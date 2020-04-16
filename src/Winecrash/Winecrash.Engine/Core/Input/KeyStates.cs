@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace Winecrash.Engine
 {
-    public static class Input
+    [Flags]
+    internal enum KeyStates : byte
     {
+        None = 0,
+        Released = 1,
+        Pressed = 2,
+        Releasing = 4,
+        Pressing = 8
     }
 }
