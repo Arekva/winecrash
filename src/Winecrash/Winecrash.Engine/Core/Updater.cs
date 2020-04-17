@@ -62,12 +62,16 @@ namespace Winecrash.Engine
                     Render.FinalImage.SetPixel(col, x, y);
                 }
 
+                //double time = Time.TimeSinceStart - timeBeforeUpdate;
+
                 OnFrameEnd?.Invoke();
 
                 //60 fps = 1/60th = 16 ms
                 //144 fps = 1/144th = between 6ms and 7ms
 
                 Time.DeltaTime = Time.TimeSinceStart - timeBeforeUpdate;
+                
+                
             }
         }
     }

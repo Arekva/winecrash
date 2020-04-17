@@ -9,7 +9,7 @@ namespace Winecrash.Engine
 {
     public static class Debug
     {
-        private static string LogPath = FileManager.Root + @$"Logs/{Time.ShortTimeForFile}.txt";
+        private static string LogPath = FileManager.Root + @$"Logs/logs.txt";
 
         private static List<Logger> Loggers = new List<Logger>(1);
         
@@ -27,18 +27,21 @@ namespace Winecrash.Engine
 
         }
 
+        private static bool Writing = false;
         private static void WriteAll()
         {
+            if (Writing) return;
+            Writing = true;
             string[] logs = logMessages.ToArray();
             logMessages.Clear();
 
             using(FileStream fs = new FileStream(LogPath, FileMode.Append))
                 for (int i = 0; i < logs.Length; i++)
                 {
-                    byte[] b = Encoding.Unicode.GetBytes(logs[i]);
+                    byte[] b = Encoding.Unicode.GetBytes(logs[i] + "\n");
                     fs.Write(b, 0, b.Length);
                 }
-                    
+            Writing = false;
         }
         
         public static void Log(object message)
