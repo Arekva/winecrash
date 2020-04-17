@@ -27,7 +27,7 @@ namespace Winecrash.Engine
 
         }
 
-        private static bool Writing = false;
+        private static bool Writing = true;
         private static void WriteAll()
         {
             if (Writing) return;

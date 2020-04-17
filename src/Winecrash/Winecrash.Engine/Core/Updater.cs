@@ -50,7 +50,7 @@ namespace Winecrash.Engine
 
 
                 //Parallel.For(0, Render.FrameResolutionX * Render.FrameResolutionY, i =>
-                for (int i = 0; i < Render.FrameResolutionX * Render.FrameResolutionY; i++)
+                /*for (int i = 0; i < Render.FrameResolutionX * Render.FrameResolutionY; i++)
                 {
                     int x = i % Render.FrameResolutionX;
                     int y = i / Render.FrameResolutionX;
@@ -60,7 +60,7 @@ namespace Winecrash.Engine
                         (double)x / Render.FrameResolutionX, 1.0D - (double)y / Render.FrameResolutionY, 0, 1.0D);
 
                     Render.FinalImage.SetPixel(col, x, y);
-                }
+                }*/
 
                 //double time = Time.TimeSinceStart - timeBeforeUpdate;
 
