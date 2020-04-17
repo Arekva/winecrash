@@ -64,6 +64,10 @@ namespace Winecrash.Engine
 
                 return angles * WMath.RadToDeg;
             }
+            set
+            {
+                this = new Quaternion(value);
+            }
         }
 
         /*public Vector3D Direction
