@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace Winecrash.Engine
 {
@@ -16,6 +17,7 @@ namespace Winecrash.Engine
         public double Z { get; set; }
 
         #region Multi Dimensional Accessors
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D XY
         {
             get
@@ -29,6 +31,7 @@ namespace Winecrash.Engine
                 this.Y = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D YX
         {
             get
@@ -42,7 +45,7 @@ namespace Winecrash.Engine
                 this.X = value.Y;
             }
         }
-
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D YZ
         {
             get
@@ -56,6 +59,7 @@ namespace Winecrash.Engine
                 this.Z = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D ZY
         {
             get
@@ -70,6 +74,7 @@ namespace Winecrash.Engine
             }
         }
 
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D XZ
         {
             get
@@ -83,6 +88,7 @@ namespace Winecrash.Engine
                 this.Z = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D ZX
         {
             get
@@ -214,6 +220,7 @@ namespace Winecrash.Engine
         #endregion
 
         #region Constructors
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D(Vector2D xy, double z)
         {
             this.X = xy.X;
@@ -222,6 +229,7 @@ namespace Winecrash.Engine
 
             this.Dimensions = 3;
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D(double x, Vector2D yz)
         {
             this.X = x;

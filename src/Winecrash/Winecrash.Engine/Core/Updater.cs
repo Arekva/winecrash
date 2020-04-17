@@ -45,7 +45,8 @@ namespace Winecrash.Engine
 
                 OnFrameStart?.Invoke();
 
-                //Simulates 60fps framerate
+                //60 fps = 1/60th = 16 ms
+                //144 fps = 1/144th = between 6ms and 7ms
                 Thread.Sleep(16);
 
                 Time.DeltaTime = Time.TimeSinceStart - timeBeforeUpdate;

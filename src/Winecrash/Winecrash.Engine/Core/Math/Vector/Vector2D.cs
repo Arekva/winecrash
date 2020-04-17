@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Winecrash.Engine
         public double X { get; set; }
         public double Y { get; set; }
 
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D XY
         {
             get
@@ -27,6 +29,7 @@ namespace Winecrash.Engine
                 this = value;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D YX
         {
             get

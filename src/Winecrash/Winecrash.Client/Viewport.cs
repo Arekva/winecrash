@@ -56,9 +56,15 @@ namespace Winecrash.Client
 
                 VectorND vn = new VectorND(10, 1.0D);
 
+                Vector4D d = new Vector4D();
+
                 vn[5] = 5.0D;
 
-                lb_debug.Text += "\n\n\n" + v3 + "\n" + vn;
+                double angle = Time.TimeSinceStart * 20.0D;
+                Quaternion quat = new Quaternion((Vector3D.Forward) * angle);
+
+
+                lb_debug.Text += "\n\n\nQuaternion: " + quat.ToString() + "\nEuler: " + quat.Euler.ToString();// + "\nDirection: " + quat.Direction;
             });
         }
 

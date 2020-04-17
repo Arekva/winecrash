@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Winecrash.Engine
 {
@@ -13,6 +14,7 @@ namespace Winecrash.Engine
         public double W { get; set; }
 
         #region Multi dimensional accessors
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D XY
         {
             get
@@ -26,6 +28,7 @@ namespace Winecrash.Engine
                 this.Y = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D YX
         {
             get
@@ -39,6 +42,7 @@ namespace Winecrash.Engine
                 this.X = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D XZ
         {
             get
@@ -52,6 +56,7 @@ namespace Winecrash.Engine
                 this.Z = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D ZX
         {
             get
@@ -65,6 +70,7 @@ namespace Winecrash.Engine
                 this.X = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D XW
         {
             get
@@ -78,6 +84,7 @@ namespace Winecrash.Engine
                 this.W = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D WX
         {
             get
@@ -90,6 +97,7 @@ namespace Winecrash.Engine
                 this.X = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D YZ
         {
             get
@@ -103,6 +111,7 @@ namespace Winecrash.Engine
                 this.Z = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D ZY
         {
             get
@@ -116,6 +125,7 @@ namespace Winecrash.Engine
                 this.Y = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D YW
         {
             get
@@ -129,6 +139,7 @@ namespace Winecrash.Engine
                 this.W = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D WY
         {
             get
@@ -142,6 +153,7 @@ namespace Winecrash.Engine
                 this.Y = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D ZW
         {
             get
@@ -155,6 +167,7 @@ namespace Winecrash.Engine
                 this.W = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D WZ
         {
             get
@@ -168,6 +181,7 @@ namespace Winecrash.Engine
                 this.Z = value.Y;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D XYZ
         {
             get
@@ -182,6 +196,7 @@ namespace Winecrash.Engine
                 this.Z = value.Z;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D ZYX
         {
             get
@@ -196,6 +211,7 @@ namespace Winecrash.Engine
                 this.X = value.Z;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D YZW
         {
             get
@@ -210,6 +226,7 @@ namespace Winecrash.Engine
                 this.W = value.Z;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D WZY
         {
             get
@@ -224,6 +241,7 @@ namespace Winecrash.Engine
                 this.Y = value.Z;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D XZW
         {
             get
@@ -238,6 +256,7 @@ namespace Winecrash.Engine
                 this.W = value.Z;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D WZX
         {
             get
@@ -252,6 +271,7 @@ namespace Winecrash.Engine
                 this.X = value.Z;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D XYW
         {
             get
@@ -266,6 +286,7 @@ namespace Winecrash.Engine
                 this.W = value.Z;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D WYZ
         {
             get
@@ -280,6 +301,7 @@ namespace Winecrash.Engine
                 this.Z = value.Z;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4D XYZW
         {
             get
@@ -292,6 +314,7 @@ namespace Winecrash.Engine
                 this = value;
             }
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4D WZYX
         {
             get
@@ -307,6 +330,7 @@ namespace Winecrash.Engine
                 this.X = value.W;
             }
         }
+
         #endregion
 
         #region Directions
@@ -330,7 +354,6 @@ namespace Winecrash.Engine
                 return new Vector4D(-1.0D, 0.0D, 0.0D, 0.0D);
             }
         }
-
         /// <summary>
         /// Positive Y
         /// </summary>
@@ -351,7 +374,6 @@ namespace Winecrash.Engine
                 return new Vector4D(0.0D, -1.0D, 0.0D, 0.0D);
             }
         }
-
         /// <summary>
         /// Positive Z
         /// </summary>
@@ -372,7 +394,6 @@ namespace Winecrash.Engine
                 return new Vector4D(0.0D, 0.0D, -1.0D, 0.0D);
             }
         }
-
         /// <summary>
         /// Positive W
         /// </summary>
@@ -441,6 +462,7 @@ namespace Winecrash.Engine
         #endregion
 
         #region Constructors
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4D(Vector2D xy, double z, double w)
         {
             this.X = xy.X;
@@ -450,6 +472,7 @@ namespace Winecrash.Engine
 
             this.Dimensions = 4;
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4D(double x, Vector2D yz, double w)
         {
             this.X = x;
@@ -459,6 +482,7 @@ namespace Winecrash.Engine
 
             this.Dimensions = 4;
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4D(double x, double y, Vector2D zw)
         {
             this.X = x;
@@ -468,6 +492,7 @@ namespace Winecrash.Engine
 
             this.Dimensions = 4;
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4D(Vector2D xy, Vector2D zw)
         {
             this.X = xy.X;
@@ -477,6 +502,7 @@ namespace Winecrash.Engine
 
             this.Dimensions = 4;
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4D(Vector3D xyz, double w)
         {
             this.X = xyz.X;
@@ -486,6 +512,7 @@ namespace Winecrash.Engine
 
             this.Dimensions = 4;
         }
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4D(double x, Vector3D yzw)
         {
             this.X = x;
