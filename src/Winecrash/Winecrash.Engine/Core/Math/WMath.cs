@@ -11,6 +11,30 @@ namespace Winecrash.Engine
         public const double DegToRad = Math.PI / 180D;
         public const double RadToDeg = 180D / Math.PI;
 
+        public static T Clamp<T>(T value, T min, T max) where T : IComparable
+        {
+            return value.CompareTo(min) == 0 ? min : (value.CompareTo(max) == 0 ? max : value);
+        }
+
+        /// <summary>
+        /// Get the index of a 1D array treated as 2D
+        /// </summary>
+        public static int Flatten2D(int x, int y, int width)
+        {
+            return x + y * width;
+        }
+
+        /// <summary>
+        /// Get 2D index from 1D index and size 
+        /// </summary>
+        public static void FlatTo2D(int index, int width, out int x, out int y)
+        {
+            x = index % width;
+            y = index / width;
+        }
+
+
+
         #region CopySign
         internal static Int64 CopySign(Int64 x, Int64 y)
         {
@@ -114,6 +138,7 @@ namespace Winecrash.Engine
         }
         public static double CopySign(float x, float y)
         {
+            if (Single.IsNaN(x)) return Single.NaN;
             //if x negative
             if (x < 0.0F)
             {
@@ -139,6 +164,7 @@ namespace Winecrash.Engine
         }
         public static double CopySign(double x, double y)
         {
+            if (Double.IsNaN(x)) return Double.NaN;
             //if x negative
             if (x < 0.0D)
             {

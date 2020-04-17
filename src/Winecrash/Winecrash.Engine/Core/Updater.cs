@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Winecrash.Engine
 {
+    //TODO : internal
     public static class Updater
     {
         internal static Thread UpdateThread;
@@ -17,6 +18,7 @@ namespace Winecrash.Engine
 
 
         public static UpdateCallback OnFrameStart;
+        public static UpdateCallback OnFrameEnd;
 
         [Initializer]
         private static void Initialize()
@@ -44,6 +46,8 @@ namespace Winecrash.Engine
                 double timeBeforeUpdate = Time.TimeSinceStart;
 
                 OnFrameStart?.Invoke();
+
+                OnFrameEnd?.Invoke();
 
                 //60 fps = 1/60th = 16 ms
                 //144 fps = 1/144th = between 6ms and 7ms

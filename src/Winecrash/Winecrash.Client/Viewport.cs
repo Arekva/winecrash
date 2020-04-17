@@ -30,8 +30,7 @@ namespace Winecrash.Client
             Engine.Engine.Load();
 
             Updater.OnFrameStart += Debug;
-
-            
+            Render.OnFrameRendered += OnFrameRender;
         }
 
         private void Viewport_FormClosing(object sender, FormClosingEventArgs e)
@@ -66,6 +65,11 @@ namespace Winecrash.Client
 
                 lb_debug.Text += "\n\n\nQuaternion: " + quat.ToString() + "\nEuler: " + quat.Euler.ToString();// + "\nDirection: " + quat.Direction;
             });
+        }
+
+        private static void OnFrameRender(RenderImage image)
+        {
+
         }
 
 
