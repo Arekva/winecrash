@@ -25,6 +25,8 @@ namespace Winecrash.Client
 
         private void Viewport_Load(object sender, EventArgs e)
         {
+            this.FormClosing += Viewport_FormClosing;
+
             Engine.Engine.Load();
 
             Updater.OnFrameStart += Debug;
@@ -32,29 +34,31 @@ namespace Winecrash.Client
             
         }
 
+        private void Viewport_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Engine.Engine.Stop();
+        }
+
         private void Debug()
         {
             InvokeOnMainThread(() =>
             {
-                string msg = "A ";
-                if(Input.IsPressed(Keys.A))
-                {
-                    msg += " pressed";
-                }
-                else if (Input.IsPressing(Keys.A))
-                {
-                    msg += " pressing";
-                }
-                else if(Input.IsReleased(Keys.A))
-                {
-                    //msg += " released";
-                }
-                else if (Input.IsReleasing(Keys.A))
-                {
-                    msg += "releasing";
-                }
-                if (msg != "A ")
-                    MessageBox.Show(msg);
+                lb_debug.Text = "Time since beginning: " + Math.Round(Time.TimeSinceStart,4) + " secs\n with a current delta of " + Math.Round(Time.DeltaTime, 4) + " secs\n(" + Math.Round((1D/ Time.DeltaTime)) + "FPS)";
+
+                Vector2D v2 = new Vector2D(2.0D);
+                Vector3D v3 = new Vector3D(v2, 8.98D);
+
+                v3.YZ *= 5.0F;
+
+                Vector3D v3bis = new Vector3D(5.0D);
+
+                v3 /= v3bis;
+
+                VectorND vn = new VectorND(10, 1.0D);
+
+                vn[5] = 5.0D;
+
+                lb_debug.Text += "\n\n\n" + v3 + "\n" + vn;
             });
         }
 
