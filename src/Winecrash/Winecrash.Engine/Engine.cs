@@ -24,7 +24,7 @@ namespace Winecrash.Engine
             Updater.FixedUpdateThread?.Abort();
         }
 
-        [Initializer(Int32.MinValue)]
+        [Initializer(Int32.MinValue + 10)]
         private static void Initialize()
         {
             CheckPlateform();
@@ -42,6 +42,8 @@ namespace Winecrash.Engine
                     throw new Exception(errorMessage);
                 }
             }
+            
+            Debug.Log(OS);
         }
 
         private static void CheckPlateform()

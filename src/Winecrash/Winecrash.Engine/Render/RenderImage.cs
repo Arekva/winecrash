@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,14 @@ namespace Winecrash.Engine
     {
         public int Width { get; private set; }
         public int Height { get; private set; }
+
+        public Bitmap Image
+        {
+            get
+            {
+                return Render.RawToBitmap(this.Data, this.Width, this.Height, Format);
+            }
+        }
 
         public const PixelFormat Format = PixelFormat.Format32bppArgb;
         public const int Canals = 4;
@@ -45,7 +54,9 @@ namespace Winecrash.Engine
         }
         public void SetPixel(Color32 color, int x, int y)
         {
-            int i = WMath.Flatten2D(x, y, this.Width);
+
+
+            int i = x + this.Width * y;
 
             //red: i * 4 + 2
             //green: i * 4 + 1

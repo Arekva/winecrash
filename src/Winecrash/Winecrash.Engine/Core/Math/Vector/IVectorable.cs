@@ -8,9 +8,9 @@ namespace Winecrash.Engine
 {
     public interface IVectorable
     {
-        public int Dimensions { get; }
+        int Dimensions { get; }
 
-        public double SquaredLength { get; }
-        public double Length { get; }
+        double SquaredLength { get; }
+        double Length { get; }
     }
 }

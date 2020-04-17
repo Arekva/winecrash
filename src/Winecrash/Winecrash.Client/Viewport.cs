@@ -26,11 +26,18 @@ namespace Winecrash.Client
         private void Viewport_Load(object sender, EventArgs e)
         {
             this.FormClosing += Viewport_FormClosing;
+            this.SizeChanged += Viewport_SizeChanged;
+            this.OnSizeChanged(EventArgs.Empty);
 
             Engine.Engine.Load();
 
             Updater.OnFrameStart += Debug;
             Render.OnFrameRendered += OnFrameRender;
+        }
+
+        private void Viewport_SizeChanged(object sender, EventArgs e)
+        {
+            Render.SetNextFrameResolution(this.Size.Width, this.Size.Height);
         }
 
         private void Viewport_FormClosing(object sender, FormClosingEventArgs e)
@@ -42,9 +49,17 @@ namespace Winecrash.Client
         {
             InvokeOnMainThread(() =>
             {
-                lb_debug.Text = "Time since beginning: " + Math.Round(Time.TimeSinceStart,4) + " secs\n with a current delta of " + Math.Round(Time.DeltaTime, 4) + " secs\n(" + Math.Round((1D/ Time.DeltaTime)) + "FPS)";
+                lb_debug.Text = 
+                "Time since beginning: " 
+                + Math.Round(Time.TimeSinceStart,4) 
+                + " secs\n with a current delta of " 
+                + Math.Round(Time.DeltaTime, 4)
+                + " secs\n(" + Math.Round((1D/ Time.DeltaTime)) + "FPS)"
+                + "\n\nViewport draw time : " + drawTime
 
-                Vector2D v2 = new Vector2D(2.0D);
+                ;
+
+               /* Vector2D v2 = new Vector2D(2.0D);
                 Vector3D v3 = new Vector3D(v2, 8.98D);
 
                 v3.YZ *= 5.0F;
@@ -60,16 +75,26 @@ namespace Winecrash.Client
                 vn[5] = 5.0D;
 
                 double angle = Time.TimeSinceStart * 20.0D;
-                Quaternion quat = new Quaternion((Vector3D.Forward) * angle);
+                Quaternion quat = new Quaternion((Vector3D.Forward) * angle);*/
 
 
-                lb_debug.Text += "\n\n\nQuaternion: " + quat.ToString() + "\nEuler: " + quat.Euler.ToString();// + "\nDirection: " + quat.Direction;
+                //lb_debug.Text += "\n\n\nQuaternion: " + quat.ToString() + "\nEuler: " + quat.Euler.ToString();// + "\nDirection: " + quat.Direction;
             });
         }
-
-        private static void OnFrameRender(RenderImage image)
+        private static double drawTime = 0;
+        private void OnFrameRender(RenderImage renderImage)
         {
+            double t = Time.TimeSinceStart;
+            InvokeOnMainThread(() =>
+            {
+                this.Refresh();
+            });
+            drawTime = Time.TimeSinceStart - t;
+        }
 
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            e.Graphics.DrawImage(Render.FinalImage.Image, 0, 0, Render.FrameResolutionX, Render.FrameResolutionY);
         }
 
 

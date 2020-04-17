@@ -14,17 +14,39 @@ namespace Winecrash.Engine
         public delegate void FrameRenderDelegate(RenderImage image);
         public static FrameRenderDelegate OnFrameRendered;
 
-        internal static RenderImage FinalImage { get; private set; } = new RenderImage(512, 512);
+        public static RenderImage FinalImage { get; private set; } = new RenderImage(FrameResolutionX, FrameResolutionY);
+
+        public static int FrameResolutionX { get; private set; } = 512;
+        public static int FrameResolutionY { get; set; } = 512;
+
+        private static int NextFrameResolutionX { get; set; } = FrameResolutionX;
+        private static int NextFrameResolutionY { get; set; } = FrameResolutionY;
 
         [Initializer]
         private static void Initialize()
         {
             Updater.OnFrameEnd += InvokeRenderTargets;
+            Updater.OnFrameStart += OnFrameStart;
+
         }
 
         private static void InvokeRenderTargets()
         {
             OnFrameRendered?.Invoke(FinalImage);
+        }
+
+        private static void OnFrameStart()
+        {
+            FrameResolutionX = NextFrameResolutionX;
+            FrameResolutionY = NextFrameResolutionY;
+
+            FinalImage = new RenderImage(FrameResolutionX, FrameResolutionY);
+        }
+
+        public static void SetNextFrameResolution(int x, int y)
+        {
+            NextFrameResolutionX = x;
+            NextFrameResolutionY = y;
         }
 
         

@@ -10,7 +10,7 @@ namespace Winecrash.Engine
 {
     internal interface IInputWrapper
     {
-        public OSPlatform CorrespondingOS { get; }
-        public bool GetKey(Keys key);
+        OSPlatform CorrespondingOS { get; }
+        bool GetKey(Keys key);
     }
 }
