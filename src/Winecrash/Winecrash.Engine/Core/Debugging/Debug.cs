@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Winecrash.Engine
 {
     public static class Debug
     {
+
+        internal static Thread PrintThread;
+
         private static string LogPath = FileManager.Root + @$"Logs/logs.txt";
 
         private static List<Logger> Loggers = new List<Logger>(1);
@@ -23,25 +27,36 @@ namespace Winecrash.Engine
             
             Loggers.Add(new Logger(LogFile, LogWarningFile, LogErrorFile, LogExceptionFile));
 
-            Updater.OnFrameEnd += WriteAll;
-
+            WriteAll();
         }
 
         private static bool Writing = false;
         private static void WriteAll()
         {
-            if (Writing) return;
-            Writing = true;
-            string[] logs = logMessages.ToArray();
-            logMessages.Clear();
-
-            using(FileStream fs = new FileStream(LogPath, FileMode.Append))
-                for (int i = 0; i < logs.Length; i++)
+            PrintThread = new Thread(() =>
+            {
+                while (true)
                 {
-                    byte[] b = Encoding.Unicode.GetBytes(logs[i] + "\n");
-                    fs.Write(b, 0, b.Length);
+                    try
+                    {
+                        string[] logs = logMessages.ToArray();
+                        logMessages.Clear();
+
+                        using (StreamWriter LogWritter = new StreamWriter(LogPath, true))
+                        {
+                            for (int i = 0; i < logs.Length; i++)
+                            {
+                                LogWritter.WriteLine(logs[i]);
+                            }
+                        }
+
+                        Thread.Sleep(1000);
+                    }
+                    catch { }
                 }
-            Writing = false;
+            });
+
+            PrintThread.Start();
         }
         
         public static void Log(object message)

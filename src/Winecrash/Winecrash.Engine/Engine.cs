@@ -22,6 +22,7 @@ namespace Winecrash.Engine
         {
             Updater.UpdateThread?.Abort();
             Updater.FixedUpdateThread?.Abort();
+            Debug.PrintThread?.Abort();
         }
 
         [Initializer(Int32.MinValue + 10)]
