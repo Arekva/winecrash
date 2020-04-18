@@ -30,7 +30,7 @@ namespace Winecrash.Engine
             WriteAll();
         }
 
-        private static bool Writing = false;
+        private static bool Writing = true;
         private static void WriteAll()
         {
             PrintThread = new Thread(() =>

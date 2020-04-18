@@ -50,7 +50,6 @@ namespace Winecrash.Engine
                 Color32 cols = new Color32(0, 0, 0, 255);
 
                 //Parallel.For(0, Render.FrameResolutionX * Render.FrameResolutionY, i =>
-                //{
                 for (int i = 0; i < Render.FrameResolutionX * Render.FrameResolutionY; i++)
                 {
                     int x = i % Render.FrameResolutionX;
@@ -64,7 +63,6 @@ namespace Winecrash.Engine
 
                     Render.FinalImage.SetPixel(col, x, y);
                 }
-                //});
 
                 //double time = Time.TimeSinceStart - timeBeforeUpdate;
 
