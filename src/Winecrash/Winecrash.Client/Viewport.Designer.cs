@@ -23,40 +23,41 @@
         #region Code généré par le Concepteur Windows Form
 
         /// <summary>
-        /// Méthode requise pour la prise en charge du concepteur - ne modifiez pas
-        /// le contenu de cette méthode avec l'éditeur de code.
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
-            this.lb_debug = new System.Windows.Forms.Label();
+            this.ViewRender = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize) (this.ViewRender)).BeginInit();
             this.SuspendLayout();
             // 
-            // lb_debug
+            // ViewRender
             // 
-            this.lb_debug.AutoSize = true;
-            this.lb_debug.Location = new System.Drawing.Point(12, 9);
-            this.lb_debug.Name = "lb_debug";
-            this.lb_debug.Size = new System.Drawing.Size(51, 13);
-            this.lb_debug.TabIndex = 0;
-            this.lb_debug.Text = "lb_debug";
+            this.ViewRender.BackColor = System.Drawing.Color.Black;
+            this.ViewRender.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.ViewRender.Location = new System.Drawing.Point(0, 0);
+            this.ViewRender.Name = "ViewRender";
+            this.ViewRender.Size = new System.Drawing.Size(617, 357);
+            this.ViewRender.TabIndex = 0;
+            this.ViewRender.TabStop = false;
             // 
             // Viewport
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.lb_debug);
+            this.ClientSize = new System.Drawing.Size(933, 519);
+            this.Controls.Add(this.ViewRender);
             this.Name = "Viewport";
             this.Text = "Winecrash Viewport";
             this.Load += new System.EventHandler(this.Viewport_Load);
+            ((System.ComponentModel.ISupportInitialize) (this.ViewRender)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
-
         }
 
         #endregion
 
-        private System.Windows.Forms.Label lb_debug;
+        private System.Windows.Forms.PictureBox ViewRender;
     }
 }
 

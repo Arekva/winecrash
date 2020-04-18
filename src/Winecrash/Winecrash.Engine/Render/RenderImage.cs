@@ -21,7 +21,7 @@ namespace Winecrash.Engine
             }
         }
 
-        public const PixelFormat Format = PixelFormat.Format32bppArgb;
+        public const PixelFormat Format = PixelFormat.Format32bppPArgb;
         public const int Canals = 4;
 
         private const int RedShift = 2;
