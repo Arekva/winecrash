@@ -3,20 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Winecrash.Engine;
 
 namespace Winecrash.Client
 {
     static class Program
     {
-        /// <summary>
-        /// Point d'entrée principal de l'application.
-        /// </summary>
-        [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Viewport());
+            WEngine.Run();
+
+            CreateDebugWindow();
+            //MessageBox.Show("Exiting program");
+        }
+
+        [STAThread]
+        static void CreateDebugWindow()
+        {
+            WEngine.OnStop += () => Application.Exit();
+
+            Debug.AddLogger(new Logger(frmDebug.Log));
+
+            Application.Run(new frmDebug());
         }
     }
 }

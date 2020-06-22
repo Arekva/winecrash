@@ -55,7 +55,7 @@ namespace Winecrash.Engine
                     if (!type.IsInterface && typeof(IInputWrapper).IsAssignableFrom(type))
                     {
                         IInputWrapper wrapper = Activator.CreateInstance(type) as IInputWrapper;
-                        if(wrapper.CorrespondingOS == Engine.OS)
+                        if(wrapper.CorrespondingOS == WEngine.OS)
                         {
                             InputWrapper = wrapper;
                             return true;

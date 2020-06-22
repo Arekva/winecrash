@@ -5,24 +5,76 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace Winecrash.Engine
 {
-    public static class Engine
+    public static class WEngine
     {
         public static OSPlatform OS { get; private set; }
 
         private static OSPlatform[] SupportedOS = new OSPlatform[] { OSPlatform.Windows, OSPlatform.Linux };
 
+        public delegate void StopDelegate();
+        public static StopDelegate OnStop;
+
+        public static Thread Run()
+        {
+            Thread winThread = Viewport.ThreadRunner = new Thread(ShowWindow)
+            {
+                IsBackground = false,
+                Priority = ThreadPriority.Highest
+            };
+            winThread.Start();
+
+            Load();
+            //Stop();
+
+            return winThread;
+        }
+
+        private static void ShowWindow()
+        {
+            using (Viewport vp = new Viewport(800, 600, "Winecraft Viewport"))
+            {
+                vp.Run();
+            }
+        }
+
         public static void Load()
         {
             Initializer.InitializeEngine();
         }
-        public static void Stop()
+        internal static void Stop(object sender)
         {
+            try
+            {
+                OnStop?.Invoke();
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message + "\n" + e.StackTrace, "Error when stopping engine", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            if (!(sender is Viewport))
+            {
+                Viewport.ThreadRunner?.Abort();
+            }
+
+            foreach(Layer layer in Layer._Layers)
+            {
+                foreach(Group group in layer._Groups)
+                {
+                    group.Thread.Abort();
+                }
+            }
+
             Updater.UpdateThread?.Abort();
             Updater.FixedUpdateThread?.Abort();
             Debug.PrintThread?.Abort();
+        }
+        public static void Stop()
+        {
+            Stop(null);
         }
 
         [Initializer(Int32.MinValue + 10)]

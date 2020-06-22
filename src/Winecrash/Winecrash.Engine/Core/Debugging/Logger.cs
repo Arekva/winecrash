@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Winecrash.Engine
 {
-    internal sealed class Logger
+    public sealed class Logger
     {
         public delegate void LoggerCallback(object message);
 
