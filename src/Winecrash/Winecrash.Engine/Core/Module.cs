@@ -6,16 +6,8 @@ using System.Threading.Tasks;
 
 namespace Winecrash.Engine
 {
-    public class Module : WObject
+    public class Module : BaseObject
     {
-        private int _ExecutionLayer;
-        public int ExecutionLayer
-        {
-            get
-            {
-                return this.ExecutionLayer;
-            }
-        }
         private int _Group;
         public int Group 
         { 
@@ -34,25 +26,56 @@ namespace Winecrash.Engine
         {
             get
             {
-                return this._ExecutionOrder;
+                return _ExecutionOrder;
             }
 
             set
             {
-
+                SetOrder(value);
             }
         }
 
-        private void SetGroup(int group)
+        private void SetOrder(int newOrder)
         {
-            if (group == _Group) return;
+            this._ExecutionOrder = newOrder;
+
+            Engine.Group.GetGroup(this.Group).SortModules();
+        }
+        private void SetGroup(int newGroup)
+        {
+            if (newGroup == _Group) return;
+
+            Group previousGroup = Winecrash.Engine.Group.GetGroup(this._Group);
+            previousGroup.RemoveModule(this);
+
+            Engine.Group.CreateOrGetGroup(newGroup, null, new[] { this });
+
+            this._Group = newGroup;
         }
 
-        private Module()
+        public Module() : base()
         {
-
+            Engine.Group.CreateOrGetGroup(0, null, new[] { this });
         }
 
+        public WObject WObject { get; internal set; }
+
+        internal bool StartDone { get; set; } = false;
+
+        internal protected virtual void Creation() { }
+        internal protected virtual void Start() { }
         internal protected virtual void Update() { }
+        internal protected virtual void OnDelete() { }
+
+        public sealed override void Delete()
+        {
+            this.OnDelete();
+
+            this.WObject._Modules.Remove(this);
+            this.WObject = null;
+            Engine.Group.GetGroup(this.Group).RemoveModule(this);
+
+            base.Delete();
+        }
     }
 }

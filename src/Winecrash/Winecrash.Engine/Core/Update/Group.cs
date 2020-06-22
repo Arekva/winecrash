@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 
 namespace Winecrash.Engine
 {
-    internal class Group
+    public class Group
     {
+        public ManualResetEvent DoneEvent { get; set; } = new ManualResetEvent(false);
+        public ManualResetEvent ResetEvent { get; set; } = new ManualResetEvent(false);
+
         private int _Order;
         public int Order
         { 
@@ -38,9 +41,9 @@ namespace Winecrash.Engine
             }
         }
 
-        internal List<Module> _Modules = new List<Module>(1);
+        internal List<Module> _Modules { get; set; } = new List<Module>(1);
 
-        internal static List<Group> _Groups = new List<Group>(1);
+        internal static List<Group> _Groups { get; set; } = new List<Group>(1);
         public int GroupCount
         {
             get
@@ -50,9 +53,6 @@ namespace Winecrash.Engine
         }
         
         public Thread Thread { get; private set; }
-
-        private bool DoUpdate = false;
-        public bool UpdateDone { get; private set; } = false;
 
         private Group(string name, int order, IEnumerable<Module> modules)
         {
@@ -66,9 +66,8 @@ namespace Winecrash.Engine
 
             _Groups.Add(this);
 
+
             SortByOrder();
-
-
 
             Thread = new Thread(Update)
             {
@@ -80,29 +79,31 @@ namespace Winecrash.Engine
             Thread.Start();
         }
 
-        public void TriggerUpdate()
-        {
-            DoUpdate = true;
-        }
-
         private void Update()
         {
-            while(true)
+            
+            while (true)
             {
-                while (!DoUpdate)
-                {
-                    Thread.Sleep(1);
-                }
-                UpdateDone = false;
-                DoUpdate = false;
+                this.ResetEvent.WaitOne(); //wait for reset event
+                this.ResetEvent.Reset(); //set reset event to false
 
-                foreach (Module module in this._Modules)
+                Module[] modules = this._Modules.ToArray();
+                
+                for (int i = 0; i < modules.Length; i++)
                 {
-                    module.Update();
+                    if (modules[i].Deleted) continue;
+
+                    if (!modules[i].StartDone)
+                    {
+                        modules[i].StartDone = true;
+                        modules[i].Start();
+                    }
+
+                    modules[i].Update();
                 }
 
-                UpdateDone = true;
-            }
+                this.DoneEvent.Set(); //says the thread is done.      
+            }  
         }
 
         public static Group CreateOrGetGroup(int order, string name = null, IEnumerable<Module> modules = null)
@@ -145,9 +146,9 @@ namespace Winecrash.Engine
                 group.Thread.Abort();
                 group.Thread = null;
 
-                List<Module> modules = group._Modules;
+                group.Thread.Abort();
                 _Groups.Remove(group);
-                CreateOrGetGroup(0, null, modules);
+                CreateOrGetGroup(0, null, group._Modules);
             }
             else
             {
@@ -178,8 +179,8 @@ namespace Winecrash.Engine
             }
 
             first._Modules.AddRange(second._Modules);
-            second._Modules = null;
 
+            second._Modules = null;
             second.Thread.Abort();
             second.Thread = null;
 
@@ -188,7 +189,7 @@ namespace Winecrash.Engine
             return first;
         }
 
-        private static Group GetGroup(int order)
+        public static Group GetGroup(int order)
         {
             return _Groups.FindLast(g => g.Order == order);
         }
@@ -201,6 +202,30 @@ namespace Winecrash.Engine
         private static void SortByOrder()
         {
             _Groups = _Groups.OrderBy(g => g.Order).ToList();
+        }
+
+        public void SortModules()
+        {
+            this._Modules = _Modules.OrderBy(m => m.ExecutionOrder).ToList();
+        }
+
+        public static void SetGroupLayer(int group, int newLayer)
+        {
+            Group correspondingGroup = Group.GetGroup(group);
+
+            if(correspondingGroup != null)
+            {
+                foreach(Layer layer in Layer._Layers)
+                {
+                    //find the current layer of the group
+                    if (layer._Groups.Contains(correspondingGroup))
+                    {
+                        layer._Groups.Remove(correspondingGroup);
+                        Layer.CreateOrGetLayer(newLayer, null, new[] { correspondingGroup });
+                        break;
+                    }
+                }
+            }
         }
     }
 }

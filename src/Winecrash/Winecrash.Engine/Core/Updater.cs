@@ -20,7 +20,7 @@ namespace Winecrash.Engine
         public static UpdateCallback OnFrameStart;
         public static UpdateCallback OnFrameEnd;
 
-        [Initializer(1000)]
+        //[Initializer(1000)]
         private static void Initialize()
         {
             //Time.ElapsedTimeWatch.Start();

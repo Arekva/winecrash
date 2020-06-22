@@ -82,6 +82,8 @@
     <Compile Include="Core\Input\Input.cs" />
     <Compile Include="Core\Updater.cs" />
     <Compile Include="Core\Update\Group.cs" />
+    <Compile Include="Core\Update\UpdateEvent.cs" />
+    <Compile Include="Core\Object.cs" />
     <Compile Include="Core\WObject.cs" />
     <Compile Include="Render\Shader.cs" />
     <Compile Include="WEngine.cs" />

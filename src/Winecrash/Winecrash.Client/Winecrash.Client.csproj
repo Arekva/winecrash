@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestModule.cs" />
     <EmbeddedResource Include="frmDebug.resx">
       <DependentUpon>frmDebug.cs</DependentUpon>
     </EmbeddedResource>

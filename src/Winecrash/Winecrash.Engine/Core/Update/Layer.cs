@@ -41,6 +41,8 @@ namespace Winecrash.Engine
         private static void Initialize()
         {
             CreateOrGetLayer(0, "Default Layer", new[] { Group.CreateOrGetGroup(0, "Default Group", null) });
+
+            Viewport.Update += new UpdateEventHandler(Update);
         }
 
         private Layer(string name, int order, IEnumerable<Group> groups)
@@ -177,39 +179,20 @@ namespace Winecrash.Engine
             return first;
         }
 
-        public static void Update()
+        public static void Update(UpdateEventArgs args)
         {
-            foreach(Layer layer in _Layers)
+            foreach (Layer layer in _Layers)
             {
+                ManualResetEvent[] doneEvents = new ManualResetEvent[layer._Groups.Count];
+
                 for (int i = 0; i < layer._Groups.Count; i++)
                 {
-                    layer._Groups[i].TriggerUpdate();
+                    layer._Groups[i].DoneEvent.Reset();
+                    doneEvents[i] = layer._Groups[i].DoneEvent;
+                    layer._Groups[i].ResetEvent.Set(); //unlock thread
                 }
 
-                bool allDone = false;
-                while(!allDone)
-                {
-                    bool ok = true;
-
-                    for (int i = 0; i < layer._Groups.Count; i++)
-                    {
-                        if (!layer._Groups[i].UpdateDone)
-                        {
-                            ok = false;
-                            break;
-                        }
-                    }
-
-                    if(ok)
-                    {
-                        allDone = true;
-                    }
-
-                    else
-                    {
-                        Thread.Sleep(1);
-                    }
-                }
+                WaitHandle.WaitAll(doneEvents); //wait for all the threads of the group
             }
         }
 

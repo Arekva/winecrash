@@ -14,17 +14,24 @@ namespace Winecrash.Engine
 {
     public class Viewport : GameWindow
     {
+        public static Viewport Instance { get; private set; }
+
         public static Thread ThreadRunner;
 
         internal static Updater.UpdateCallback OnFrameStart;
 
+        public static event UpdateEventHandler Update;
+
         
         
-        public Viewport(int width, int height, string title) : base(width, height, GraphicsMode.Default, title) { }
+        public Viewport(int width, int height, string title) : base(width, height, GraphicsMode.Default, title) 
+        {
+            Instance = this;
+        }
 
         protected override void OnLoad(EventArgs e)
         {
-            Debug.Log(Layer.GetTrace());
+            //Debug.Log(Layer.GetTrace());
 
             shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
 
@@ -82,9 +89,13 @@ namespace Winecrash.Engine
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            Layer.Update();
+            Update?.Invoke(new UpdateEventArgs(e.Time));
 
-            Debug.Log((int)(1D/e.Time));
+            //Layer.Update();
+
+            //Debug.Log((int)(1D/e.Time));
+
+            GC.Collect();
 
             base.OnUpdateFrame(e);
         }

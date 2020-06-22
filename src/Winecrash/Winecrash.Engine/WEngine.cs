@@ -18,6 +18,11 @@ namespace Winecrash.Engine
         public delegate void StopDelegate();
         public static StopDelegate OnStop;
 
+        public static void TraceLayers()
+        {
+            Debug.Log(Layer.GetTrace());
+        }
+
         public static Thread Run()
         {
             Thread winThread = Viewport.ThreadRunner = new Thread(ShowWindow)

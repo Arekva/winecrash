@@ -19,7 +19,7 @@ namespace Winecrash.Engine
         
         private static List<string> logMessages = new List<string>();
 
-        [Initializer(Int32.MinValue + 1)]
+        //[Initializer(Int32.MinValue + 1)]
         private static void Initialize()
         {
 
