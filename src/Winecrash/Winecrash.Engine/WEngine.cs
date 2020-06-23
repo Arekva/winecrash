@@ -27,6 +27,8 @@ namespace Winecrash.Engine
 
         public static Thread Run()
         {
+            System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+
             Thread winThread = Viewport.ThreadRunner = new Thread(ShowWindow)
             {
                 IsBackground = false,
@@ -35,7 +37,6 @@ namespace Winecrash.Engine
             winThread.Start();
 
             Load();
-            //Stop();
 
             return winThread;
         }

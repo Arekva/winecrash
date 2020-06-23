@@ -20,6 +20,12 @@ namespace Winecrash.Client
             WObject wobj1 = new WObject("Test Object #1");
             wobj1.AddModule<TestModule>().Name = "Test Module #1";
 
+            Mesh[] meshes = Mesh.LoadFile("Models/Cube.obj", MeshFormats.Wavefront);
+
+            if (meshes != null)
+                for (int i = 0; i < meshes.Length; i++)
+                    Debug.Log(meshes[i].Name);
+
             WEngine.TraceLayers();
 
         }

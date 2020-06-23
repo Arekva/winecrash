@@ -136,7 +136,7 @@ namespace Winecrash.Engine
             //else return positive x
             return x;
         }
-        public static double CopySign(float x, float y)
+        public static float CopySign(float x, float y)
         {
             if (Single.IsNaN(x)) return Single.NaN;
             //if x negative

@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Diagnostics;
 using System.Reflection;
+
+
+using FKeys = System.Windows.Forms.Keys;
+using WKeys = Winecrash.Engine.Keys;
 
 namespace Winecrash.Engine
 {
@@ -10,8 +14,8 @@ namespace Winecrash.Engine
         internal static Input Instance { get; private set; }
         private static IInputWrapper InputWrapper { get; set; }
 
-        private static int KeysAmount = Enum.GetNames(typeof(Keys)).Length;
-        private static Dictionary<Keys, KeyStates> RegisteredKeyStates = new Dictionary<Keys, KeyStates>(KeysAmount);
+        private static int KeysAmount = Enum.GetValues(typeof(WKeys)).Length;
+        private static Dictionary<WKeys, KeyStates> RegisteredKeyStates = new Dictionary<WKeys, KeyStates>(KeysAmount);
 
         public override bool Undeletable { get; internal set; } = true;
 
@@ -32,11 +36,13 @@ namespace Winecrash.Engine
 
             CreateKeys();
         }
+
+
         protected internal override void Update()
         {
             UpdateKeysStates();
-            //OnFrameStart();
         }
+
         private static bool CreateWrapper()
         {
             foreach(Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -59,24 +65,20 @@ namespace Winecrash.Engine
         }
         private static void CreateKeys()
         {
-            for (int i = 0; i < KeysAmount; i++)
+            foreach(WKeys key in (WKeys[])Enum.GetValues(typeof(WKeys)))
             {
-                RegisteredKeyStates.Add((Keys)i, KeyStates.Released);
+                RegisteredKeyStates.Add(key, KeyStates.Released);
             }
         }
 
         private static void UpdateKeysStates()
         {
-            for (int i = 0; i < KeysAmount; i++)
+            foreach (WKeys key in (WKeys[])Enum.GetValues(typeof(WKeys)))
             {
-                Keys key = (Keys)i;
-
                 KeyStates previousState = GetKeyState(key, RegisteredKeyStates);
                 KeyStates newState;
 
-                bool pressed = InputWrapper.GetKey(key);
-
-                if(pressed)
+                if (InputWrapper.GetKey(key))
                 {
                     if (previousState == KeyStates.Pressed) continue; // nothing new, continue;
 
@@ -110,7 +112,7 @@ namespace Winecrash.Engine
             }
         }
 
-        private static KeyStates GetKeyState(Keys key, Dictionary<Keys, KeyStates> dictionary)
+        private static KeyStates GetKeyState(WKeys key, Dictionary<WKeys, KeyStates> dictionary)
         {
             if (dictionary == null) return KeyStates.None;
 
@@ -122,21 +124,21 @@ namespace Winecrash.Engine
             throw new Exception("Key not existing in keys dictionary !");
         }
 
-        public static bool IsPressed(Keys key)
+        public static bool IsPressed(WKeys key)
         {
-            return GetKeyState(key, RegisteredKeyStates) == KeyStates.Pressed;
+            return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Pressed;
         }
-        public static bool IsPressing(Keys key)
+        public static bool IsPressing(WKeys key)
         {
-            return GetKeyState(key, RegisteredKeyStates) == KeyStates.Pressing;
+            return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Pressing;
         }
-        public static bool IsReleased(Keys key)
+        public static bool IsReleased(WKeys key)
         {
-            return GetKeyState(key, RegisteredKeyStates) == KeyStates.Released;
+            return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Released;
         }
-        public static bool IsReleasing(Keys key)
+        public static bool IsReleasing(WKeys key)
         {
-            return GetKeyState(key, RegisteredKeyStates) == KeyStates.Releasing;
+            return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Releasing;
         }
     }
 }

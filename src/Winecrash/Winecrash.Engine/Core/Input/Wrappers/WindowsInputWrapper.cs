@@ -9,10 +9,10 @@ namespace Winecrash.Engine
 
         public bool GetKey(Keys key)
         {
-            return GetAsyncKeyState(key) != 0;
+            return GetAsyncKeyState((System.Windows.Forms.Keys)key) != 0;
         }
 
         [DllImport("user32.dll")]
-        public static extern short GetAsyncKeyState(Keys vKey);
+        public static extern short GetAsyncKeyState(System.Windows.Forms.Keys vKey);
     }
 }

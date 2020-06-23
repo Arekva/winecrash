@@ -58,6 +58,7 @@
     <Compile Include="Core\Color\Color.cs" />
     <Compile Include="Core\Color\Color256.cs" />
     <Compile Include="Core\Color\Color32.cs" />
+    <Compile Include="Core\Input\Keys.cs" />
     <Compile Include="Core\Math\Vector\Vector2F.cs" />
     <Compile Include="Core\Math\Vector\Vector3F.cs" />
     <Compile Include="Core\Math\Vector\Vector4F.cs" />
@@ -82,19 +83,19 @@
     <Compile Include="Core\Math\Vector\VectorND.cs" />
     <Compile Include="Core\Math\WMath.cs" />
     <Compile Include="Core\Time.cs" />
-    <Compile Include="Core\Input\Input.cs" />
+    <Compile Include="Modules\Input.cs" />
     <Compile Include="Core\Update\Group.cs" />
     <Compile Include="Core\Update\UpdateEvent.cs" />
     <Compile Include="Core\BaseObject.cs" />
     <Compile Include="Core\WObject.cs" />
     <Compile Include="Render\Mesh.cs" />
+    <Compile Include="Render\MeshFormats.cs" />
     <Compile Include="Render\Shader.cs" />
     <Compile Include="WEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render\Viewport.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Modules\" />
     <Folder Include="Physics\" />
     <Folder Include="Sound\" />
   </ItemGroup>

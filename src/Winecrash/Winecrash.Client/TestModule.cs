@@ -22,9 +22,9 @@ namespace Winecrash.Client
 
         protected override void Update()
         {
-            if (Input.IsPressing(System.Windows.Forms.Keys.A))
+            if (Input.IsPressing(Keys.One))
             {
-                Debug.Log("A is pressed");
+                Debug.Log("One is pressed");
             }
         }
 
