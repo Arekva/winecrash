@@ -68,7 +68,22 @@ namespace Winecrash.Engine
         internal protected virtual void Update() { }
         internal protected virtual void OnDelete() { }
 
+        internal sealed override void ForcedDelete()
+        {
+            InternalDelete();
+        }
         public sealed override void Delete()
+        {
+            if (this.Undeletable)
+            {
+                Debug.LogWarning("Unable to delete " + this + " : undeletable.");
+                return;
+            }
+
+            InternalDelete();
+        }
+
+        private void InternalDelete()
         {
             this.OnDelete();
 

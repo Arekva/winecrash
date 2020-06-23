@@ -18,6 +18,8 @@ namespace Winecrash.Engine
         public delegate void StopDelegate();
         public static StopDelegate OnStop;
 
+        public static WObject EngineObject;
+
         public static void TraceLayers()
         {
             Debug.Log(Layer.GetTrace());
@@ -73,8 +75,8 @@ namespace Winecrash.Engine
                 }
             }
 
-            Updater.UpdateThread?.Abort();
-            Updater.FixedUpdateThread?.Abort();
+            //Updater.UpdateThread?.Abort();
+            //Updater.FixedUpdateThread?.Abort();
             Debug.PrintThread?.Abort();
         }
         public static void Stop()
@@ -100,8 +102,22 @@ namespace Winecrash.Engine
                     throw new Exception(errorMessage);
                 }
             }
-            
-            Debug.Log(OS);
+
+            CreateEngineWObject();
+        }
+
+        private static WObject CreateEngineWObject()
+        {
+            WObject wobj = new WObject("Engine Logic")
+            {
+                Undeletable = true
+            };
+
+            wobj.AddModule<Input>().ExecutionOrder = Int32.MinValue;
+
+
+            EngineObject = wobj;
+            return wobj;
         }
 
         private static void CheckPlateform()

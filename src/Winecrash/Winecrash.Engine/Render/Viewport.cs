@@ -18,7 +18,7 @@ namespace Winecrash.Engine
 
         public static Thread ThreadRunner;
 
-        internal static Updater.UpdateCallback OnFrameStart;
+        //internal static Updater.UpdateCallback OnFrameStart;
 
         public static event UpdateEventHandler Update;
 

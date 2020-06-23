@@ -23,9 +23,22 @@ namespace Winecrash.Engine
             _WObjects.Add(this);
         }
 
+        public static WObject Find(string name)
+        {
+            return _WObjects.Find(w => w.Name == name);
+        }
+
         public T AddModule<T>() where T : Module
         {
             T mod = (T)Activator.CreateInstance(typeof(T));
+
+            if(mod.Undeletable && !this.Undeletable)
+            {
+                Debug.LogError("Cannot add undeletable module on deletable WObject !");
+
+                Group.GetGroup(0).RemoveModule(mod);
+                return null;
+            }
 
             mod.Name = mod.GetType().Name;
             mod.WObject = this;
@@ -58,8 +71,27 @@ namespace Winecrash.Engine
             return this.GetModule<T>() ?? this.AddModule<T>();
         }
 
-        public override void Delete()
+        internal sealed override void ForcedDelete()
         {
+            for (int i = 0; i < _Modules.Count; i++)
+            {
+                _Modules[i].ForcedDelete();
+            }
+
+            _Modules.Clear();
+            _Modules = null;
+            _WObjects.Remove(this);
+
+            base.Delete();
+        }
+        public sealed override void Delete()
+        {
+            if (this.Undeletable)
+            {
+                Debug.LogWarning("Unable to delete " + this + " : wobject undeletable.");
+                return;
+            }
+
             for (int i = 0; i < _Modules.Count; i++)
             {
                 _Modules[i].Delete();

@@ -10,7 +10,6 @@ namespace Winecrash.Client
 {
     public class TestModule : Module
     {
-        //public Int64[] dummy = new Int64[25_000_000];
         protected override void Creation()
         {
             //Debug.Log("TestModule creation ! Parent : " + this.WObject.Name);
@@ -23,7 +22,10 @@ namespace Winecrash.Client
 
         protected override void Update()
         {
-            //Debug.Log("TestModule update");
+            if (Input.IsPressing(System.Windows.Forms.Keys.A))
+            {
+                Debug.Log("A is pressed");
+            }
         }
 
         protected override void OnDelete()

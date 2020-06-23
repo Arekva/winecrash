@@ -9,11 +9,11 @@ namespace Winecrash.Engine
 {
     public class Group
     {
-        public ManualResetEvent DoneEvent { get; set; } = new ManualResetEvent(false);
-        public ManualResetEvent ResetEvent { get; set; } = new ManualResetEvent(false);
+        internal ManualResetEvent DoneEvent { get; set; } = new ManualResetEvent(false);
+        internal ManualResetEvent ResetEvent { get; set; } = new ManualResetEvent(false);
 
         private int _Order;
-        public int Order
+        internal int Order
         { 
             get
             {
@@ -58,15 +58,15 @@ namespace Winecrash.Engine
         internal List<Module> _Modules { get; set; } = new List<Module>(1);
 
         internal static List<Group> _Groups { get; set; } = new List<Group>(1);
-        public int GroupCount
+        internal int GroupCount
         {
             get
             {
                 return _Groups.Count;
             }
         }
-        
-        public Thread Thread { get; private set; }
+
+        internal Thread Thread { get; private set; }
 
         internal bool Deleted { get; private set; }
 
@@ -143,7 +143,7 @@ namespace Winecrash.Engine
             return group;
         }
 
-        public void RemoveModule(Module module)
+        internal void RemoveModule(Module module)
         {
             this._Modules.Remove(module);
 
@@ -235,12 +235,12 @@ namespace Winecrash.Engine
             return first;
         }
 
-        internal static Group GetGroup(int order)
+        public static Group GetGroup(int order)
         {
             return _Groups.FindLast(g => g.Order == order);
         }
 
-        internal static Group GetGroup(string name)
+        public static Group GetGroup(string name)
         {
             return _Groups.FindLast(g => g.Name == name);
         }
@@ -250,12 +250,12 @@ namespace Winecrash.Engine
             _Groups = _Groups.OrderBy(g => g.Order).ToList();
         }
 
-        public void SortModules()
+        internal void SortModules()
         {
             this._Modules = _Modules.OrderBy(m => m.ExecutionOrder).ToList();
         }
 
-        public static void SetGroupLayer(int group, int newLayer)
+        internal static void SetGroupLayer(int group, int newLayer)
         {
             if (group == 0) return;
 

@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Winecrash.Engine
 {
     public abstract class BaseObject : IComparable
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = "BaseObject";
         private Guid Identifier { get; }
 
-        internal bool Deleted { get; private set; }
+        internal bool Deleted { get; private set; } = false;
+
+        public virtual bool Undeletable { get; internal set; } = false;
+
+        public bool Enabled { get; set; } = true;
 
         public BaseObject() 
         {
@@ -23,6 +23,8 @@ namespace Winecrash.Engine
             this.Identifier = Guid.NewGuid();
             this.Name = name;
         }
+
+        internal virtual void ForcedDelete() { }
 
         public virtual void Delete()
         {
@@ -47,6 +49,11 @@ namespace Winecrash.Engine
         public override int GetHashCode()
         {
             return this.Identifier.GetHashCode();
+        }
+
+        public static implicit operator bool (BaseObject bobj)
+        {
+            return !(bobj is null);
         }
     }
 }
