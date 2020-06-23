@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace Winecrash.Engine
 {
-    public struct Vector2D : IVectorable, IComparable, IComparable<Vector2D>, IEquatable<Vector2D>, IFormattable
+    public struct Vector2F : IComparable, IComparable<Vector2F>, IEquatable<Vector2F>, IFormattable
     {
         public int Dimensions { get; }
 
 
         #region Properties
-        public double X { get; set; }
-        public double Y { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D XY
+        public Vector2F XY
         {
             get
             {
@@ -30,11 +30,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D YX
+        public Vector2F YX
         {
             get
             {
-                return new Vector2D(this.Y, this.X);
+                return new Vector2F(this.Y, this.X);
             }
 
             set
@@ -44,83 +44,83 @@ namespace Winecrash.Engine
             }
         }
 
-        public static Vector2D Right
+        public static Vector2F Right
         {
             get
             {
-                return new Vector2D(1.0D, 0.0D);
+                return new Vector2F(1.0F, 0.0F);
             }
         }
-        public static Vector2D Left
+        public static Vector2F Left
         {
             get
             {
-                return new Vector2D(-1.0D, 0.0D);
+                return new Vector2F(-1.0F, 0.0F);
             }
         }
-        public static Vector2D Up
+        public static Vector2F Up
         {
             get
             {
-                return new Vector2D(0.0D, 1.0D);
+                return new Vector2F(0.0F, 1.0F);
             }
         }
-        public static Vector2D Down
+        public static Vector2F Down
         {
             get
             {
-                return new Vector2D(0.0D, -1.0D);
-            }
-        }
-
-        public static Vector2D Zero
-        {
-            get
-            {
-                return new Vector2D(0.0D);
-            }
-        }
-        public static Vector2D One
-        {
-            get
-            {
-                return new Vector2D(1.0D);
+                return new Vector2F(0.0F, -1.0F);
             }
         }
 
-        public double SquaredLength
+        public static Vector2F Zero
+        {
+            get
+            {
+                return new Vector2F(0.0F);
+            }
+        }
+        public static Vector2F One
+        {
+            get
+            {
+                return new Vector2F(1.0F);
+            }
+        }
+
+        public float SquaredLength
         {
             get
             {
                 return this.X * this.X + this.Y * this.Y;
             }
         }
-        public double Length
+        public float Length
         {
             get
             {
-                return Math.Sqrt(this.SquaredLength);
+                return (float)Math.Sqrt(this.SquaredLength);
             }
         }
 
-        public Vector2D Normalized
+        public Vector2F Normalized
         {
             get
             {
-                return NormalizeVector2D(this);
+                return NormalizeVector2F(this);
             }
         }
         #endregion
 
         #region Constructors
-        public Vector2D(double values)
+        public Vector2F(float values)
         {
             this.X = values;
             this.Y = values;
 
             this.Dimensions = 2;
         }
-        public Vector2D(double x, double y)
+        public Vector2F(float x, float y)
         {
             this.X = x;
             this.Y = y;
@@ -130,14 +130,14 @@ namespace Winecrash.Engine
         #endregion
 
         #region Methods
-        public Vector2D Normalize()
+        public Vector2F Normalize()
         {
-            return this = NormalizeVector2D(this);
+            return this = NormalizeVector2F(this);
         }
 
-        private static Vector2D NormalizeVector2D(Vector2D vector)
+        private static Vector2F NormalizeVector2F(Vector2F vector)
         {
-            if (vector == Vector2D.Zero)
+            if (vector == Vector2F.Zero)
                 return vector;
 
             return vector / vector.Length;
@@ -145,7 +145,7 @@ namespace Winecrash.Engine
 
         public override bool Equals(object obj)
         {
-            return obj is Vector2D d &&
+            return obj is Vector2F d &&
                    X == d.X &&
                    Y == d.Y;
         }
@@ -161,30 +161,30 @@ namespace Winecrash.Engine
         #region ToString
         public override string ToString()
         {
-            return $"Vector2D({this.X.ToString()};{this.Y.ToString()})";
+            return $"Vector2F({this.X.ToString()};{this.Y.ToString()})";
         }
         public string ToString(IFormatProvider provider)
         {
-            return $"Vector2D({this.X.ToString(provider)};{this.Y.ToString(provider)})";
+            return $"Vector2F({this.X.ToString(provider)};{this.Y.ToString(provider)})";
         }
         public string ToString(string format)
         {
-            return $"Vector2D({this.X.ToString(format)};{this.ToString(format)})";
+            return $"Vector2F({this.X.ToString(format)};{this.ToString(format)})";
         }
         public string ToString(string format, IFormatProvider provider)
         {
-            return $"Vector2D({this.X.ToString(format, provider)};{this.Y.ToString(format, provider)})";
+            return $"Vector2F({this.X.ToString(format, provider)};{this.Y.ToString(format, provider)})";
         }
         #endregion
 
         public int CompareTo(object value)
         {
-            return value is Vector2D v ? CompareTo(v) : 1;
+            return value is Vector2F v ? CompareTo(v) : 1;
         }
 
-        public int CompareTo(Vector2D value)
+        public int CompareTo(Vector2F value)
         {
-            double l1 = this.Length, l2 = value.Length;
+            float l1 = this.Length, l2 = value.Length;
 
             if (l1 > l2) return 1;
 
@@ -192,7 +192,7 @@ namespace Winecrash.Engine
 
             return 0;
         }
-        public bool Equals(Vector2D o)
+        public bool Equals(Vector2F o)
         {
             return
                 this.X == o.X &&
@@ -202,50 +202,50 @@ namespace Winecrash.Engine
         #endregion
 
         #region Operators
-        public static bool operator ==(Vector2D v1, Vector2D v2)
+        public static bool operator ==(Vector2F v1, Vector2F v2)
         {
             return v1.X == v2.X && v1.Y == v2.Y;
         }
-        public static bool operator !=(Vector2D v1, Vector2D v2)
+        public static bool operator !=(Vector2F v1, Vector2F v2)
         {
             return v1.X != v2.X || v1.Y != v2.Y;
         }
-        public static Vector2D operator +(Vector2D v, double n)
+        public static Vector2F operator +(Vector2F v, float n)
         {
-            return new Vector2D(v.X + n, v.Y + n);
+            return new Vector2F(v.X + n, v.Y + n);
         }
-        public static Vector2D operator +(Vector2D v1, Vector2D v2)
+        public static Vector2F operator +(Vector2F v1, Vector2F v2)
         {
-            return new Vector2D(v1.X + v2.X, v1.Y + v2.Y);
+            return new Vector2F(v1.X + v2.X, v1.Y + v2.Y);
         }
-        public static Vector2D operator -(Vector2D v)
+        public static Vector2F operator -(Vector2F v)
         {
-            return new Vector2D(v.X * -1.0D, v.Y * -1.0D);
+            return new Vector2F(v.X * -1.0F, v.Y * -1.0F);
         }
-        public static Vector2D operator -(Vector2D v1, Vector2D v2)
+        public static Vector2F operator -(Vector2F v1, Vector2F v2)
         {
-            return new Vector2D(v1.X - v2.X, v1.Y - v2.Y);
+            return new Vector2F(v1.X - v2.X, v1.Y - v2.Y);
         }
-        public static Vector2D operator *(Vector2D v, double n)
+        public static Vector2F operator *(Vector2F v, float n)
         {
-            return new Vector2D(v.X * n, v.Y * n);
+            return new Vector2F(v.X * n, v.Y * n);
         }
-        public static Vector2D operator *(Vector2D v1, Vector2D v2)
+        public static Vector2F operator *(Vector2F v1, Vector2F v2)
         {
-            return new Vector2D(v1.X * v2.X, v1.Y * v2.Y);
+            return new Vector2F(v1.X * v2.X, v1.Y * v2.Y);
         }
-        public static Vector2D operator /(Vector2D v, double n)
+        public static Vector2F operator /(Vector2F v, float n)
         {
-            return new Vector2D(v.X / n, v.Y / n);
+            return new Vector2F(v.X / n, v.Y / n);
         }
-        public static Vector2D operator /(Vector2D v1, Vector2D v2)
+        public static Vector2F operator /(Vector2F v1, Vector2F v2)
         {
-            return new Vector2D(v1.X / v2.X, v1.Y / v2.Y);
+            return new Vector2F(v1.X / v2.X, v1.Y / v2.Y);
         }
 
-        public static implicit operator Vector2D(Vector2F vec)
+        public static implicit operator Vector2F(Vector2D vec)
         {
-            return new Vector2D(vec.X, vec.Y);
+            return new Vector2F((float)vec.X, (float)vec.Y);
         }
         #endregion
     }

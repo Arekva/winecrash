@@ -22,8 +22,6 @@ namespace Winecrash.Engine
 
         public static event UpdateEventHandler Update;
 
-        
-        
         public Viewport(int width, int height, string title) : base(width, height, GraphicsMode.Default, title) 
         {
             Instance = this;
@@ -31,8 +29,6 @@ namespace Winecrash.Engine
 
         protected override void OnLoad(EventArgs e)
         {
-            //Debug.Log(Layer.GetTrace());
-
             shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
 
             GL.ClearColor(0.11f, 0.11f, 0.11f, 1.0f);
@@ -104,14 +100,9 @@ namespace Winecrash.Engine
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-
-
             shader.Use();
             GL.BindVertexArray(VertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-
-
-
 
             Context.SwapBuffers();
             base.OnRenderFrame(e);

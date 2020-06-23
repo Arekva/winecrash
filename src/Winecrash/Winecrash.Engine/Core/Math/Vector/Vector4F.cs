@@ -3,23 +3,23 @@ using System.ComponentModel;
 
 namespace Winecrash.Engine
 {
-    public struct Vector4D : IVectorable, IComparable, IComparable<Vector4D>, IEquatable<Vector4D>, IFormattable
+    public struct Vector4F : IComparable, IComparable<Vector4F>, IEquatable<Vector4F>, IFormattable
     {
         public int Dimensions { get; }
 
         #region Properties
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
-        public double W { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+        public float W { get; set; }
 
         #region Multi dimensional accessors
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D XY
+        public Vector2F XY
         {
             get
             {
-                return new Vector2D(X, Y);
+                return new Vector2F(X, Y);
             }
 
             set
@@ -29,11 +29,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D YX
+        public Vector2F YX
         {
             get
             {
-                return new Vector2D(Y, X);
+                return new Vector2F(Y, X);
             }
 
             set
@@ -43,11 +43,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D XZ
+        public Vector2F XZ
         {
             get
             {
-                return new Vector2D(this.X, this.Z);
+                return new Vector2F(this.X, this.Z);
             }
 
             set
@@ -57,11 +57,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D ZX
+        public Vector2F ZX
         {
             get
             {
-                return new Vector2D(this.Z, this.X);
+                return new Vector2F(this.Z, this.X);
             }
 
             set
@@ -71,11 +71,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D XW
+        public Vector2F XW
         {
             get
             {
-                return new Vector2D(this.X, this.W);
+                return new Vector2F(this.X, this.W);
             }
 
             set
@@ -85,11 +85,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D WX
+        public Vector2F WX
         {
             get
             {
-                return new Vector2D(this.W, this.X);
+                return new Vector2F(this.W, this.X);
             }
             set
             {
@@ -98,11 +98,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D YZ
+        public Vector2F YZ
         {
             get
             {
-                return new Vector2D(this.Y, this.Z);
+                return new Vector2F(this.Y, this.Z);
             }
 
             set
@@ -112,11 +112,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D ZY
+        public Vector2F ZY
         {
             get
             {
-                return new Vector2D(this.Z, this.Y);
+                return new Vector2F(this.Z, this.Y);
             }
 
             set
@@ -126,11 +126,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D YW
+        public Vector2F YW
         {
             get
             {
-                return new Vector2D(this.Y, this.W);
+                return new Vector2F(this.Y, this.W);
             }
 
             set
@@ -140,11 +140,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D WY
+        public Vector2F WY
         {
             get
             {
-                return new Vector2D(this.W, this.Y);
+                return new Vector2F(this.W, this.Y);
             }
 
             set
@@ -154,11 +154,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D ZW
+        public Vector2F ZW
         {
             get
             {
-                return new Vector2D(this.Z, this.W);
+                return new Vector2F(this.Z, this.W);
             }
 
             set
@@ -168,11 +168,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector2D WZ
+        public Vector2F WZ
         {
             get
             {
-                return new Vector2D(this.W, this.Z);
+                return new Vector2F(this.W, this.Z);
             }
 
             set
@@ -182,11 +182,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector3D XYZ
+        public Vector3F XYZ
         {
             get
             {
-                return new Vector3D(this.X, this.Y, this.Z);
+                return new Vector3F(this.X, this.Y, this.Z);
             }
 
             set
@@ -197,11 +197,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector3D ZYX
+        public Vector3F ZYX
         {
             get
             {
-                return new Vector3D(this.Z, this.Y, this.X);
+                return new Vector3F(this.Z, this.Y, this.X);
             }
 
             set
@@ -212,11 +212,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector3D YZW
+        public Vector3F YZW
         {
             get
             {
-                return new Vector3D(this.Y, this.Z, this.W);
+                return new Vector3F(this.Y, this.Z, this.W);
             }
 
             set
@@ -227,11 +227,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector3D WZY
+        public Vector3F WZY
         {
             get
             {
-                return new Vector3D(this.W, this.Z, this.Y);
+                return new Vector3F(this.W, this.Z, this.Y);
             }
 
             set
@@ -242,11 +242,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector3D XZW
+        public Vector3F XZW
         {
             get
             {
-                return new Vector3D(this.X, this.Z, this.W);
+                return new Vector3F(this.X, this.Z, this.W);
             }
 
             set
@@ -257,11 +257,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector3D WZX
+        public Vector3F WZX
         {
             get
             {
-                return new Vector3D(this.W, this.Z, this.X);
+                return new Vector3F(this.W, this.Z, this.X);
             }
 
             set
@@ -272,11 +272,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector3D XYW
+        public Vector3F XYW
         {
             get
             {
-                return new Vector3D(this.X, this.Y, this.W);
+                return new Vector3F(this.X, this.Y, this.W);
             }
 
             set
@@ -287,11 +287,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector3D WYZ
+        public Vector3F WYZ
         {
             get
             {
-                return new Vector3D(this.W, this.Y, this.Z);
+                return new Vector3F(this.W, this.Y, this.Z);
             }
 
             set
@@ -302,7 +302,7 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector4D XYZW
+        public Vector4F XYZW
         {
             get
             {
@@ -315,11 +315,11 @@ namespace Winecrash.Engine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector4D WZYX
+        public Vector4F WZYX
         {
             get
             {
-                return new Vector4D(this.W, this.Z, this.Y, this.X);
+                return new Vector4F(this.W, this.Z, this.Y, this.X);
             }
 
             set
@@ -337,81 +337,81 @@ namespace Winecrash.Engine
         /// <summary>
         /// Positive X
         /// </summary>
-        public static Vector4D Right
+        public static Vector4F Right
         {
             get
             {
-                return new Vector4D(1.0D, 0.0D, 0.0D, 0.0D);
+                return new Vector4F(1.0F, 0.0F, 0.0F, 0.0F);
             }
         }
         /// <summary>
         /// Negative X
         /// </summary>
-        public static Vector4D Left
+        public static Vector4F Left
         {
             get
             {
-                return new Vector4D(-1.0D, 0.0D, 0.0D, 0.0D);
+                return new Vector4F(-1.0F, 0.0F, 0.0F, 0.0F);
             }
         }
         /// <summary>
         /// Positive Y
         /// </summary>
-        public static Vector4D Up
+        public static Vector4F Up
         {
             get
             {
-                return new Vector4D(0.0D, 1.0D, 0.0D,0.0D);
+                return new Vector4F(0.0F, 1.0F, 0.0F, 0.0F);
             }
         }
         /// <summary>
         /// Negative Y
         /// </summary>
-        public static Vector4D Down
+        public static Vector4F Down
         {
             get
             {
-                return new Vector4D(0.0D, -1.0D, 0.0D, 0.0D);
+                return new Vector4F(0.0F, -1.0F, 0.0F, 0.0F);
             }
         }
         /// <summary>
         /// Positive Z
         /// </summary>
-        public static Vector4D Forward
+        public static Vector4F Forward
         {
             get
             {
-                return new Vector4D(0.0D, 0.0D, 1.0D, 0.0D);
+                return new Vector4F(0.0F, 0.0F, 1.0F, 0.0F);
             }
         }
         /// <summary>
         /// Negative Z
         /// </summary>
-        public static Vector4D Backward
+        public static Vector4F Backward
         {
             get
             {
-                return new Vector4D(0.0D, 0.0D, -1.0D, 0.0D);
+                return new Vector4F(0.0F, 0.0F, -1.0F, 0.0F);
             }
         }
         /// <summary>
         /// Positive W
         /// </summary>
-        public static Vector4D Ana
+        public static Vector4F Ana
         {
             get
             {
-                return new Vector4D(0.0D, 0.0D, 0.0D, 1.0D);
+                return new Vector4F(0.0F, 0.0F, 0.0F, 1.0F);
             }
         }
         /// <summary>
         /// Negative W
         /// </summary>
-        public static Vector4D Kata
+        public static Vector4F Kata
         {
             get
             {
-                return new Vector4D(0.0D, 0.0D, 0.0D, -1.0D);
+                return new Vector4F(0.0F, 0.0F, 0.0F, -1.0F);
             }
         }
         #endregion
@@ -419,51 +419,51 @@ namespace Winecrash.Engine
         /// <summary>
         /// All zero
         /// </summary>
-        public static Vector4D Zero
+        public static Vector4F Zero
         {
             get
             {
-                return new Vector4D(0.0D);
+                return new Vector4F(0.0F);
             }
         }
         /// <summary>
         /// All positive
         /// </summary>
-        public static Vector4D One
+        public static Vector4F One
         {
             get
             {
-                return new Vector4D(1.0D);
+                return new Vector4F(1.0F);
             }
         }
 
-        public double SquaredLength
+        public float SquaredLength
         {
             get
             {
                 return this.X * this.X + this.Y * this.Y + this.Z * this.Z + this.W * this.W;
             }
         }
-        public double Length
+        public float Length
         {
             get
             {
-                return Math.Sqrt(this.SquaredLength);
+                return (float)Math.Sqrt(this.SquaredLength);
             }
         }
 
-        public Vector4D Normalized
+        public Vector4F Normalized
         {
             get
             {
-                return NormalizeVector4D(this);
+                return NormalizeVector4F(this);
             }
         }
         #endregion
 
         #region Constructors
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector4D(Vector2D xy, double z, double w)
+        public Vector4F(Vector2F xy, float z, float w)
         {
             this.X = xy.X;
             this.Y = xy.Y;
@@ -473,7 +473,7 @@ namespace Winecrash.Engine
             this.Dimensions = 4;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector4D(double x, Vector2D yz, double w)
+        public Vector4F(float x, Vector2F yz, float w)
         {
             this.X = x;
             this.Y = yz.X;
@@ -483,7 +483,7 @@ namespace Winecrash.Engine
             this.Dimensions = 4;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector4D(double x, double y, Vector2D zw)
+        public Vector4F(float x, float y, Vector2F zw)
         {
             this.X = x;
             this.Y = y;
@@ -493,7 +493,7 @@ namespace Winecrash.Engine
             this.Dimensions = 4;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector4D(Vector2D xy, Vector2D zw)
+        public Vector4F(Vector2F xy, Vector2F zw)
         {
             this.X = xy.X;
             this.Y = xy.Y;
@@ -503,7 +503,7 @@ namespace Winecrash.Engine
             this.Dimensions = 4;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector4D(Vector3D xyz, double w)
+        public Vector4F(Vector3F xyz, float w)
         {
             this.X = xyz.X;
             this.Y = xyz.Y;
@@ -513,7 +513,7 @@ namespace Winecrash.Engine
             this.Dimensions = 4;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public Vector4D(double x, Vector3D yzw)
+        public Vector4F(float x, Vector3F yzw)
         {
             this.X = x;
             this.Y = yzw.X;
@@ -522,7 +522,7 @@ namespace Winecrash.Engine
 
             this.Dimensions = 4;
         }
-        public Vector4D(double values)
+        public Vector4F(float values)
         {
             this.X = values;
             this.Y = values;
@@ -531,25 +531,25 @@ namespace Winecrash.Engine
 
             this.Dimensions = 4;
         }
-        public Vector4D(double x, double y)
+        public Vector4F(float x, float y)
         {
             this.X = x;
             this.Y = y;
-            this.Z = 0.0D;
-            this.W = 0.0D;
+            this.Z = 0.0F;
+            this.W = 0.0F;
 
             this.Dimensions = 4;
         }
-        public Vector4D(double x, double y, double z)
+        public Vector4F(float x, float y, float z)
         {
             this.X = x;
             this.Y = y;
             this.Z = z;
-            this.W = 0.0D;
+            this.W = 0.0F;
 
             this.Dimensions = 4;
         }
-        public Vector4D(double x, double y, double z, double w)
+        public Vector4F(float x, float y, float z, float w)
         {
             this.X = x;
             this.Y = y;
@@ -562,14 +562,14 @@ namespace Winecrash.Engine
 
         #region Methods
 
-        public Vector4D Normalize()
+        public Vector4F Normalize()
         {
-            return this = NormalizeVector4D(this);
+            return this = NormalizeVector4F(this);
         }
 
-        private static Vector4D NormalizeVector4D(Vector4D vector)
+        private static Vector4F NormalizeVector4F(Vector4F vector)
         {
-            if (vector == Vector4D.Zero)
+            if (vector == Vector4F.Zero)
                 return vector;
 
             return vector / vector.Length;
@@ -577,7 +577,7 @@ namespace Winecrash.Engine
 
         public override bool Equals(object obj)
         {
-            return obj is Vector4D d &&
+            return obj is Vector4F d &&
                    X == d.X &&
                    Y == d.Y &&
                    Z == d.Z &&
@@ -597,30 +597,30 @@ namespace Winecrash.Engine
         #region ToString
         public override string ToString()
         {
-            return $"Vector4D({this.X.ToString()};{this.Y.ToString()};{this.Z.ToString()};{this.W.ToString()})";
+            return $"Vector4F({this.X.ToString()};{this.Y.ToString()};{this.Z.ToString()};{this.W.ToString()})";
         }
         public string ToString(IFormatProvider provider)
         {
-            return $"Vector4D({this.X.ToString(provider)};{this.Y.ToString(provider)};{this.Z.ToString(provider)};{this.W.ToString(provider)})";
+            return $"Vector4F({this.X.ToString(provider)};{this.Y.ToString(provider)};{this.Z.ToString(provider)};{this.W.ToString(provider)})";
         }
         public string ToString(string format)
         {
-            return $"Vector4D({this.X.ToString(format)};{this.ToString(format)};{this.Z.ToString(format)};{this.W.ToString(format)})";
+            return $"Vector4F({this.X.ToString(format)};{this.ToString(format)};{this.Z.ToString(format)};{this.W.ToString(format)})";
         }
         public string ToString(string format, IFormatProvider provider)
         {
-            return $"Vector4D({this.X.ToString(format, provider)};{this.Y.ToString(format, provider)};{this.Z.ToString(format, provider)};{this.W.ToString(format, provider)})";
+            return $"Vector4F({this.X.ToString(format, provider)};{this.Y.ToString(format, provider)};{this.Z.ToString(format, provider)};{this.W.ToString(format, provider)})";
         }
         #endregion
 
         public int CompareTo(object value)
         {
-            return value is Vector4D v ? CompareTo(v) : 1;
+            return value is Vector4F v ? CompareTo(v) : 1;
         }
 
-        public int CompareTo(Vector4D value)
+        public int CompareTo(Vector4F value)
         {
-            double l1 = this.Length, l2 = value.Length;
+            float l1 = this.Length, l2 = value.Length;
 
             if (l1 > l2) return 1;
 
@@ -628,7 +628,7 @@ namespace Winecrash.Engine
 
             return 0;
         }
-        public bool Equals(Vector4D o)
+        public bool Equals(Vector4F o)
         {
             return 
                 this.X == o.X && 
@@ -640,50 +640,50 @@ namespace Winecrash.Engine
         #endregion
 
         #region Operators
-        public static bool operator == (Vector4D v1, Vector4D v2)
+        public static bool operator == (Vector4F v1, Vector4F v2)
         {
             return v1.X == v2.X && v1.Y == v2.Y && v1.Z == v2.Z && v1.W == v2.W;
         }
-        public static bool operator != (Vector4D v1, Vector4D v2)
+        public static bool operator != (Vector4F v1, Vector4F v2)
         {
             return v1.X != v2.X || v1.Y != v2.Y || v1.Z != v2.Z || v1.W != v2.W;
         }
-        public static Vector4D operator + (Vector4D v, double n)
+        public static Vector4F operator + (Vector4F v, float n)
         {
-            return new Vector4D(v.X + n, v.Y + n, v.Z + n, v.W + n);
+            return new Vector4F(v.X + n, v.Y + n, v.Z + n, v.W + n);
         }
-        public static Vector4D operator + (Vector4D v1, Vector4D v2)
+        public static Vector4F operator + (Vector4F v1, Vector4F v2)
         {
-            return new Vector4D(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z, v1.W + v2.W);
+            return new Vector4F(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z, v1.W + v2.W);
         }
-        public static Vector4D operator - (Vector4D v)
+        public static Vector4F operator - (Vector4F v)
         {
-            return new Vector4D(v.X * -1.0D, v.Y * -1.0D, v.Z * -1.0D, v.W * -1.0D);
+            return new Vector4F(v.X * -1.0F, v.Y * -1.0F, v.Z * -1.0F, v.W * -1.0F);
         }
-        public static Vector4D operator - (Vector4D v1, Vector4D v2)
+        public static Vector4F operator - (Vector4F v1, Vector4F v2)
         {
-            return new Vector4D(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z, v1.W - v2.W);
+            return new Vector4F(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z, v1.W - v2.W);
         }
-        public static Vector4D operator * (Vector4D v, double n)
+        public static Vector4F operator * (Vector4F v, float n)
         {
-            return new Vector4D(v.X * n, v.Y * n, v.Z * n, v.W * n);
+            return new Vector4F(v.X * n, v.Y * n, v.Z * n, v.W * n);
         }
-        public static Vector4D operator * (Vector4D v1, Vector4D v2)
+        public static Vector4F operator * (Vector4F v1, Vector4F v2)
         {
-            return new Vector4D(v1.X * v2.X, v1.Y * v2.Y, v1.Z * v2.Z, v1.W * v2.W);
+            return new Vector4F(v1.X * v2.X, v1.Y * v2.Y, v1.Z * v2.Z, v1.W * v2.W);
         }
-        public static Vector4D operator /(Vector4D v, double n)
+        public static Vector4F operator /(Vector4F v, float n)
         {
-            return new Vector4D(v.X / n, v.Y / n, v.Z / n, v.W / n);
+            return new Vector4F(v.X / n, v.Y / n, v.Z / n, v.W / n);
         }
-        public static Vector4D operator /(Vector4D v1, Vector4D v2)
+        public static Vector4F operator /(Vector4F v1, Vector4F v2)
         {
-            return new Vector4D(v1.X / v2.X, v1.Y / v2.Y, v1.Z / v2.Z, v1.W / v2.W);
+            return new Vector4F(v1.X / v2.X, v1.Y / v2.Y, v1.Z / v2.Z, v1.W / v2.W);
         }
 
-        public static implicit operator Vector4D(Vector4F vec)
+        public static implicit operator Vector4F(Vector4D vec)
         {
-            return new Vector4D(vec.X, vec.Y, vec.Z, vec.W);
+            return new Vector4F((float)vec.X, (float)vec.Y, (float)vec.Z, (float)vec.W);
         }
         #endregion
     }

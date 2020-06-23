@@ -53,11 +53,20 @@
     <Compile Include="frmDebug.Designer.cs">
       <DependentUpon>frmDebug.cs</DependentUpon>
     </Compile>
+    <Compile Include="GroupManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GroupManager.Designer.cs">
+      <DependentUpon>GroupManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestModule.cs" />
     <EmbeddedResource Include="frmDebug.resx">
       <DependentUpon>frmDebug.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GroupManager.resx">
+      <DependentUpon>GroupManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

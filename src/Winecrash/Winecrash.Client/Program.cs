@@ -12,10 +12,6 @@ namespace Winecrash.Client
     {
         static void Main()
         {
-            
-
-            
-
             Task.Run(CreateDebugWindow);
 
             WEngine.Run();
@@ -44,6 +40,7 @@ namespace Winecrash.Client
 
             WEngine.TraceLayers();
 
+            Thread.Sleep(1000);
             mod1.Group = mod2.Group = 0;
             mod1.ExecutionOrder = 10;
             WEngine.TraceLayers();
