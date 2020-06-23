@@ -45,7 +45,8 @@ namespace Winecrash.Engine
         {
             if (newGroup == _Group) return;
 
-            Group previousGroup = Winecrash.Engine.Group.GetGroup(this._Group);
+            Group previousGroup = Engine.Group.GetGroup(this._Group);
+            
             previousGroup.RemoveModule(this);
 
             Engine.Group.CreateOrGetGroup(newGroup, null, new[] { this });

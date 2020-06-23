@@ -8,7 +8,7 @@ namespace Winecrash.Engine
 {
     public sealed class WObject : BaseObject
     {
-        public Int64[] dummy = new Int64[100_000_000];
+        //public Int64[] dummy = new Int64[100_000_000];
 
         internal static List<WObject> _WObjects { get; set; } = new List<WObject>(1);
         internal List<Module> _Modules { get; set; } = new List<Module>(1);
@@ -26,13 +26,13 @@ namespace Winecrash.Engine
         public T AddModule<T>() where T : Module
         {
             T mod = (T)Activator.CreateInstance(typeof(T));
+
             mod.Name = mod.GetType().Name;
             mod.WObject = this;
-            this._Modules.Add(mod);
-            mod.Creation();
 
-            Debug.Log(mod.ToString());
-            //System.Windows.Forms.MessageBox.Show(mod.ToString());
+            this._Modules.Add(mod);
+
+            mod.Creation();
 
             return mod;
         }

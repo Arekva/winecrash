@@ -22,24 +22,30 @@ namespace Winecrash.Client
 
             System.Threading.Thread.Sleep(500);
 
-            WObject wobj1 = new WObject("Test Object 1");
-            wobj1.AddModule<TestModule>();
+            WObject wobj1 = new WObject("Test Object #1");
+            TestModule mod1 = wobj1.AddModule<TestModule>();
+            mod1.Name = "TestModule #1";
 
-            WObject wobj2 = new WObject("Test Object 2");
+            WObject wobj2 = new WObject("Test Object #2");
             TestModule mod2 = wobj2.AddModule<TestModule>();
-            //mod2.Group = 1;
+            mod2.Name = "TestModule #2";
 
-            //Debug.Log(Group.GetGroup(1).Name);
 
             WEngine.TraceLayers();
 
-            wobj1.Delete();
-            wobj1 = null;
+            mod1.Group = int.MinValue;
+            mod2.Group = 1;
 
-            Thread.Sleep(2000);
+            Group.SetGroupLayer(int.MinValue, -10);
+            Group.SetGroupLayer(1, 1);
+            Group.SetGroupLayer(0, 1);
 
-            wobj2.Delete();
+            
 
+            WEngine.TraceLayers();
+
+            mod1.Group = mod2.Group = 0;
+            mod1.ExecutionOrder = 10;
             WEngine.TraceLayers();
         }
 

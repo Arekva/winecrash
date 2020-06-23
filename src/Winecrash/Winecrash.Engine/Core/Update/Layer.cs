@@ -37,17 +37,20 @@ namespace Winecrash.Engine
 
         internal List<Group> _Groups = new List<Group>(1);
 
+        internal bool Deleted { get; set; } = false;
+
         [Initializer]
         private static void Initialize()
         {
-            CreateOrGetLayer(0, "Default Layer", new[] { Group.CreateOrGetGroup(0, "Default Group", null) });
+            Layer.CreateOrGetLayer(0, "Default Layer", null);
+            Group.CreateOrGetGroup(0, "Default Group", null);
 
             Viewport.Update += new UpdateEventHandler(Update);
         }
 
         private Layer(string name, int order, IEnumerable<Group> groups)
         {
-            if (name == null) this.Name = "Layer #" + LayerCount;
+            if (name == null) this.Name = "Layer #" + order;
             else this.Name = name;
 
             this._Order = order;
@@ -104,6 +107,7 @@ namespace Winecrash.Engine
             {
                 List<Group> groups = layer._Groups;
                 _Layers.Remove(layer);
+                layer.Deleted = true;
                 CreateOrGetLayer(0, null, groups);
             }
             else
@@ -181,18 +185,34 @@ namespace Winecrash.Engine
 
         public static void Update(UpdateEventArgs args)
         {
-            foreach (Layer layer in _Layers)
+            Layer[] layers = _Layers.ToArray();
+
+            for (int i = 0; i < layers.Length; i++)
             {
-                ManualResetEvent[] doneEvents = new ManualResetEvent[layer._Groups.Count];
+                Layer layer = layers[i];
 
-                for (int i = 0; i < layer._Groups.Count; i++)
+                if (layer.Deleted) continue;
+
+                List<ManualResetEvent> doneEvents = new List<ManualResetEvent>(layer._Groups.Count);
+
+                for (int j = 0; j < layer._Groups.Count; j++)
                 {
-                    layer._Groups[i].DoneEvent.Reset();
-                    doneEvents[i] = layer._Groups[i].DoneEvent;
-                    layer._Groups[i].ResetEvent.Set(); //unlock thread
-                }
+                    if (layer._Groups[j].Deleted) continue;
 
-                WaitHandle.WaitAll(doneEvents); //wait for all the threads of the group
+                    layer._Groups[j].DoneEvent.Reset();
+                    doneEvents.Add(layer._Groups[j].DoneEvent);
+                    layer._Groups[j].ResetEvent.Set(); //unlock thread
+                }
+                
+                try
+                {
+                    WaitHandle.WaitAll(doneEvents.ToArray()); //wait for all the threads of the group
+                }
+                catch
+                {
+                    MessageBox.Show(layer.Order.ToString());
+                }
+                
             }
         }
 
@@ -206,11 +226,11 @@ namespace Winecrash.Engine
 
                 foreach(Group group in layer._Groups)
                 {
-                    txt += "-" + group.Name + "\n";
+                    txt += "--" + group.Name + "\n";
 
                     foreach(Module module in group._Modules)
                     {
-                        txt += "--" + module.Name + "\n";
+                        txt += "----" + module.Name + "[" + module.ExecutionOrder + "]\n";
                     }
                 }
             }

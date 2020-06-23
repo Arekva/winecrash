@@ -41,6 +41,20 @@ namespace Winecrash.Engine
             }
         }
 
+        private int _Layer = 0;
+        public int Layer
+        {
+            get
+            {
+                return this._Layer;
+            }
+
+            set
+            {
+                SetGroupLayer(this._Order, value);
+            }
+        }
+
         internal List<Module> _Modules { get; set; } = new List<Module>(1);
 
         internal static List<Group> _Groups { get; set; } = new List<Group>(1);
@@ -54,9 +68,11 @@ namespace Winecrash.Engine
         
         public Thread Thread { get; private set; }
 
-        private Group(string name, int order, IEnumerable<Module> modules)
+        internal bool Deleted { get; private set; }
+
+        private Group(string name, int order, int layer, IEnumerable<Module> modules)
         {
-            if (name == null) this._Name = "Group #" + GroupCount;
+            if (name == null) this._Name = "Group #" + order;
             else this._Name = name;
 
             if (modules != null)
@@ -66,6 +82,7 @@ namespace Winecrash.Engine
 
             _Groups.Add(this);
 
+            Engine.Layer.CreateOrGetLayer(layer, null, new[] { this });
 
             SortByOrder();
 
@@ -106,13 +123,13 @@ namespace Winecrash.Engine
             }  
         }
 
-        public static Group CreateOrGetGroup(int order, string name = null, IEnumerable<Module> modules = null)
+        internal static Group CreateOrGetGroup(int order, string name = null, IEnumerable<Module> modules = null)
         {
             Group group = GetGroup(order);
 
             if (group == null) // no layer, can add one.
             {
-                group = new Group(name, order, modules);
+                group = new Group(name, order, 0, modules);
             }
 
             else
@@ -129,9 +146,36 @@ namespace Winecrash.Engine
         public void RemoveModule(Module module)
         {
             this._Modules.Remove(module);
+
+            if(this._Order != 0 && this._Modules.Count == 0) //remove if none
+            {
+                this._Modules = null;
+                _Groups.Remove(this);
+
+                foreach(Layer layer in Engine.Layer._Layers)
+                {
+                    if(layer._Groups.Contains(this))
+                    {
+                        layer._Groups.Remove(this);
+
+                        if(layer._Groups.Count == 0) //remove layer
+                        {
+                            Engine.Layer.RemoveLayer(layer.Order);
+
+                        }
+
+                        break;
+                    }
+                }
+
+                this.Thread.Abort();
+                this.Deleted = true;
+
+                this.DoneEvent.Set();
+            }
         }
 
-        public void RemoveGroup(int order)
+        private void RemoveGroup(int order)
         {
             if (order == 0)
             {
@@ -158,6 +202,8 @@ namespace Winecrash.Engine
 
         private void SetOrder(int newOrder)
         {
+            if (this._Order == 0) return;
+
             Group group = GetGroup(newOrder);
 
             if (group != null)
@@ -189,12 +235,12 @@ namespace Winecrash.Engine
             return first;
         }
 
-        public static Group GetGroup(int order)
+        internal static Group GetGroup(int order)
         {
             return _Groups.FindLast(g => g.Order == order);
         }
 
-        private static Group GetGroup(string name)
+        internal static Group GetGroup(string name)
         {
             return _Groups.FindLast(g => g.Name == name);
         }
@@ -211,17 +257,28 @@ namespace Winecrash.Engine
 
         public static void SetGroupLayer(int group, int newLayer)
         {
+            if (group == 0) return;
+
             Group correspondingGroup = Group.GetGroup(group);
 
             if(correspondingGroup != null)
             {
-                foreach(Layer layer in Layer._Layers)
+                Layer[] layers = Engine.Layer._Layers.ToArray();
+
+                for (int i = 0; i < layers.Length; i++)
                 {
                     //find the current layer of the group
-                    if (layer._Groups.Contains(correspondingGroup))
+                    if (layers[i]._Groups.Contains(correspondingGroup))
                     {
-                        layer._Groups.Remove(correspondingGroup);
-                        Layer.CreateOrGetLayer(newLayer, null, new[] { correspondingGroup });
+                        layers[i]._Groups.Remove(correspondingGroup);
+                        Engine.Layer.CreateOrGetLayer(newLayer, null, new[] { correspondingGroup });
+
+                        if (layers[i]._Groups.Count == 0) //remove layer
+                        {
+                            Engine.Layer.RemoveLayer(layers[i].Order);
+                        }
+
+
                         break;
                     }
                 }

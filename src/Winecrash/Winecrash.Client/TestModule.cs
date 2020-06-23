@@ -10,20 +10,20 @@ namespace Winecrash.Client
 {
     public class TestModule : Module
     {
-        public Int64[] dummy = new Int64[25_000_000];
+        //public Int64[] dummy = new Int64[25_000_000];
         protected override void Creation()
         {
-            Debug.Log("TestModule creation ! Parent : " + this.WObject.Name);
+            //Debug.Log("TestModule creation ! Parent : " + this.WObject.Name);
         }
 
         protected override void Start()
         {
-            Debug.Log("TestModule first frame");
+            //Debug.Log("TestModule first frame");
         }
 
         protected override void Update()
         {
-            Debug.Log("TestModule update");
+            //Debug.Log("TestModule update");
         }
 
         protected override void OnDelete()
