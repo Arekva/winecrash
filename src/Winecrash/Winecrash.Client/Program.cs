@@ -20,7 +20,7 @@ namespace Winecrash.Client
             WObject wobj1 = new WObject("Test Object");
             wobj1.AddModule<DebugHelp>();
 
-            Mesh[] meshes = Mesh.LoadFile("Models/Cube.obj", MeshFormats.Wavefront);
+            Mesh[] meshes = Mesh.LoadFile("assets/models/cube.obj", MeshFormats.Wavefront);
 
             /*if (meshes != null)
                 for (int i = 0; i < meshes.Length; i++)

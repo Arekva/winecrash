@@ -95,6 +95,7 @@
     <Compile Include="Render\Mesh.cs" />
     <Compile Include="Render\MeshFormats.cs" />
     <Compile Include="Render\Shader.cs" />
+    <Compile Include="Render\Texture.cs" />
     <Compile Include="WEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render\Viewport.cs" />

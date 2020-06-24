@@ -10,6 +10,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Graphics;
 using OpenTK.Input;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace Winecrash.Engine
 {
@@ -23,14 +24,18 @@ namespace Winecrash.Engine
 
         public static event UpdateEventHandler Update;
 
-        public Viewport(int width, int height, string title) : base(width, height, GraphicsMode.Default, title) 
+        public Viewport(int width, int height, string title, Icon icon = null) : base(width, height, GraphicsMode.Default, title) 
         {
+            if(icon != null)
+            {
+                this.Icon = icon;
+            }
             Instance = this;
         }
 
         protected override void OnLoad(EventArgs e)
         {
-            shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
+            shader = new Shader("assets/shaders/shader.vert", "assets/shaders/shader.frag");
 
             GL.ClearColor(0.11f, 0.11f, 0.11f, 1.0f);
 
@@ -46,7 +51,10 @@ namespace Winecrash.Engine
             //assignation du buffer en temps que vertex buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObject);
-            
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+
 
             //En gros:
             // 1er arg     : 0 => numéro de l'attribut voulu: ici numéro 0 (location)
@@ -118,10 +126,13 @@ namespace Winecrash.Engine
 
                         //copie du tableau de vertices dans le buffer
                         GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
-                        GL.BufferData(BufferTarget.ElementArrayBuffer, m.Triangles.Length * sizeof(uint), m.Triangles, BufferUsageHint.StaticDraw);
+                        GL.BufferData(BufferTarget.ElementArrayBuffer, alt_triangles.Length * sizeof(uint), alt_triangles, BufferUsageHint.StaticDraw);
+
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge); //x axis
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge); //y axis
 
                         GL.BindVertexArray(VertexArrayObject);
-                        GL.DrawElements(PrimitiveType.Triangles, m.Triangles.Length, DrawElementsType.UnsignedInt, 0);
+                        GL.DrawElements(PrimitiveType.Triangles, alt_triangles.Length, DrawElementsType.UnsignedInt, 0);
                         //GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length / 3);
                     }
                 }
@@ -131,6 +142,27 @@ namespace Winecrash.Engine
             Context.SwapBuffers();
             base.OnRenderFrame(e);
         }
+
+        private static Texture texture = Texture.FromFile("assets/textures/blocks/grass_side.png");
+
+        int[] alt_triangles =
+        {
+            // + y
+            0, 1, 2,
+            1, 3, 2,
+
+            // - x
+            //4, 6, 5,
+            //7, 5, 6
+
+
+        };
+
+        float[] alt_uvs =
+        {
+            0.0f, 0.0f,  1.0f, 0.0f,  1.0f, 1.0f,
+            1.0f, 0.0f,  0.0f, 1.0f,  1.0f, 1.0f,
+        };
 
         float[] vertices = {
             -0.5f, -0.5f, 0.0f,  //Bottom-left vertex

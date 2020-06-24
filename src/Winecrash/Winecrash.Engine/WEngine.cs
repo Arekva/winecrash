@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Threading;
+using System.Drawing;
 
 namespace Winecrash.Engine
 {
@@ -43,9 +44,24 @@ namespace Winecrash.Engine
 
         private static void ShowWindow()
         {
-            using (Viewport vp = new Viewport(1024, 1024, "Winecraft Viewport"))
+            Icon icon = null;
+
+            try
             {
-                vp.Run();
+               icon = new Icon("icon.ico");
+            }
+
+            catch (Exception e)
+            {
+                MessageBox.Show("Unable to load icon : " + e.Message);
+            }
+
+            finally
+            {
+                using (Viewport vp = new Viewport(1024, 1024, "Winecraft Viewport", icon))
+                {
+                    vp.Run();
+                }
             }
         }
 
