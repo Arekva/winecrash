@@ -36,6 +36,7 @@ namespace Winecrash.Engine
 
             //création d'un buffer pour les vertex
             VertexBufferObject = GL.GenBuffer();
+            ElementBufferObject = GL.GenBuffer();
             VertexArrayObject = GL.GenVertexArray();
 
             
@@ -44,8 +45,8 @@ namespace Winecrash.Engine
 
             //assignation du buffer en temps que vertex buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
-            //copie du tableau de vertices dans le buffer
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObject);
+            
 
             //En gros:
             // 1er arg     : 0 => numéro de l'attribut voulu: ici numéro 0 (location)
@@ -100,8 +101,32 @@ namespace Winecrash.Engine
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             shader.Use();
-            GL.BindVertexArray(VertexArrayObject);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+
+            WObject obj = WObject.Find("Test Object");
+
+            if(obj)
+            {
+                MeshRenderer mr = obj.GetModule<MeshRenderer>();
+
+                if(mr)
+                {
+                    Mesh m = mr.Mesh;
+
+                    if(m)
+                    {
+                        float[] vertices = m.VerticesFloatArray();
+
+                        //copie du tableau de vertices dans le buffer
+                        GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+                        GL.BufferData(BufferTarget.ElementArrayBuffer, m.Triangles.Length * sizeof(uint), m.Triangles, BufferUsageHint.StaticDraw);
+
+                        GL.BindVertexArray(VertexArrayObject);
+                        GL.DrawElements(PrimitiveType.Triangles, m.Triangles.Length, DrawElementsType.UnsignedInt, 0);
+                        //GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length / 3);
+                    }
+                }
+            }
+            
 
             Context.SwapBuffers();
             base.OnRenderFrame(e);
@@ -118,6 +143,7 @@ namespace Winecrash.Engine
         };
 
         int VertexBufferObject;
+        int ElementBufferObject;
         int VertexArrayObject;
 
         Shader shader;

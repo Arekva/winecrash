@@ -43,7 +43,7 @@ namespace Winecrash.Engine
 
         private static void ShowWindow()
         {
-            using (Viewport vp = new Viewport(800, 600, "Winecraft Viewport"))
+            using (Viewport vp = new Viewport(1024, 1024, "Winecraft Viewport"))
             {
                 vp.Run();
             }

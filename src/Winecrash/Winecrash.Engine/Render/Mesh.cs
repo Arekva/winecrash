@@ -28,7 +28,7 @@ namespace Winecrash.Engine
         }
 
         public Vector3F[] Vertices { get; set; }
-        public int[] Triangles { get; set; }
+        public UInt32[] Triangles { get; set; }
         public Vector2F[] UVs { get; set; }
         public Vector4F[] Tangents { get; set; }
         public Vector3F[] Normals { get; set; }
@@ -60,6 +60,7 @@ namespace Winecrash.Engine
                     List<Vector3F> vertices = new List<Vector3F>();
                     List<Vector3F> normals = new List<Vector3F>();
                     List<Vector2F> uvs = new List<Vector2F>();
+                    List<uint> triangles = new List<uint>();
 
                     bool verticesStarted = false;
 
@@ -83,6 +84,7 @@ namespace Winecrash.Engine
                                 mesh.Vertices = vertices.ToArray();
                                 mesh.UVs = uvs.ToArray();
                                 mesh.Normals = vertices.ToArray();
+                                mesh.Triangles = triangles.ToArray();
 
                                 mesh = new Mesh();
                                 meshes.Add(mesh);
@@ -90,6 +92,7 @@ namespace Winecrash.Engine
                                 vertices.Clear();
                                 uvs.Clear();
                                 normals.Clear();
+                                triangles.Clear();
                             }
 
                             mesh.Name = args[1];
@@ -112,12 +115,40 @@ namespace Winecrash.Engine
                             normals.Add(new Vector3F(Single.Parse(args[1]), Single.Parse(args[2]), Single.Parse(args[3])));
                         }
 
+                        else if (action == "f") // faces
+                        {
+                            //if polygon => 4 vertices, if triangle => 3 vertices 
+
+                            bool polygon = args.Length - 1 == 4;
+
+                            uint[] faceVertices = new uint[polygon ? 4 : 3];
+
+                            for (int i = 0; i < faceVertices.Length; i++) // extracting vertices
+                            {
+                                faceVertices[i] = UInt32.Parse(args[i + 1][0].ToString());
+                            }
+
+                            triangles.Add(faceVertices[0] - 1);
+                            triangles.Add(faceVertices[1] - 1);
+                            triangles.Add(faceVertices[2] - 1);
+
+                            if (polygon)
+                            {
+                                triangles.Add(faceVertices[0] - 1);
+                                triangles.Add(faceVertices[2] - 1);
+                                triangles.Add(faceVertices[3] - 1);
+                            }
+
+
+                        }
+
                         //todo: faces, materials
                     }
 
                     mesh.Vertices = vertices.ToArray();
                     mesh.UVs = uvs.ToArray();
                     mesh.Normals = vertices.ToArray();
+                    mesh.Triangles = triangles.ToArray();
                 }
 
                 return meshes.ToArray();
@@ -144,23 +175,36 @@ namespace Winecrash.Engine
             throw new NotImplementedException("*.Blend Blender format is not supported yet.");
         }
 
+        private Vector3F rotaroundpivot(Vector3F point, Vector3F pivot, Quaternion rotation)
+        {
+            Vector3F dir = point - pivot;
+            dir = rotation * dir;
+            point = dir + pivot;
+            return point;
+        }
         public float[] VerticesFloatArray()
         {
-            Stopwatch sw = new Stopwatch();
+            //Stopwatch sw = new Stopwatch();
 
-            sw.Start();
+            //sw.Start();
+            Vector3F p = Vector3F.Zero;
+            Quaternion rot = DebugHelp.Rotation;
 
             float[] result = new float[this.Vertices.Length * 3];
 
             for (int v = 0, f = 0; v < this.Vertices.Length; v++, f += 3)
             {
-                result[f] = this.Vertices[v].X;
-                result[f + 1] = this.Vertices[v].Y;
-                result[f + 2] = this.Vertices[v].Z;
+                Vector3F vert = this.Vertices[v];
+
+                vert = rotaroundpivot(vert, p, rot) * DebugHelp.Scale;
+
+                result[f] = vert.X + DebugHelp.ModelShift.X;
+                result[f + 1] = vert.Y + DebugHelp.ModelShift.Y;
+                result[f + 2] = vert.Z + DebugHelp.ModelShift.Z;
             }
 
-            sw.Stop();
-            Debug.Log(sw.Elapsed.TotalMilliseconds.ToString("C2"));
+            //sw.Stop();
+            //Debug.Log(sw.Elapsed.TotalMilliseconds.ToString("C2"));
 
 
             //todo: marshalised vector3f[] => float[] copy

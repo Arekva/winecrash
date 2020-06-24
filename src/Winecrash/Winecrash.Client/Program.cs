@@ -18,6 +18,7 @@ namespace Winecrash.Client
 
             Thread.Sleep(1000);
             WObject wobj1 = new WObject("Test Object");
+            wobj1.AddModule<DebugHelp>();
 
             Mesh[] meshes = Mesh.LoadFile("Models/Cube.obj", MeshFormats.Wavefront);
 
@@ -29,23 +30,6 @@ namespace Winecrash.Client
             if (meshes != null && meshes.Length > 0)
                 mr.Mesh = meshes[0];
 
-            if(mr.Mesh != null)
-            {
-                Debug.Log("= V3F Vertices =");
-                for (int i = 0; i < mr.Mesh.Vertices.Length; i++)
-                {
-                    Debug.Log(mr.Mesh.Vertices[i]);
-                }
-
-                Debug.Log("\n= Float Vertices =");
-
-                float[] floats = mr.Mesh.VerticesFloatArray();
-
-                for (int i = 0; i < floats.Length; i+=3)
-                {
-                    Debug.Log(floats[i] + " " + floats[i + 1] + " " + floats[i + 2]);
-                }
-            }
 
             //Thread.Sleep(500);
 

@@ -325,11 +325,43 @@ namespace Winecrash.Engine
             return r;
         }
 
+        public static Quaternion operator *(Quaternion a, Quaternion b)
+        {
+            return new Quaternion(
+                a.W * b.X + a.X * b.W + a.Y * b.Z - a.Z * b.Y,
+                a.W * b.Y + a.Y * b.W + a.Z * b.X - a.X * b.Z,
+                a.W * b.Z + a.Z * b.W + a.X * b.Y - a.Y * b.X,
+                a.W * b.W - a.X * b.X - a.Y * b.Y - a.Z * b.Z);
+        }
+
         public override string ToString()
         {
             return $"Quaternion({Math.Round(this.X,4)};{Math.Round(this.Y,4)};{Math.Round(this.Z,4)};{Math.Round(this.W,4)})";
         }
 
+
         #endregion
+
+        public static Vector3D operator *(Quaternion rotation, Vector3D point)
+        {
+            double X = rotation.X * 2.0D;
+            double Y = rotation.Y * 2.0D;
+            double Z = rotation.Z * 2F;
+            double XX = rotation.X * X;
+            double YY = rotation.Y * Y;
+            double ZZ = rotation.Z * Z;
+            double XY = rotation.X * Y;
+            double XZ = rotation.X * Z;
+            double YZ = rotation.Y * Z;
+            double WX = rotation.W * X;
+            double WY = rotation.W * Y;
+            double WZ = rotation.W * Z;
+
+            Vector3D res = Vector3D.Zero;
+            res.X = (1.0D - (YY + ZZ)) * point.X + (XY - WZ) * point.Y + (XZ + WY) * point.Z;
+            res.Y = (XY + WZ) * point.X + (1.0D - (XX + ZZ)) * point.Y + (YZ - WX) * point.Z;
+            res.Z = (XZ - WY) * point.X + (YZ + WX) * point.Y + (1.0D - (XX + YY)) * point.Z;
+            return res;
+        }
     }
 }
