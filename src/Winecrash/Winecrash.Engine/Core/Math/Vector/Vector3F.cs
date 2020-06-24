@@ -265,6 +265,19 @@ namespace Winecrash.Engine
         #endregion
 
         #region Methods
+        public Vector3F RotateAround(Vector3F pivot, Vector3F axis, float angle)
+        {
+            return this.RotateAround(pivot, axis * angle);
+        }
+        public Vector3F RotateAround(Vector3F pivot, Vector3F eulers)
+        {
+            return this.RotateAround(pivot, new Quaternion(eulers));
+        }
+        public Vector3F RotateAround(Vector3F pivot, Quaternion rotation)
+        {
+            return (rotation * (this - pivot)) + pivot;
+        }
+
         public static Vector3F Cross(Vector3F v1, Vector3F v2)
         {
             return new Vector3F

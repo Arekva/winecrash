@@ -363,5 +363,10 @@ namespace Winecrash.Engine
             res.Z = (XZ - WY) * point.X + (YZ + WX) * point.Y + (1.0D - (XX + YY)) * point.Z;
             return res;
         }
+
+        public static Vector3F operator *(Quaternion rotation, Vector3F point)
+        {
+            return rotation * (Vector3D)point;
+        }
     }
 }

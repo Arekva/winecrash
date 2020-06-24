@@ -32,7 +32,15 @@ namespace Winecrash.Engine
 
             set
             {
+                Vector3F oldGlobalPosition = this.Position;
+                Quaternion oldGlobalRotation = this.Rotation;
+                Vector3F oldGlobalScale = this.Scale;
+
                 this._Parent = value;
+
+                this.Position = oldGlobalPosition;
+                this.Rotation = oldGlobalRotation;
+                this.Scale = oldGlobalScale;
             }
         }
 
@@ -46,27 +54,48 @@ namespace Winecrash.Engine
         }
 
 
-        public Vector3D Position { get; set; } = Vector3D.Zero;
-        public Vector3D LocalPosition
+
+        public Vector3F Position
+        {
+            get
+            {   //                                      first set to scale                                     then rotate                          then add parent's position
+                return this._Parent ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3F.Zero, this._Parent.Rotation.Inverted) + this._Parent.Position : this.LocalPosition;
+            }
+
+            set
+            {   //                                      first get relative position                              then rotate by invert                                 then scale
+                this.LocalPosition = this._Parent ? (value - this._Parent.Position).RotateAround(Vector3F.Zero, this._Parent.Rotation) * (Vector3F.One / this._Parent.Scale) : value;
+            }
+        }
+        public Vector3F LocalPosition { get; set; } = Vector3F.Zero;
+
+        public Quaternion Rotation
         {
             get
             {
-                return !this._Parent ? this.Position : this._Parent.Position - this.Position;
+                return this._Parent ? this._Parent.Rotation * this.LocalRotation : this.LocalRotation;
             }
 
             set
             {
-                this.Position = !this._Parent ? value : this._Parent.Position + value;
+                this.LocalRotation = this._Parent ? this._Parent.Rotation.Inverted * value : value;
             }
         }
+        public Quaternion LocalRotation { get; set; } = Quaternion.Identity;
 
-        public Quaternion Rotation { get; set; } = Quaternion.Identity;
+        public Vector3F Scale
+        {
+            get
+            {
+                return this._Parent ? this._Parent.Scale * this.LocalScale : this.LocalScale;
+            }
 
-        public Vector3F Scale { get; set; } = Vector3F.One;
-
-
-
-
+            set
+            {
+                this.LocalScale = this._Parent ? value / this._Parent.Scale : value;
+            }
+        }
+        public Vector3F LocalScale { get; set; } = Vector3F.One;
 
         public static WObject Find(string name)
         {
