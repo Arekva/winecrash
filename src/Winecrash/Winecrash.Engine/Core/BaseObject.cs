@@ -11,7 +11,20 @@ namespace Winecrash.Engine
 
         public virtual bool Undeletable { get; internal set; } = false;
 
-        public bool Enabled { get; set; } = true;
+        private bool _Enabled = true;
+
+        public bool Enabled
+        {
+            get
+            {
+                return this._Enabled;
+            }
+
+            set
+            {
+                this.SetEnable(value);
+            }
+        }
 
         public BaseObject() 
         {
@@ -25,6 +38,11 @@ namespace Winecrash.Engine
         }
 
         internal virtual void ForcedDelete() { }
+
+        internal virtual void SetEnable(bool status) 
+        {
+            this._Enabled = status;
+        }
 
         public virtual void Delete()
         {

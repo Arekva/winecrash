@@ -9,6 +9,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Graphics;
 using OpenTK.Input;
+using System.Diagnostics;
 
 namespace Winecrash.Engine
 {
@@ -85,11 +86,9 @@ namespace Winecrash.Engine
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            Time.DeltaTime = e.Time;
+
             Update?.Invoke(new UpdateEventArgs(e.Time));
-
-            //Layer.Update();
-
-            //Debug.Log((int)(1D/e.Time));
 
             GC.Collect();
 

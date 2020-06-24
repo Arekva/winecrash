@@ -43,6 +43,16 @@ namespace Winecrash.Engine
             UpdateKeysStates();
         }
 
+        protected internal override void OnDelete()
+        {
+            if(Instance == this)
+            {
+                Instance = null;
+            }
+            InputWrapper = null;
+            RegisteredKeyStates = null;
+        }
+
         private static bool CreateWrapper()
         {
             foreach(Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())

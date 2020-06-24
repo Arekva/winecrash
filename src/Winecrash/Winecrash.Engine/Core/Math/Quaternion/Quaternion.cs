@@ -14,7 +14,7 @@ namespace Winecrash.Engine
         public double Z { get; set; }
         public double W { get; set; }
 
-        public Quaternion Identity
+        public static Quaternion Identity
         {
             get
             {

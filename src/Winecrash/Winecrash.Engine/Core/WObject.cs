@@ -8,8 +8,6 @@ namespace Winecrash.Engine
 {
     public sealed class WObject : BaseObject
     {
-        //public Int64[] dummy = new Int64[100_000_000];
-
         internal static List<WObject> _WObjects { get; set; } = new List<WObject>(1);
         internal List<Module> _Modules { get; set; } = new List<Module>(1);
 
@@ -22,6 +20,53 @@ namespace Winecrash.Engine
         {
             _WObjects.Add(this);
         }
+
+
+        private WObject _Parent = null;
+        public WObject Parent
+        {
+            get
+            {
+                return this._Parent;
+            }
+
+            set
+            {
+                this._Parent = value;
+            }
+        }
+
+        private List<WObject> _Children = new List<WObject>();
+        public WObject[] Children
+        {
+            get
+            {
+                return _Children.ToArray();
+            }
+        }
+
+
+        public Vector3D Position { get; set; } = Vector3D.Zero;
+        public Vector3D LocalPosition
+        {
+            get
+            {
+                return !this._Parent ? this.Position : this._Parent.Position - this.Position;
+            }
+
+            set
+            {
+                this.Position = !this._Parent ? value : this._Parent.Position + value;
+            }
+        }
+
+        public Quaternion Rotation { get; set; } = Quaternion.Identity;
+
+        public Vector3F Scale { get; set; } = Vector3F.One;
+
+
+
+
 
         public static WObject Find(string name)
         {
@@ -71,6 +116,17 @@ namespace Winecrash.Engine
             return this.GetModule<T>() ?? this.AddModule<T>();
         }
 
+        internal sealed override void SetEnable(bool status)
+        {
+            for (int i = 0; i < _Children.Count; i++)
+                _Children[i].Enabled = status;
+
+            if(status == true && this._Parent)
+                this._Parent.Enabled = true;
+
+            base.SetEnable(status);
+        }
+
         internal sealed override void ForcedDelete()
         {
             for (int i = 0; i < _Modules.Count; i++)
@@ -95,7 +151,16 @@ namespace Winecrash.Engine
             for (int i = 0; i < _Modules.Count; i++)
             {
                 _Modules[i].Delete();
+            } 
+
+            for (int i = 0; i < _Children.Count; i++)
+            {
+                _Children[i].Delete();
             }
+
+            this._Parent = null;
+            _Children.Clear();
+            _Children = null;
 
             _Modules.Clear();
             _Modules = null;

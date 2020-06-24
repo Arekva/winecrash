@@ -116,6 +116,8 @@ namespace Winecrash.Engine
 
             wobj.AddModule<Input>().ExecutionOrder = Int32.MinValue;
 
+            Layer.CreateOrGetLayer(0).Name = "Default Layer";
+            Group.CreateOrGetGroup(-1, "3D Logic");
 
             EngineObject = wobj;
             return wobj;

@@ -56,7 +56,7 @@ namespace Winecrash.Engine
 
         public Module() : base()
         {
-            Engine.Group.CreateOrGetGroup(0, null, new[] { this });
+            Engine.Group.CreateOrGetGroup(0, "Default Group", new[] { this });
         }
 
         public WObject WObject { get; internal set; }
@@ -67,6 +67,30 @@ namespace Winecrash.Engine
         internal protected virtual void Start() { }
         internal protected virtual void Update() { }
         internal protected virtual void OnDelete() { }
+
+        internal protected virtual void OnEnable() { }
+
+        internal protected virtual void OnDisable() { }
+
+        internal sealed override void SetEnable(bool status)
+        {
+            if (this.Enabled)
+            {
+                if (!status)
+                {
+                    this.OnDisable();
+                }
+            }
+            else
+            {
+                if (status)
+                {
+                    this.OnEnable();
+                }
+            }
+
+            base.SetEnable(status);
+        }
 
         internal sealed override void ForcedDelete()
         {

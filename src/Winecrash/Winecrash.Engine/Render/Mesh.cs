@@ -5,14 +5,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+
 namespace Winecrash.Engine
 {
     public class Mesh : BaseObject
     {
+        //public Int64[] dummy = new long[50_000_000];
 
         public Mesh() : base() {}
 
         public Mesh(string name) : base(name) { }
+
+        public Mesh(Mesh original) : base()
+        {
+            this.Vertices = original.Vertices;
+            this.Triangles = original.Triangles;
+            this.UVs = original.UVs;
+            this.Tangents = original.Tangents;
+            this.Normals = original.Normals;
+        }
 
         public Vector3F[] Vertices { get; set; }
         public int[] Triangles { get; set; }
@@ -126,10 +139,38 @@ namespace Winecrash.Engine
             }
             
         }
-
         private static Mesh[] LoadBlender(string path)
         {
             throw new NotImplementedException("*.Blend Blender format is not supported yet.");
+        }
+
+        public float[] VerticesFloatArray()
+        {
+            Stopwatch sw = new Stopwatch();
+
+            sw.Start();
+
+            float[] result = new float[this.Vertices.Length * 3];
+
+            for (int v = 0, f = 0; v < this.Vertices.Length; v++, f += 3)
+            {
+                result[f] = this.Vertices[v].X;
+                result[f + 1] = this.Vertices[v].Y;
+                result[f + 2] = this.Vertices[v].Z;
+            }
+
+            sw.Stop();
+            Debug.Log(sw.Elapsed.TotalMilliseconds.ToString("C2"));
+
+
+            //todo: marshalised vector3f[] => float[] copy
+
+            //GCHandle gch = GCHandle.Alloc(this.Vertices, GCHandleType.Pinned);
+            //IntPtr verticesPtr = gch.AddrOfPinnedObject();
+
+            //Marshal.Copy(verticesPtr, result, 0, vectorArrayAmount);
+
+            return result;
         }
 
         internal override void ForcedDelete()
