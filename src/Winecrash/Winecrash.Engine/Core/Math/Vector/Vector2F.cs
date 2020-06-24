@@ -130,6 +130,15 @@ namespace Winecrash.Engine
         #endregion
 
         #region Methods
+        public static Vector2F Dot(Vector2F v1, Vector2F v2)
+        {
+            return v1 * v2;
+        }
+        public static float Angle(Vector2F v1, Vector2F v2)
+        {
+            return (float)Math.Acos((v1.Normalized * v2.Normalized).Length);
+        }
+
         public Vector2F Normalize()
         {
             return this = NormalizeVector2F(this);

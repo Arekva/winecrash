@@ -265,6 +265,21 @@ namespace Winecrash.Engine
         #endregion
 
         #region Methods
+        public static Vector3D Cross(Vector3D v1, Vector3D v2)
+        {
+            return new Vector3D
+                (v1.Y * v2.Z - v1.Z * v2.Y,
+                 v1.Z * v2.X - v1.X * v2.Z,
+                 v1.X * v2.Y - v1.Y * v2.X);
+        }
+        public static Vector3D Dot(Vector3D v1, Vector3D v2)
+        {
+            return v1 * v2;
+        }
+        public static double Angle(Vector3D v1, Vector3D v2)
+        {
+            return Math.Acos((v1.Normalized * v2.Normalized).Length);
+        }
 
         public Vector3D Normalize()
         {

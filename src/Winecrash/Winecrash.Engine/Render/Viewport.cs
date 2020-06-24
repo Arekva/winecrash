@@ -18,12 +18,36 @@ namespace Winecrash.Engine
     {
         public static Viewport Instance { get; private set; }
 
-        public static Thread ThreadRunner;
-
-        //internal static Updater.UpdateCallback OnFrameStart;
+        internal static Thread ThreadRunner { get; set; }
 
         public static event UpdateEventHandler Update;
 
+        private readonly float[] _Vertices =
+        {
+            // Position         Texture coordinates
+             0.5f,  0.5f, -0.5f, 1.0f, 1.0f, // top right     - 0
+             0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // bottom right  - 1
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom left   - 2
+            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f  // top left      - 3
+        };
+
+        private readonly uint[] _Indices =
+        {
+            0, 1, 3,
+            1, 2, 3
+        };
+
+        private int _VertexBufferObject;
+        private int _ElementBufferObject;
+        private int _VertexArrayObject;
+
+        private Shader _Shader;
+        private Texture _Texture;
+        private Texture _Texture2;
+
+        /// <summary>
+        /// https://github.com/opentk/LearnOpenTK/blob/master/Chapter1/4-Textures/Window.cs
+        /// </summary>
         public Viewport(int width, int height, string title, Icon icon = null) : base(width, height, GraphicsMode.Default, title) 
         {
             if(icon != null)
@@ -35,64 +59,96 @@ namespace Winecrash.Engine
 
         protected override void OnLoad(EventArgs e)
         {
-            shader = new Shader("assets/shaders/shader.vert", "assets/shaders/shader.frag");
+            try
+            {
+                GL.ClearColor(0.11f, 0.11f, 0.11f, 1.0f);
 
-            GL.ClearColor(0.11f, 0.11f, 0.11f, 1.0f);
+                this._VertexBufferObject = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ArrayBuffer, this._VertexBufferObject);
+                GL.BufferData(BufferTarget.ArrayBuffer, this._Vertices.Length * sizeof(float), this._Vertices, BufferUsageHint.StaticDraw);
 
-            //création d'un buffer pour les vertex
-            VertexBufferObject = GL.GenBuffer();
-            ElementBufferObject = GL.GenBuffer();
-            VertexArrayObject = GL.GenVertexArray();
+                this._ElementBufferObject = GL.GenBuffer();
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, this._ElementBufferObject);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, this._Indices.Length * sizeof(uint), this._Indices, BufferUsageHint.StaticDraw);
 
-            
+                this._Shader = new Shader("assets/shaders/shader.vert", "assets/shaders/shader.frag");
+                this._Shader.Use();
 
-            GL.BindVertexArray(VertexArrayObject);
+                this._Texture = new Texture("assets/textures/container.png");
+                this._Texture.Use(TextureUnit.Texture0);
 
-            //assignation du buffer en temps que vertex buffer
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObject);
+                this._Texture2 = new Texture("assets/textures/awesomeface.png");
+                this._Texture2.Use(TextureUnit.Texture1);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                this._Shader.SetInt("texture0", 0);
+                this._Shader.SetInt("texture1", 1);
 
+                this._VertexArrayObject = GL.GenVertexArray();
+                GL.BindVertexArray(this._VertexArrayObject);
 
-            //En gros:
-            // 1er arg     : 0 => numéro de l'attribut voulu: ici numéro 0 (location)
-            // 2eme arg    : 3 => spécifie la taille de l'attribut du vertex, ici 3 octets (vector3)
-            // 3eme arg    : spécifie le type de donnée, ici float.
-            // 4eme arg    : normalisation: en gros, envoie -1 si nombre négatif, et 1 si positif
-            // 5eme arg    : position de la prochaine donnée en octet (ici la taille du vecteur)
-            // 6eme arg    : offset du début de la donnée par rapport à la position
-            GL.VertexAttribPointer(shader.GetAttribLocation("aPosition"), 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, this._VertexArrayObject);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, this._ElementBufferObject); //?
 
-            
+                int vertexLocation = _Shader.GetAttribLocation("aPosition");
+                GL.EnableVertexAttribArray(vertexLocation);
+                GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
 
-            base.OnLoad(e);
+                var texCoordLocation = _Shader.GetAttribLocation("aTexCoord");
+                GL.EnableVertexAttribArray(texCoordLocation);
+                GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+            }
+            catch(Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                base.OnLoad(e);
+            }
+        }
+
+        protected override void OnRenderFrame(FrameEventArgs e)
+        {
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.BindVertexArray(_VertexArrayObject);
+
+            _Texture.Use();
+            _Texture2.Use(TextureUnit.Texture1);
+            _Shader.Use();
+
+            GL.DrawElements(PrimitiveType.Triangles, _Indices.Length, DrawElementsType.UnsignedInt, 0);
+
+            SwapBuffers();
+
+            base.OnRenderFrame(e);
         }
 
         protected override void OnUnload(EventArgs e)
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.DeleteBuffer(VertexBufferObject);
-            shader.Dispose();
+            GL.BindVertexArray(0);
+            GL.UseProgram(0);
+
+            GL.DeleteBuffer(_VertexBufferObject);
+            GL.DeleteVertexArray(_VertexArrayObject);
+
+            _Shader.Delete();
+            _Texture.Delete();
+
             base.OnUnload(e);
         }
-
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
 
             WEngine.Stop(this);
         }
-
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
 
             base.OnResize(e);
         }
-
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             Time.DeltaTime = e.Time;
@@ -104,80 +160,8 @@ namespace Winecrash.Engine
             base.OnUpdateFrame(e);
         }
 
-        protected override void OnRenderFrame(FrameEventArgs e)
-        {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+        
 
-            shader.Use();
-
-            WObject obj = WObject.Find("Test Object");
-
-            if(obj)
-            {
-                MeshRenderer mr = obj.GetModule<MeshRenderer>();
-
-                if(mr)
-                {
-                    Mesh m = mr.Mesh;
-
-                    if(m)
-                    {
-                        float[] vertices = m.VerticesFloatArray();
-
-                        //copie du tableau de vertices dans le buffer
-                        GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
-                        GL.BufferData(BufferTarget.ElementArrayBuffer, alt_triangles.Length * sizeof(uint), alt_triangles, BufferUsageHint.StaticDraw);
-
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge); //x axis
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge); //y axis
-
-                        GL.BindVertexArray(VertexArrayObject);
-                        GL.DrawElements(PrimitiveType.Triangles, alt_triangles.Length, DrawElementsType.UnsignedInt, 0);
-                        //GL.DrawArrays(PrimitiveType.Triangles, 0, vertices.Length / 3);
-                    }
-                }
-            }
-            
-
-            Context.SwapBuffers();
-            base.OnRenderFrame(e);
-        }
-
-        private static Texture texture = Texture.FromFile("assets/textures/blocks/grass_side.png");
-
-        int[] alt_triangles =
-        {
-            // + y
-            0, 1, 2,
-            1, 3, 2,
-
-            // - x
-            //4, 6, 5,
-            //7, 5, 6
-
-
-        };
-
-        float[] alt_uvs =
-        {
-            0.0f, 0.0f,  1.0f, 0.0f,  1.0f, 1.0f,
-            1.0f, 0.0f,  0.0f, 1.0f,  1.0f, 1.0f,
-        };
-
-        float[] vertices = {
-            -0.5f, -0.5f, 0.0f,  //Bottom-left vertex
-             0.5f, -0.5f, 0.0f,  //Bottom-right vertex
-            -0.5f,  0.5f, 0.0f,  //Top-left vertex
-
-             0.0f,  0.0f, 0.0f,  //Bottom-left vertex
-             1.0f,  0.0f, 0.0f,  //Bottom-right vertex
-             0.0f,  1.0f, 0.0f,  //Top-left vertex
-        };
-
-        int VertexBufferObject;
-        int ElementBufferObject;
-        int VertexArrayObject;
-
-        Shader shader;
+        
     }
 }

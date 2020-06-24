@@ -561,6 +561,14 @@ namespace Winecrash.Engine
         #endregion
 
         #region Methods
+        public static Vector4F Dot(Vector4F v1, Vector4F v2)
+        {
+            return v1 * v2;
+        }
+        public static float Angle(Vector4F v1, Vector4F v2)
+        {
+            return (float)Math.Acos((v1.Normalized * v2.Normalized).Length);
+        }
 
         public Vector4F Normalize()
         {

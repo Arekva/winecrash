@@ -61,6 +61,7 @@
     <Compile Include="Core\Color\Color256.cs" />
     <Compile Include="Core\Color\Color32.cs" />
     <Compile Include="Core\Input\Keys.cs" />
+    <Compile Include="Core\Math\Vector\Vector2I.cs" />
     <Compile Include="Core\Math\Vector\Vector2F.cs" />
     <Compile Include="Core\Math\Vector\Vector3F.cs" />
     <Compile Include="Core\Math\Vector\Vector4F.cs" />

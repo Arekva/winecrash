@@ -4,97 +4,137 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
 namespace Winecrash.Engine
 {
-    public class Shader : IDisposable
+    public class Shader : BaseObject
     {
-        int Handle;
+        private int Handle = -1;
 
-        public Shader(string vertexPath, string fragmentPath)
+        private readonly Dictionary<string, int> _UniformLocations;
+
+        public Shader(string vertexPath, string fragmentPath) : base()
         {
-            int VertexShader, FragmentShader;
+            string shaderSource = LoadSource(vertexPath);
+            int vertexShader = GL.CreateShader(ShaderType.VertexShader);
+            GL.ShaderSource(vertexShader, shaderSource);
+            CompileShader(vertexShader);
 
-            string VertexShaderSource;
-
-            using (StreamReader reader = new StreamReader(vertexPath, Encoding.UTF8))
-            {
-                VertexShaderSource = reader.ReadToEnd();
-            }
-
-            string FragmentShaderSource;
-
-            using (StreamReader reader = new StreamReader(fragmentPath, Encoding.UTF8))
-            {
-                FragmentShaderSource = reader.ReadToEnd();
-            }
-
-            VertexShader = GL.CreateShader(ShaderType.VertexShader);
-            GL.ShaderSource(VertexShader, VertexShaderSource);
-
-            FragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(FragmentShader, FragmentShaderSource);
-
-
-
-            GL.CompileShader(VertexShader);
-
-            string infoLogVert = GL.GetShaderInfoLog(VertexShader);
-            if (infoLogVert != System.String.Empty)
-                Debug.Log(infoLogVert);
-
-
-            GL.CompileShader(FragmentShader);
-
-            string infoLogFrag = GL.GetShaderInfoLog(FragmentShader);
-            if (infoLogFrag != System.String.Empty)
-                Debug.Log(infoLogFrag);
+            shaderSource = LoadSource(fragmentPath);
+            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
+            GL.ShaderSource(fragmentShader, shaderSource);
+            CompileShader(fragmentShader);
 
             this.Handle = GL.CreateProgram();
-            GL.AttachShader(Handle, VertexShader);
-            GL.AttachShader(Handle, FragmentShader);
-            GL.LinkProgram(Handle);
 
+            GL.AttachShader(Handle, vertexShader);
+            GL.AttachShader(Handle, fragmentShader);
 
-            GL.DetachShader(Handle, VertexShader);
-            GL.DetachShader(Handle, FragmentShader);
-            GL.DeleteShader(FragmentShader);
-            GL.DeleteShader(VertexShader);
+            LinkProgram(Handle);
+
+            GL.DetachShader(Handle, vertexShader);
+            GL.DetachShader(Handle, fragmentShader);
+            GL.DeleteShader(fragmentShader);
+            GL.DeleteShader(vertexShader);
+
+            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int numberOfUniforms);
+
+            _UniformLocations = new Dictionary<string, int>(numberOfUniforms);
+
+            for (int i = 0; i < numberOfUniforms; i++)
+            {
+                string key = GL.GetActiveUniform(Handle, i, out _, out _);
+
+                int location = GL.GetUniformLocation(Handle, key);
+
+                _UniformLocations.Add(key, location);
+            }
+
         }
 
-        public void Use()
+        private static void CompileShader(int shader)
+        {
+            GL.CompileShader(shader);
+
+            GL.GetShader(shader, ShaderParameter.CompileStatus, out int code);
+
+            if(code != (int)All.True)
+            {
+                string infoLog = GL.GetShaderInfoLog(shader);
+                throw new Exception($"Error occurred whilst compiling Shader({shader}).\n\n{infoLog}");
+            }
+        }
+
+        private static void LinkProgram(int program)
+        {
+            GL.LinkProgram(program);
+
+            GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int code);
+
+            if(code != (int)All.True)
+            {
+                throw new Exception($"Error occurred whilst linking Program {program} : " + GL.GetProgramInfoLog(program));
+            }
+        }
+
+        internal void Use()
         {
             GL.UseProgram(Handle);
         }
 
-        public int GetAttribLocation(string attribName)
+        internal int GetAttribLocation(string attribName)
         {
             return GL.GetAttribLocation(Handle, attribName);
         }
 
-        private bool disposedValue = false;
-        protected virtual void Dispose(bool disposing)
+        private static string LoadSource(string path)
         {
-            if (!disposedValue)
+            using (var sr = new StreamReader(path, Encoding.UTF8))
             {
-                GL.DeleteProgram(Handle);
-
-                disposedValue = true;
+                return sr.ReadToEnd();
             }
         }
 
-        ~Shader()
+        public override void Delete()
         {
             GL.DeleteProgram(Handle);
+            Handle = -1;
+
+            base.Delete();
         }
 
-
-        public void Dispose()
+        public void SetInt(string name, int data)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            if (this.Deleted) return;
+
+            GL.UseProgram(Handle);
+            GL.Uniform1(_UniformLocations[name], data);
+        }
+
+        public void SetFloat(string name, float data)
+        {
+            if (this.Deleted) return;
+
+            GL.UseProgram(Handle);
+            GL.Uniform1(_UniformLocations[name], data);
+        }
+
+        public void SetMatrix4(string name, Matrix4 data)
+        {
+            if (this.Deleted) return;
+
+            GL.UseProgram(Handle);
+            GL.UniformMatrix4(_UniformLocations[name], true, ref data);
+        }
+
+        public void SetVector3(string name, Vector3F data)
+        {
+            if (this.Deleted) return;
+
+            GL.UseProgram(Handle);
+            GL.Uniform3(_UniformLocations[name], new Vector3(data.X, data.Y, data.Z));
         }
     }
 }

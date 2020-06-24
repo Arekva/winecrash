@@ -561,7 +561,14 @@ namespace Winecrash.Engine
         #endregion
 
         #region Methods
-
+        public static Vector4D Dot(Vector4D v1, Vector4D v2)
+        {
+            return v1 * v2;
+        }
+        public static double Angle(Vector4D v1, Vector4D v2)
+        {
+            return Math.Acos((v1.Normalized * v2.Normalized).Length);
+        }
         public Vector4D Normalize()
         {
             return this = NormalizeVector4D(this);

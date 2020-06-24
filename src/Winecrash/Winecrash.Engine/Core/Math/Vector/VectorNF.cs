@@ -7,11 +7,11 @@ using System.Runtime;
 
 namespace Winecrash.Engine
 {
-    public struct VectorND : IVectorable, IComparable, IComparable<VectorND>, IEquatable<VectorND>, IFormattable
+    public struct VectorNF : IVectorable, IComparable, IComparable<VectorNF>, IEquatable<VectorNF>, IFormattable
     {
         public int Dimensions { get; }
 
-        public double this[int dimension]
+        public float this[int dimension]
         {
             get
             {
@@ -30,17 +30,17 @@ namespace Winecrash.Engine
             }
         }
 
-        private double[] Componants;
+        private float[] Componants;
 
         public double SquaredLength
         {
             get
             {
-                double sl = 0.0D;
+                float sl = 0.0F;
 
                 for (int i = 0; i < this.Dimensions; i++)
                 {
-                    double c = this.Componants[i];
+                    float c = this.Componants[i];
 
                     sl += c * c;
                 }
@@ -56,33 +56,33 @@ namespace Winecrash.Engine
             }
         }
 
-        public VectorND Normalized
+        public VectorNF Normalized
         {
             get
             {
-                return NormalizeVectorND(this);
+                return NormalizeVectorNF(this);
             }
         }
 
         
 
-        public VectorND(int dimensions)
+        public VectorNF(int dimensions)
         {
             if (dimensions < 1) 
-                throw new ArgumentOutOfRangeException(nameof(dimensions), "The amount of dimensions of the VectorND must be superior to 0");
+                throw new ArgumentOutOfRangeException(nameof(dimensions), "The amount of dimensions of the VectorNF must be superior to 0");
 
             this.Dimensions = dimensions;
 
-            this.Componants = new double[dimensions];
+            this.Componants = new float[dimensions];
         }
-        public VectorND(int dimensions, double values)
+        public VectorNF(int dimensions, float values)
         {
             if (dimensions < 1)
-                throw new ArgumentOutOfRangeException(nameof(dimensions), "The amount of dimensions of the VectorND must be superior to 0");
+                throw new ArgumentOutOfRangeException(nameof(dimensions), "The amount of dimensions of the VectorNF must be superior to 0");
 
             this.Dimensions = dimensions;
 
-            this.Componants = new double[dimensions];
+            this.Componants = new float[dimensions];
 
             for (int i = 0; i < dimensions; i++)
             {
@@ -90,24 +90,24 @@ namespace Winecrash.Engine
             }
         }
 
-        public static double Angle(VectorND v1, VectorND v2)
+        public static double Angle(VectorNF v1, VectorNF v2)
         {
             return Math.Acos((v1.Normalized * v2.Normalized).Length);
         }
 
-        public VectorND Normalize()
+        public VectorNF Normalize()
         {
-            return this = NormalizeVectorND(this);
+            return this = NormalizeVectorNF(this);
         }
 
-        private static VectorND NormalizeVectorND(VectorND vector)
+        private static VectorNF NormalizeVectorNF(VectorNF vector)
         {
-            return vector / vector.Length;
+            return vector / (float)vector.Length;
         }
 
         public override bool Equals(object obj)
         {
-            if(obj is VectorND d)
+            if(obj is VectorNF d)
             {
                 if(d.Dimensions == this.Dimensions)
                 {
@@ -134,7 +134,7 @@ namespace Winecrash.Engine
         #region ToString
         public override string ToString()
         {
-            string txt = $"VectorND[{this.Dimensions}](";
+            string txt = $"VectorNF[{this.Dimensions}](";
 
             for (int i = 0; i < this.Dimensions; i++)
             {
@@ -150,7 +150,7 @@ namespace Winecrash.Engine
         }
         public string ToString(IFormatProvider provider)
         {
-            string txt = $"VectorND[{this.Dimensions}](";
+            string txt = $"VectorNF[{this.Dimensions}](";
 
             for (int i = 0; i < this.Dimensions; i++)
             {
@@ -166,7 +166,7 @@ namespace Winecrash.Engine
         }
         public string ToString(string format)
         {
-            string txt = $"VectorND[{this.Dimensions}](";
+            string txt = $"VectorNF[{this.Dimensions}](";
 
             for (int i = 0; i < this.Dimensions; i++)
             {
@@ -182,7 +182,7 @@ namespace Winecrash.Engine
         }
         public string ToString(string format, IFormatProvider provider)
         {
-            string txt = $"VectorND[{this.Dimensions}](";
+            string txt = $"VectorNF[{this.Dimensions}](";
 
             for (int i = 0; i < this.Dimensions; i++)
             {
@@ -199,10 +199,10 @@ namespace Winecrash.Engine
 
         public int CompareTo(object value)
         {
-            return value is VectorND v ? CompareTo(v) : 1;
+            return value is VectorNF v ? CompareTo(v) : 1;
         }
 
-        public int CompareTo(VectorND value)
+        public int CompareTo(VectorNF value)
         {
             double l1 = this.Length, l2 = value.Length;
 
@@ -212,7 +212,7 @@ namespace Winecrash.Engine
 
             return 0;
         }
-        public bool Equals(VectorND o)
+        public bool Equals(VectorNF o)
         {
             if (o.Dimensions != this.Dimensions) 
                 return false;
@@ -227,87 +227,87 @@ namespace Winecrash.Engine
 
 
         #region Operators
-        public static bool operator ==(VectorND v1, VectorND v2)
+        public static bool operator ==(VectorNF v1, VectorNF v2)
         {
             return v1.Equals(v2);
         }
-        public static bool operator !=(VectorND v1, VectorND v2)
+        public static bool operator !=(VectorNF v1, VectorNF v2)
         {
             return v1.Equals(v2);
         }
-        public static VectorND operator +(VectorND v, double n)
+        public static VectorNF operator +(VectorNF v, float n)
         {
-            VectorND vec = new VectorND(v.Dimensions);
+            VectorNF vec = new VectorNF(v.Dimensions);
 
             for (int i = 0; i < v.Dimensions; i++)
                 vec.Componants[i] = v.Componants[i] + n;
 
             return vec;
         }
-        public static VectorND operator +(VectorND v1, VectorND v2)
+        public static VectorNF operator +(VectorNF v1, VectorNF v2)
         {
             if (v1.Dimensions != v2.Dimensions)
                 throw new Exception("Cannot add two vector of different dimensions.");
 
-            VectorND vec = new VectorND(v1.Dimensions);
+            VectorNF vec = new VectorNF(v1.Dimensions);
 
             for (int i = 0; i < v1.Dimensions; i++)
                 vec.Componants[i] = v1.Componants[i] + v2.Componants[i];
 
             return vec;
         }
-        public static VectorND operator -(VectorND v)
+        public static VectorNF operator -(VectorNF v)
         {
             return v * -1.0F;
         }
-        public static VectorND operator -(VectorND v1, VectorND v2)
+        public static VectorNF operator -(VectorNF v1, VectorNF v2)
         {
             if (v1.Dimensions != v2.Dimensions)
                 throw new Exception("Cannot substract two vectors of different dimensions.");
 
-            VectorND vec = new VectorND(v1.Dimensions);
+            VectorNF vec = new VectorNF(v1.Dimensions);
 
             for (int i = 0; i < v1.Dimensions; i++)
                 vec.Componants[i] = v1.Componants[i] - v2.Componants[i];
 
             return vec;
         }
-        public static VectorND operator *(VectorND v, double n)
+        public static VectorNF operator *(VectorNF v, float n)
         {
-            VectorND vec = new VectorND(v.Dimensions);
+            VectorNF vec = new VectorNF(v.Dimensions);
 
             for (int i = 0; i < v.Dimensions; i++)
                 vec.Componants[i] = v.Componants[i] * n;
 
             return vec;
         }
-        public static VectorND operator *(VectorND v1, VectorND v2)
+        public static VectorNF operator *(VectorNF v1, VectorNF v2)
         {
             if (v1.Dimensions != v2.Dimensions)
                 throw new Exception("Cannot multiply two vectors of different dimensions.");
 
-            VectorND vec = new VectorND(v1.Dimensions);
+            VectorNF vec = new VectorNF(v1.Dimensions);
 
             for (int i = 0; i < v1.Dimensions; i++)
                 vec.Componants[i] = v1.Componants[i] - v2.Componants[i];
 
             return vec;
         }
-        public static VectorND operator /(VectorND v, double n)
+        public static VectorNF operator /(VectorNF v, float n)
         {
-            VectorND vec = new VectorND(v.Dimensions);
+            VectorNF vec = new VectorNF(v.Dimensions);
 
             for (int i = 0; i < v.Dimensions; i++)
                 vec.Componants[i] = v.Componants[i] / n;
 
             return vec;
         }
-        public static VectorND operator /(VectorND v1, VectorND v2)
+        public static VectorNF operator /(VectorNF v1, VectorNF v2)
         {
             if (v1.Dimensions != v2.Dimensions)
                 throw new Exception("Cannot divide two vectors of different dimensions.");
 
-            VectorND vec = new VectorND(v1.Dimensions);
+            VectorNF vec = new VectorNF(v1.Dimensions);
 
             for (int i = 0; i < v1.Dimensions; i++)
                 vec.Componants[i] = v1.Componants[i] / v2.Componants[i];

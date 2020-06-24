@@ -98,7 +98,6 @@ namespace Winecrash.Engine
 
         private void Update()
         {
-            
             while (true)
             {
                 this.ResetEvent.WaitOne(); //wait for reset event

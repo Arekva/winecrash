@@ -265,7 +265,21 @@ namespace Winecrash.Engine
         #endregion
 
         #region Methods
-
+        public static Vector3F Cross(Vector3F v1, Vector3F v2)
+        {
+            return new Vector3F
+                (v1.Y * v2.Z - v1.Z * v2.Y,
+                 v1.Z * v2.X - v1.X * v2.Z,
+                 v1.X * v2.Y - v1.Y * v2.X);
+        }
+        public static Vector3F Dot(Vector3F v1, Vector3F v2)
+        {
+            return v1 * v2;
+        }
+        public static float Angle(Vector3F v1, Vector3F v2)
+        {
+            return (float)Math.Acos((v1.Normalized * v2.Normalized).Length);
+        }
         public Vector3F Normalize()
         {
             return this = NormalizeVector3F(this);
