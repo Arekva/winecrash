@@ -17,7 +17,11 @@ namespace Winecrash.Client
             WEngine.Run();
 
             WObject wobj1 = new WObject("Test Object");
-            wobj1.AddModule<MeshRenderer>();
+            //MeshRenderer mr = wobj1.AddModule<MeshRenderer>();
+            //mr.Mesh = Mesh.LoadFile("assets/models/cube.obj", MeshFormats.Wavefront)[0];
+           
+            //Shader.Find("Error");
+            //mr.Material = new Material();
 
             Viewport.OnLoaded += () =>
             {
@@ -25,6 +29,8 @@ namespace Winecrash.Client
                 Input.CursorVisible = false;
 
                 Camera.Main.WObject.Position = new Vector3F(0, 0, -3);
+
+                //mr.Material = new Material(Shader.Find("Standard"));
             };
             
 

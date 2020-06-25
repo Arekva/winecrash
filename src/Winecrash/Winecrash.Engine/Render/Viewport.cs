@@ -92,6 +92,7 @@ namespace Winecrash.Engine
         internal int _VertexArrayObject;
 
         internal Shader _Shader;
+        internal Material Mat;
         internal Texture _Texture;
         internal Texture _Texture2;
 
@@ -112,13 +113,16 @@ namespace Winecrash.Engine
 
         protected override void OnLoad(EventArgs e)
         {
+            //GL.ClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+
             WObject camWobj = new WObject("Main Camera");
             camWobj.AddModule<Camera>();
 
+            Shader.CreateError();
+
             try
             {
-                GL.ClearColor(0.11f, 0.11f, 0.11f, 1.0f);
-
+                
                 this._VertexBufferObject = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ArrayBuffer, this._VertexBufferObject);
                 GL.BufferData(BufferTarget.ArrayBuffer, this./*_Vertices*/cube_vertices.Length * sizeof(float), this./*_Vertices*/cube_vertices, BufferUsageHint.StaticDraw);
@@ -127,17 +131,23 @@ namespace Winecrash.Engine
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, this._ElementBufferObject);
                 GL.BufferData(BufferTarget.ElementArrayBuffer, this._Indices.Length * sizeof(uint), this._Indices, BufferUsageHint.StaticDraw);
 
-                this._Shader = new Shader("assets/shaders/shader.vert", "assets/shaders/shader.frag");
-                this._Shader.Use();
+                this._Shader = new Shader("assets/shaders/Standard.vert", "assets/shaders/Standard.frag");
 
-                this._Texture = new Texture("assets/textures/container.png");
-                this._Texture.Use(TextureUnit.Texture0);
+                //Debug.Log(WObject.Find("Engine Core").GetModule<MeshRenderer>().Material);
 
-                this._Texture2 = new Texture("assets/textures/awesomeface.png");
-                this._Texture2.Use(TextureUnit.Texture1);
+                Mat = WObject.Find("Engine Core").AddOrGetModule<MeshRenderer>().Material = new Material(this._Shader);
 
-                this._Shader.SetInt("texture0", 0);
-                this._Shader.SetInt("texture1", 1);
+                //this._Texture = new Texture("assets/textures/container.png");
+                //this._Texture.Use(TextureUnit.Texture0);
+
+                //this._Texture2 = new Texture("assets/textures/awesomeface.png");
+                //this._Texture2.Use(TextureUnit.Texture1);
+
+                Mat.SetData<Texture>("albedo", new Texture("assets/textures/container.png"));
+                Mat.SetData<Texture>("texture1", new Texture("assets/textures/awesomeface.png"));
+
+                //Mat.SetData<int>("albedo", 0);
+                //Mat.SetData<int>("texture1", 1);
 
                 this._VertexArrayObject = GL.GenVertexArray();
                 GL.BindVertexArray(this._VertexArrayObject);
@@ -159,7 +169,7 @@ namespace Winecrash.Engine
             }
             catch(Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show(ex.Message);
+                System.Windows.Forms.MessageBox.Show(ex.ToString(), "Error when loading Viewport: ", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             }
             finally
             {
@@ -188,8 +198,25 @@ namespace Winecrash.Engine
             GL.DeleteBuffer(_VertexBufferObject);
             GL.DeleteVertexArray(_VertexArrayObject);
 
-            _Shader.Delete();
-            _Texture.Delete();
+
+            
+            Shader[] shaders = Shader.Cache.ToArray();
+            if(shaders != null)
+                for (int i = 0; i < shaders.Length; i++)
+                    if (shaders[i] != null)
+                        shaders[i].Delete();
+            shaders = null;
+
+            
+            Texture[] textures = Texture.Cache.ToArray();
+            System.Windows.Forms.MessageBox.Show(textures.Length.ToString());
+            if (textures != null)
+                for (int i = 0; i < textures.Length; i++)
+                    if (textures[i] != null)
+                        Debug.Log(textures[i].Name);//textures[i].Delete();
+            textures = null;
+
+            Thread.Sleep(5000);
 
             base.OnUnload(e);
         }

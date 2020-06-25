@@ -12,8 +12,6 @@ namespace Winecrash.Engine
 {
     public class Mesh : BaseObject
     {
-        //public Int64[] dummy = new long[50_000_000];
-
         public Mesh() : base() {}
 
         public Mesh(string name) : base(name) { }
@@ -32,6 +30,45 @@ namespace Winecrash.Engine
         public Vector2F[] UVs { get; set; }
         public Vector4F[] Tangents { get; set; }
         public Vector3F[] Normals { get; set; }
+
+        internal float[] Vertex
+        {
+            get
+            {
+                float[] array = new float[this.Vertices.Length * 3 + this.UVs.Length * 2];
+
+                for (int vert = 0; vert < this.Vertices.Length; vert++)
+                {
+                    Vector3F vertice = this.Vertices[vert];
+
+                    array[vert * 3] = vertice.X;
+                    array[vert * 3 + 1] = vertice.Y;
+                    array[vert * 2 + 2] = vertice.Z;
+
+                    if (vert >= UVs.Length)
+                    {
+                        array[vert * 3 + 3] = array[vert * 3 + 4] = 0.0F;
+                    }
+
+                    else
+                    {
+                        Vector2F uv = this.UVs[vert];
+                        array[vert * 3 + 3] = uv.X;
+                        array[vert * 3 + 4] = uv.Y;
+                    }
+                }
+
+                return array;
+            }
+        }
+
+        internal uint[] Indices
+        {
+            get
+            {
+                return Triangles;
+            }
+        }
 
         public static Mesh[] LoadFile(string path, MeshFormats format)
         {
@@ -174,33 +211,6 @@ namespace Winecrash.Engine
         {
             throw new NotImplementedException("*.Blend Blender format is not supported yet.");
         }
-
-        public float[] VerticesFloatArray()
-        {
-            float[] result = new float[this.Vertices.Length * 3];
-
-            for (int v = 0, f = 0; v < this.Vertices.Length; v++, f += 3)
-            {
-                Vector3F vert = this.Vertices[v];
-                result[f] = vert.X ;
-                result[f + 1] = vert.Y;
-                result[f + 2] = vert.Z;
-            }
-
-            //sw.Stop();
-            //Debug.Log(sw.Elapsed.TotalMilliseconds.ToString("C2"));
-
-
-            //todo: marshalised vector3f[] => float[] copy
-
-            //GCHandle gch = GCHandle.Alloc(this.Vertices, GCHandleType.Pinned);
-            //IntPtr verticesPtr = gch.AddrOfPinnedObject();
-
-            //Marshal.Copy(verticesPtr, result, 0, vectorArrayAmount);
-
-            return result;
-        }
-
         internal override void ForcedDelete()
         {
             this.Delete();

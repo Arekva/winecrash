@@ -30,9 +30,48 @@ namespace Winecrash.Engine
             }
         }
 
+        [Obsolete("Not implemented yet")]
+        public bool ReadOnly { get; private set; } = true;
 
-        public Texture(string path) : base()
+        internal static List<Texture> Cache { get; set; } = new List<Texture>();
+
+        public static Texture Find(string name)
         {
+            return Cache.Find(t => t.Name == name);
+        }
+
+        /// <summary>
+        /// DO NOT USE ! USED BY ACTIVATOR.
+        /// </summary>
+        [Obsolete("Use Texture(string, string) instead.\nThis .ctor is meant to be used by Material's Activator")]
+        public Texture()
+        {
+            this.Name = "Blanck";
+            this.Size = new Vector2I(1, 1);
+            byte[] blanck = new byte[4];
+            for (int i = 0; i < 4; i++)
+            {
+                blanck[i] = 255;
+            }
+
+            this.Handle = GL.GenTexture();
+
+            this.Use();
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+            Cache.Add(this);
+        }
+
+        public Texture(string path, string name = null) : base(name)
+        {
+            if(name == null)
+                this.Name = path.Split('/', '\\').Last().Split('.')[0];
+
             this.Handle = GL.GenTexture();
 
             this.Use();
@@ -66,6 +105,8 @@ namespace Winecrash.Engine
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+                Cache.Add(this);
             }
             catch(Exception e)
             {
@@ -84,7 +125,7 @@ namespace Winecrash.Engine
 
         public override void Delete()
         {
-            //this.Data = null;
+            Cache.Remove(this);
 
             GL.DeleteTexture(Handle);
             this.Handle = -1;

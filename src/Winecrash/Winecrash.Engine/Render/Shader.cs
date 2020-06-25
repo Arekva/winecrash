@@ -11,12 +11,108 @@ namespace Winecrash.Engine
 {
     public class Shader : BaseObject
     {
-        private int Handle = -1;
+        internal struct ShaderUniformData
+        {
+            public string Name { get; }
+            public int Location { get; }
+            public int Size { get; }
+            public ActiveUniformType Type { get; }
 
-        private readonly Dictionary<string, int> _UniformLocations;
+            public ShaderUniformData(string name, int location, int size, ActiveUniformType type)
+            {
+                this.Name = name;
+                this.Location = location;
+                this.Size = size;
+                this.Type = type;
+            }
+        }
+        internal int Handle = -1;
+
+        internal ShaderUniformData[] Uniforms { get; private set; }
+
+        internal static List<Shader> Cache = new List<Shader>();
+
+        public static Shader ErrorShader { get; private set; }
+
+        public static Shader Find(string name)
+        {
+            return Cache.Find(s => s.Name == name);
+        }
+
+        internal static Shader CreateError()
+        {
+            const string frag =
+            @"#version 330
+            out vec4 outputColor;
+            void main()
+            {
+                outputColor = vec4(1.0, 0.0, 1.0, 1.0);
+            }";
+
+            const string vert =
+            @"#version 330 core
+            layout(location = 0) in vec3 aPosition;
+            uniform mat4 transform;
+            void main()
+            {
+                gl_Position = vec4(aPosition, 1.0) * transform;
+            }";
+
+            try
+            {
+                return ErrorShader = new Shader("Error", vert, frag);
+            }
+            catch (Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show("Could not load Error shader: " + e.Message, "Fatal Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                throw new Exception("Fatal error : could not load Error shader: " + e.Message);
+            }
+        }
+        private Shader(string name, string vert, string frag) : base(name)
+        {
+            // define vertex shader
+            int vertexShader = GL.CreateShader(ShaderType.VertexShader);
+            GL.ShaderSource(vertexShader, vert);
+            CompileShader(vertexShader);
+
+            // define fragment shader
+            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
+            GL.ShaderSource(fragmentShader, frag);
+            CompileShader(fragmentShader);
+
+            // create program
+            this.Handle = GL.CreateProgram();
+
+            // link shaders together and compile the program
+            GL.AttachShader(Handle, vertexShader);
+            GL.AttachShader(Handle, fragmentShader);
+            LinkProgram(Handle);
+
+            // cleaning
+            GL.DetachShader(Handle, vertexShader);
+            GL.DetachShader(Handle, fragmentShader);
+            GL.DeleteShader(fragmentShader);
+            GL.DeleteShader(vertexShader);
+
+
+            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int nUniforms);
+
+            Uniforms = new ShaderUniformData[nUniforms];
+
+            for (int i = 0; i < nUniforms; i++)
+            {
+                string UName = GL.GetActiveUniform(Handle, i, out int USize, out ActiveUniformType UType);
+                Uniforms[i] = new ShaderUniformData(UName, GL.GetUniformLocation(Handle, UName), USize, UType);
+            }
+
+            Cache.Add(this);
+        }
 
         public Shader(string vertexPath, string fragmentPath) : base()
         {
+            string[] reps = vertexPath.Split('/', '\\');
+            this.Name = reps[reps.Length - 1].Split('.')[0];
+
             string shaderSource = LoadSource(vertexPath);
             int vertexShader = GL.CreateShader(ShaderType.VertexShader);
             GL.ShaderSource(vertexShader, shaderSource);
@@ -39,19 +135,17 @@ namespace Winecrash.Engine
             GL.DeleteShader(fragmentShader);
             GL.DeleteShader(vertexShader);
 
-            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int numberOfUniforms);
+            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int nUniforms);
 
-            _UniformLocations = new Dictionary<string, int>(numberOfUniforms);
+            Uniforms = new ShaderUniformData[nUniforms];
 
-            for (int i = 0; i < numberOfUniforms; i++)
+            for (int i = 0; i < nUniforms; i++)
             {
-                string key = GL.GetActiveUniform(Handle, i, out _, out _);
-
-                int location = GL.GetUniformLocation(Handle, key);
-
-                _UniformLocations.Add(key, location);
+                string UName = GL.GetActiveUniform(Handle, i, out int USize, out ActiveUniformType UType);
+                Uniforms[i] = new ShaderUniformData(UName, GL.GetUniformLocation(Handle, UName), USize, UType);
             }
 
+            Cache.Add(this);
         }
 
         private static void CompileShader(int shader)
@@ -60,7 +154,7 @@ namespace Winecrash.Engine
 
             GL.GetShader(shader, ShaderParameter.CompileStatus, out int code);
 
-            if(code != (int)All.True)
+            if (code != (int)All.True)
             {
                 string infoLog = GL.GetShaderInfoLog(shader);
                 throw new Exception($"Error occurred whilst compiling Shader({shader}).\n\n{infoLog}");
@@ -73,7 +167,7 @@ namespace Winecrash.Engine
 
             GL.GetProgram(program, GetProgramParameterName.LinkStatus, out int code);
 
-            if(code != (int)All.True)
+            if (code != (int)All.True)
             {
                 throw new Exception($"Error occurred whilst linking Program {program} : " + GL.GetProgramInfoLog(program));
             }
@@ -97,44 +191,20 @@ namespace Winecrash.Engine
             }
         }
 
+        public void SetMatrix4(string name, Matrix4 data)
+        {
+            GL.UseProgram(this.Handle);
+            GL.UniformMatrix4(this.Uniforms.First(sh => sh.Name == name).Location, true, ref data);
+        }
+
         public override void Delete()
         {
             GL.DeleteProgram(Handle);
             Handle = -1;
 
+            Cache.Remove(this);
+
             base.Delete();
-        }
-
-        public void SetInt(string name, int data)
-        {
-            if (this.Deleted) return;
-
-            GL.UseProgram(Handle);
-            GL.Uniform1(_UniformLocations[name], data);
-        }
-
-        public void SetFloat(string name, float data)
-        {
-            if (this.Deleted) return;
-
-            GL.UseProgram(Handle);
-            GL.Uniform1(_UniformLocations[name], data);
-        }
-
-        public void SetMatrix4(string name, Matrix4 data)
-        {
-            if (this.Deleted) return;
-
-            GL.UseProgram(Handle);
-            GL.UniformMatrix4(_UniformLocations[name], true, ref data);
-        }
-
-        public void SetVector3(string name, Vector3F data)
-        {
-            if (this.Deleted) return;
-
-            GL.UseProgram(Handle);
-            GL.Uniform3(_UniformLocations[name], new Vector3(data.X, data.Y, data.Z));
         }
     }
 }

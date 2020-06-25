@@ -3,63 +3,64 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK;
+using OpenTK.Graphics.OpenGL4;
+
+using System.Windows.Forms;
 
 namespace Winecrash.Engine
 {
     public sealed class MeshRenderer : Module
     {
-        //public Int64[] dummy = new long[50_000_000];
-
         private Mesh _Mesh = null;
-        public Mesh Mesh
+        public Mesh Mesh { get; set; }
+        public Material Material { get; set; }
+
+        internal static List<MeshRenderer> ActiveMeshRenderers = new List<MeshRenderer>();
+
+        internal void Use(Matrix4 transform)
         {
-            get
+            //if (_Mesh == null || _Mesh.Vertices == null || _Mesh.Triangles == null) return;
+
+            if(Material == null)
             {
-                return this._Mesh;
+                Shader.ErrorShader.Use();
+                Shader.ErrorShader.SetMatrix4("transform", transform);
             }
 
-            set
+            else
             {
-                if(this.Enabled)
-                {
-                    ActiveMeshes.Add(value);
-                }
-
-                _Mesh = value;
+                Material.SetData<Matrix4>("transform", transform);
+                Material.Use();
             }
+
+            //GL.BindVertexArray()
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            //GL.DrawElements(PrimitiveType.Triangles, _Mesh.Triangles.Length, DrawElementsType.UnsignedInt, 0);
         }
-
-        internal static List<Mesh> ActiveMeshes = new List<Mesh>();
 
         protected internal override void Creation()
         {
+            ActiveMeshRenderers.Add(this);
             this.Group = -1;
         }
         protected internal override void Update()
         {
-            // Manage mesh references in case of deletion
-            if(_Mesh != null && _Mesh.Deleted)
-            {
-                ActiveMeshes.Remove(_Mesh);
-                this._Mesh = null;
-            }
+
         }
         protected internal override void OnEnable()
         {
-            if(_Mesh != null)
-                ActiveMeshes.Add(this._Mesh);
+            ActiveMeshRenderers.Add(this);
         }
 
         protected internal override void OnDisable()
         {
-            if (_Mesh != null)
-                ActiveMeshes.Remove(this._Mesh);
+            ActiveMeshRenderers.Remove(this);
         }
 
         protected internal override void OnDelete()
         {
-            if (_Mesh != null)
-                ActiveMeshes.Remove(this._Mesh);
+            ActiveMeshRenderers.Remove(this);
             this._Mesh = null;
         }
     }
