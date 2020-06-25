@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK;
+
 namespace Winecrash.Engine
 {
     public sealed class WObject : BaseObject
@@ -37,6 +39,7 @@ namespace Winecrash.Engine
                 Vector3F oldGlobalScale = this.Scale;
 
                 this._Parent = value;
+                this._Parent._Children.Add(this);
 
                 this.Position = oldGlobalPosition;
                 this.Rotation = oldGlobalRotation;
@@ -44,7 +47,7 @@ namespace Winecrash.Engine
             }
         }
 
-        private List<WObject> _Children = new List<WObject>();
+        private List<WObject> _Children { get; set; } = new List<WObject>();
         public WObject[] Children
         {
             get
@@ -96,6 +99,23 @@ namespace Winecrash.Engine
             }
         }
         public Vector3F LocalScale { get; set; } = Vector3F.One;
+
+        internal Matrix4 TransformMatrix
+        {
+            get
+            {
+                Vector3F tra = this.Position;
+                Quaternion rot = this.Rotation;
+                Vector3F sca = this.Scale;
+
+                Matrix4 transform = Matrix4.Identity;
+                transform *= Matrix4.CreateTranslation(tra.X, tra.Y, tra.Z);
+                transform *= Matrix4.CreateScale(sca.X, sca.Y, sca.Z);
+                transform *= Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W));
+
+                return transform;
+            }
+        }
 
         public static WObject Find(string name)
         {
@@ -162,6 +182,15 @@ namespace Winecrash.Engine
             {
                 _Modules[i].ForcedDelete();
             }
+
+            for (int i = 0; i < _Children.Count; i++)
+            {
+                _Children[i].ForcedDelete();
+            }
+
+            this._Parent = null;
+            _Children.Clear();
+            _Children = null;
 
             _Modules.Clear();
             _Modules = null;

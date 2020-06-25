@@ -46,6 +46,7 @@ namespace Winecrash.Engine
             Group.CreateOrGetGroup(0, "Default Group", null);
 
             Viewport.Update += new UpdateEventHandler(Update);
+            Viewport.Render += new UpdateEventHandler(Render);
         }
 
         private Layer(string name, int order, IEnumerable<Group> groups)
@@ -181,6 +182,16 @@ namespace Winecrash.Engine
             _Layers.Remove(second);
 
             return first;
+        }
+
+        public static void Render(UpdateEventArgs args)
+        {
+            Camera[] cameras = Camera.Cameras.ToArray();
+
+            for (int i = 0; i < cameras.Length; i++)
+            {
+                cameras[i].OnRender(); // cameras are rendered one by one because of opengl.
+            }
         }
 
         public static void Update(UpdateEventArgs args)

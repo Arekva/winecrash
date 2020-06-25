@@ -175,32 +175,16 @@ namespace Winecrash.Engine
             throw new NotImplementedException("*.Blend Blender format is not supported yet.");
         }
 
-        private Vector3F rotaroundpivot(Vector3F point, Vector3F pivot, Quaternion rotation)
-        {
-            Vector3F dir = point - pivot;
-            dir = rotation * dir;
-            point = dir + pivot;
-            return point;
-        }
         public float[] VerticesFloatArray()
         {
-            //Stopwatch sw = new Stopwatch();
-
-            //sw.Start();
-            Vector3F p = Vector3F.Zero;
-            Quaternion rot = DebugHelp.Rotation;
-
             float[] result = new float[this.Vertices.Length * 3];
 
             for (int v = 0, f = 0; v < this.Vertices.Length; v++, f += 3)
             {
                 Vector3F vert = this.Vertices[v];
-
-                vert = rotaroundpivot(vert, p, rot) * DebugHelp.Scale;
-
-                result[f] = vert.X + DebugHelp.ModelShift.X;
-                result[f + 1] = vert.Y + DebugHelp.ModelShift.Y;
-                result[f + 2] = vert.Z + DebugHelp.ModelShift.Z;
+                result[f] = vert.X ;
+                result[f + 1] = vert.Y;
+                result[f + 2] = vert.Z;
             }
 
             //sw.Stop();

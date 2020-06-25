@@ -21,6 +21,7 @@ namespace Winecrash.Engine
         internal static Thread ThreadRunner { get; set; }
 
         public static event UpdateEventHandler Update;
+        public static event UpdateEventHandler Render;
 
         private readonly float[] _Vertices =
         {
@@ -30,6 +31,50 @@ namespace Winecrash.Engine
             -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom left   - 2
             -0.5f,  0.5f, -0.5f, 0.0f, 1.0f  // top left      - 3
         };
+
+        float[] cube_vertices = {
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+};
 
         private readonly uint[] _Indices =
         {
@@ -44,6 +89,9 @@ namespace Winecrash.Engine
         private Shader _Shader;
         private Texture _Texture;
         private Texture _Texture2;
+
+        private Matrix4 _View;
+        private Matrix4 _Projection;
 
         /// <summary>
         /// https://github.com/opentk/LearnOpenTK/blob/master/Chapter1/4-Textures/Window.cs
@@ -65,7 +113,7 @@ namespace Winecrash.Engine
 
                 this._VertexBufferObject = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ArrayBuffer, this._VertexBufferObject);
-                GL.BufferData(BufferTarget.ArrayBuffer, this._Vertices.Length * sizeof(float), this._Vertices, BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, this./*_Vertices*/cube_vertices.Length * sizeof(float), this./*_Vertices*/cube_vertices, BufferUsageHint.StaticDraw);
 
                 this._ElementBufferObject = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, this._ElementBufferObject);
@@ -96,6 +144,10 @@ namespace Winecrash.Engine
                 var texCoordLocation = _Shader.GetAttribLocation("aTexCoord");
                 GL.EnableVertexAttribArray(texCoordLocation);
                 GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+
+
+                
+                
             }
             catch(Exception ex)
             {
@@ -110,13 +162,40 @@ namespace Winecrash.Engine
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            Render?.Invoke(new UpdateEventArgs(e.Time));
+
             GL.BindVertexArray(_VertexArrayObject);
 
             _Texture.Use();
             _Texture2.Use(TextureUnit.Texture1);
             _Shader.Use();
 
-            GL.DrawElements(PrimitiveType.Triangles, _Indices.Length, DrawElementsType.UnsignedInt, 0);
+            if(DebugHelp.Instance != null)
+            {
+                this._View = Matrix4.CreateTranslation(0.0f, 0.0f, -3.0f);
+                this._Projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), (float)this.Width / (float)this.Height, 0.1f, 100.0f);
+
+                WObject wobj = DebugHelp.Instance.WObject;
+
+                //Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), (float)this.Width / (float)this.Height, 0.1f, 100.0f);
+
+                Matrix4 mat = this._View * this._Projection * wobj.TransformMatrix;
+                _Shader.SetMatrix4("transform", mat);
+
+                GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+                //GL.DrawElements(PrimitiveType.Triangles, _Indices.Length, DrawElementsType.UnsignedInt, 0);
+
+                /*foreach (WObject child in wobj.Children)
+                {
+                    _Shader.SetMatrix4("transform", child.TransformMatrix);
+                    GL.DrawElements(PrimitiveType.Triangles, _Indices.Length, DrawElementsType.UnsignedInt, 0);
+                }*/
+                
+            }
+            
+
+            
 
             SwapBuffers();
 
@@ -159,9 +238,5 @@ namespace Winecrash.Engine
 
             base.OnUpdateFrame(e);
         }
-
-        
-
-        
     }
 }
