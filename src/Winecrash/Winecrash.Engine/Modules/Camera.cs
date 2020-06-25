@@ -208,14 +208,14 @@ namespace Winecrash.Engine
 
             GL.BindVertexArray(vp._VertexArrayObject);
 
-            int count = 0;
+            //int count = 0;
             MeshRenderer[] mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
             for (int i = 0; i < mrs.Length; i++)
             {
                 MeshRenderer mr = mrs[i];
 
-                count++;
-                Debug.Log(count);
+                //count++;
+                //Debug.Log(count);
                 mr.Use(mr.WObject.TransformMatrix * view * proj);
 
                 //GL.DrawArrays(PrimitiveType.Triangles, 0, 36);

@@ -27,13 +27,7 @@ namespace Winecrash.Engine
 
         public Material(Shader shader) : base()
         {
-            if(shader == null)
-            {
-                shader = Shader.ErrorShader;
-            }
             this.Shader = shader;
-
-            BuildDataDictionnary();
         }
 
         private class MaterialData
@@ -103,6 +97,7 @@ namespace Winecrash.Engine
             Shader.ShaderUniformData[] shaderData = this._Shader.Uniforms;
             this._Data = new MaterialData[shaderData.Length];
 
+
             for (int i = 0; i < shaderData.Length; i++)
             {
                 Type csType = GetCsharpType(shaderData[i].Type);
@@ -111,6 +106,22 @@ namespace Winecrash.Engine
                     Debug.LogError("Unknown type \"" + shaderData[i].Type + "\", ignoring.");
                     continue;
                 }
+
+                if(csType == typeof(Texture))
+                {
+                    if (Texture.Blank)
+                    {
+                        _Data[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Texture.Blank, shaderData[i].Type);
+                    }
+                    else
+                    {
+                        _Data[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Activator.CreateInstance(csType), shaderData[i].Type);
+                    }
+
+
+                    continue;
+                }
+
 
 
                 _Data[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Activator.CreateInstance(csType), shaderData[i].Type);

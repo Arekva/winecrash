@@ -40,12 +40,18 @@ namespace Winecrash.Engine
             return Cache.Find(t => t.Name == name);
         }
 
+        public static Texture Blank { get; private set; }
         /// <summary>
         /// DO NOT USE ! USED BY ACTIVATOR.
         /// </summary>
         [Obsolete("Use Texture(string, string) instead.\nThis .ctor is meant to be used by Material's Activator")]
         public Texture()
         {
+            if(Blank != null)
+            {
+                this.Delete();
+                return;
+            }
             this.Name = "Blanck";
             this.Size = new Vector2I(1, 1);
             byte[] blanck = new byte[4];
@@ -64,6 +70,7 @@ namespace Winecrash.Engine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
+            Blank = this;
             Cache.Add(this);
         }
 
