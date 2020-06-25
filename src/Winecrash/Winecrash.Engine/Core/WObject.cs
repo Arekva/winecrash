@@ -100,6 +100,49 @@ namespace Winecrash.Engine
         }
         public Vector3F LocalScale { get; set; } = Vector3F.One;
 
+        public Vector3F Right
+        {
+            get
+            {
+                return this.Rotation * Vector3F.Right;
+            }
+        }
+        public Vector3F Left
+        {
+            get
+            {
+                return this.Rotation * Vector3F.Left;
+            }
+        }
+        public Vector3F Up
+        {
+            get
+            {
+                return this.Rotation * Vector3F.Up;
+            }
+        }
+        public Vector3F Down
+        {
+            get
+            {
+                return this.Rotation * Vector3F.Down;
+            }
+        }
+        public Vector3F Forward
+        {
+            get
+            {
+                return this.Rotation * Vector3F.Forward;
+            }
+        }
+        public Vector3F Backward
+        {
+            get
+            {
+                return this.Rotation * Vector3F.Down;
+            }
+        }
+
         internal Matrix4 TransformMatrix
         {
             get

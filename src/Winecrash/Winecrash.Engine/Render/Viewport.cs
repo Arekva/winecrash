@@ -22,6 +22,11 @@ namespace Winecrash.Engine
 
         public static event UpdateEventHandler Update;
         public static event UpdateEventHandler Render;
+        public static event ViewportLoadDelegate OnLoaded;
+
+        public delegate void ViewportLoadDelegate();
+
+        MouseState _PreviousState = new MouseState();
 
         private readonly float[] _Vertices =
         {
@@ -32,7 +37,7 @@ namespace Winecrash.Engine
             -0.5f,  0.5f, -0.5f, 0.0f, 1.0f  // top left      - 3
         };
 
-        float[] cube_vertices = {
+        internal float[] cube_vertices = {
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -76,22 +81,22 @@ namespace Winecrash.Engine
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
-        private readonly uint[] _Indices =
+        internal readonly uint[] _Indices =
         {
             0, 1, 3,
             1, 2, 3
         };
 
-        private int _VertexBufferObject;
-        private int _ElementBufferObject;
-        private int _VertexArrayObject;
+        internal int _VertexBufferObject;
+        internal int _ElementBufferObject;
+        internal int _VertexArrayObject;
 
-        private Shader _Shader;
-        private Texture _Texture;
-        private Texture _Texture2;
+        internal Shader _Shader;
+        internal Texture _Texture;
+        internal Texture _Texture2;
 
-        private Matrix4 _View;
-        private Matrix4 _Projection;
+        internal Matrix4 _View;
+        internal Matrix4 _Projection;
 
         /// <summary>
         /// https://github.com/opentk/LearnOpenTK/blob/master/Chapter1/4-Textures/Window.cs
@@ -107,6 +112,9 @@ namespace Winecrash.Engine
 
         protected override void OnLoad(EventArgs e)
         {
+            WObject camWobj = new WObject("Main Camera");
+            camWobj.AddModule<Camera>();
+
             try
             {
                 GL.ClearColor(0.11f, 0.11f, 0.11f, 1.0f);
@@ -156,6 +164,7 @@ namespace Winecrash.Engine
             finally
             {
                 base.OnLoad(e);
+                OnLoaded?.Invoke();
             }
         }
 
@@ -164,38 +173,6 @@ namespace Winecrash.Engine
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             Render?.Invoke(new UpdateEventArgs(e.Time));
-
-            GL.BindVertexArray(_VertexArrayObject);
-
-            _Texture.Use();
-            _Texture2.Use(TextureUnit.Texture1);
-            _Shader.Use();
-
-            if(DebugHelp.Instance != null)
-            {
-                this._View = Matrix4.CreateTranslation(0.0f, 0.0f, -3.0f);
-                this._Projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), (float)this.Width / (float)this.Height, 0.1f, 100.0f);
-
-                WObject wobj = DebugHelp.Instance.WObject;
-
-                //Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), (float)this.Width / (float)this.Height, 0.1f, 100.0f);
-
-                Matrix4 mat = this._View * this._Projection * wobj.TransformMatrix;
-                _Shader.SetMatrix4("transform", mat);
-
-                GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
-                //GL.DrawElements(PrimitiveType.Triangles, _Indices.Length, DrawElementsType.UnsignedInt, 0);
-
-                /*foreach (WObject child in wobj.Children)
-                {
-                    _Shader.SetMatrix4("transform", child.TransformMatrix);
-                    GL.DrawElements(PrimitiveType.Triangles, _Indices.Length, DrawElementsType.UnsignedInt, 0);
-                }*/
-                
-            }
-            
-
-            
 
             SwapBuffers();
 
@@ -228,9 +205,22 @@ namespace Winecrash.Engine
 
             base.OnResize(e);
         }
+        protected override void OnMouseMove(MouseMoveEventArgs e)
+        {
+            base.OnMouseMove(e);
+        }
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             Time.DeltaTime = e.Time;
+            MouseState ms = Mouse.GetState();
+            Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);
+            Input.MouseDelta = delta;
+            this._PreviousState = ms;
+            if (Input.LockMode == CursorLockModes.Lock && Focused)
+            {
+                
+                Mouse.SetPosition(X + Width / 2f, Y + Height / 2f);
+            }
 
             Update?.Invoke(new UpdateEventArgs(e.Time));
 

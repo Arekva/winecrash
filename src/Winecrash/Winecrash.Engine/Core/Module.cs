@@ -69,6 +69,7 @@ namespace Winecrash.Engine
         internal protected virtual void OnDelete() { }
         internal protected virtual void OnEnable() { }
         internal protected virtual void OnDisable() { }
+        internal protected virtual void OnRender() { }
 
         internal sealed override void SetEnable(bool status)
         {

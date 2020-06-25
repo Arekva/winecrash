@@ -17,6 +17,41 @@ namespace Winecrash.Engine
         private static int KeysAmount = Enum.GetValues(typeof(WKeys)).Length;
         private static Dictionary<WKeys, KeyStates> RegisteredKeyStates = new Dictionary<WKeys, KeyStates>(KeysAmount);
 
+        public static bool CursorVisible
+        {
+            get
+            {
+                return Viewport.Instance != null ? Viewport.Instance.CursorVisible : true;
+            }
+
+            set
+            {
+                if (Viewport.Instance != null)
+                {
+                    Viewport.Instance.CursorVisible = value;
+                }
+                else
+                {
+                    Debug.LogError("Unable to change the cursor: viewport is null !");
+                }
+
+            }
+        }
+
+        internal static bool Focused
+        {
+            get
+            {
+                return Viewport.Instance != null ? Viewport.Instance.Focused : false;
+            }
+        }
+
+        public static Vector2D MouseDelta { get; internal set; } = Vector2D.Zero;
+
+        public static double MouseSensivity { get; set; } = 1.0D;
+
+        public static CursorLockModes LockMode { get; set; } = CursorLockModes.Free;
+
         public override bool Undeletable { get; internal set; } = true;
 
         protected internal override void Creation()
@@ -136,18 +171,23 @@ namespace Winecrash.Engine
 
         public static bool IsPressed(WKeys key)
         {
+            if (!Focused) return false;
+
             return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Pressed;
         }
         public static bool IsPressing(WKeys key)
         {
+            if (!Focused) return false;
             return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Pressing;
         }
         public static bool IsReleased(WKeys key)
         {
+            if (!Focused) return false;
             return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Released;
         }
         public static bool IsReleasing(WKeys key)
         {
+            if (!Focused) return false;
             return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Releasing;
         }
     }

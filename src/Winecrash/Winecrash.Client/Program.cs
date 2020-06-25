@@ -16,15 +16,22 @@ namespace Winecrash.Client
 
             WEngine.Run();
 
-            Thread.Sleep(1000);
             WObject wobj1 = new WObject("Test Object");
-            wobj1.AddModule<DebugHelp>();
+            wobj1.AddModule<MeshRenderer>();
 
-            WObject wobj2 = new WObject("Test Object Child");
-            wobj2.Parent = wobj1;
+            Viewport.OnLoaded += () =>
+            {
+                Input.LockMode = CursorLockModes.Lock;
+                Input.CursorVisible = false;
 
-            wobj2.LocalPosition = new Vector3F(0.75F, 0, 0);
-            wobj2.LocalScale = new Vector3F(0.5F);
+                Camera.Main.WObject.Position = new Vector3F(0, 0, -3);
+            };
+            
+
+            
+
+            
+            
 
             //Mesh[] meshes = Mesh.LoadFile("assets/models/cube.obj", MeshFormats.Wavefront);
 

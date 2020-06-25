@@ -17,6 +17,8 @@ namespace Winecrash.Engine
         private static OSPlatform[] SupportedOS = new OSPlatform[] { OSPlatform.Windows, OSPlatform.Linux };
 
         public delegate void StopDelegate();
+        
+
         public static StopDelegate OnStop;
 
         public static WObject EngineObject;
@@ -125,12 +127,13 @@ namespace Winecrash.Engine
 
         private static WObject CreateEngineWObject()
         {
-            WObject wobj = new WObject("Engine Logic")
+            WObject wobj = new WObject("Engine Core")
             {
                 Undeletable = true
             };
 
             wobj.AddModule<Input>().ExecutionOrder = Int32.MinValue;
+            wobj.AddModule<EngineCore>();
 
             Layer.CreateOrGetLayer(0).Name = "Default Layer";
             Group.CreateOrGetGroup(-1, "3D Logic");
