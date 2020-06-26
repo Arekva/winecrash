@@ -265,6 +265,10 @@ namespace Winecrash.Engine
         #endregion
 
         #region Methods
+        public static double Distance(Vector3D v1, Vector3D v2)
+        {
+            return Math.Abs((v1 - v2).Length);
+        }
         public Vector3D RotateAround(Vector3D pivot, Vector3D axis, float angle)
         {
             return this.RotateAround(pivot, axis * angle);

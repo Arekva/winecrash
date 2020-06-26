@@ -11,7 +11,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Winecrash.Engine
 {
-    public class Texture : BaseObject
+    public sealed class Texture : BaseObject
     {
         internal int Handle { get; private set; }
         public Vector2I Size { get; private set; }

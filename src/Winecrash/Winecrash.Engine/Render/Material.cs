@@ -136,10 +136,6 @@ namespace Winecrash.Engine
                 {
                     _Data[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Activator.CreateInstance(csType), shaderData[i].Type);
                 }
-
-
-
-                
             }
         }
 
@@ -173,7 +169,17 @@ namespace Winecrash.Engine
         {
             if (this.Deleted) return;
 
-            MaterialData matdata = this._Data.First(d => d.Name == name);
+            MaterialData matdata = null;
+
+            try
+            {
+                matdata = this._Data.First(d => d.Name == name);
+            }
+            catch // not found
+            {
+                return;
+            }
+
             if (data.GetType() == matdata.Data.GetType())
             {
                     //Texture previous = matdata.Data;
@@ -183,7 +189,14 @@ namespace Winecrash.Engine
 
         public object GetData(string name)
         {
-            return this._Data.First(d => d.Name == name).Data;
+            try
+            {
+                return this._Data.First(d => d.Name == name).Data;
+            }
+            catch
+            {
+                return null;
+            }
         }
         public T GetData<T>(string name)
         {

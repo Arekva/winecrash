@@ -8,7 +8,7 @@ using OpenTK;
 
 namespace Winecrash.Engine
 {
-    public class EngineCore : Module
+    public sealed class EngineCore : Module
     {
         public static EngineCore Instance { get; private set; }
 

@@ -9,7 +9,7 @@ using WKeys = Winecrash.Engine.Keys;
 
 namespace Winecrash.Engine
 {
-    public class Input : Module
+    public sealed class Input : Module
     {
         internal static Input Instance { get; private set; }
         private static IInputWrapper InputWrapper { get; set; }

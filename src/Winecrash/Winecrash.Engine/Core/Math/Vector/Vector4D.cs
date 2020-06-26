@@ -561,6 +561,10 @@ namespace Winecrash.Engine
         #endregion
 
         #region Methods
+        public static double Distance(Vector4D v1, Vector4D v2)
+        {
+            return Math.Abs((v1 - v2).Length);
+        }
         public static Vector4D Dot(Vector4D v1, Vector4D v2)
         {
             return v1 * v2;

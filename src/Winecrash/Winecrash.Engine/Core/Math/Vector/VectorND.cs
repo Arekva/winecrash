@@ -90,6 +90,11 @@ namespace Winecrash.Engine
             }
         }
 
+        public static double Distance(VectorND v1, VectorND v2)
+        {
+            return Math.Abs((v1 - v2).Length);
+        }
+
         public static double Angle(VectorND v1, VectorND v2)
         {
             return Math.Acos((v1.Normalized * v2.Normalized).Length);

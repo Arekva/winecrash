@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Winecrash.Engine
 {
-    public class Shader : BaseObject
+    public sealed class Shader : BaseObject
     {
         internal struct ShaderUniformData
         {

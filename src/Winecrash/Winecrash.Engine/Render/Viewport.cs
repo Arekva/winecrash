@@ -149,27 +149,6 @@ namespace Winecrash.Engine
                 Material mat2 = mr2.Material = new Material(Shader.Find("Standard"));
                 //mat1.SetData<Texture>("albedo", Texture.Find("container"));
                 mat2.SetData<Vector4>("color", new Vector4(0, 0, 1, 1));
-
-                /* *///Material Mat = WObject.Find("Engine Core").AddOrGetModule<MeshRenderer>().Material = new Material(sh);
-                /* *///Mat.SetData<Texture>("albedo", new Texture("assets/textures/container.png"));
-                /* *///Mat.SetData<Texture>("texture1", new Texture("assets/textures/awesomeface.png"));
-
-                /*this._VertexArrayObject = GL.GenVertexArray();
-                GL.BindVertexArray(this._VertexArrayObject);*/
-
-                //GL.BindBuffer(BufferTarget.ArrayBuffer, this._VertexArrayObject);
-                //GL.BindBuffer(BufferTarget.ElementArrayBuffer, this._ElementBufferObject);
-
-                /* *///sh.SetAttribute("position", AttributeTypes.Vertice);
-                /* *///sh.SetAttribute("uv", AttributeTypes.UV);
-
-                /*int vertexLocation = Shader.Find("Standard").GetAttribLocation("position");
-                GL.EnableVertexAttribArray(vertexLocation);
-                GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-
-                var texCoordLocation = Shader.Find("Standard").GetAttribLocation("uv");
-                GL.EnableVertexAttribArray(texCoordLocation);
-                GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));*/
             }
             catch(Exception ex)
             {

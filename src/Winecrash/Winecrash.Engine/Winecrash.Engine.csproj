@@ -97,6 +97,9 @@
     <Compile Include="Core\WObject.cs" />
     <Compile Include="Modules\MeshRenderer.cs" />
     <Compile Include="Render\AttributeTypes.cs" />
+    <Compile Include="Render\Lightening\DirectionalLight.cs" />
+    <Compile Include="Render\Lightening\Light.cs" />
+    <Compile Include="Render\Lightening\PointLight.cs" />
     <Compile Include="Render\Material.cs" />
     <Compile Include="Render\Mesh.cs" />
     <Compile Include="Render\MeshFormats.cs" />
@@ -111,6 +114,7 @@
     <Folder Include="Sound\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
   </ItemGroup>

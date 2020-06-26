@@ -12,7 +12,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Winecrash.Engine
 {
-    public class Mesh : BaseObject
+    public sealed class Mesh : BaseObject
     {
         public Mesh() : base() {}
 
