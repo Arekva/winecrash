@@ -206,16 +206,13 @@ namespace Winecrash.Engine
             Matrix4 proj = this.ProjectionMatrix;
 
 
-            GL.BindVertexArray(vp._VertexArrayObject);
+            //GL.BindVertexArray(vp._VertexArrayObject);
 
             //int count = 0;
             MeshRenderer[] mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
             for (int i = 0; i < mrs.Length; i++)
             {
                 MeshRenderer mr = mrs[i];
-
-                //count++;
-                //Debug.Log(count);
                 mr.Use(mr.WObject.TransformMatrix * view * proj);
 
                 //GL.DrawArrays(PrimitiveType.Triangles, 0, 36);

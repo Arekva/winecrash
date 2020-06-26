@@ -135,7 +135,7 @@ namespace Winecrash.Engine
             wobj.AddModule<Input>().ExecutionOrder = Int32.MinValue;
             wobj.AddModule<EngineCore>();
 
-            //wobj.AddModule<MeshRenderer>();
+            
 
             Layer.CreateOrGetLayer(0).Name = "Default Layer";
             Group.CreateOrGetGroup(-1, "3D Logic");

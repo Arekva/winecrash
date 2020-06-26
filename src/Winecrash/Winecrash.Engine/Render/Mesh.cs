@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
+using OpenTK.Graphics.OpenGL4;
+
 namespace Winecrash.Engine
 {
     public class Mesh : BaseObject
@@ -30,6 +32,80 @@ namespace Winecrash.Engine
         public Vector2F[] UVs { get; set; }
         public Vector4F[] Tangents { get; set; }
         public Vector3F[] Normals { get; set; }
+
+        internal int ModelHash
+        {
+            get
+            {
+                var hashCode = 1397521031;
+                hashCode = hashCode * -1521134295 + base.GetHashCode();
+                hashCode = hashCode * -1521134295 + EqualityComparer<Vector3F[]>.Default.GetHashCode(Vertices);
+                hashCode = hashCode * -1521134295 + EqualityComparer<uint[]>.Default.GetHashCode(Triangles);
+                hashCode = hashCode * -1521134295 + EqualityComparer<Vector2F[]>.Default.GetHashCode(UVs);
+                hashCode = hashCode * -1521134295 + EqualityComparer<Vector4F[]>.Default.GetHashCode(Tangents);
+                hashCode = hashCode * -1521134295 + EqualityComparer<Vector3F[]>.Default.GetHashCode(Normals);
+                return hashCode;
+            }
+        }
+
+        private readonly float[] _Vertices =
+        {
+            // Position         Texture coordinates
+             0.5f,  0.5f, -0.5f, 1.0f, 1.0f, // top right     - 0
+             0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // bottom right  - 1
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom left   - 2
+            -0.5f,  0.5f, -0.5f, 0.0f, 1.0f  // top left      - 3
+        };
+
+        internal float[] cube_vertices = {
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+};
+
+        internal readonly uint[] _Indices =
+        {
+            0, 1, 3,
+            1, 2, 3
+        };
 
         internal float[] Vertex
         {

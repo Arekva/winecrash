@@ -26,9 +26,30 @@ namespace Winecrash.Engine
                 this.Type = type;
             }
         }
+
+        internal class ShaderAttributeData
+        {
+            public ShaderAttributeData(string name, int location, int size, int length, ActiveAttribType type)
+            {
+                this.Name = name;
+                this.Location = location;
+                this.Size = size;
+                this.Length = length;
+                this.Type = type;
+            }
+
+            public string Name { get; }
+            public int Location { get; }
+            public int Size { get; }
+            public int Length { get; }
+            public ActiveAttribType Type { get; }
+        }
+
         internal int Handle = -1;
 
         internal ShaderUniformData[] Uniforms { get; private set; }
+
+        internal ShaderAttributeData[] Attributes { get; private set; }
 
         internal static List<Shader> Cache = new List<Shader>();
 
@@ -51,11 +72,11 @@ namespace Winecrash.Engine
 
             const string vert =
             @"#version 330 core
-            layout(location = 0) in vec3 aPosition;
+            layout(location = 0) in vec3 position;
             uniform mat4 transform;
             void main()
             {
-                gl_Position = vec4(aPosition, 1.0) * transform;
+                gl_Position = vec4(position, 1.0) * transform;
             }";
 
             try
@@ -94,9 +115,18 @@ namespace Winecrash.Engine
             GL.DeleteShader(fragmentShader);
             GL.DeleteShader(vertexShader);
 
+            GL.GetProgram(Handle, GetProgramParameterName.ActiveAttributes, out int nAttribs);
+            Attributes = new ShaderAttributeData[nAttribs];
+
+            for (int i = 0; i < nAttribs; i++)
+            {
+                GL.GetActiveAttrib(Handle, i, 16, out int ALength, out int ASize, out ActiveAttribType AType, out string AName);
+
+                this.Attributes[i] = new ShaderAttributeData(AName, i, ASize, ALength, AType);
+            }
+
 
             GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int nUniforms);
-
             Uniforms = new ShaderUniformData[nUniforms];
 
             for (int i = 0; i < nUniforms; i++)
@@ -135,8 +165,19 @@ namespace Winecrash.Engine
             GL.DeleteShader(fragmentShader);
             GL.DeleteShader(vertexShader);
 
-            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int nUniforms);
 
+            GL.GetProgram(Handle, GetProgramParameterName.ActiveAttributes, out int nAttribs);
+            Attributes = new ShaderAttributeData[nAttribs];
+
+            for (int i = 0; i < nAttribs; i++)
+            {
+                GL.GetActiveAttrib(Handle, i, 16, out int ALength, out int ASize, out ActiveAttribType AType, out string AName);
+
+                this.Attributes[i] = new ShaderAttributeData(AName, i, ASize, ALength, AType);
+            }
+            
+
+            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int nUniforms);
             Uniforms = new ShaderUniformData[nUniforms];
 
             for (int i = 0; i < nUniforms; i++)
@@ -145,7 +186,73 @@ namespace Winecrash.Engine
                 Uniforms[i] = new ShaderUniformData(UName, GL.GetUniformLocation(Handle, UName), USize, UType);
             }
 
+            SetAttribute("position", AttributeTypes.Vertice);
+            SetAttribute("uv", AttributeTypes.UV);
+
             Cache.Add(this);
+        }
+
+        internal bool SetAttribute(string name, AttributeTypes type)
+        {
+            ShaderAttributeData data = null;
+            try
+            {
+                data = this.Attributes.First(sh => sh.Name == name);
+            }
+            catch
+            {
+                return false;
+            }
+
+            if (data == null) return false;
+
+            GL.EnableVertexAttribArray(data.Location);
+
+            int size;
+            VertexAttribPointerType ptrType;
+            bool normalized;
+            int stride;
+            int offset;
+
+            switch (type)
+            {
+                case AttributeTypes.Vertice:
+                    {
+                        size = 3;
+                        ptrType = VertexAttribPointerType.Float;
+                        normalized = false;
+                        stride = 5 * sizeof(float);
+                        offset = 0;
+
+                        break;
+                    }
+
+                case AttributeTypes.UV:
+                    {
+                        size = 2;
+                        ptrType = VertexAttribPointerType.Float;
+                        normalized = false;
+                        stride = 5 * sizeof(float);
+                        offset = 3 * sizeof(float);
+
+                        break;
+                    }
+
+                default:
+                    {
+                        size = 0;
+                        ptrType = VertexAttribPointerType.UnsignedByte;
+                        normalized = false;
+                        stride = 0;
+                        offset = 0;
+
+                        break;
+                    }
+            }
+
+            GL.VertexAttribPointer(data.Location, size, ptrType, normalized, stride, offset);
+
+            return true;
         }
 
         private static void CompileShader(int shader)

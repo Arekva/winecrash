@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenTK;
+
 namespace Winecrash.Engine
 {
     public class EngineCore : Module
@@ -23,6 +25,13 @@ namespace Winecrash.Engine
             Instance = this;
         }
 
+        protected internal override void Start()
+        {
+            this.WObject.Position = Vector3F.Left * 5.0F;
+            
+            
+        }
+
         protected internal override void Update()
         {
             // alt f4 close
@@ -33,7 +42,7 @@ namespace Winecrash.Engine
             }
 
             // fullscreen
-            if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressed(Keys.Enter))
+            if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressed(Keys.Enter) || Input.IsPressed(Keys.F11))
             {
                 throw new NotImplementedException("Fullscreen switch not done yet.");
             }

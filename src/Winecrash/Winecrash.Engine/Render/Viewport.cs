@@ -91,14 +91,6 @@ namespace Winecrash.Engine
         internal int _ElementBufferObject;
         internal int _VertexArrayObject;
 
-        internal Shader _Shader;
-        internal Material Mat;
-        internal Texture _Texture;
-        internal Texture _Texture2;
-
-        internal Matrix4 _View;
-        internal Matrix4 _Projection;
-
         /// <summary>
         /// https://github.com/opentk/LearnOpenTK/blob/master/Chapter1/4-Textures/Window.cs
         /// </summary>
@@ -121,38 +113,55 @@ namespace Winecrash.Engine
             try
             {
                 
-                this._VertexBufferObject = GL.GenBuffer();
+                /*this._VertexBufferObject = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ArrayBuffer, this._VertexBufferObject);
-                GL.BufferData(BufferTarget.ArrayBuffer, this./*_Vertices*/cube_vertices.Length * sizeof(float), this./*_Vertices*/cube_vertices, BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, this.cube_vertices.Length * sizeof(float), this.cube_vertices, BufferUsageHint.StaticDraw);
 
                 this._ElementBufferObject = GL.GenBuffer();
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, this._ElementBufferObject);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, this._Indices.Length * sizeof(uint), this._Indices, BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, this._Indices.Length * sizeof(uint), this._Indices, BufferUsageHint.StaticDraw);*/
 
-                this._Shader = new Shader("assets/shaders/Standard.vert", "assets/shaders/Standard.frag");
+                new Shader("assets/shaders/Standard.vert", "assets/shaders/Standard.frag");
+                new Texture("assets/textures/container.png");
 
-                Mat = WObject.Find("Engine Core").AddOrGetModule<MeshRenderer>().Material = new Material(this._Shader);
+                WObject wobj = new WObject("Test 0");
+                wobj.Position = Vector3F.Zero;
+                MeshRenderer mr = wobj.AddModule<MeshRenderer>();
+                mr.Mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront)[0];
+                Material mat = mr.Material = new Material(Shader.Find("Standard"));
+                mat.SetData<Texture>("albedo", Texture.Find("container"));
+                mat.SetData<Vector4>("color", new Vector4(1,0,0,1));
 
-                Mat.SetData<Texture>("albedo", new Texture("assets/textures/container.png"));
-                Mat.SetData<Texture>("texture1", new Texture("assets/textures/awesomeface.png"));
+                
 
-                this._VertexArrayObject = GL.GenVertexArray();
-                GL.BindVertexArray(this._VertexArrayObject);
+                WObject wobj1 = new WObject("Test 1");
+                wobj1.Position = Vector3F.One;
+                MeshRenderer mr1 = wobj1.AddModule<MeshRenderer>();
+                mr1.Mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront)[0];
+                Material mat1 = mr1.Material = new Material(Shader.Find("Standard"));
+                mat1.SetData<Texture>("albedo", Texture.Find("container"));
+                mat1.SetData<Vector4>("color", new Vector4(0, 1, 0, 1));
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, this._VertexArrayObject);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, this._ElementBufferObject);
+                /* *///Material Mat = WObject.Find("Engine Core").AddOrGetModule<MeshRenderer>().Material = new Material(sh);
+                /* *///Mat.SetData<Texture>("albedo", new Texture("assets/textures/container.png"));
+                /* *///Mat.SetData<Texture>("texture1", new Texture("assets/textures/awesomeface.png"));
 
-                int vertexLocation = _Shader.GetAttribLocation("aPosition");
+                /*this._VertexArrayObject = GL.GenVertexArray();
+                GL.BindVertexArray(this._VertexArrayObject);*/
+
+                //GL.BindBuffer(BufferTarget.ArrayBuffer, this._VertexArrayObject);
+                //GL.BindBuffer(BufferTarget.ElementArrayBuffer, this._ElementBufferObject);
+
+                /* *///sh.SetAttribute("position", AttributeTypes.Vertice);
+                /* *///sh.SetAttribute("uv", AttributeTypes.UV);
+
+                /*int vertexLocation = Shader.Find("Standard").GetAttribLocation("position");
                 GL.EnableVertexAttribArray(vertexLocation);
                 GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
 
-                var texCoordLocation = _Shader.GetAttribLocation("aTexCoord");
+                var texCoordLocation = Shader.Find("Standard").GetAttribLocation("uv");
                 GL.EnableVertexAttribArray(texCoordLocation);
-                GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-
-
-                
-                
+                GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));*/
             }
             catch(Exception ex)
             {
@@ -192,18 +201,13 @@ namespace Winecrash.Engine
                 for (int i = 0; i < shaders.Length; i++)
                     if (shaders[i] != null)
                         shaders[i].Delete();
-            shaders = null;
-
             
             Texture[] textures = Texture.Cache.ToArray();
-            System.Windows.Forms.MessageBox.Show(textures.Length.ToString());
+
             if (textures != null)
                 for (int i = 0; i < textures.Length; i++)
                     if (textures[i] != null)
                         textures[i].Delete();
-            textures = null;
-
-            //Thread.Sleep(5000);
 
             base.OnUnload(e);
         }
@@ -225,14 +229,14 @@ namespace Winecrash.Engine
         }
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            //Debug.Log((1D/e.Time).ToString("C0").Split('¤')[1] + " FPS");
             Time.DeltaTime = e.Time;
             MouseState ms = Mouse.GetState();
             Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);
-            Input.MouseDelta = delta;
+            Input.MouseDelta = Focused ? delta : Vector2D.Zero;
             this._PreviousState = ms;
             if (Input.LockMode == CursorLockModes.Lock && Focused)
             {
-                
                 Mouse.SetPosition(X + Width / 2f, Y + Height / 2f);
             }
 

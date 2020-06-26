@@ -22,6 +22,8 @@ namespace Winecrash.Client
                 Input.CursorVisible = false;
 
                 Camera.Main.WObject.Position = new Vector3F(0, 0, -3);
+
+                //Debug.Log(Material.Find("Material[Standard]").DebugMaterial());
             };
         }
 

@@ -96,6 +96,7 @@
     <Compile Include="Core\BaseObject.cs" />
     <Compile Include="Core\WObject.cs" />
     <Compile Include="Modules\MeshRenderer.cs" />
+    <Compile Include="Render\AttributeTypes.cs" />
     <Compile Include="Render\Material.cs" />
     <Compile Include="Render\Mesh.cs" />
     <Compile Include="Render\MeshFormats.cs" />

@@ -27,7 +27,10 @@ namespace Winecrash.Engine
 
         public Material(Shader shader) : base()
         {
+            Cache.Add(this);
             this.Shader = shader;
+
+            this.Name = "Material[" + shader.Name + "]";
         }
 
         private class MaterialData
@@ -47,6 +50,14 @@ namespace Winecrash.Engine
         }
 
         private MaterialData[] _Data;
+
+        internal static List<Material> Cache = new List<Material>();
+
+        public static Material Find(string name)
+        {
+            return Cache.First(mat => mat.Name == name);
+            //return Mater
+        }
 
         internal void Use()
         {
@@ -79,6 +90,9 @@ namespace Winecrash.Engine
                     case ActiveUniformType.Int:
                         this.SetInt(data.Location, (int)data.Data);
                         break;
+                    case ActiveUniformType.FloatVec4:
+                        this.SetVector4(data.Location, (Vector4)data.Data);
+                        break;
                     case ActiveUniformType.FloatVec2:
                         this.SetVector2(data.Location, (Vector2)data.Data);
                         break;
@@ -104,10 +118,9 @@ namespace Winecrash.Engine
                 if (csType == null)
                 {
                     Debug.LogError("Unknown type \"" + shaderData[i].Type + "\", ignoring.");
-                    continue;
                 }
 
-                if(csType == typeof(Texture))
+                else if(csType == typeof(Texture))
                 {
                     if (Texture.Blank)
                     {
@@ -117,18 +130,20 @@ namespace Winecrash.Engine
                     {
                         _Data[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Activator.CreateInstance(csType), shaderData[i].Type);
                     }
+                }
 
-
-                    continue;
+                else
+                {
+                    _Data[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Activator.CreateInstance(csType), shaderData[i].Type);
                 }
 
 
 
-                _Data[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Activator.CreateInstance(csType), shaderData[i].Type);
+                
             }
         }
 
-        private Type GetCsharpType(ActiveUniformType gltype)
+        private static Type GetCsharpType(ActiveUniformType gltype)
         {
             return gltype switch
             {
@@ -136,6 +151,7 @@ namespace Winecrash.Engine
                 ActiveUniformType.Double => typeof(double),
                 ActiveUniformType.Float => typeof(float),
                 ActiveUniformType.Int => typeof(int),
+                ActiveUniformType.FloatVec4 => typeof(Vector4),
                 ActiveUniformType.FloatVec3 => typeof(Vector3),
                 ActiveUniformType.FloatVec2 => typeof(Vector2),
                 ActiveUniformType.Sampler2D => typeof(Texture),
@@ -147,6 +163,8 @@ namespace Winecrash.Engine
         public override void Delete()
         {
             this.Shader = null;
+            this._Data = null;
+            Cache.Remove(this);
 
             base.Delete();
         }
@@ -158,8 +176,8 @@ namespace Winecrash.Engine
             MaterialData matdata = this._Data.First(d => d.Name == name);
             if (data.GetType() == matdata.Data.GetType())
             {
-                //Texture previous = matdata.Data;
-                matdata.Data = data;
+                    //Texture previous = matdata.Data;
+                    matdata.Data = data;
             }
         }
 
@@ -202,5 +220,24 @@ namespace Winecrash.Engine
             GL.Uniform3(location, ref data);
         }
 
+        private void SetVector4(int location, Vector4 data)
+        {
+            GL.Uniform4(location, ref data);
+        }
+
+
+        public string DebugMaterial()
+        {
+            string txt = $"Material \"{this.Name}\" [Shader \"{this.Shader.Name}\"]\n";
+
+            for (int i = 0; i < this._Data.Length; i++)
+            {
+                MaterialData md = _Data[i];
+                Type t = GetCsharpType(md.GLType);
+                txt += $"{md.Name}({t.Name}) = {md.Data}\n";
+            }
+
+            return txt;
+        }
     }
 }
