@@ -201,11 +201,15 @@ namespace Winecrash.Engine
             }
             catch
             {
+                Debug.Log($"No data corresponding to \"{name}\"({type}");
                 return false;
             }
 
-            if (data == null) return false;
-
+            if (data == null)
+            {
+                Debug.Log($"No data corresponding to \"{name}\"({type}");
+                return false;
+            }
             GL.EnableVertexAttribArray(data.Location);
 
             int size;
@@ -251,6 +255,7 @@ namespace Winecrash.Engine
             }
 
             GL.VertexAttribPointer(data.Location, size, ptrType, normalized, stride, offset);
+
 
             return true;
         }

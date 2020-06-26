@@ -64,6 +64,16 @@ namespace Winecrash.Engine
 
             this.Use();
 
+            GL.TexImage2D(TextureTarget.Texture2D,
+                        0,
+                        PixelInternalFormat.Rgba,
+                        this.Width,
+                        this.Height,
+                        0,
+                        OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
+                        PixelType.UnsignedByte,
+                        blanck);
+
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 

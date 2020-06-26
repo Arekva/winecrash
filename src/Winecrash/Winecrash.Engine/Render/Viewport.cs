@@ -87,9 +87,9 @@ namespace Winecrash.Engine
             1, 2, 3
         };
 
-        internal int _VertexBufferObject;
-        internal int _ElementBufferObject;
-        internal int _VertexArrayObject;
+        //internal int _VertexBufferObject;
+        //internal int _ElementBufferObject;
+        //internal int _VertexArrayObject;
 
         /// <summary>
         /// https://github.com/opentk/LearnOpenTK/blob/master/Chapter1/4-Textures/Window.cs
@@ -129,18 +129,26 @@ namespace Winecrash.Engine
                 MeshRenderer mr = wobj.AddModule<MeshRenderer>();
                 mr.Mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront)[0];
                 Material mat = mr.Material = new Material(Shader.Find("Standard"));
-                mat.SetData<Texture>("albedo", Texture.Find("container"));
+                //mat.SetData<Texture>("albedo", Texture.Find("container"));
                 mat.SetData<Vector4>("color", new Vector4(1,0,0,1));
 
                 
 
                 WObject wobj1 = new WObject("Test 1");
-                wobj1.Position = Vector3F.One;
+                wobj1.Position = Vector3F.Left * 2.0F;
                 MeshRenderer mr1 = wobj1.AddModule<MeshRenderer>();
-                mr1.Mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront)[0];
+                mr1.Mesh = Mesh.LoadFile("assets/models/Suzanne.obj", MeshFormats.Wavefront)[0];
                 Material mat1 = mr1.Material = new Material(Shader.Find("Standard"));
-                mat1.SetData<Texture>("albedo", Texture.Find("container"));
+                //mat1.SetData<Texture>("albedo", Texture.Find("container"));
                 mat1.SetData<Vector4>("color", new Vector4(0, 1, 0, 1));
+
+                WObject wobj2 = new WObject("Test 2");
+                wobj2.Position = Vector3F.Left * -2.0F;
+                MeshRenderer mr2 = wobj2.AddModule<MeshRenderer>();
+                mr2.Mesh = Mesh.LoadFile("assets/models/Ico_1.obj", MeshFormats.Wavefront)[0];
+                Material mat2 = mr2.Material = new Material(Shader.Find("Standard"));
+                //mat1.SetData<Texture>("albedo", Texture.Find("container"));
+                mat2.SetData<Vector4>("color", new Vector4(0, 0, 1, 1));
 
                 /* *///Material Mat = WObject.Find("Engine Core").AddOrGetModule<MeshRenderer>().Material = new Material(sh);
                 /* *///Mat.SetData<Texture>("albedo", new Texture("assets/textures/container.png"));
@@ -191,9 +199,14 @@ namespace Winecrash.Engine
             GL.BindVertexArray(0);
             GL.UseProgram(0);
 
-            GL.DeleteBuffer(_VertexBufferObject);
-            GL.DeleteVertexArray(_VertexArrayObject);
+            //GL.DeleteBuffer(_VertexBufferObject);
+            //GL.DeleteVertexArray(_VertexArrayObject);
 
+            MeshRenderer[] renderers = MeshRenderer.MeshRenderers.ToArray();
+            if (renderers != null)
+                for (int i = 0; i < renderers.Length; i++)
+                    if (renderers[i] != null)
+                        renderers[i].Delete();
 
             
             Shader[] shaders = Shader.Cache.ToArray();

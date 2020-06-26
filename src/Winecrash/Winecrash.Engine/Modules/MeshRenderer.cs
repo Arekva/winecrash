@@ -16,6 +16,7 @@ namespace Winecrash.Engine
         public Material Material { get; set; }
 
         internal static List<MeshRenderer> ActiveMeshRenderers = new List<MeshRenderer>();
+        internal static List<MeshRenderer> MeshRenderers = new List<MeshRenderer>();
 
         private int PreviousFrameHash = 0;
         private bool RebuildBuffers = true;
@@ -32,49 +33,54 @@ namespace Winecrash.Engine
             if(VertexBufferObject == -1)
             {
                 VertexBufferObject = GL.GenBuffer();
-                
+                //GL.BindVertexArray(VertexBufferObject);
             }
 
             if(ElementBufferObject == -1)
             {
                 ElementBufferObject = GL.GenBuffer();
-                
             }
 
             if(VertexArrayObject == -1)
             {
                 VertexArrayObject = GL.GenVertexArray();
-                //GL.BindVertexArray(VertexArrayObject);
             }
+
+            float[] vertex = Mesh.Vertex;
+            uint[] tris = Mesh.Indices;
 
             if (RebuildBuffers)
             {
-                float[] vertex = Mesh.cube_vertices;//Mesh.Vertex;
-                uint[] tris = Mesh._Indices;//Mesh.Triangles;
+                Debug.Log("Rebuilding the buffers for " + this.WObject.Name);
+
+                GL.BindVertexArray(VertexArrayObject);
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, this.VertexBufferObject);
                 GL.BufferData(BufferTarget.ArrayBuffer, vertex.Length * sizeof(float), vertex, BufferUsageHint.StaticDraw);
+                
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.ElementBufferObject);
                 GL.BufferData(BufferTarget.ElementArrayBuffer, tris.Length * sizeof(uint), tris, BufferUsageHint.StaticDraw);
+                
+                RebuildBuffers = false;
             }
-
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, this.VertexBufferObject);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.ElementBufferObject);
-            
             GL.BindVertexArray(VertexArrayObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObject);
+            
 
             Material.Shader.SetAttribute("position", AttributeTypes.Vertice);
             Material.Shader.SetAttribute("uv", AttributeTypes.UV);
             Material.SetData<Matrix4>("transform", transform);
             Material.Use();
 
-            GL.DrawArrays(PrimitiveType.Triangles, 0, Mesh./*Vertices*/cube_vertices.Length / 5);
+            //GL.DrawArrays(PrimitiveType.Triangles, 0, tris.Length * 6);
+            GL.DrawElements(PrimitiveType.Triangles, tris.Length, DrawElementsType.UnsignedInt, 0);
         }
 
         protected internal override void Creation()
         {
             ActiveMeshRenderers.Add(this);
+            MeshRenderers.Add(this);
             this.Group = -1;
         }
         protected internal override void Update()
@@ -101,8 +107,10 @@ namespace Winecrash.Engine
 
         protected internal override void OnDelete()
         {
+            GL.DeleteBuffer(VertexBufferObject);
+            GL.DeleteVertexArray(VertexArrayObject);
 
-
+            MeshRenderers.Remove(this);
             ActiveMeshRenderers.Remove(this);
             this.Mesh = null;
         }

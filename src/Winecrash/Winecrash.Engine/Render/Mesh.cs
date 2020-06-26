@@ -117,20 +117,25 @@ namespace Winecrash.Engine
                 {
                     Vector3F vertice = this.Vertices[vert];
 
-                    array[vert * 3] = vertice.X;
-                    array[vert * 3 + 1] = vertice.Y;
-                    array[vert * 2 + 2] = vertice.Z;
+                    array[vert * 5 + 0] = vertice.X;
+                    array[vert * 5 + 1] = vertice.Y;
+                    array[vert * 5 + 2] = vertice.Z;
+
+                    //Debug.Log(vertice);
+
+                    //array[vert * 5 + 3] = .0F;//uv.X;
+                    //array[vert * 5 + 4] = .0F;//uv.Y;
 
                     if (vert >= UVs.Length)
                     {
-                        array[vert * 3 + 3] = array[vert * 3 + 4] = 0.0F;
+                        array[vert * 5 + 3] = array[vert * 5 + 4] = 0.0F;
                     }
 
                     else
                     {
                         Vector2F uv = this.UVs[vert];
-                        array[vert * 3 + 3] = uv.X;
-                        array[vert * 3 + 4] = uv.Y;
+                        array[vert * 5 + 3] = uv.X;
+                        array[vert * 5 + 4] = uv.Y;
                     }
                 }
 
@@ -214,7 +219,7 @@ namespace Winecrash.Engine
                         else if (action == "v") // vertice
                         {
                             verticesStarted = true;
-
+                            
                             vertices.Add(new Vector3F(Single.Parse(args[1]), Single.Parse(args[2]), Single.Parse(args[3])));
                         }
 
@@ -238,9 +243,12 @@ namespace Winecrash.Engine
 
                             for (int i = 0; i < faceVertices.Length; i++) // extracting vertices
                             {
-                                faceVertices[i] = UInt32.Parse(args[i + 1][0].ToString());
+                                
+                                faceVertices[i] = UInt32.Parse(args[i + 1].Split('/')[0]);
+                                
                             }
 
+                            
                             triangles.Add(faceVertices[0] - 1);
                             triangles.Add(faceVertices[1] - 1);
                             triangles.Add(faceVertices[2] - 1);
