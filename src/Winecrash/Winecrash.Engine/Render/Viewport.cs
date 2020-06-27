@@ -127,7 +127,7 @@ namespace Winecrash.Engine
                 WObject wobj = new WObject("Test 0");
                 wobj.Position = Vector3F.Zero;
                 MeshRenderer mr = wobj.AddModule<MeshRenderer>();
-                mr.Mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront)[0];
+                mr.Mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront);
                 Material mat = mr.Material = new Material(Shader.Find("Standard"));
                 //mat.SetData<Texture>("albedo", Texture.Find("container"));
                 mat.SetData<Vector4>("color", new Vector4(1,0,0,1));
@@ -137,7 +137,7 @@ namespace Winecrash.Engine
                 WObject wobj1 = new WObject("Test 1");
                 wobj1.Position = Vector3F.Left * 2.0F;
                 MeshRenderer mr1 = wobj1.AddModule<MeshRenderer>();
-                mr1.Mesh = Mesh.LoadFile("assets/models/Suzanne.obj", MeshFormats.Wavefront)[0];
+                mr1.Mesh = Mesh.LoadFile("assets/models/Suzanne.obj", MeshFormats.Wavefront);
                 Material mat1 = mr1.Material = new Material(Shader.Find("Standard"));
                 //mat1.SetData<Texture>("albedo", Texture.Find("container"));
                 mat1.SetData<Vector4>("color", new Vector4(0, 1, 0, 1));
@@ -145,10 +145,15 @@ namespace Winecrash.Engine
                 WObject wobj2 = new WObject("Test 2");
                 wobj2.Position = Vector3F.Left * -2.0F;
                 MeshRenderer mr2 = wobj2.AddModule<MeshRenderer>();
-                mr2.Mesh = Mesh.LoadFile("assets/models/Ico_1.obj", MeshFormats.Wavefront)[0];
+                mr2.Mesh = Mesh.LoadFile("assets/models/Ico_1.obj", MeshFormats.Wavefront);
                 Material mat2 = mr2.Material = new Material(Shader.Find("Standard"));
                 //mat1.SetData<Texture>("albedo", Texture.Find("container"));
                 mat2.SetData<Vector4>("color", new Vector4(0, 0, 1, 1));
+
+                WObject mainLight = new WObject("Directional Light");
+                mainLight.AddModule<DirectionalLight>();
+                mainLight.LocalRotation = new Quaternion(50.0D, -30.0D, 0.0D);
+                
             }
             catch(Exception ex)
             {
@@ -163,8 +168,10 @@ namespace Winecrash.Engine
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            updatesw.Start();
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
+            //Layer.Render
             Render?.Invoke(new UpdateEventArgs(e.Time));
 
             SwapBuffers();
@@ -219,9 +226,12 @@ namespace Winecrash.Engine
         {
             base.OnMouseMove(e);
         }
+
+        static Stopwatch updatesw = new Stopwatch();
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            //Debug.Log((1D/e.Time).ToString("C0").Split('¤')[1] + " FPS");
+            
+            Debug.Log((1D/e.Time).ToString("C0").Split('¤')[1] + " FPS");
             Time.DeltaTime = e.Time;
             MouseState ms = Mouse.GetState();
             Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);
@@ -232,9 +242,18 @@ namespace Winecrash.Engine
                 Mouse.SetPosition(X + Width / 2f, Y + Height / 2f);
             }
 
+            
             Update?.Invoke(new UpdateEventArgs(e.Time));
+            
+            
 
+            
+
+            
             GC.Collect();
+           
+
+            
 
             base.OnUpdateFrame(e);
         }

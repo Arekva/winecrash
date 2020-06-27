@@ -190,7 +190,7 @@ namespace Winecrash.Engine
 
             for (int i = 0; i < cameras.Length; i++)
             {
-                //todo: threaded OnRender.
+                //todo: threaded OnRender - note: nope lol.
                 Module[] modules = cameras[i].WObject._Modules.ToArray();
 
                 for (int j = 0; j < modules.Length; j++)

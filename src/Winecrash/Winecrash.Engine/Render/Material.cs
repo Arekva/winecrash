@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,9 +60,23 @@ namespace Winecrash.Engine
             //return Mater
         }
 
+        Stopwatch sw = new Stopwatch();
         internal void Use()
         {
             Shader.Use();
+
+            //set the lights
+            DirectionalLight main = DirectionalLight.Main;
+            if(main != null)
+            {
+                
+                this.SetData<Vector4>("mainLightColor", main.Color);
+                sw.Stop();
+                this.SetData<Vector3>("mainLightDirection", main.WObject.Forward);
+                this.SetData<Vector4>("mainLightAmbiant", main.Ambient);
+            }
+            
+
 
             int texCount = 0;
             for (int i = 0; i < _Data.Length; i++)
@@ -171,16 +186,15 @@ namespace Winecrash.Engine
 
             MaterialData matdata = null;
 
-            try
+            for (int i = 0; i < this._Data.Length; i++)
             {
-                matdata = this._Data.First(d => d.Name == name);
+                if(this._Data[i].Name == name)
+                {
+                    matdata = this._Data[i];
+                    break;
+                }
             }
-            catch // not found
-            {
-                return;
-            }
-
-            if (data.GetType() == matdata.Data.GetType())
+            if (matdata != null && data.GetType() == matdata.Data.GetType())
             {
                     //Texture previous = matdata.Data;
                     matdata.Data = data;

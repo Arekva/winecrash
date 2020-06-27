@@ -9,6 +9,7 @@ namespace Winecrash.Engine
     internal enum AttributeTypes
     {
         Vertice,
-        UV
+        UV,
+        Normal
     }
 }

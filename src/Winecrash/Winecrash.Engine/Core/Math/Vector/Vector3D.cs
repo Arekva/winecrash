@@ -417,6 +417,13 @@ namespace Winecrash.Engine
         {
             return new Vector3D(vec.X, vec.Y, vec.Z);
         }
+
+
+        
+        public static implicit operator OpenTK.Vector3(Vector3D vec)
+        {
+            return new OpenTK.Vector3((float)vec.X, (float)vec.Y, (float)vec.Z);
+        }
         #endregion
     }
 }

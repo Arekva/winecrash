@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Graphics;
+using System.Diagnostics;
 
 namespace Winecrash.Engine
 {
@@ -196,53 +197,16 @@ namespace Winecrash.Engine
 
         protected internal override void OnRender()
         {
-            Vector3F p = this.WObject.Position;
-            Vector3F t = this.WObject.Forward;
-            Vector3F u = this.WObject.Up;
-
-            Viewport vp = Viewport.Instance;
-
             Matrix4 view = this.ViewMatrix;
             Matrix4 proj = this.ProjectionMatrix;
 
-
-            //GL.BindVertexArray(vp._VertexArrayObject);
-
-            //int count = 0;
+            
             MeshRenderer[] mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
             for (int i = 0; i < mrs.Length; i++)
             {
                 MeshRenderer mr = mrs[i];
                 mr.Use(mr.WObject.TransformMatrix * view * proj);
-
-                //GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
             }
-            //vp._Texture.Use();
-            //vp._Texture2.Use(TextureUnit.Texture1);
-            //vp._Shader.Use();
-
-            //if (EngineCore.Instance != null)
-            //{
-                //vp._View = Matrix4.CreateTranslation(0.0f, 0.0f, -3.0f);
-                
-            //    WObject wobj = EngineCore.Instance.WObject;
-
-                //Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f), (float)this.Width / (float)this.Height, 0.1f, 100.0f);
-
-            //    Matrix4 mat = wobj.TransformMatrix * view * proj;//wobj.TransformMatrix;
-
-            //    vp.Mat.SetData<Matrix4>("transform", mat);
-
-                //GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
-                //GL.DrawElements(PrimitiveType.Triangles, _Indices.Length, DrawElementsType.UnsignedInt, 0);
-
-                /*foreach (WObject child in wobj.Children)
-                {
-                    _Shader.SetMatrix4("transform", child.TransformMatrix);
-                    GL.DrawElements(PrimitiveType.Triangles, _Indices.Length, DrawElementsType.UnsignedInt, 0);
-                }*/
-
-            //}
         }
     }
 }

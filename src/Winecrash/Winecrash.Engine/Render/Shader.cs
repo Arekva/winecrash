@@ -195,21 +195,18 @@ namespace Winecrash.Engine
         internal bool SetAttribute(string name, AttributeTypes type)
         {
             ShaderAttributeData data = null;
-            try
+
+            for (int i = 0; i < Attributes.Length; i++)
             {
-                data = this.Attributes.First(sh => sh.Name == name);
-            }
-            catch
-            {
-                Debug.Log($"No data corresponding to \"{name}\"({type}");
-                return false;
+                if (Attributes[i].Name == name)
+                {
+                    data = Attributes[i];
+                }
+
             }
 
-            if (data == null)
-            {
-                Debug.Log($"No data corresponding to \"{name}\"({type}");
-                return false;
-            }
+            if (data == null) return false;
+
             GL.EnableVertexAttribArray(data.Location);
 
             int size;
@@ -218,6 +215,12 @@ namespace Winecrash.Engine
             int stride;
             int offset;
 
+            const int VerticeSize = 3;
+            const int UVSize = 2;
+            const int NormalSize = 3;
+
+            const int Size = VerticeSize + UVSize + NormalSize;
+
             switch (type)
             {
                 case AttributeTypes.Vertice:
@@ -225,7 +228,7 @@ namespace Winecrash.Engine
                         size = 3;
                         ptrType = VertexAttribPointerType.Float;
                         normalized = false;
-                        stride = 5 * sizeof(float);
+                        stride = Size * sizeof(float);
                         offset = 0;
 
                         break;
@@ -236,8 +239,19 @@ namespace Winecrash.Engine
                         size = 2;
                         ptrType = VertexAttribPointerType.Float;
                         normalized = false;
-                        stride = 5 * sizeof(float);
-                        offset = 3 * sizeof(float);
+                        stride = Size * sizeof(float);
+                        offset = VerticeSize * sizeof(float);
+
+                        break;
+                    }
+
+                case AttributeTypes.Normal:
+                    {
+                        size = 3;
+                        ptrType = VertexAttribPointerType.Float;
+                        normalized = false;
+                        stride = Size * sizeof(float);
+                        offset = (VerticeSize + UVSize) * sizeof(float);
 
                         break;
                     }

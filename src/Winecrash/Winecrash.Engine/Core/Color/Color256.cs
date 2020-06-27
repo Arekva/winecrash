@@ -43,6 +43,11 @@ namespace Winecrash.Engine
             return new Color256(colour);
         }
 
+        public static implicit operator OpenTK.Vector4(Color256 col)
+        {
+            return new OpenTK.Vector4((float)col.R, (float)col.B, (float)col.G, (float)col.A);
+        }
+
         public static Color256 operator *(Color256 c, double v)
         {
             return new Color256(c.R * v, c.G * v, c.B * v, c.A * v);
