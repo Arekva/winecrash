@@ -47,7 +47,7 @@ namespace Winecrash.Engine
 
             
             float[] vertex = Mesh.Vertex;
-            uint[] tris = Mesh.Triangles;
+            uint[] tris = Mesh.Indices;
 
             
 
@@ -78,12 +78,13 @@ namespace Winecrash.Engine
             Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
 
             Material.SetData<Matrix4>("transform", transform);
+            //Material.SetData<Vector3>("scale", this);
 
             
 
             Material.Use();
-
-            GL.DrawElements(PrimitiveType.Triangles, tris.Length, DrawElementsType.UnsignedInt, 0);
+            GL.DepthMask(true);
+            GL.DrawElements(PrimitiveType.Triangles, tris.Length * 4, DrawElementsType.UnsignedInt, 0);
 
         }
 

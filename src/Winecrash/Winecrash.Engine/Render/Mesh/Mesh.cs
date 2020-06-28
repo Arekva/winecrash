@@ -34,6 +34,7 @@ namespace Winecrash.Engine
         public Vector3F[] Normals { get; set; }
 
         internal float[] Vertex { get; private set; } = null;
+        internal uint[] Indices { get; private set; } = null;
 
         internal bool AskedForApply { get; set; } = false;
 
@@ -53,10 +54,15 @@ namespace Winecrash.Engine
                 Vertex[vert * 8 + 4] = uvs.Y;
 
                 Vector3F normal = this.Normals[vert];
+
                 Vertex[vert * 8 + 5] = normal.X;
                 Vertex[vert * 8 + 6] = normal.Y;
                 Vertex[vert * 8 + 7] = normal.Z;
             }
+
+            //Indices = Triangles;
+
+            Indices = this.Triangles/*.Reverse().ToArray()*/;
 
             AskedForApply = true;
         }

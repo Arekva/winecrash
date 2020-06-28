@@ -118,6 +118,8 @@ namespace Winecrash.Engine
             GL.GetProgram(Handle, GetProgramParameterName.ActiveAttributes, out int nAttribs);
             Attributes = new ShaderAttributeData[nAttribs];
 
+            
+
             for (int i = 0; i < nAttribs; i++)
             {
                 GL.GetActiveAttrib(Handle, i, 16, out int ALength, out int ASize, out ActiveAttribType AType, out string AName);
@@ -168,12 +170,12 @@ namespace Winecrash.Engine
 
             GL.GetProgram(Handle, GetProgramParameterName.ActiveAttributes, out int nAttribs);
             Attributes = new ShaderAttributeData[nAttribs];
-
+            
             for (int i = 0; i < nAttribs; i++)
             {
                 GL.GetActiveAttrib(Handle, i, 16, out int ALength, out int ASize, out ActiveAttribType AType, out string AName);
 
-                this.Attributes[i] = new ShaderAttributeData(AName, i, ASize, ALength, AType);
+                this.Attributes[i] = new ShaderAttributeData(AName, GL.GetAttribLocation(Handle, AName), ASize, ALength, AType);
             }
             
 
@@ -188,6 +190,7 @@ namespace Winecrash.Engine
 
             SetAttribute("position", AttributeTypes.Vertice);
             SetAttribute("uv", AttributeTypes.UV);
+            SetAttribute("normal", AttributeTypes.Normal);
 
             Cache.Add(this);
         }
@@ -263,6 +266,8 @@ namespace Winecrash.Engine
                         normalized = false;
                         stride = 0;
                         offset = 0;
+
+                        Debug.Log("Something went wrong..");
 
                         break;
                     }

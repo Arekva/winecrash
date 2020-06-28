@@ -12,7 +12,7 @@ namespace Winecrash.Engine
         internal static List<DirectionalLight> DirectionalLights { get; private set; } = new List<DirectionalLight>();
 
 
-        public Color256 Ambient { get; set; } = new Color256(0.25D, 0.25D, 0.25D, 1.0D);
+        public Color256 Ambient { get; set; } = new Color256(0.1D, 0.1D, 0.1D, 1.0D);
 
         protected internal override void Creation()
         {
@@ -25,6 +25,7 @@ namespace Winecrash.Engine
 
             base.Creation();
         }
+
 
         protected internal override void OnDelete()
         {

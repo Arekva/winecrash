@@ -151,10 +151,11 @@ namespace Winecrash.Engine
                 Quaternion rot = this.Rotation;
                 Vector3F sca = this.Scale;
 
-                Matrix4 transform = Matrix4.Identity;
-                transform *= Matrix4.CreateTranslation(tra.X, tra.Y, tra.Z);
-                transform *= Matrix4.CreateScale(sca.X, sca.Y, sca.Z);
-                transform *= Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W));
+                Matrix4 transform =
+                    Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W)) *
+                    Matrix4.CreateTranslation(tra.X, tra.Y, tra.Z) *
+                    Matrix4.CreateScale(sca.X, sca.Y, sca.Z) *
+                    Matrix4.Identity;
 
                 return transform;
             }

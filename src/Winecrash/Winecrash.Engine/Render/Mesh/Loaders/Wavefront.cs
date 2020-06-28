@@ -190,6 +190,7 @@ namespace Winecrash.Engine.ModelLoaders
                                 mesh.Normals[vn] = new Vector3F(Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]),
                                     Convert.ToSingle(brokenString[3]));
                                 vn++;
+                                
                                 break;
                             case "vc":
                                 break;
