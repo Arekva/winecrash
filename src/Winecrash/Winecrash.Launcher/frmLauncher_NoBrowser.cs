@@ -17,15 +17,16 @@ using System.IO.Compression;
 
 namespace Winecrash.Launcher
 {
-    public partial class frmLauncher : Form
+    public partial class frmLauncher_NoBrowser : Form
     {
         public static string WebsiteRoot = "http://docs.arthurcarre.fr/winecrash/";
         static WebClient client = new WebClient();
         static string[] builds;
         string selectedVersion;
 
-        public frmLauncher()
+        public frmLauncher_NoBrowser()
         {
+            
             InitializeComponent();
         }
 
@@ -39,6 +40,8 @@ namespace Winecrash.Launcher
             client.DownloadFileCompleted += Client_DownloadFileCompleted;
 
             DownloadBuildJSON();
+
+            
 
 
             for (int i = 0; i < builds.Length; i++)

@@ -1,6 +1,6 @@
 ﻿namespace Winecrash.Launcher
 {
-    partial class frmLauncher
+    partial class frmLauncher_NoBrowser
     {
         /// <summary>
         /// Variable nécessaire au concepteur.
@@ -28,14 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmLauncher));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmLauncher_NoBrowser));
             this.label1 = new System.Windows.Forms.Label();
             this.cbVersions = new System.Windows.Forms.ComboBox();
             this.btDownload = new System.Windows.Forms.Button();
             this.progBarDownload = new System.Windows.Forms.ProgressBar();
             this.lbDownloadSpeed = new System.Windows.Forms.Label();
             this.lbDownloadQty = new System.Windows.Forms.Label();
-            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.btPlay = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -96,15 +95,6 @@
             this.lbDownloadQty.TabIndex = 5;
             this.lbDownloadQty.Text = "500 KB / 800 KB";
             // 
-            // webBrowser1
-            // 
-            this.webBrowser1.Location = new System.Drawing.Point(404, 9);
-            this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
-            this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(480, 551);
-            this.webBrowser1.TabIndex = 6;
-            this.webBrowser1.Url = new System.Uri("http://docs.arthurcarre.fr/winecrash", System.UriKind.Absolute);
-            // 
             // btPlay
             // 
             this.btPlay.Enabled = false;
@@ -116,13 +106,12 @@
             this.btPlay.UseVisualStyleBackColor = true;
             this.btPlay.Click += new System.EventHandler(this.btPlay_Click);
             // 
-            // frmLauncher
+            // frmLauncher_NoBrowser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(896, 572);
             this.Controls.Add(this.btPlay);
-            this.Controls.Add(this.webBrowser1);
             this.Controls.Add(this.lbDownloadQty);
             this.Controls.Add(this.lbDownloadSpeed);
             this.Controls.Add(this.progBarDownload);
@@ -132,7 +121,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.Name = "frmLauncher";
+            this.Name = "frmLauncher_NoBrowser";
             this.Text = "Winecrash Launcher";
             this.Load += new System.EventHandler(this.frmLauncher_Load);
             this.ResumeLayout(false);
@@ -147,7 +136,6 @@
         private System.Windows.Forms.ProgressBar progBarDownload;
         private System.Windows.Forms.Label lbDownloadSpeed;
         private System.Windows.Forms.Label lbDownloadQty;
-        private System.Windows.Forms.WebBrowser webBrowser1;
         private System.Windows.Forms.Button btPlay;
     }
 }
