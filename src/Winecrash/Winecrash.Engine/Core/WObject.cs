@@ -185,6 +185,15 @@ namespace Winecrash.Engine
 
             mod.Creation();
 
+            if(this.Enabled)
+            {
+                mod.OnEnable();
+            }
+            else
+            {
+                mod.OnDisable();
+            }
+
             return mod;
         }
 

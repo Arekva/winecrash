@@ -17,13 +17,11 @@ namespace Winecrash.Engine
         protected internal override void Creation()
         {
             Lights.Add(this);
-            ActiveLights.Add(this);
         }
 
         protected internal override void OnEnable()
         {
-            if(!ActiveLights.Contains(this))
-                ActiveLights.Add(this);
+            ActiveLights.Add(this);
         }
 
         protected internal override void OnDisable()
@@ -33,6 +31,7 @@ namespace Winecrash.Engine
 
         protected internal override void OnDelete()
         {
+            ActiveLights.Remove(this);
             Lights.Remove(this);
         }
     }

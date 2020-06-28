@@ -103,10 +103,15 @@
     <Compile Include="Core\BaseObject.cs" />
     <Compile Include="Core\WObject.cs" />
     <Compile Include="Modules\MeshRenderer.cs" />
+    <Compile Include="Modules\BoxCollider.cs" />
+    <Compile Include="Modules\Collider.cs" />
+    <Compile Include="Physics\HitInfo.cs" />
+    <Compile Include="Physics\Physics.cs" />
+    <Compile Include="Physics\Ray.cs" />
     <Compile Include="Render\AttributeTypes.cs" />
-    <Compile Include="Modules\Lightening\DirectionalLight.cs" />
-    <Compile Include="Modules\Lightening\Light.cs" />
-    <Compile Include="Modules\Lightening\PointLight.cs" />
+    <Compile Include="Modules\DirectionalLight.cs" />
+    <Compile Include="Modules\Light.cs" />
+    <Compile Include="Modules\PointLight.cs" />
     <Compile Include="Render\Material.cs" />
     <Compile Include="Render\Mesh\Loaders\Wavefront.cs" />
     <Compile Include="Render\Mesh\Mesh.cs" />
@@ -118,10 +123,10 @@
     <Compile Include="Render\Viewport.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Physics\" />
     <Folder Include="Sound\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Physics\AABB.cs" />
     <None Include="WObjectDiagram.cd" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
