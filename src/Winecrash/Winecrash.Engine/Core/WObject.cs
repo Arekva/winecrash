@@ -23,6 +23,15 @@ namespace Winecrash.Engine
             _WObjects.Add(this);
         }
 
+        /// <summary>
+        /// Render layer of the WObject:
+        /// 0 = none
+        /// Int64.MaxValue = everything
+        /// 
+        /// ex: 1<<32 = skybox
+        /// </summary>
+        public Int64 Layer { get; set; } = (1L << 0); // Default layer = 1;
+
 
         private WObject _Parent = null;
         public WObject Parent

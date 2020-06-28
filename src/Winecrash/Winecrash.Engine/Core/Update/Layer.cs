@@ -186,7 +186,7 @@ namespace Winecrash.Engine
 
         public static void Render(UpdateEventArgs args)
         {
-            Camera[] cameras = Camera.Cameras.ToArray();
+            Camera[] cameras = Camera.Cameras.OrderBy(cam => cam.Depth).ToArray();
 
             for (int i = 0; i < cameras.Length; i++)
             {

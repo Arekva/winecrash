@@ -193,6 +193,7 @@ namespace Winecrash.Engine
                     break;
                 }
             }
+
             if (matdata != null && data.GetType() == matdata.Data.GetType())
             {
                     //Texture previous = matdata.Data;
@@ -211,6 +212,7 @@ namespace Winecrash.Engine
                 return null;
             }
         }
+
         public T GetData<T>(string name)
         {
             return (T)GetData(name);
