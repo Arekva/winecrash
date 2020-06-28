@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=3.2.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.3.2\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -50,8 +53,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DayNightCycle.cs" />
-    <Compile Include="FreeCam.cs" />
+    <Compile Include="Modules\DayNightCycle.cs" />
+    <Compile Include="Modules\FreeCam.cs" />
     <Compile Include="frmDebug.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,7 +69,21 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SkyboxCamera.cs" />
+    <Compile Include="Modules\SkyboxCamera.cs" />
+    <Compile Include="Item\Block.cs" />
+    <Compile Include="Ticket\Ticket.cs" />
+    <Compile Include="Ticket\TicketEditTypes.cs" />
+    <Compile Include="Ticket\TicketLoadTypes.cs" />
+    <Compile Include="Ticket\TicketPreviousDirections.cs" />
+    <Compile Include="Ticket\TicketTypes.cs" />
+    <Compile Include="World\Chunk.cs" />
+    <Compile Include="World\DictionnaryChunk.cs" />
+    <Compile Include="World\Generator.cs" />
+    <Compile Include="World\ISaveable.cs" />
+    <Compile Include="Item\Item.cs" />
+    <Compile Include="Item\ItemCache.cs" />
+    <Compile Include="Item\ItemDef.cs" />
+    <Compile Include="World\World.cs" />
     <EmbeddedResource Include="frmDebug.resx">
       <DependentUpon>frmDebug.cs</DependentUpon>
     </EmbeddedResource>

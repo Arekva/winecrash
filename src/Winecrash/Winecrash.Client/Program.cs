@@ -29,6 +29,17 @@ namespace Winecrash.Client
             Camera.Main.RenderLayers &= ~(1L << 32);
 
             CreateSkybox();
+
+            ItemDef[] items = ItemCache.LoadItems();
+            for (short i = 0; i < items.Length; i++)
+            {
+                Debug.Log("Loaded item " + items[i]);
+            }
+
+            WObject worldwobj = new WObject("World");
+            worldwobj.AddModule<World>();
+
+            WEngine.TraceLayers();
         }
 
 
@@ -55,12 +66,16 @@ namespace Winecrash.Client
             mr.Material.SetData<Vector4>("highAtmosphereColour", HighAtmosphereColour);
             mr.Material.SetData<Vector4>("groundAtmosphereColour", GroundAtmosphereColour);
 
+            mr.Material.SetData<float>("sunSize", 0.025F);
+            mr.Material.SetData<Vector4>("sunInnerColor", new Color256(1.0D,1.0D,1.0D,1.0D));
+            mr.Material.SetData<Vector4>("sunOuterColor", new Color256(245D / 255D, 234D / 255D, 181D / 255D, 1.0D));
+
             sky.Layer = 1L << 32;
 
 
             WObject sun = new WObject("Sun");
             sun.AddModule<DirectionalLight>();
-            sun.LocalRotation = new Engine.Quaternion(50, -30, 0);
+            sun.LocalRotation = new Engine.Quaternion(90, 0, 0);
             sun.AddModule<DayNightCycle>();
 
             SkyboxCamera skycam = new WObject("Skybox Camera").AddModule<SkyboxCamera>();

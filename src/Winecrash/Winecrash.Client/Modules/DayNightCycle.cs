@@ -9,7 +9,7 @@ namespace Winecrash.Client
 {
     class DayNightCycle : Module
     {
-        float rotationSpeed = 20.0F;
+        float rotationSpeed = 0.0F;
         protected override void Update()
         {
             DirectionalLight.Main.WObject.LocalRotation *= new Quaternion(0, rotationSpeed * (float)Time.DeltaTime, 0);
