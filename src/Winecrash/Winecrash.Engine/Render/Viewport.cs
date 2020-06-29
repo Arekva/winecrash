@@ -22,9 +22,12 @@ namespace Winecrash.Engine
 
         public static event UpdateEventHandler Update;
         public static event UpdateEventHandler Render;
+        public static event ViewportDoOnceDelegate DoOnce;
+
         public static event ViewportLoadDelegate OnLoaded;
 
         public delegate void ViewportLoadDelegate();
+        public delegate void ViewportDoOnceDelegate();
 
         MouseState _PreviousState = new MouseState();
 
@@ -123,7 +126,8 @@ namespace Winecrash.Engine
         static Stopwatch updatesw = new Stopwatch();
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            
+            DoOnce?.Invoke();
+            DoOnce = null;
             //Debug.Log((1D/e.Time).ToString("C0").Split('¤')[1] + " FPS");
             Time.DeltaTime = e.Time;
             MouseState ms = Mouse.GetState();

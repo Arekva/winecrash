@@ -107,8 +107,11 @@ namespace Winecrash.Engine
 
         protected internal override void OnDelete()
         {
-            GL.DeleteBuffer(VertexBufferObject);
-            GL.DeleteVertexArray(VertexArrayObject);
+            Viewport.DoOnce += () =>
+            {
+                GL.DeleteBuffer(VertexBufferObject);
+                GL.DeleteVertexArray(VertexArrayObject);
+            };
 
             MeshRenderers.Remove(this);
             ActiveMeshRenderers.Remove(this);

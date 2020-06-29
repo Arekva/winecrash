@@ -79,6 +79,14 @@ namespace Winecrash.Client
             }
 
             this.WObject.Position = pos + fwd - rght + up;
+
+
+            if(Input.IsPressed(Keys.Delete))
+            {
+                World.Instance.WObject.Delete();
+
+                WEngine.TraceLayers();
+            }
         }
     }
 }

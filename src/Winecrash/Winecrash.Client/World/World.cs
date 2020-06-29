@@ -37,11 +37,11 @@ namespace Winecrash.Client
 
         protected override void Start()
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            /*Task.Run(() => */Ticket.CreateTicket(0, 0, StartLevel, TicketTypes.Start, TicketPreviousDirection.None, true)/*)*/;
-            sw.Stop();
-            Engine.Debug.Log("World created in " + sw.Elapsed.TotalMilliseconds.ToString("N2") + " ms");
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
+            Task.Run(() => Ticket.CreateTicket(0, 0, StartLevel, TicketTypes.Start, TicketPreviousDirection.None, true));
+            //sw.Stop();
+            //Engine.Debug.Log("World created in " + sw.Elapsed.TotalMilliseconds.ToString("N2") + " ms");
 
         }
 

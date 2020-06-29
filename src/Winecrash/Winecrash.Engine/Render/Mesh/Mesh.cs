@@ -26,7 +26,7 @@ namespace Winecrash.Engine
             this.Tangents = original.Tangents;
             this.Normals = original.Normals;
 
-            this.Apply();
+            this.Apply(true);
         }
 
         public Vector3F[] Vertices { get; set; }
@@ -40,7 +40,7 @@ namespace Winecrash.Engine
 
         internal bool AskedForApply { get; set; } = false;
 
-        public void Apply()
+        public void Apply(bool deleteWorkArrays)
         {
             Vertex = new float[this.Vertices.Length * 8];
 
@@ -65,6 +65,16 @@ namespace Winecrash.Engine
             //Indices = Triangles;
 
             Indices = this.Triangles/*.Reverse().ToArray()*/;
+
+            if(deleteWorkArrays)
+            {
+                Vertices = null;
+                Triangles = null;
+                UVs = null;
+                Tangents = null;
+                Normals = null;
+            }
+            
 
             AskedForApply = true;
         }

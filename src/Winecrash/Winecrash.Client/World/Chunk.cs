@@ -25,6 +25,7 @@ namespace Winecrash.Client
         public const int Depth = 16;
 
         internal short[,,] Blocks;
+        public Chunk[] Neighboors;
 
         public Ticket Ticket { get; internal set; }
 
@@ -34,14 +35,37 @@ namespace Winecrash.Client
             this.Ticket = ticket;
             this._Blocks = blocksCacheIndexes;
         }*/
+        protected override void OnDelete()
+        {
+            this.Neighboors = null;
+
+            this.Blocks = null;
+            this.Ticket = null;
+
+            base.OnDelete();
+        }
 
         protected override void Creation()
         {
             // this.Blocks = Generator.GetChunk(this.Ticket.Position.X, this.Ticket.Position.Y, out _);
             MeshRenderer mr = this.WObject.AddModule<MeshRenderer>();
-            mr.Mesh = new Mesh(World.DebugChunkMesh);
             mr.Material = new Material(Shader.Find("Standard"));
             mr.Material.SetData<int>("debug", 1);
+        }
+
+        public void RefreshNeighboors()
+        {
+            Neighboors = new Chunk[4];
+
+            //West
+            Neighboors[0] = Ticket.GetTicket(this.Ticket.Position + new Vector2I(-1, 0))?.Chunk;
+            //East
+            Neighboors[1] = Ticket.GetTicket(this.Ticket.Position + new Vector2I(1, 0))?.Chunk;
+
+            //North
+            Neighboors[2] = Ticket.GetTicket(this.Ticket.Position + new Vector2I(0, 1))?.Chunk;
+            //South
+            Neighboors[3] = Ticket.GetTicket(this.Ticket.Position + new Vector2I(0, -1))?.Chunk;
         }
 
         protected override void Start()
@@ -50,15 +74,23 @@ namespace Winecrash.Client
             this.Blocks = Generator.GetChunk(this.Ticket.Position.X, this.Ticket.Position.Y, out _);
 
             BuildChunk();
+
+            this.RunAsync = false;
         }
+
+
         public int Get1DIndex(int x, int y, int z)
         {
             return x + Width * y + Width * Height * z;
         }
 
+        
+
 
         public void BuildChunk()
         {
+            RefreshNeighboors();
+
             List<Vector3F> vertices = new List<Vector3F>();
             List<Vector2F> uv = new List<Vector2F>();
             List<Vector3F> normals = new List<Vector3F>();
@@ -128,11 +160,11 @@ namespace Winecrash.Client
                     Tangents = new Vector4F[vertices.Count]
                 };
 
-                m.Apply();
+                m.Apply(true);
 
 
                 MeshRenderer mr = this.WObject.GetModule<MeshRenderer>();
-                mr.Mesh.Delete();
+                mr.Mesh?.Delete();
                 mr.Mesh = m;
 
                 //Debug.Log("Created chunk mesh for " + this.WObject);
@@ -455,7 +487,31 @@ namespace Winecrash.Client
                 return ItemCache.Get(Blocks[x, y, z]).Identifier == "winecrash:air";
             }
 
-            else return true;
+            else
+            {
+
+                /*if(x < 0 && Neighboors[0] != null)
+                {
+                    return ItemCache.Get(Neighboors[0].Blocks[Width - 1, y, z]).Identifier == "winecrash:air";
+                }
+
+                if (x > Width - 1 && Neighboors[1] != null)
+                {
+                    return ItemCache.Get(Neighboors[1].Blocks[0, y, z]).Identifier == "winecrash:air";
+                }
+
+                if (y < 0 && Neighboors[2] != null)
+                {
+                    return ItemCache.Get(Neighboors[2].Blocks[x, y, Depth - 1]).Identifier == "winecrash:air";
+                }
+
+                if (y > Depth - 1 && Neighboors[3] != null)
+                {
+                    return ItemCache.Get(Neighboors[3].Blocks[x, y, 0]).Identifier == "winecrash:air";
+                }*/
+
+                return false; 
+            }
 
             /*else
             {
@@ -508,13 +564,7 @@ namespace Winecrash.Client
             }
         }
 
-        protected override void OnDelete()
-        {
-            this.Blocks = null;
-            this.Ticket = null;
-
-            base.OnDelete();
-        }
+        
 
         private string NoCompress()
         {

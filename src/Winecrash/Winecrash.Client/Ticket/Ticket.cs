@@ -208,6 +208,8 @@ namespace Winecrash.Client
 
             chunk.Group = 1000 + (this.Position.X / 8 + this.Position.Y / 8);
 
+            chunk.RunAsync = true;
+
             /*if (gen)
             {
                 Save(chunk, this.Position.X, this.Position.Y);
@@ -226,8 +228,12 @@ namespace Winecrash.Client
 
         public void Save()
         {
-
             Save(this.Chunk, this.Position.X, this.Position.Y);
+        }
+
+        public static Ticket GetTicket(Vector2I pos)
+        {
+            return _Tickets.FirstOrDefault(t => t.Position == pos);
         }
     }
 }

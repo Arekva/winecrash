@@ -8,6 +8,8 @@ namespace Winecrash.Engine
 {
     public class Module : BaseObject
     {
+        public bool RunAsync { get; set; } = false;
+
         private int _Group;
         public int Group 
         { 

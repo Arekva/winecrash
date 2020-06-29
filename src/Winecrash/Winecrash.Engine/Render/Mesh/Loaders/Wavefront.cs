@@ -60,7 +60,7 @@ namespace Winecrash.Engine.ModelLoaders
                 Name = newMesh.FileName
             };
 
-            mesh.Apply();
+            mesh.Apply(false);
 
             //mesh.RecalculateBounds(); *cough*
 

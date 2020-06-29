@@ -32,6 +32,7 @@ namespace Winecrash.Engine
         /// </summary>
         public Int64 Layer { get; set; } = 1L; // Default layer = 1;
 
+        
 
         private WObject _Parent = null;
         public WObject Parent

@@ -107,6 +107,7 @@ namespace Winecrash.Engine
                 
                 for (int i = 0; i < modules.Length; i++)
                 {
+                    if(modules[i] != null)
                     lock (modules[i])
                     {
                         if (modules[i].Deleted) continue;
@@ -114,10 +115,18 @@ namespace Winecrash.Engine
                         if (modules[i].StartDone == false)
                         {
                             modules[i].StartDone = true;
-                            modules[i].Start();
+                            if (modules[i].RunAsync)
+                            {
+                                Task.Run(modules[i].Start);
+                            }
+                            else
+                            {
+                                modules[i].Start();
+                            }
                         }
 
                         modules[i].Update();
+
                     }
                 }
 
