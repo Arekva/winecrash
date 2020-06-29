@@ -16,20 +16,23 @@ namespace Winecrash.Engine
         public Mesh Mesh { get; set; }
         public Material Material { get; set; }
 
-        internal static List<MeshRenderer> ActiveMeshRenderers = new List<MeshRenderer>();
-        internal static List<MeshRenderer> MeshRenderers = new List<MeshRenderer>();
+        internal static List<MeshRenderer> ActiveMeshRenderers { get; set; } = new List<MeshRenderer>();
+        internal static List<MeshRenderer> MeshRenderers { get; set; } = new List<MeshRenderer>();
 
         private int VertexBufferObject = -1;
         private int ElementBufferObject = -1;
         private int VertexArrayObject = -1;
 
-        
-        internal void Use(Matrix4 transform)
-        {
-            if (Deleted || Material == null) return;
-            if (Mesh == null || Mesh.Vertices == null || Mesh.Triangles == null) return;
+        public bool UseMask { get; set; } = true;
 
+        internal void Use(Camera sender)
+        {
+            if (Deleted || Material == null || Mesh == null) return;
+
+            Matrix4 transform = this.WObject.TransformMatrix * sender.ViewMatrix * sender.ProjectionMatrix;
             
+            //Debug.Log(transform);
+
             if (VertexBufferObject == -1)
             {
                 VertexBufferObject = GL.GenBuffer();
@@ -53,8 +56,6 @@ namespace Winecrash.Engine
 
             if (Mesh.AskedForApply)
             {
-                Debug.Log("Rebuilding the buffers for " + this.WObject.Name);
-
                 GL.BindVertexArray(VertexArrayObject);
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, this.VertexBufferObject);
@@ -73,27 +74,27 @@ namespace Winecrash.Engine
 
             
 
-            Material.Shader.SetAttribute("position", AttributeTypes.Vertice);
-            Material.Shader.SetAttribute("uv", AttributeTypes.UV);
-            Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
+            this.Material.Shader.SetAttribute("position", AttributeTypes.Vertice);
+            this.Material.Shader.SetAttribute("uv", AttributeTypes.UV);
+            this.Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
 
-            Material.SetData<Matrix4>("transform", transform);
+            this.Material.SetData<Matrix4>("transform", transform);
             //Material.SetData<Vector3>("scale", this);
 
             
 
-            Material.Use();
-            GL.DepthMask(true);
+            this.Material.Use();
+            GL.DepthMask(UseMask);
             GL.DrawElements(PrimitiveType.Triangles, tris.Length * 4, DrawElementsType.UnsignedInt, 0);
 
         }
 
         protected internal override void Creation()
         {
-            ActiveMeshRenderers.Add(this);
             MeshRenderers.Add(this);
             this.Group = -1;
         }
+
         protected internal override void OnEnable()
         {
             ActiveMeshRenderers.Add(this);

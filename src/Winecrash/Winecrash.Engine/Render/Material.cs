@@ -136,7 +136,7 @@ namespace Winecrash.Engine
 
                 else if(csType == typeof(Texture))
                 {
-                    if (Texture.Blank)
+                    if (Texture.Blank != null)
                     {
                         _Data[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Texture.Blank, shaderData[i].Type);
                     }

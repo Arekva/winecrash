@@ -25,6 +25,8 @@ namespace Winecrash.Engine
             this.UVs = original.UVs;
             this.Tangents = original.Tangents;
             this.Normals = original.Normals;
+
+            this.Apply();
         }
 
         public Vector3F[] Vertices { get; set; }

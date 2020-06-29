@@ -42,6 +42,7 @@ namespace Winecrash.Engine
 
         protected override void OnLoad(EventArgs e)
         {
+            new Texture();
             WObject camWobj = new WObject("Main Camera");
             camWobj.AddModule<Camera>();
 

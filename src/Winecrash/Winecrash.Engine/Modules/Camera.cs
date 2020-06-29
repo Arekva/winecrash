@@ -50,7 +50,7 @@ namespace Winecrash.Engine
             }
         }
 
-        private float _NearClip = 0.1F;
+        public float _NearClip = 0.1F;
         public float NearClip
         {
             get
@@ -63,7 +63,7 @@ namespace Winecrash.Engine
                 this._NearClip = WMath.Clamp(value, 0.01F, this._FarClip - 0.01F);
             }
         }
-        private float _FarClip = 100.0F;
+        public float _FarClip = 100.0F;
         public float FarClip
         {
             get
@@ -138,11 +138,14 @@ namespace Winecrash.Engine
             Matrix4 proj = this.ProjectionMatrix;
 
             
-            MeshRenderer[] mrs = MeshRenderer.ActiveMeshRenderers.Where(cam => (cam.WObject.Layer & this.RenderLayers) != 0).ToArray();
-            for (int i = 0; i < mrs.Length; i++)
+            MeshRenderer[] mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
+
+            MeshRenderer[] layerMrs = mrs.Where(mr => (mr.WObject.Layer & this.RenderLayers) != 0).ToArray();
+
+            
+            for (int i = 0; i < layerMrs.Length; i++)
             {
-                MeshRenderer mr = mrs[i];
-                mr.Use(mr.WObject.TransformMatrix * view * proj);
+                layerMrs[i].Use(this);
             }
         }
     }

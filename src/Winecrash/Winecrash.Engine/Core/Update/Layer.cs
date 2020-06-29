@@ -225,16 +225,8 @@ namespace Winecrash.Engine
                     doneEvents.Add(layer._Groups[j].DoneEvent);
                     layer._Groups[j].ResetEvent.Set(); //unlock thread
                 }
-                
-                try
-                {
-                    WaitHandle.WaitAll(doneEvents.ToArray()); //wait for all the threads of the group
-                }
-                catch
-                {
-                    MessageBox.Show(layer.Order.ToString());
-                }
-                
+
+                WaitHandle.WaitAll(doneEvents.ToArray()); //wait for all the threads of the group
             }
         }
 

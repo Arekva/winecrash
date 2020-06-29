@@ -15,9 +15,10 @@ namespace Winecrash.Client
         protected override void Creation()
         {
             SkyCam = this.WObject.AddModule<Camera>();
-            SkyCam.NearClip = 0.1F;
-            SkyCam.FarClip = 1.1F;
+            SkyCam._NearClip = 0.1F;
+            SkyCam._FarClip = 1.1F;
             SkyCam.Depth = -1000;
+            SkyCam.RenderLayers = 1L << 32;
         }
 
         protected override void Update()
@@ -27,6 +28,13 @@ namespace Winecrash.Client
                 SkyCam.FOV = ReferenceCamera.FOV;
                 SkyCam.WObject.Rotation = ReferenceCamera.WObject.Rotation;
             }
+        }
+
+        protected override void OnRender()
+        {
+
+
+            base.OnRender();
         }
 
         protected override void OnDelete()

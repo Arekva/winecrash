@@ -40,7 +40,7 @@ namespace Winecrash.Engine
             return Cache.Find(t => t.Name == name);
         }
 
-        public static Texture Blank { get; private set; }
+        public static Texture Blank { get; set; }
         /// <summary>
         /// DO NOT USE ! USED BY ACTIVATOR.
         /// </summary>
@@ -52,6 +52,9 @@ namespace Winecrash.Engine
                 this.Delete();
                 return;
             }
+            Debug.Log("Creating blanck");
+            Blank = this;
+
             this.Name = "Blanck";
             this.Size = new Vector2I(1, 1);
             byte[] blanck = new byte[4];
@@ -59,6 +62,7 @@ namespace Winecrash.Engine
             {
                 blanck[i] = 255;
             }
+
 
             this.Handle = GL.GenTexture();
 

@@ -19,6 +19,8 @@ namespace Winecrash.Client
 
         public static Mesh DebugChunkMesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront);
 
+        public static List<Chunk> SpawnNextUpdate = new List<Chunk>();
+
         protected override void Creation()
         {
             if(Instance)
@@ -37,9 +39,11 @@ namespace Winecrash.Client
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            Ticket.CreateTicket(0, 0, StartLevel, TicketTypes.Start, TicketPreviousDirection.None, true);
+            /*Task.Run(() => */Ticket.CreateTicket(0, 0, StartLevel, TicketTypes.Start, TicketPreviousDirection.None, true)/*)*/;
             sw.Stop();
             Engine.Debug.Log("World created in " + sw.Elapsed.TotalMilliseconds.ToString("N2") + " ms");
+
+            WEngine.TraceLayers();
         }
 
 

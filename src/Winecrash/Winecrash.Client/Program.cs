@@ -28,6 +28,10 @@ namespace Winecrash.Client
             Camera.Main.WObject.AddModule<FreeCam>();
             Camera.Main.RenderLayers &= ~(1L << 32);
 
+            
+            Camera.Main._FarClip = 1000.0F;
+            Camera.Main.FOV = 80.0F;
+
             CreateSkybox();
 
             ItemDef[] items = ItemCache.LoadItems();
@@ -36,10 +40,15 @@ namespace Winecrash.Client
                 Debug.Log("Loaded item " + items[i]);
             }
 
+            /*WObject test = new WObject("test");
+            MeshRenderer mr = test.AddModule<MeshRenderer>();
+            mr.Mesh = World.DebugChunkMesh;
+            mr.Material = new Material(Shader.Find("Standard"));*/
+
             WObject worldwobj = new WObject("World");
             worldwobj.AddModule<World>();
 
-            WEngine.TraceLayers();
+            
         }
 
 
@@ -58,6 +67,7 @@ namespace Winecrash.Client
             MeshRenderer mr = sky.AddModule<MeshRenderer>();
 
             mr.Mesh = Mesh.LoadFile("assets/models/Skybox.obj", MeshFormats.Wavefront);
+            mr.UseMask = false;
 
             mr.Material = new Material(Shader.Find("Skybox"));
             mr.Material.SetData<Vector4>("horizonColourDay", HorizonColourDay);

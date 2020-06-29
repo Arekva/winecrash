@@ -37,9 +37,19 @@ namespace Winecrash.Client
 
         protected override void Creation()
         {
-
+            // this.Blocks = Generator.GetChunk(this.Ticket.Position.X, this.Ticket.Position.Y, out _);
+            MeshRenderer mr = this.WObject.AddModule<MeshRenderer>();
+            mr.Mesh = new Mesh(World.DebugChunkMesh);
+            mr.Material = new Material(Shader.Find("Standard"));
+            mr.Material.SetData<int>("debug", 1);
         }
 
+        protected override void Start()
+        {
+            this.WObject.Scale = Vector3F.One * 0.5F;
+            this.WObject.LocalPosition = new Vector3F(this.Ticket.Position.X * Chunk.Width, 0, this.Ticket.Position.Y * Chunk.Depth);
+
+        }
         public int Get1DIndex(int x, int y, int z)
         {
             return x + Width * y + Width * Height * z;

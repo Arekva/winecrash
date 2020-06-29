@@ -30,7 +30,7 @@ namespace Winecrash.Engine
         /// 
         /// ex: 1<<32 = skybox
         /// </summary>
-        public Int64 Layer { get; set; } = (1L << 0); // Default layer = 1;
+        public Int64 Layer { get; set; } = 1L; // Default layer = 1;
 
 
         private WObject _Parent = null;
@@ -161,9 +161,9 @@ namespace Winecrash.Engine
                 Vector3F sca = this.Scale;
 
                 Matrix4 transform =
+                    Matrix4.CreateScale(sca.X, sca.Y, sca.Z) *
                     Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W)) *
                     Matrix4.CreateTranslation(tra.X, tra.Y, tra.Z) *
-                    Matrix4.CreateScale(sca.X, sca.Y, sca.Z) *
                     Matrix4.Identity;
 
                 return transform;

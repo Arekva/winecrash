@@ -107,15 +107,18 @@ namespace Winecrash.Engine
                 
                 for (int i = 0; i < modules.Length; i++)
                 {
-                    if (modules[i].Deleted) continue;
-
-                    if (!modules[i].StartDone)
+                    lock (modules[i])
                     {
-                        modules[i].StartDone = true;
-                        modules[i].Start();
-                    }
+                        if (modules[i].Deleted) continue;
 
-                    modules[i].Update();
+                        if (modules[i].StartDone == false)
+                        {
+                            modules[i].StartDone = true;
+                            modules[i].Start();
+                        }
+
+                        modules[i].Update();
+                    }
                 }
 
                 this.DoneEvent.Set(); //says the thread is done.      

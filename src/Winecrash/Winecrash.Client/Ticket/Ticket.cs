@@ -50,7 +50,7 @@ namespace Winecrash.Client
                 _Tickets.Add(ticket);
             }
 
-            Debug.Log("Creating ticket " + x  + ";" + y);
+            //Debug.Log("Creating ticket " + x  + ";" + y);
             //  Recursively create tickets around in a square shape
             //
             //  36 36 36 36 36 36 36   a.k.a    n+3 n+3 n+3 n+3 n+3 n+3 n+3
@@ -112,6 +112,7 @@ namespace Winecrash.Client
             this.Level = level;
             this.InvokeType = invokeType;
             this.LifeTime = lifeTime;
+
             Chunk = CreateChunk();
 
             OnCreation?.Invoke(this);
@@ -204,18 +205,13 @@ namespace Winecrash.Client
             Chunk chunk = chunkwobj.AddModule<Chunk>();
             chunkwobj.Parent = World.Instance.WObject;
             chunk.Ticket = this;
-            chunk.Blocks = Generator.GetChunk(this.Position.X, this.Position.Y, out bool gen);
-            chunkwobj.LocalPosition = new Vector3F((Chunk.Width / 2) * this.Position.X, 0, (Chunk.Width / 2) * this.Position.Y);
+            
+            chunk.Group = 1000 + (this.Position.X / 8 + this.Position.Y / 8);
 
-            MeshRenderer mr = chunkwobj.AddModule<MeshRenderer>();
-            mr.Mesh = World.DebugChunkMesh;
-            //mr.Material = new Material(Shader.Find("Standard"));
-
-
-            if (gen)
+            /*if (gen)
             {
                 Save(chunk, this.Position.X, this.Position.Y);
-            }
+            }*/
             return chunk;
         }
 
