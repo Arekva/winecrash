@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using LibNoise;
+
 namespace Winecrash.Client
 {
     public static class Generator
@@ -30,6 +32,8 @@ namespace Winecrash.Client
         {
             short[,,] blocks = new short[Chunk.Width, Chunk.Height, Chunk.Depth];
 
+            LibNoise.Primitive.SimplexPerlin perlin = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
+            
             for (int z = 0; z < Chunk.Depth; z++)
             {
                 for (int y = 0; y < Chunk.Height; y++)
@@ -38,40 +42,43 @@ namespace Winecrash.Client
                     {
                         string id = "winecrash:air";
 
-                        if (y < 64)
-                        {
-                            if (y == 63)
-                            {
-                                id = "winecrash:grass";
-                            }
-                            else if (y > 59)
-                            {
-                                id = "winecrash:dirt";
-                            }
-                            else
-                            {
-                                id = "winecrash:stone";
-                            }
+                        const float scale = 0.05F;
+                        const float shiftX = 10000;
+                        const float shiftZ = 10000;
 
-                            if (y == 2)
-                            {
-                                if (World.WorldRandom.NextDouble() < 0.33D)
-                                {
-                                    id = "winecrash:bedrock";
-                                }
-                            }
-                            if (y == 1)
-                            {
-                                if (World.WorldRandom.NextDouble() < 0.66D)
-                                {
-                                    id = "winecrash:bedrock";
-                                }
-                            }
-                            if (y == 0)
+                        int height = (int)(perlin.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 10) + 58;
+
+                        if(y == height)
+                        {
+                            id = "winecrash:grass";
+                        }
+                        else if(y < height)
+                        {
+                            if(y > height - 3)
+                                id = "winecrash:dirt";
+                            else
+                                id = "winecrash:stone";
+                        }
+
+                        if (y == 2)
+                        {
+                            if (World.WorldRandom.NextDouble() < 0.33D)
                             {
                                 id = "winecrash:bedrock";
                             }
                         }
+                        else if (y == 1)
+                        {
+                            if (World.WorldRandom.NextDouble() < 0.66D)
+                            {
+                                id = "winecrash:bedrock";
+                            }
+                        }
+                        else if (y == 0)
+                        {
+                            id = "winecrash:bedrock";
+                        }
+
 
                         //Server.Log(id);
                         blocks[x, y, z] = ItemCache.GetCacheIndex(id);//new Block(id);

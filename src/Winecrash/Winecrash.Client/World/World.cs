@@ -43,7 +43,6 @@ namespace Winecrash.Client
             sw.Stop();
             Engine.Debug.Log("World created in " + sw.Elapsed.TotalMilliseconds.ToString("N2") + " ms");
 
-            WEngine.TraceLayers();
         }
 
 

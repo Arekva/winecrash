@@ -32,6 +32,8 @@ namespace Winecrash.Client
             Camera.Main._FarClip = 1000.0F;
             Camera.Main.FOV = 80.0F;
 
+            Camera.Main.WObject.Position = Vector3F.Up * 64F;
+
             CreateSkybox();
 
             ItemDef[] items = ItemCache.LoadItems();

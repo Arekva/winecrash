@@ -205,7 +205,7 @@ namespace Winecrash.Client
             Chunk chunk = chunkwobj.AddModule<Chunk>();
             chunkwobj.Parent = World.Instance.WObject;
             chunk.Ticket = this;
-            
+
             chunk.Group = 1000 + (this.Position.X / 8 + this.Position.Y / 8);
 
             /*if (gen)
