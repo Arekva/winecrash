@@ -1,0 +1,12 @@
+{
+    "Transparent": false,
+    
+    "Textures": {
+      "Up": "assets/textures/blocks/bedrock.png",
+      "Down": "assets/textures/blocks/bedrock.png",
+      "West": "assets/textures/blocks/bedrock.png",
+      "East": "assets/textures/blocks/bedrock.png",
+      "North": "assets/textures/blocks/bedrock.png",
+      "South": "assets/textures/blocks/bedrock.png"
+    }
+  }

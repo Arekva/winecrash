@@ -67,7 +67,11 @@ namespace Winecrash.Engine
 
         internal protected virtual void Creation() { }
         internal protected virtual void Start() { }
+
+        internal protected virtual void PreUpdate() { }
         internal protected virtual void Update() { }
+
+        internal protected virtual void LateUpdate() { }
         internal protected virtual void OnDelete() { }
         internal protected virtual void OnEnable() { }
         internal protected virtual void OnDisable() { }

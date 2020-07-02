@@ -6,30 +6,11 @@ using System.Threading.Tasks;
 
 namespace Winecrash.Client
 {
-    public abstract class Item : IEquatable<Item>
+    public abstract class Item
     {
-        private short CacheIndex { get; set; } = 0;
+        public string Identifier { get; internal set; } = "winecrash:air";
 
-        public string Identifier
-        {
-            get
-            {
-                return this.Definition.Identifier;
-            }
-        }
-
-        internal protected ItemDef Definition
-        {
-            get
-            {
-                return ItemCache.Get(CacheIndex);
-            }
-        }
-
-        public Item(string identifier)
-        {
-            this.CacheIndex = ItemCache.GetCacheIndex(identifier);
-        }
+        public virtual void OnDeserialize() { }
 
         public bool Equals(Item other)
         {
@@ -39,6 +20,16 @@ namespace Winecrash.Client
         public override bool Equals(object obj)
         {
             return Equals(obj as Item);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Identifier.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{this.Identifier} ({this.GetType().Name})";
         }
 
     }

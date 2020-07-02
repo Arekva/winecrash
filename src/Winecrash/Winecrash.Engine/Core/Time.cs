@@ -14,7 +14,7 @@ namespace Winecrash.Engine
         public static double TimeScale { get; set; } = 1D;
 
 
-        public const double FixedDeltaTime = 1D / 16;
+        public const double FixedDeltaTime = 1D / 60;
         public static double FixedTimeScale { get; set; } = 1D;
 
         public static string ShortTime

@@ -1,0 +1,88 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Winecrash.Client
+{
+    internal static class ItemCache
+    {
+        private static readonly Dictionary<string, Item> _ItemsIdentifiers = new Dictionary<string, Item>();
+        private static readonly Dictionary<Item, ushort> _ItemsListIndexes = new Dictionary<Item, ushort>();
+        private static readonly Dictionary<string, ushort> _ItemIdentifiersIndexes = new Dictionary<string, ushort>();
+        private static readonly Dictionary<ushort, string> _ItemIndexesIdentifiers = new Dictionary<ushort, string>();
+        public static readonly List<Item> _ItemsList = new List<Item>();
+
+        public static T Get<T>(string identifier) where T : Item
+        {
+            return _ItemsIdentifiers[identifier] as T;
+        }
+        public static T Get<T>(int index) where T : Item
+        {
+            return _ItemsList[index] as T;
+        }
+        public static ushort GetIndex(Item item)
+        {
+            return _ItemsListIndexes[item];
+        }
+        public static ushort GetIndex(string identifier)
+        {
+            return _ItemIdentifiersIndexes[identifier];
+        }
+        public static string GetIdentifier(ushort index)
+        {
+            return _ItemIndexesIdentifiers[index];
+        }
+
+
+        public static bool TryGet<T>(string identifier, out T item) where T : Item
+        {
+            Item dbItem = _ItemsIdentifiers[identifier];
+
+            if(dbItem is T actualItem)
+            {
+                item = actualItem;
+                return true;
+            }
+
+            else
+            {
+                item = null;
+                return false;
+            }
+        }
+        public static bool TryGet<T>(int index, out T item) where T : Item
+        {
+            Item dbItem = _ItemsList[index];
+
+            if (dbItem is T actualItem)
+            {
+                item = actualItem;
+                return true;
+            }
+
+            else
+            {
+                item = null;
+                return false;
+            }
+        }
+        internal static void AddItems(IEnumerable<Item> items)
+        {
+            ushort baseIdx = (ushort)_ItemsList.Count;
+            foreach (Item item in items)
+            {
+                _ItemsIdentifiers.Add(item.Identifier, item);
+                _ItemsListIndexes.Add(item, baseIdx);
+                _ItemIdentifiersIndexes.Add(item.Identifier, baseIdx);
+                _ItemIndexesIdentifiers.Add(baseIdx, item.Identifier);
+
+                baseIdx++;
+            }
+
+            _ItemsList.AddRange(items);
+        }
+    }
+}

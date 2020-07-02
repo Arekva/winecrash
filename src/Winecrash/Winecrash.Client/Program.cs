@@ -6,6 +6,9 @@ using System.Windows.Forms;
 using Winecrash.Engine;
 using System.Threading;
 using OpenTK;
+using System.IO;
+
+using Newtonsoft.Json;
 
 namespace Winecrash.Client
 {
@@ -17,6 +20,11 @@ namespace Winecrash.Client
 
             WEngine.Run();
 
+            //Block b = new Block();
+            //b.Textures = new TexturePaths();
+            //File.WriteAllText("debug.json", JsonConvert.SerializeObject(b, Formatting.Indented));
+
+
             Viewport.OnLoaded += Start;
         }
 
@@ -27,20 +35,21 @@ namespace Winecrash.Client
 
             Camera.Main.WObject.AddModule<FreeCam>();
             Camera.Main.RenderLayers &= ~(1L << 32);
+            //Camera.Main.WObject.AddModule<RigidBody>();
 
-            
             Camera.Main._FarClip = 1000.0F;
             Camera.Main.FOV = 80.0F;
 
             Camera.Main.WObject.Position = Vector3F.Up * 80F;
 
+            Database db = Database.Load("assets/items/items.json");
+
+            db.ParseItems();
+
+            
+
             CreateSkybox();
 
-            ItemDef[] items = ItemCache.LoadItems();
-            for (short i = 0; i < items.Length; i++)
-            {
-                Debug.Log("Loaded item " + items[i]);
-            }
 
             /*WObject test = new WObject("test");
             MeshRenderer mr = test.AddModule<MeshRenderer>();
@@ -50,7 +59,7 @@ namespace Winecrash.Client
             WObject worldwobj = new WObject("World");
             worldwobj.AddModule<World>();
 
-            
+
         }
 
 
@@ -79,7 +88,7 @@ namespace Winecrash.Client
             mr.Material.SetData<Vector4>("groundAtmosphereColour", GroundAtmosphereColour);
 
             mr.Material.SetData<float>("sunSize", 0.025F);
-            mr.Material.SetData<Vector4>("sunInnerColor", new Color256(1.0D,1.0D,1.0D,1.0D));
+            mr.Material.SetData<Vector4>("sunInnerColor", new Color256(1.0D, 1.0D, 1.0D, 1.0D));
             mr.Material.SetData<Vector4>("sunOuterColor", new Color256(245D / 255D, 234D / 255D, 181D / 255D, 1.0D));
 
             sky.Layer = 1L << 32;

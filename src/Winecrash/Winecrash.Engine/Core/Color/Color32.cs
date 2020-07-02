@@ -12,10 +12,10 @@ namespace Winecrash.Engine
         public const byte MinValue = Byte.MinValue;
         public const byte MaxValue = Byte.MaxValue;
 
-        public byte R { get; private set; }
-        public byte G { get; private set; }
-        public byte B { get; private set; }
-        public byte A { get; private set; }
+        public byte R { get; set; }
+        public byte G { get; set; }
+        public byte B { get; set; }
+        public byte A { get; set; }
 
         public byte this[int i]
         {

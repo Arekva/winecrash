@@ -8,8 +8,12 @@ namespace Winecrash.Client
 {
     public class Block : Item
     {
-        public Block(string identifier) : base(identifier) { }
+        public bool Transparent { get; set; } = false;
 
-        public virtual void Tick() { }
+        public override void OnDeserialize()
+        {
+
+            base.OnDeserialize();
+        }
     }
 }

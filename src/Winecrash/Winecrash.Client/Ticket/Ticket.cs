@@ -203,8 +203,10 @@ namespace Winecrash.Client
         {
             WObject chunkwobj = new WObject($"Chunk [{this.Position.X};{this.Position.Y}]");
             Chunk chunk = chunkwobj.AddModule<Chunk>();
-            chunkwobj.Parent = World.Instance.WObject;
             chunk.Ticket = this;
+            //chunk.Position = new Vector3I(Position, 0);
+            chunkwobj.Parent = World.Instance.WObject;
+            
 
             chunk.Group = 1000 + (this.Position.X / 8 + this.Position.Y / 8);
 
@@ -233,7 +235,7 @@ namespace Winecrash.Client
 
         public static Ticket GetTicket(Vector2I pos)
         {
-            return _Tickets.FirstOrDefault(t => t.Position == pos);
+            return _Tickets.ToArray().FirstOrDefault(t => t.Position == pos);
         }
     }
 }

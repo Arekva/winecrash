@@ -14,6 +14,90 @@ namespace Winecrash.Engine
     public sealed class Texture : BaseObject
     {
         internal int Handle { get; private set; }
+
+        internal byte[] Data { get; set; }
+
+        public void SetPixel(int x, int y, Color32 color)
+        {
+            int i = x + Size.X * y;
+            this.Data[i] = color.R;
+            this.Data[i + 1] = color.G;
+            this.Data[i + 2] = color.B;
+            this.Data[i + 3] = color.A;
+        }
+
+        public Color32 GetPixel(int x, int y)
+        {
+            Color32 col = new Color32();
+            int i = x + Size.X * y;
+            col.R = this.Data[i];
+            col.G = this.Data[i + 1];
+            col.B = this.Data[i + 2];
+            col.A = this.Data[i + 3];
+            return col;
+        }
+
+        public void SetPixels(int x, int y, int width, int height, Color32[] colors)
+        {
+            if (colors == null) return;
+
+            int iColor = 0;
+            for (int texy = 0; texy < height; texy++)
+            {
+                for (int texx = 0; texx < width; texx++)
+                {
+                    int i = (x + texx) + Size.X * (y + texy);
+
+                    this.Data[i] = colors[iColor].R;
+                    this.Data[i + 1] = colors[iColor].G;
+                    this.Data[i + 2] = colors[iColor].B;
+                    this.Data[i + 3] = colors[iColor].A;
+
+                    iColor++;
+                }
+            }
+        }
+
+        public Color32[] GetPixels(int x, int y, int width, int height)
+        {
+            Color32[] colors = new Color32[width * height];
+
+            int iColor = 0;
+            for (int texy = 0; texy < height; texy++)
+            {
+                for (int texx = 0; texx < width; texx++)
+                {
+                    int i = (x + texx) + Size.X * (y + texy);
+
+                    colors[iColor] = new Color32(this.Data[i], this.Data[i + 1], this.Data[i + 2], this.Data[i + 3]);
+
+                    iColor++;
+                }
+            }
+
+            return colors;
+        }
+
+        public void Apply()
+        {
+            Viewport.DoOnce += () =>
+            {
+                this.Use();
+
+                GL.TexImage2D(TextureTarget.Texture2D,
+                            0,
+                            PixelInternalFormat.Rgba,
+                            this.Width,
+                            this.Height,
+                            0,
+                            OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
+                            PixelType.UnsignedByte,
+                            this.Data);
+            };
+        }
+
+
+
         public Vector2I Size { get; private set; }
         public int Width
         {
@@ -30,14 +114,11 @@ namespace Winecrash.Engine
             }
         }
 
-        [Obsolete("Not implemented yet")]
-        public bool ReadOnly { get; private set; } = true;
-
         internal static List<Texture> Cache { get; set; } = new List<Texture>();
 
         public static Texture Find(string name)
         {
-            return Cache.Find(t => t.Name == name);
+            return Cache.FirstOrDefault(t => t.Name == name);
         }
 
         public static Texture Blank { get; set; }
@@ -52,17 +133,18 @@ namespace Winecrash.Engine
                 this.Delete();
                 return;
             }
-            Debug.Log("Creating blanck");
+
             Blank = this;
 
-            this.Name = "Blanck";
+            this.Name = "Blank";
             this.Size = new Vector2I(1, 1);
-            byte[] blanck = new byte[4];
+            byte[] blank = new byte[4];
             for (int i = 0; i < 4; i++)
             {
-                blanck[i] = 255;
+                blank[i] = 255;
             }
 
+            this.Data = blank;
 
             this.Handle = GL.GenTexture();
 
@@ -76,7 +158,7 @@ namespace Winecrash.Engine
                         0,
                         OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
                         PixelType.UnsignedByte,
-                        blanck);
+                        blank);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
@@ -86,6 +168,23 @@ namespace Winecrash.Engine
 
             Blank = this;
             Cache.Add(this);
+        }
+
+        public Texture(int width, int height)
+        {
+            this.Size = new Vector2I(width, height);
+        }
+
+        public static Texture GetOrCreate(string path)
+        {
+            string name = path.Split('/', '\\').Last().Split('.')[0];
+            Texture tex = Texture.Find(name);
+            if(tex == null)
+            {
+                tex = new Texture(path, name);
+            }
+
+            return tex;
         }
 
         public Texture(string path, string name = null) : base(name)

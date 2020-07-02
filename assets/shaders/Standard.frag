@@ -11,6 +11,8 @@ uniform vec4 color;
 uniform vec4 mainLightColor;
 uniform vec4 mainLightAmbiant;
 uniform vec3 mainLightDirection;
+
+uniform int debug;
 //uniform sampler2D texture1;
 
 float remap(float value, float oldLow, float oldHigh, float newLow, float newHigh)
@@ -35,5 +37,13 @@ void main()
     //apply light
     diffuse = color * mainLightColor * diffuse * max(dot(mainLightDirection, Normal), 0.0) + mainLightAmbiant;
 
-    outputColor = vec4(diffuse.xyz, 1.0);
+    if(debug == 1)
+    {
+        outputColor = vec4(remap_v3(normalize(Normal), -1.0, 1.0, 0.0, 1.0), 1.0);
+    }
+
+    else
+    {
+        outputColor = vec4(diffuse.xyz, 1.0);
+    }
 }

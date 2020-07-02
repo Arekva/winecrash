@@ -1,0 +1,12 @@
+{
+    "Transparent": false,
+    
+    "Textures": {
+      "Up": "assets/textures/blocks/grass_top.png",
+      "Down": "assets/textures/blocks/dirt.png",
+      "West": "assets/textures/blocks/grass_side.png",
+      "East": "assets/textures/blocks/grass_side.png",
+      "North": "assets/textures/blocks/grass_side.png",
+      "South": "assets/textures/blocks/grass_side.png"
+    }
+  }

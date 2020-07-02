@@ -111,6 +111,7 @@ namespace Winecrash.Engine
             this.Normals = null;
 
             this.Vertex = null;
+            this.Indices = null;
 
             base.Delete();
         }

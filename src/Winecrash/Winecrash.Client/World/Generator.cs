@@ -12,7 +12,7 @@ namespace Winecrash.Client
 {
     public static class Generator
     {
-        public static short[,,] GetChunk(int x, int y, out bool generated)
+        public static ushort[] GetChunk(int x, int y, out bool generated)
         {
             string fileName = "save/" + $"c{x}_{y}.json";
 
@@ -28,11 +28,11 @@ namespace Winecrash.Client
             }
 
         }
-        private static short[,,] Generate(int chunkx, int chunky)
-        {
-            short[,,] blocks = new short[Chunk.Width, Chunk.Height, Chunk.Depth];
 
-            LibNoise.Primitive.SimplexPerlin perlin = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
+        static LibNoise.Primitive.SimplexPerlin perlin = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
+        private static ushort[] Generate(int chunkx, int chunky)
+        {
+            ushort[] blocks = new ushort[Chunk.Width * Chunk.Height * Chunk.Depth];
             
             for (int z = 0; z < Chunk.Depth; z++)
             {
@@ -42,11 +42,11 @@ namespace Winecrash.Client
                     {
                         string id = "winecrash:air";
 
-                        const float scale = 0.05F;
+                        const float scale = 0.025F;
                         const float shiftX = 10000;
                         const float shiftZ = 10000;
 
-                        int height = (int)(perlin.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 10) + 58;
+                        int height = (int)(perlin.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 5) + 60;
 
                         if(y == height)
                         {
@@ -81,24 +81,22 @@ namespace Winecrash.Client
 
 
                         //Server.Log(id);
-                        blocks[x, y, z] = ItemCache.GetCacheIndex(id);//new Block(id);
+                        blocks[x + Chunk.Width * y + Chunk.Width * Chunk.Height * z] = ItemCache.GetIndex(id);//new Block(id);
                     }
                 }
             }
 
             return blocks;
         }
-        private static short[,,] LoadFromSave(string path)
+        private static ushort[] LoadFromSave(string path)
         {
-            //string json = File.ReadAllText(path);
-
             JsonSerializer serializer = new JsonSerializer();
             using (StreamReader sr = File.OpenText(path))
             using (JsonTextReader jtr = new JsonTextReader(sr))
             {
-                DictionnaryChunk dc = (DictionnaryChunk)serializer.Deserialize(jtr, typeof(DictionnaryChunk));
+                JSONChunk dc = (JSONChunk)serializer.Deserialize(jtr, typeof(JSONChunk));
 
-                short[,,] blocks = new short[Chunk.Width, Chunk.Height, Chunk.Depth];
+                ushort[] blocks = new ushort[Chunk.Width * Chunk.Height * Chunk.Depth];
                 int chunkindex = 0;
 
                 for (int z = 0; z < Chunk.Depth; z++)
@@ -107,8 +105,7 @@ namespace Winecrash.Client
                     {
                         for (int x = 0; x < Chunk.Width; x++)
                         {
-                            blocks[x, y, z] = /*new Block(*/ItemCache.GetCacheIndex(dc.Dictionnary[dc.References[chunkindex]])/*)*/;
-                            chunkindex++;
+                            blocks[x + Chunk.Width * y + Chunk.Width * Chunk.Height * z] = ItemCache.GetIndex(dc.Palette[dc.Data[chunkindex++]]);
                         }
                     }
                 }

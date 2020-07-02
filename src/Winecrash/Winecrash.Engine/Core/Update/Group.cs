@@ -96,10 +96,12 @@ namespace Winecrash.Engine
             Thread.Start();
         }
 
+        internal static UpdateTypes UpdateType = UpdateTypes.PreUpdate;
         private void Update()
         {
             while (true)
             {
+                UpdateTypes ut = UpdateType;
                 this.ResetEvent.WaitOne(); //wait for reset event
                 this.ResetEvent.Reset(); //set reset event to false
 
@@ -112,18 +114,41 @@ namespace Winecrash.Engine
                     {
                         if (modules[i].Deleted) continue;
 
-                        if (modules[i].StartDone == false)
-                        {
-                            modules[i].StartDone = true;
-                            if (modules[i].RunAsync)
+                        switch(ut)
                             {
-                                Task.Run(modules[i].Start);
+                                case UpdateTypes.PreUpdate:
+                                    {
+                                        if (modules[i].StartDone == false)
+                                        {
+                                            modules[i].StartDone = true;
+                                            if (modules[i].RunAsync)
+                                            {
+                                                Task.Run(modules[i].Start);
+                                            }
+                                            else
+                                            {
+                                                modules[i].Start();
+                                            }
+                                        }
+
+
+                                        modules[i].PreUpdate();
+                                    }
+                                    break;
+
+                                case UpdateTypes.Update:
+                                    {
+                                        modules[i].Update();
+                                    }
+                                    break;
+
+                                case UpdateTypes.LateUpdate:
+                                    {
+                                        modules[i].LateUpdate();
+                                    }
+                                    break;
                             }
-                            else
-                            {
-                                modules[i].Start();
-                            }
-                        }
+                        
 
                         modules[i].Update();
 

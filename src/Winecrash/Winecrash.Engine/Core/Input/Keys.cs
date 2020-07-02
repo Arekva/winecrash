@@ -10,7 +10,7 @@ namespace Winecrash.Engine
     public enum Keys
     {
         MouseLeftButton = 1,
-        RMouseightButton = 2,
+        MouseRightButton = 2,
         MouseMiddleButton = 4,
         MouseFourthButton = 5,
         MouseFifthButton = 6,

@@ -699,5 +699,3 @@ namespace Winecrash.Engine
         #endregion
     }
 }
-
-
