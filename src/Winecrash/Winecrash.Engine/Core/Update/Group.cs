@@ -131,7 +131,6 @@ namespace Winecrash.Engine
                                             }
                                         }
 
-
                                         modules[i].PreUpdate();
                                     }
                                     break;
@@ -148,10 +147,8 @@ namespace Winecrash.Engine
                                     }
                                     break;
                             }
-                        
 
-                        modules[i].Update();
-
+                        //modules[i].Update();
                     }
                 }
 

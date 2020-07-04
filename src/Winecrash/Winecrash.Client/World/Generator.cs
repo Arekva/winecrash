@@ -30,7 +30,7 @@ namespace Winecrash.Client
         }
 
         static LibNoise.Primitive.SimplexPerlin perlin = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
-        private static ushort[] Generate(int chunkx, int chunky)
+        public static ushort[] Generate(int chunkx, int chunky, bool save = false, bool erase = false)
         {
             ushort[] blocks = new ushort[Chunk.Width * Chunk.Height * Chunk.Depth];
             
@@ -86,6 +86,19 @@ namespace Winecrash.Client
                 }
             }
 
+            if(save)
+            {
+                string fileName = "save/" + $"c{chunkx}_{chunky}.json";
+
+                if(erase)
+                    File.WriteAllText(fileName, ToJSON(blocks));
+
+                else if(!File.Exists(fileName))
+                {
+                    File.WriteAllText(fileName, ToJSON(blocks));
+                }
+            }
+
             return blocks;
         }
         private static ushort[] LoadFromSave(string path)
@@ -112,6 +125,40 @@ namespace Winecrash.Client
 
                 return blocks;
             }
+        }
+
+        private static string ToJSON(ushort[] blocks)
+        {
+            Dictionary<string, int> distinctIDs = new Dictionary<string, int>(64);
+
+            int[] blocksRef = new int[Chunk.TotalBlocks];
+
+            int chunkIndex = 0;
+            int paletteIndex = 0;
+
+            for (int z = 0; z < Chunk.Depth; z++)
+            {
+                for (int y = 0; y < Chunk.Height; y++)
+                {
+                    for (int x = 0; x < Chunk.Width; x++)
+                    {
+                        string id = ItemCache.GetIdentifier(blocks[x + Chunk.Width * y + Chunk.Width * Chunk.Height * z]);
+
+                        if (!distinctIDs.ContainsKey(id))
+                        {
+                            distinctIDs.Add(id, paletteIndex++);
+                        }
+
+                        blocksRef[chunkIndex++] = distinctIDs[id];
+                    }
+                }
+            }
+
+            return JsonConvert.SerializeObject(new JSONChunk()
+            {
+                Palette = distinctIDs.Keys.ToArray(),
+                Data = blocksRef
+            }, Formatting.None);
         }
     }
 }

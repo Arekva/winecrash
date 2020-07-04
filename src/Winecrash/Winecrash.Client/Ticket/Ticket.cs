@@ -201,6 +201,7 @@ namespace Winecrash.Client
 
         private Chunk CreateChunk()
         {
+           
             WObject chunkwobj = new WObject($"Chunk [{this.Position.X};{this.Position.Y}]");
             Chunk chunk = chunkwobj.AddModule<Chunk>();
             chunk.Ticket = this;

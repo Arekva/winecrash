@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Winecrash.Engine;
 using System.Threading;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace Winecrash.Client
 {
     public class ChunkEventArgs : EventArgs
     {
+        
         public Chunk Chunk { get; } = null;
 
         public ChunkEventArgs(Chunk chunk) : base()
@@ -63,7 +65,7 @@ namespace Winecrash.Client
         {
             return ItemCache.GetIdentifier(this._Blocks[x + Width * y + Width * Height * z]);
         }
-        public int GetBlockIndex(int x, int y, int z)
+        public ushort GetBlockIndex(int x, int y, int z)
         {
             return this._Blocks[x + Width * y + Width * Height * z];
         }
@@ -92,6 +94,11 @@ namespace Winecrash.Client
         /// </summary>
         public Vector3I Position { get; private set; }
 
+        public static Material ChunkMaterial;
+
+        public static int TexWidth;
+        public static int TexHeight;
+
 #region Neighbors
         /// <summary>
         /// Northern neighbor chunk
@@ -114,7 +121,7 @@ namespace Winecrash.Client
         /// <summary>
         /// All the chunks loaded into the game.
         /// </summary>
-        public static List<Chunk> Chunks { get; private set; } = new List<Chunk>(900);
+        public static List<Chunk> Chunks { get; private set; } = new List<Chunk>(1000);
 
 #region Loading Properties
         /// <summary>
@@ -153,16 +160,54 @@ namespace Winecrash.Client
         public static event ChunkLoadDelegate AnyChunkDeleted;
         #endregion
 
-#region Subscribers
+        #region Subscribers
         private void OnAnyChunkCreated(ChunkEventArgs args)
         {
             Chunk other = args.Chunk;
             if (other == this) return;
 
-            if (!NorthNeighbor && other.Position == this.Position + Vector3I.Up) NorthNeighbor = other;
-            else if (!SouthNeighbor && other.Position == this.Position + Vector3I.Down) SouthNeighbor = other;
-            else if (!WestNeighbor && other.Position == this.Position + Vector3I.Left) WestNeighbor = other;
-            else if (!EastNeighbor && other.Position == this.Position + Vector3I.Right) EastNeighbor = other;
+            if (!NorthNeighbor && other.Position == this.Position + Vector3I.Up)
+            {
+                NorthNeighbor = other;
+                /*if(other.BuiltOnce)
+                {
+                    other.Construct();
+                }*/
+            }
+            else if (!SouthNeighbor && other.Position == this.Position + Vector3I.Down)
+            {
+                SouthNeighbor = other;
+
+                /*if (other.BuiltOnce)
+                {
+                    other.Construct();
+                }*/
+            }
+            else if (!WestNeighbor && other.Position == this.Position + Vector3I.Left)
+            {
+                WestNeighbor = other;
+
+                /*if (other.BuiltOnce)
+                {
+                    other.Construct();
+                }*/
+            }
+            else if (!EastNeighbor && other.Position == this.Position + Vector3I.Right)
+            {
+                EastNeighbor = other;
+
+                /*if (other.BuiltOnce)
+                {
+                    other.Construct();
+                }*/
+            }
+
+            /*if(rebuild && BuiltOnce)
+            {
+                StopCurrentConstruction();
+
+                Construct();
+            }*/
         }
         private void OnAnyChunkDeleted(ChunkEventArgs args)
         {
@@ -230,8 +275,10 @@ namespace Winecrash.Client
 
             MeshRenderer mr = this.Renderer = this.WObject.AddModule<MeshRenderer>();
 
-            mr.Material = new Material(Shader.Find("Standard"));
-            mr.Material.SetData<int>("debug", 1);
+            mr.Material = Chunk.ChunkMaterial;
+               
+
+            Chunks.Add(this);
         }
 
         protected override void Start()
@@ -246,8 +293,18 @@ namespace Winecrash.Client
             this.WObject.Position = new Vector3F(this.Position.X * Width, 0, this.Position.Y * Depth);
 
             this._Blocks = Generator.GetChunk(this.Position.X, this.Position.Y, out _);
-            AnyChunkCreated?.Invoke(new ChunkEventArgs(this));
 
+            //pregenerate neighbors to compute transparency
+            //if (!File.Exists("save/" + $"c{this.Position.X - 1}_{this.Position.Y}.json"))
+            //    Generator.Generate(this.Position.X - 1, this.Position.Y, true, false); // west
+            //if (!File.Exists("save/" + $"c{this.Position.X + 1}_{this.Position.Y}.json"))
+            //    Generator.Generate(this.Position.X + 1, this.Position.Y, true, false); // east
+            //if (!File.Exists("save/" + $"c{this.Position.X}_{this.Position.Y - 1}.json"))
+            //    Generator.Generate(this.Position.X, this.Position.Y - 1, true, false); // south
+            //if (!File.Exists("save/" + $"c{this.Position.X}_{this.Position.Y + 1}.json"))
+            //    Generator.Generate(this.Position.X, this.Position.Y + 1, true, false); // north
+
+            AnyChunkCreated?.Invoke(new ChunkEventArgs(this));
 
             while (Loading >= LoadRate)  // Wait for other chunks to build.
                 Thread.Sleep(1);
@@ -255,9 +312,20 @@ namespace Winecrash.Client
             Loading++;
 
 
-            this.BuiltOnce = true;
-            this.Construct();
             
+
+            NorthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Up)?.Chunk;
+
+            SouthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Down)?.Chunk;
+
+            EastNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Right)?.Chunk;
+
+            WestNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Left)?.Chunk;
+
+
+            this.Construct();
+            this.BuiltOnce = true;
+
             Loading--;
             
             AnyChunkFirstBuilt?.Invoke(new ChunkEventArgs(this));
@@ -292,6 +360,9 @@ namespace Winecrash.Client
         {
             if (Constructing) return;
             Constructing = true;
+
+
+
             List<Vector3F> vertices = new List<Vector3F>();
             List<Vector2F> uv = new List<Vector2F>();
             List<Vector3F> normals = new List<Vector3F>();
@@ -312,6 +383,7 @@ namespace Winecrash.Client
             Stack<BlockFaces> faces = new Stack<BlockFaces>(6);
             uint triangle = 0;
             Item item = null;
+            ushort index = 0;
 
             for (int z = 0; z < Depth; z++)
             {
@@ -324,7 +396,10 @@ namespace Winecrash.Client
                             StopCurrentConstruct = false;
                             return;
                         }
-                        item = ItemCache.Get<Item>(this.GetBlockIndex(x, y, z));
+
+                        index = GetBlockIndex(x,y,z);
+
+                        item = ItemCache.Get<Item>(index);
 
                         if (item.Identifier == "winecrash:air") continue; // ignore if air
 
@@ -339,7 +414,8 @@ namespace Winecrash.Client
                         {
                             CreateVerticesCube(x, y, z, face, vertices);
 
-                            uv.AddRange(new Vector2F[6]); // no uv yet.
+                            CreateUVsCube(face, uv, index);
+                            //uv.AddRange(new Vector2F[6]); // no uv yet.
 
                             CreateNormalsCube(face, normals);
 
@@ -354,20 +430,43 @@ namespace Winecrash.Client
 
             if(vertices.Count != 0)
             {
-                Mesh m = new Mesh("Chunk Mesh")
+                if(Renderer.Mesh == null)
                 {
-                    Vertices = vertices.ToArray(),
-                    Triangles = triangles.ToArray(),
-                    UVs = uv.ToArray(),
-                    Normals = normals.ToArray(),
-                    Tangents = new Vector4F[vertices.Count]
-                };
+                    Mesh m = new Mesh("Chunk Mesh");
 
-                m.Apply(true);
+                    m.Vertices = vertices.ToArray();
+                    m.Triangles = triangles.ToArray();
+                    m.UVs = uv.ToArray();
+                    m.Normals = normals.ToArray();
+                    m.Tangents = new Vector4F[vertices.Count];
 
-                Renderer.Mesh?.Delete();
-                Renderer.Mesh = m;
+                    m.Apply(true);
+
+                    Renderer.Mesh = m;
+                }
+
+                else
+                {
+                    Mesh m = Renderer.Mesh;
+
+                    m.Vertices = vertices.ToArray();
+                    m.Triangles = triangles.ToArray();
+                    m.UVs = uv.ToArray();
+                    m.Normals = normals.ToArray();
+                    m.Tangents = new Vector4F[vertices.Count];
+
+                    m.Apply(true);
+                }
+
+                
+
+                vertices = null;
+                triangles = null;
+                uv = null;
+                normals = null;
             }
+
+            cwest = ceast = cnorth = csouth = null;
 
             Constructing = false;
         }
@@ -379,6 +478,62 @@ namespace Winecrash.Client
         private static Vector3F right = Vector3F.Right;
         private static Vector3F forward = Vector3F.Forward;
         private static Vector3F south = Vector3F.Backward;
+
+
+        private static void CreateUVsCube(BlockFaces face, List<Vector2F> uvs, int cubeIdx)
+        {
+            float faceIDX = 0;
+
+            switch(face)
+            {
+                case BlockFaces.East:
+                    faceIDX = 0;
+                    break;
+
+                case BlockFaces.West:
+                    faceIDX = 1;
+                    break;
+
+                case BlockFaces.Up:
+                    faceIDX = 2;
+                    break;
+
+                case BlockFaces.Down:
+                    faceIDX = 3;
+                    break;
+
+                case BlockFaces.North:
+                    faceIDX = 4;
+                    break;
+
+                case BlockFaces.South:
+                    faceIDX = 5;
+                    break;
+            }
+
+            float idx = (float)cubeIdx;
+            //cubeIdx = 1;//ItemCache.GetIndex("winecrash:grass");
+
+            uvs.AddRange(new[]
+            {
+                
+                
+                
+
+
+                
+                
+                new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //5
+                new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //4
+                new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //3
+
+                new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //2
+                new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //1
+                new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //0
+            });
+        }
+
+
         private static void CreateNormalsCube(BlockFaces face, List<Vector3F> normals)
         {
             switch (face)
@@ -535,6 +690,11 @@ namespace Winecrash.Client
             }
         }
 
+        JSONChunk cwest;
+        JSONChunk ceast;
+        JSONChunk cnorth;
+        JSONChunk csouth;
+
         private bool IsTranparent(int x, int y, int z)
         {
             //if outside world, yes
@@ -545,22 +705,80 @@ namespace Winecrash.Client
             {
                 if (x < 0) // check west neighbor
                 {
-                    return this.WestNeighbor ? this.WestNeighbor[15, y, z].Transparent : false;
+                    if(this.WestNeighbor != null && this.WestNeighbor._Blocks != null)
+                    {
+                        return this.WestNeighbor[15, y, z].Transparent;
+                    }
+
+                    else
+                    {
+                        return false;
+                        if(cwest == null)
+                        {
+                            cwest = (JSONChunk)JsonConvert.DeserializeObject(File.ReadAllText("save/" + $"c{this.Position.X - 1}_{this.Position.Y}.json"), typeof(JSONChunk));
+                        }
+
+                        return ItemCache.Get<Block>(cwest.Data[15 + Width * y + Width * Height * z]).Transparent;
+                    }
                 }
 
                 else if (x > 15) // check east neighbor
                 {
-                    return this.EastNeighbor ? this.EastNeighbor[0, y, z].Transparent : false;
+
+                    if (this.EastNeighbor != null && this.EastNeighbor._Blocks != null)
+                    {
+                        return this.EastNeighbor[0, y, z].Transparent;
+                    }
+
+                    else
+                    {
+                        return false;
+                        if (ceast == null)
+                        {
+                            ceast = (JSONChunk)JsonConvert.DeserializeObject(File.ReadAllText("save/" + $"c{this.Position.X + 1}_{this.Position.Y}.json"), typeof(JSONChunk));
+                        }
+
+                        return ItemCache.Get<Block>(ceast.Data[0 + Width * y + Width * Height * z]).Transparent;
+                    }
                 }
 
                 else if (z < 0) //check south neighbor
                 {
-                    return this.SouthNeighbor ? this.SouthNeighbor[x, y, 15].Transparent : false;
+                    if (this.SouthNeighbor != null && this.SouthNeighbor._Blocks != null)
+                    {
+                        return this.SouthNeighbor[x, y, 15].Transparent;
+                    }
+
+                    else
+                    {
+                        return false;
+                        if (csouth == null)
+                        {
+                            csouth = (JSONChunk)JsonConvert.DeserializeObject(File.ReadAllText("save/" + $"c{this.Position.X}_{this.Position.Y - 1}.json"), typeof(JSONChunk));
+                        }
+
+                        return ItemCache.Get<Block>(csouth.Data[x + Width * y + Width * Height * 15]).Transparent;
+                    }
                 }
 
                 else
                 {
-                    return this.NorthNeighbor ? this.NorthNeighbor[x, y, 0].Transparent : false;
+                    if (this.NorthNeighbor != null && this.NorthNeighbor._Blocks != null)
+                    {
+                        return this.NorthNeighbor[x, y, 0].Transparent;
+                    }
+
+                    
+                    else
+                    {
+                        return false;
+                        if (cnorth == null)
+                        {
+                            cnorth = (JSONChunk)JsonConvert.DeserializeObject(File.ReadAllText("save/" + $"c{this.Position.X}_{this.Position.Y + 1}.json"), typeof(JSONChunk));
+                        }
+
+                        return ItemCache.Get<Block>(cnorth.Data[x + Width * y + Width * Height * 0]).Transparent;
+                    }
                 }
             }
 

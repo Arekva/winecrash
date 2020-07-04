@@ -8,6 +8,7 @@ using System.Drawing.Imaging;
 using System.IO;
 
 using OpenTK.Graphics.OpenGL4;
+using System.Runtime.InteropServices;
 
 namespace Winecrash.Engine
 {
@@ -19,7 +20,8 @@ namespace Winecrash.Engine
 
         public void SetPixel(int x, int y, Color32 color)
         {
-            int i = x + Size.X * y;
+            int i = (x + Size.X * y) * 4;
+
             this.Data[i] = color.R;
             this.Data[i + 1] = color.G;
             this.Data[i + 2] = color.B;
@@ -28,34 +30,37 @@ namespace Winecrash.Engine
 
         public Color32 GetPixel(int x, int y)
         {
-            Color32 col = new Color32();
-            int i = x + Size.X * y;
-            col.R = this.Data[i];
-            col.G = this.Data[i + 1];
-            col.B = this.Data[i + 2];
-            col.A = this.Data[i + 3];
+            int i = (x + Size.X * y) * 4;
+
+            Color32 col = new Color32
+            {
+                R = this.Data[i],
+                G = this.Data[i + 1],
+                B = this.Data[i + 2],
+                A = this.Data[i + 3]
+            };
             return col;
         }
 
         public void SetPixels(int x, int y, int width, int height, Color32[] colors)
         {
-            if (colors == null) return;
+                if (colors == null) return;
 
-            int iColor = 0;
-            for (int texy = 0; texy < height; texy++)
-            {
-                for (int texx = 0; texx < width; texx++)
+                int iColor = 0;
+                for (int texy = 0; texy < height; texy++)
                 {
-                    int i = (x + texx) + Size.X * (y + texy);
+                    for (int texx = 0; texx < width; texx++)
+                    {
+                        int i = ((x + texx) + Size.X * (y + texy)) * 4;
 
-                    this.Data[i] = colors[iColor].R;
-                    this.Data[i + 1] = colors[iColor].G;
-                    this.Data[i + 2] = colors[iColor].B;
-                    this.Data[i + 3] = colors[iColor].A;
+                        this.Data[i] = colors[iColor].R;
+                        this.Data[i + 1] = colors[iColor].G;
+                        this.Data[i + 2] = colors[iColor].B;
+                        this.Data[i + 3] = colors[iColor].A;
 
-                    iColor++;
+                        iColor++;
+                    }
                 }
-            }
         }
 
         public Color32[] GetPixels(int x, int y, int width, int height)
@@ -67,7 +72,8 @@ namespace Winecrash.Engine
             {
                 for (int texx = 0; texx < width; texx++)
                 {
-                    int i = (x + texx) + Size.X * (y + texy);
+                    int i = ((x + texx) + Size.X * (y + texy)) * 4;
+
 
                     colors[iColor] = new Color32(this.Data[i], this.Data[i + 1], this.Data[i + 2], this.Data[i + 3]);
 
@@ -172,7 +178,21 @@ namespace Winecrash.Engine
 
         public Texture(int width, int height)
         {
+            this.Name = "Texture";
+            this.Handle = GL.GenTexture();
+
+            this.Use();
+
             this.Size = new Vector2I(width, height);
+            this.Data = new byte[4 * width * height];
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+            Cache.Add(this);
         }
 
         public static Texture GetOrCreate(string path)
@@ -198,35 +218,55 @@ namespace Winecrash.Engine
 
             try
             {
-                using (Bitmap img = new Bitmap(path))
+                unsafe
                 {
-                    var data = img.LockBits(
-                        new Rectangle(0, 0, img.Width, img.Height), 
-                        ImageLockMode.ReadOnly, 
-                        System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                    using (Bitmap img = new Bitmap(path))
+                    {
+                        BitmapData data = img.LockBits(
+                            new Rectangle(0, 0, img.Width, img.Height),
+                            ImageLockMode.ReadOnly,
+                            System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-                    GL.TexImage2D(TextureTarget.Texture2D,
-                        0,
-                        PixelInternalFormat.Rgba,
-                        img.Width,
-                        img.Height,
-                        0,
-                        OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
-                        PixelType.UnsignedByte,
-                        data.Scan0);
 
-                    this.Size = new Vector2I(img.Width, img.Height);
+                        uint* byteData = (uint*)data.Scan0;
+                        this.Data = new byte[4 * img.Width * img.Height];
+
+                        for (int i = 0; i < img.Width * img.Height; i++)
+                        {
+                            //reverse red and blue: bgra to rgba
+                            byteData[i] = (byteData[i] & 0x000000FF) << 16 | (byteData[i] & 0x0000FF00) | (byteData[i] & 0x00FF0000) >> 16 | (byteData[i] & 0xFF000000);
+
+                            //in order to reverse to array (flip upside down)
+                            byteData[i] = (byteData[i] & 0x000000FF) << 24 | (byteData[i] & 0x0000FF00) << 8 | (byteData[i] & 0x00FF0000) >> 8 | (byteData[i] & 0xFF000000) >> 24;
+                        }
+
+                        Marshal.Copy(data.Scan0, this.Data, 0, this.Data.Length);
+
+                        this.Data = this.Data.Reverse().ToArray();
+
+                        GL.TexImage2D(TextureTarget.Texture2D,
+                            0,
+                            PixelInternalFormat.Rgba,
+                            img.Width,
+                            img.Height,
+                            0,
+                            OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
+                            PixelType.UnsignedByte,
+                            this.Data);
+
+                        this.Size = new Vector2I(img.Width, img.Height);
+                    }
+
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+                    Cache.Add(this);
                 }
-
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-                Cache.Add(this);
             }
             catch(Exception e)
             {
@@ -249,6 +289,7 @@ namespace Winecrash.Engine
 
             GL.DeleteTexture(Handle);
             this.Handle = -1;
+            this.Data = null;
 
             base.Delete();
         }

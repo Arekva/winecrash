@@ -24,7 +24,6 @@ namespace Winecrash.Client
             //b.Textures = new TexturePaths();
             //File.WriteAllText("debug.json", JsonConvert.SerializeObject(b, Formatting.Indented));
 
-
             Viewport.OnLoaded += Start;
         }
 
@@ -46,15 +45,13 @@ namespace Winecrash.Client
 
             db.ParseItems();
 
-            
 
+            Material mat = Chunk.ChunkMaterial = new Material(Shader.Find("Standard"));
+            mat.SetData<Texture>("albedo", ItemCache.BuildChunkTexture(out int xsize, out int ysize));
+            mat.SetData<int>("debug", 0);
+            Chunk.TexWidth = xsize;
+            Chunk.TexHeight = ysize;
             CreateSkybox();
-
-
-            /*WObject test = new WObject("test");
-            MeshRenderer mr = test.AddModule<MeshRenderer>();
-            mr.Mesh = World.DebugChunkMesh;
-            mr.Material = new Material(Shader.Find("Standard"));*/
 
             WObject worldwobj = new WObject("World");
             worldwobj.AddModule<World>();
@@ -77,7 +74,7 @@ namespace Winecrash.Client
             WObject sky = new WObject("Skybox");
             MeshRenderer mr = sky.AddModule<MeshRenderer>();
 
-            mr.Mesh = Mesh.LoadFile("assets/models/Skybox.obj", MeshFormats.Wavefront);
+            mr.Mesh = Mesh.LoadFile("assets/models/Skysphere.obj", MeshFormats.Wavefront);
             mr.UseMask = false;
 
             mr.Material = new Material(Shader.Find("Skybox"));

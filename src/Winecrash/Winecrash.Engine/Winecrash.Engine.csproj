@@ -140,6 +140,7 @@
     <Compile Include="Render\Mesh\Mesh.cs" />
     <Compile Include="Render\Mesh\MeshFormats.cs" />
     <Compile Include="Render\Shader.cs" />
+    <Compile Include="Render\Text.cs" />
     <Compile Include="Render\Texture.cs" />
     <Compile Include="WEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

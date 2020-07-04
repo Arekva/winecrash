@@ -231,6 +231,29 @@ namespace Winecrash.Engine
                 WaitHandle.WaitAll(doneEvents.ToArray()); //wait for all the threads of the group
             }
 
+            //update
+            for (int i = 0; i < layers.Length; i++)
+            {
+                Group.UpdateType = UpdateTypes.Update;
+                Layer layer = layers[i];
+
+                if (layer.Deleted) continue;
+
+                List<ManualResetEvent> doneEvents = new List<ManualResetEvent>(layer._Groups.Count);
+
+                for (int j = 0; j < layer._Groups.Count; j++)
+                {
+                    if (layer._Groups[j].Deleted) continue;
+
+                    layer._Groups[j].DoneEvent.Reset();
+                    doneEvents.Add(layer._Groups[j].DoneEvent);
+                    layer._Groups[j].ResetEvent.Set(); //unlock thread
+                }
+
+                WaitHandle.WaitAll(doneEvents.ToArray()); //wait for all the threads of the group
+            }
+
+            //late update
             for (int i = 0; i < layers.Length; i++)
             {
                 Group.UpdateType = UpdateTypes.LateUpdate;

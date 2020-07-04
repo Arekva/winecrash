@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Winecrash.Engine;
 
 namespace Winecrash.Client
 {
@@ -13,7 +14,16 @@ namespace Winecrash.Client
         private static readonly Dictionary<Item, ushort> _ItemsListIndexes = new Dictionary<Item, ushort>();
         private static readonly Dictionary<string, ushort> _ItemIdentifiersIndexes = new Dictionary<string, ushort>();
         private static readonly Dictionary<ushort, string> _ItemIndexesIdentifiers = new Dictionary<ushort, string>();
-        public static readonly List<Item> _ItemsList = new List<Item>();
+        private static readonly List<Item> _ItemsList = new List<Item>();
+        public static ushort TotalItems
+        {
+            get
+            {
+                return (ushort)_ItemsList.Count;
+            }
+        }
+
+        public const ushort TextureSize = 16;
 
         public static T Get<T>(string identifier) where T : Item
         {
@@ -83,6 +93,60 @@ namespace Winecrash.Client
             }
 
             _ItemsList.AddRange(items);
+        }
+
+        private static uint NextPowerOfTwo(uint x)
+        {
+            x--;
+            x |= x >> 1;
+            x |= x >> 2;
+            x |= x >> 4;
+            x |= x >> 8;
+            //x |= x >> 16;
+            x++;
+
+            return x;
+        }
+
+        public static Texture BuildChunkTexture(out int xSize, out int ySize)
+        {
+            int texsize = (int)TextureSize;
+            int totalHeight = texsize * (int)TotalItems;
+            int totalWidth = texsize * 6; //6 faces
+
+            xSize = totalWidth;
+            ySize = totalHeight;
+
+            Texture tex = new Texture(totalWidth, totalHeight);
+
+            for (int y = 0; y < (int)TotalItems; y++)
+            {
+                if(ItemCache.TryGet<Cube>(y, out Cube c))
+                {
+                    //East
+                    tex.SetPixels(texsize * 0, y * texsize, texsize, texsize, c.EastTexture.GetPixels(0, 0, texsize, texsize));
+                    //West
+                    tex.SetPixels(texsize * 1, y * texsize, texsize, texsize, c.WestTexture.GetPixels(0, 0, texsize, texsize));
+
+                    //Up
+                    tex.SetPixels(texsize * 2, y * texsize, texsize, texsize, c.UpTexture.GetPixels(0, 0, texsize, texsize));
+                    //Down
+                    tex.SetPixels(texsize * 3, y * texsize, texsize, texsize, c.DownTexture.GetPixels(0, 0, texsize, texsize));
+
+
+                    //North
+                    tex.SetPixels(texsize * 4, y * texsize, texsize, texsize, c.NorthTexture.GetPixels(0,0, texsize, texsize));
+                    //South
+                    tex.SetPixels(texsize * 5, y * texsize, texsize, texsize, c.SouthTexture.GetPixels(0, 0, texsize, texsize));
+                }
+            }
+
+
+            tex.Apply();
+
+            //Texture tex1 = ItemCache.Get<Cube>("winecrash:grass").NorthTexture;
+            return tex;
+
         }
     }
 }

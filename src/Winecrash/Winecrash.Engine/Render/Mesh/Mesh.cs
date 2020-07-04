@@ -40,6 +40,10 @@ namespace Winecrash.Engine
 
         internal bool AskedForApply { get; set; } = false;
 
+        public delegate void MeshDeleteDelegate();
+
+        public event MeshDeleteDelegate OnDelete;
+
         public void Apply(bool deleteWorkArrays)
         {
             Vertex = new float[this.Vertices.Length * 8];
@@ -112,6 +116,9 @@ namespace Winecrash.Engine
 
             this.Vertex = null;
             this.Indices = null;
+
+            OnDelete?.Invoke();
+            OnDelete = null;
 
             base.Delete();
         }

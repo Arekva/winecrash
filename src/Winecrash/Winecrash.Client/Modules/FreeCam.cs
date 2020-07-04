@@ -82,8 +82,17 @@ namespace Winecrash.Client
 
             this.WObject.Position = pos + fwd - rght + up;
              
-
-
+            
+            if(Input.IsPressed(Keys.F3) && Input.IsPressing(Keys.A))
+            {
+                Debug.Log("Reconstructing");
+                Debug.Log(Chunk.Chunks.Count);
+                foreach (Chunk chunk in Chunk.Chunks)
+                {
+                    Task.Run(chunk.Construct);
+                }
+            }
+            
             /*Vector3D finalForce = Vector3D.Zero;
             Vector3D flattenFwd = fwd;
             flattenFwd.Y = 0.0D;

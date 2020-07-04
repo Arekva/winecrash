@@ -72,11 +72,6 @@ namespace Winecrash.Engine
             return new Color32(colour);
         }
 
-        public static implicit operator byte[](Color32 colour)
-        {
-            return new byte[3] { colour.A, colour.G, colour.R };
-        }
-
         public override string ToString()
         {
             return $"RGBA32({this.R};{this.G};{this.B};{this.A})";

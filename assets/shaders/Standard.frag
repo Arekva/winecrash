@@ -35,7 +35,7 @@ void main()
     vec4 diffuse = texture(albedo, texCoord);
 
     //apply light
-    diffuse = color * mainLightColor * diffuse * max(dot(mainLightDirection, Normal), 0.0) + mainLightAmbiant;
+    //diffuse = color * mainLightColor * diffuse * max(dot(mainLightDirection, Normal), 0.0) + mainLightAmbiant;
 
     if(debug == 1)
     {

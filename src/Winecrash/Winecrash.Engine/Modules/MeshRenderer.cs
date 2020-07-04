@@ -13,7 +13,20 @@ namespace Winecrash.Engine
 {
     public sealed class MeshRenderer : Module
     {
-        public Mesh Mesh { get; set; }
+        public Mesh Mesh
+        {
+            get
+            { 
+                return this._Mesh;
+            }
+
+            set
+            {
+                this._Mesh = value;
+            }
+        }
+        private Mesh _Mesh = null;
+
         public Material Material { get; set; }
 
         internal static List<MeshRenderer> ActiveMeshRenderers { get; set; } = new List<MeshRenderer>();
@@ -25,9 +38,10 @@ namespace Winecrash.Engine
 
         public bool UseMask { get; set; } = true;
 
+        private Mesh previousMesh = null;
         internal void Use(Camera sender)
         {
-            if (Deleted || Material == null || Mesh == null) return;
+            if (Deleted || Material == null || _Mesh == null) return;
 
             Matrix4 transform = this.WObject.TransformMatrix * sender.ViewMatrix * sender.ProjectionMatrix;
             
@@ -49,12 +63,10 @@ namespace Winecrash.Engine
             }
 
             
-            float[] vertex = Mesh.Vertex;
-            uint[] tris = Mesh.Indices;
+            float[] vertex = _Mesh.Vertex;
+            uint[] tris = _Mesh.Indices;
 
-            
-
-            if (Mesh.AskedForApply)
+            if (previousMesh != this._Mesh || _Mesh.AskedForApply)
             {
                 GL.BindVertexArray(VertexArrayObject);
 
@@ -64,13 +76,12 @@ namespace Winecrash.Engine
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.ElementBufferObject);
                 GL.BufferData(BufferTarget.ElementArrayBuffer, tris.Length * sizeof(uint), tris, BufferUsageHint.StaticDraw);
 
-                Mesh.AskedForApply = false;
+                _Mesh.AskedForApply = false;
             }
 
             
             GL.BindVertexArray(VertexArrayObject);
             GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObject);
 
             
 
@@ -85,8 +96,11 @@ namespace Winecrash.Engine
 
             this.Material.Use();
             GL.DepthMask(UseMask);
-            GL.DrawElements(PrimitiveType.Triangles, tris.Length * 4, DrawElementsType.UnsignedInt, 0);
 
+            if (_Mesh == null || _Mesh.Deleted || tris == null || VertexArrayObject == -1 || VertexBufferObject == -1) return;
+            GL.DrawElements(PrimitiveType.Triangles, tris.Length, DrawElementsType.UnsignedInt, 0);
+
+            previousMesh = this._Mesh;
         }
 
         protected internal override void Creation()
@@ -115,7 +129,7 @@ namespace Winecrash.Engine
 
             MeshRenderers.Remove(this);
             ActiveMeshRenderers.Remove(this);
-            this.Mesh = null;
+            this._Mesh = null;
         }
     }
 }
