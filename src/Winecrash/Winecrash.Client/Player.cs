@@ -434,7 +434,7 @@ namespace Winecrash.Client
                     this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) +
                     (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Forward * (float)_Bc.Extents.Z) * 0.8F,
-                Vector3D.Up), 0.05D, out _)
+                Vector3D.Up), 0.05D, out RaycastChunkHit hit)
 
             ||
             //front left
@@ -443,7 +443,7 @@ namespace Winecrash.Client
                     this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) +
                     (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Forward * (float)_Bc.Extents.Z) * 0.8F,
-                Vector3D.Up), 0.05D, out _)
+                Vector3D.Up), 0.05D, out hit)
             ||
             //back left
             RaycastChunk(
@@ -451,7 +451,7 @@ namespace Winecrash.Client
                     this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) +
                     (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.8F,
-                Vector3D.Up), 0.05D, out _)
+                Vector3D.Up), 0.05D, out hit)
             ||
             //back right
             RaycastChunk(
@@ -459,9 +459,13 @@ namespace Winecrash.Client
                     this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) +
                     (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.8F,
-                Vector3D.Up), 0.05D, out _))
+                Vector3D.Up), 0.05D, out hit))
             {
                 this._Rb.Velocity *= new Vector3D(1, 0, 1);
+
+                this.WObject.Position *= new Vector3F(1, 0, 1);
+
+                this.WObject.Position += Vector3F.Up * ((float)hit.LocalPosition.Y - (float)_Bc.Extents.Y - 0.05F);
             }
         }
         private void CheckGrounded()

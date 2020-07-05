@@ -25,6 +25,11 @@
             "Identifier": "winecrash:bedrock",
             "RuntimeType": "Winecrash.Client.Cube, Winecrash.Client",
             "Path": "assets/items/bedrock.json"
+        },
+        {
+            "Identifier": "winecrash:direction",
+            "RuntimeType": "Winecrash.Client.Cube, Winecrash.Client",
+            "Path": "assets/items/direction.json"
         }
     ]
 }

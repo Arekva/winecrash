@@ -1,0 +1,12 @@
+{
+    "Transparent": false,
+    
+    "Textures": {
+      "Up": "assets/textures/blocks/direction/dir_up.png",
+      "Down": "assets/textures/blocks/direction/dir_down.png",
+      "West": "assets/textures/blocks/direction/dir_left.png",
+      "East": "assets/textures/blocks/direction/dir_right.png",
+      "North": "assets/textures/blocks/direction/dir_forward.png",
+      "South": "assets/textures/blocks/direction/dir_backward.png"
+    }
+  }
