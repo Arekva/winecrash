@@ -30,6 +30,7 @@ namespace Winecrash.Client
         }
 
         static LibNoise.Primitive.SimplexPerlin perlin = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
+
         public static ushort[] Generate(int chunkx, int chunky, bool save = false, bool erase = false)
         {
             ushort[] blocks = new ushort[Chunk.Width * Chunk.Height * Chunk.Depth];

@@ -37,6 +37,7 @@ namespace Winecrash.Engine
         private int VertexArrayObject = -1;
 
         public bool UseMask { get; set; } = true;
+        public bool Wireframe { get; set; } = false;
 
         private Mesh previousMesh = null;
         internal void Use(Camera sender)
@@ -98,7 +99,7 @@ namespace Winecrash.Engine
             GL.DepthMask(UseMask);
 
             if (_Mesh == null || _Mesh.Deleted || tris == null || VertexArrayObject == -1 || VertexBufferObject == -1) return;
-            GL.DrawElements(PrimitiveType.Triangles, tris.Length, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(Wireframe ? PrimitiveType.LineLoop : PrimitiveType.Triangles, tris.Length, DrawElementsType.UnsignedInt, 0);
 
             previousMesh = this._Mesh;
         }

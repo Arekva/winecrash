@@ -8,7 +8,7 @@ namespace Winecrash.Engine
 {
     public static class Physics
     {
-        public static Vector3D Gravity { get; set; } = (Vector3D.Down * 9.81D) / 60.0D;
+        public static Vector3D Gravity { get; set; } = Vector3D.Down * 9.81D;
         /*public static bool Raycast(Ray ray, double length, out Vector3D position)
         {
 

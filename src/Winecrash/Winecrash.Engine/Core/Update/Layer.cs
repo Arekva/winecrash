@@ -195,9 +195,9 @@ namespace Winecrash.Engine
 
                 for (int j = 0; j < modules.Length; j++)
                 {
-                    if (modules[i] != cameras[i])
+                    if (modules[j] != cameras[i])
                     {
-                        modules[i].OnRender();
+                        modules[j].OnRender();
                     }
                 }
 

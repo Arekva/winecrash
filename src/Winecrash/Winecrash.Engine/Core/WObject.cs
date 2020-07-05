@@ -130,6 +130,17 @@ namespace Winecrash.Engine
             {
                 return this.Rotation * Vector3F.Up;
             }
+
+            set
+            {
+                this.Rotation = Quaternion.Identity;
+
+                this.Rotation *= new Quaternion(Vector3D.Up, Vector2D.Angle(Vector2D.Right, value.XZ) * WMath.RadToDeg);
+
+                this.Rotation *= new Quaternion(Vector3D.Right, Vector2D.Angle(Vector2D.Up, value.YZ) * WMath.RadToDeg);
+
+                this.Rotation *= new Quaternion(Vector3D.Forward, Vector2D.Angle(Vector2D.Up, value.XY) * WMath.RadToDeg);
+            }
         }
         public Vector3F Down
         {
@@ -233,7 +244,13 @@ namespace Winecrash.Engine
             for (int i = 0; i < _Children.Count; i++)
                 _Children[i].Enabled = status;
 
-            if(status == true && this._Parent)
+            Module[] modules = this._Modules.ToArray();
+            for (int i = 0; i < modules.Length; i++)
+            {
+                modules[i].Enabled = status;
+            }
+
+            if (status == true && this._Parent)
                 this._Parent.Enabled = true;
 
             base.SetEnable(status);

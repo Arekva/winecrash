@@ -15,7 +15,7 @@ namespace Winecrash.Client
     static class Program
     {
         static void Main()
-        {
+       {
             Task.Run(CreateDebugWindow);
 
             WEngine.Run();
@@ -32,23 +32,37 @@ namespace Winecrash.Client
             Input.LockMode = CursorLockModes.Lock;
             Input.CursorVisible = false;
 
-            Camera.Main.WObject.AddModule<FreeCam>();
+            Input.MouseSensivity *= 5.0F;
+
+            WObject playerWobj = new WObject("Player");
+            RigidBody rb = playerWobj.AddModule<RigidBody>();
+            BoxCollider bc = playerWobj.AddModule<BoxCollider>();
+
+            bc.Extents = new Vector3D(0.4F, 0.9F, 0.4F);
+
+            //rb.UseGravity = false;
+            playerWobj.AddModule<Player>();
+
+            
+
+
+            //Camera.Main.WObject.AddModule<FreeCam>();
             Camera.Main.RenderLayers &= ~(1L << 32);
             //Camera.Main.WObject.AddModule<RigidBody>();
 
             Camera.Main._FarClip = 1000.0F;
             Camera.Main.FOV = 80.0F;
 
-            Camera.Main.WObject.Position = Vector3F.Up * 80F;
+            playerWobj.Position = Vector3F.Up * 80F;
 
             Database db = Database.Load("assets/items/items.json");
 
             db.ParseItems();
 
 
-            Material mat = Chunk.ChunkMaterial = new Material(Shader.Find("Standard"));
+            Material mat = Chunk.ChunkMaterial = new Material(Shader.Find("Unlit"));
             mat.SetData<Texture>("albedo", ItemCache.BuildChunkTexture(out int xsize, out int ysize));
-            mat.SetData<int>("debug", 0);
+            mat.SetData<Vector4>("color", new Color256(1,1,1,1));
             Chunk.TexWidth = xsize;
             Chunk.TexHeight = ysize;
             CreateSkybox();

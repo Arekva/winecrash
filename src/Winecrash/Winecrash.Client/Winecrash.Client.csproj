@@ -78,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameInput.cs" />
     <Compile Include="GameManager.cs" />
     <Compile Include="Item\Block.cs" />
     <Compile Include="Item\BlockFaces.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Item\Database\ItemCache.cs" />
     <Compile Include="World\JSONChunk.cs" />
     <Compile Include="World\Chunk.cs" />
+    <Compile Include="World\RaycastChunkHit.cs" />
     <Compile Include="World\World.cs" />
     <EmbeddedResource Include="frmDebug.resx">
       <DependentUpon>frmDebug.cs</DependentUpon>

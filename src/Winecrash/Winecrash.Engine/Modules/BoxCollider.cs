@@ -11,6 +11,8 @@ namespace Winecrash.Engine
         internal static List<BoxCollider> BoxColliders = new List<BoxCollider>();
         internal static List<BoxCollider> ActiveBoxColliders = new List<BoxCollider>();
 
+        public Vector3D Extents { get; set; } = Vector3D.One;
+
         protected internal override void Creation()
         {
             BoxColliders.Add(this);

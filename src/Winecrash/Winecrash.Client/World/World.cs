@@ -68,20 +68,20 @@ namespace Winecrash.Client
             }
         }
 
-        public static void GlobalToLocal(Vector3I global, out Vector3I ChunkPosition, out Vector3I LocalPosition)
+        public static void GlobalToLocal(Vector3F global, out Vector3I ChunkPosition, out Vector3I LocalPosition)
         {
             ChunkPosition = new Vector3I(
-                (global.X / Chunk.Width) + (global.X < 0 ? -1 : 0), //X position
-                (global.Z / Chunk.Depth) + (global.Z < 0 ? -1 : 0), //Y position
+                ((int)global.X / Chunk.Width) + (global.X < 0.0F ? -1 : 0), //X position
+                ((int)global.Z / Chunk.Depth) + (global.Z < 0.0F ? -1 : 0), //Y position
                 0);                                                 //Z dimension
 
-            int localX = global.X % Chunk.Width;
+            float localX = global.X % Chunk.Width;
             if (localX < 0) localX += Chunk.Width;
 
-            int localZ = global.Z % Chunk.Depth;
+            float localZ = global.Z % Chunk.Depth;
             if (localZ < 0) localZ += Chunk.Depth;
 
-            LocalPosition = new Vector3I(localX, WMath.Clamp(global.Y, 0, 255), localZ);
+            LocalPosition = new Vector3I((int)localX, WMath.Clamp((int)global.Y, 0, 255), (int)localZ);
         }
     }
 }

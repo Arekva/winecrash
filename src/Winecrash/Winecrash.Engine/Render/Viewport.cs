@@ -58,7 +58,8 @@ namespace Winecrash.Engine
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
 
-            new Shader("assets/shaders/Standard.vert", "assets/shaders/Standard.frag");
+            new Shader("assets/shaders/Standard/Standard.vert", "assets/shaders/Standard/Standard.frag");
+            new Shader("assets/shaders/Unlit/Unlit.vert", "assets/shaders/Unlit/Unlit.frag");
 
             OnLoaded?.Invoke();
         }

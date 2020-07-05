@@ -160,7 +160,7 @@ namespace Winecrash.Engine
             }
         }
         /// <summary>
-        /// Positive Z
+        /// Negative Z
         /// </summary>
         public static Vector3F Backward
         {

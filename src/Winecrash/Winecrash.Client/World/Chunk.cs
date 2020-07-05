@@ -94,7 +94,7 @@ namespace Winecrash.Client
         /// </summary>
         public Vector3I Position { get; private set; }
 
-        public static Material ChunkMaterial;
+        public static Material ChunkMaterial { get; set; }
 
         public static int TexWidth;
         public static int TexHeight;
@@ -294,16 +294,6 @@ namespace Winecrash.Client
 
             this._Blocks = Generator.GetChunk(this.Position.X, this.Position.Y, out _);
 
-            //pregenerate neighbors to compute transparency
-            //if (!File.Exists("save/" + $"c{this.Position.X - 1}_{this.Position.Y}.json"))
-            //    Generator.Generate(this.Position.X - 1, this.Position.Y, true, false); // west
-            //if (!File.Exists("save/" + $"c{this.Position.X + 1}_{this.Position.Y}.json"))
-            //    Generator.Generate(this.Position.X + 1, this.Position.Y, true, false); // east
-            //if (!File.Exists("save/" + $"c{this.Position.X}_{this.Position.Y - 1}.json"))
-            //    Generator.Generate(this.Position.X, this.Position.Y - 1, true, false); // south
-            //if (!File.Exists("save/" + $"c{this.Position.X}_{this.Position.Y + 1}.json"))
-            //    Generator.Generate(this.Position.X, this.Position.Y + 1, true, false); // north
-
             AnyChunkCreated?.Invoke(new ChunkEventArgs(this));
 
             while (Loading >= LoadRate)  // Wait for other chunks to build.
@@ -356,6 +346,42 @@ namespace Winecrash.Client
                 StopCurrentConstruct = true;
         }
         private bool StopCurrentConstruct = false;
+
+        public void Edit(int x, int y, int z, Block b = null, bool async = true)
+        {
+            if(async)
+            {
+                Task.Run(() => PrivateEdit(x,y,z,b));
+            }
+
+            PrivateEdit(x,y,z,b);
+        }
+        private void PrivateEdit(int x, int y, int z, Block b = null)
+        {
+            if (b == null) b = ItemCache.Get<Block>("winecrash:air");
+
+            this[x, y, z] = b;
+
+            if (x == 0)
+            {
+                this.WestNeighbor?.Construct();
+            }
+            else if (x == 15)
+            {
+                this.EastNeighbor?.Construct();
+            }
+
+            if (z == 0)
+            {
+                this.SouthNeighbor?.Construct();
+            }
+            else if (z == 15)
+            {
+                this.NorthNeighbor?.Construct();
+            }
+
+            this.Construct();
+        }
         public void Construct()
         {
             if (Constructing) return;
@@ -514,23 +540,100 @@ namespace Winecrash.Client
             float idx = (float)cubeIdx;
             //cubeIdx = 1;//ItemCache.GetIndex("winecrash:grass");
 
-            uvs.AddRange(new[]
+            switch(face)
             {
-                
-                
-                
+                case BlockFaces.Up:
+                    {
+                        uvs.AddRange(new[]
+                        {
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //0
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //1
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //2
+                            
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //3
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //4
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //5
+                        });
+                    }
+                    break;
+
+                case BlockFaces.Down:
+                    {
+                        uvs.AddRange(new[]
+                        {
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1)* ItemCache.TextureSize / TexHeight), //top left
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //bottom left
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //top right
+
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //top right
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //bottom left
+                            new Vector2F((faceIDX ) * ItemCache.TextureSize / TexWidth, (idx)* ItemCache.TextureSize / TexHeight), //top left
+                        });
+                    }
+                    break;
+
+                case BlockFaces.North:
+                    {
+                        uvs.AddRange(new[]
+                        {
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //5
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //4
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //3
+
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //2
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //1
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //0
+                        });
+                    }
+                    break;
+
+                case BlockFaces.South:
+                    {
+                        uvs.AddRange(new[]
+                        {
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //0 topleft
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //2 bottom left
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //1 top right
+                            
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), // 4 top right
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //3 bottom left
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //5 bottom right
+                        });
+                    }
+                    break;
 
 
-                
-                
-                new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //5
-                new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //4
-                new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //3
+                case BlockFaces.West:
+                    {
+                        uvs.AddRange(new[]
+                        {
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //5
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //4
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //3
 
-                new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //2
-                new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //1
-                new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //0
-            });
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //2
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //1
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //0
+                        });
+                    }
+                    break;
+
+                case BlockFaces.East:
+                    {
+                        uvs.AddRange(new[]
+                        {
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //5
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //3
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //4
+                            
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //1
+                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //2
+                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //0
+                        });
+                    }
+                    break;
+            }
+            
         }
 
 

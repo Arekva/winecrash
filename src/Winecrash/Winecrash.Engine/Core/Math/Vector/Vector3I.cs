@@ -386,7 +386,10 @@ namespace Winecrash.Engine
             return new Vector3I((int)vec.X, (int)vec.Y, (int)vec.Z);
         }
 
-
+        public static implicit operator Vector3F(Vector3I vec)
+        {
+            return new Vector3F((int)vec.X, (int)vec.Y, (int)vec.Z);
+        }
 
         public static implicit operator OpenTK.Vector3(Vector3I vec)
         {
