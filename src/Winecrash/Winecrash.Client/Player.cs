@@ -239,6 +239,7 @@ namespace Winecrash.Client
             {
                 Debug.Log("Reconstructing");
                 Debug.Log(Chunk.Chunks.Count);
+                Debug.Log("Total Light size: " + (Chunk.Chunks.Count * sizeof(uint) * 8192));
                 foreach (Chunk chunk in Chunk.Chunks)
                 {
                     Task.Run(chunk.Construct);

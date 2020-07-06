@@ -35,7 +35,7 @@ namespace Winecrash.Engine
         public Vector4F[] Tangents { get; set; }
         public Vector3F[] Normals { get; set; }
 
-        internal float[] Vertex { get; private set; } = null;
+        internal float[] Vertex { get; set; } = null;
         internal uint[] Indices { get; private set; } = null;
 
         internal bool AskedForApply { get; set; } = false;

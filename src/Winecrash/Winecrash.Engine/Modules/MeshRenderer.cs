@@ -67,11 +67,13 @@ namespace Winecrash.Engine
             }
 
             
-            float[] vertex = _Mesh.Vertex;
+            
             uint[] tris = _Mesh.Indices;
 
             if (previousMesh != this._Mesh || _Mesh.AskedForApply)
             {
+                float[] vertex = _Mesh.Vertex;
+
                 GL.BindVertexArray(VertexArrayObject);
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, this.VertexBufferObject);
@@ -79,6 +81,8 @@ namespace Winecrash.Engine
                 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.ElementBufferObject);
                 GL.BufferData(BufferTarget.ElementArrayBuffer, tris.Length * sizeof(uint), tris, BufferUsageHint.StaticDraw);
+
+                _Mesh.Vertex = null;
 
                 _Mesh.AskedForApply = false;
             }

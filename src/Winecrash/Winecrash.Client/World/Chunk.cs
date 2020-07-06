@@ -432,6 +432,7 @@ namespace Winecrash.Client
         public void DiffuseLight(int basex, int basey, int basez, uint baseLevel,  BlockFaces comingFrom = BlockFaces.Up)
         {
             if (baseLevel == 0) return;
+
             int x = 0, y = 0, z = 0;
             uint level = baseLevel - 1;
             BlockFaces to;
@@ -517,6 +518,7 @@ namespace Winecrash.Client
         }
         public void GenerateLights()
         {
+            this._Light = new uint[8192];
             Block b;
             for (int z = 0; z < Chunk.Depth; z++)
             {
