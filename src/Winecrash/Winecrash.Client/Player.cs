@@ -17,7 +17,7 @@ namespace Winecrash.Client
         public float FallMaxSpeed = -10.0F;
 
         public float WalkForce = 10.0F;
-        public float JumpForce = 5.0F;
+        public float JumpForce = 8F;
 
         public float JumpCooldown = 0.25F;
         private float TimeSinceLastJump = 0.0F;

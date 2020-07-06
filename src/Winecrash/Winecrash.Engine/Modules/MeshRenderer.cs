@@ -70,6 +70,7 @@ namespace Winecrash.Engine
             
             uint[] tris = _Mesh.Indices;
 
+
             if (previousMesh != this._Mesh || _Mesh.AskedForApply)
             {
                 float[] vertex = _Mesh.Vertex;

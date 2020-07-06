@@ -34,6 +34,8 @@ namespace Winecrash.Client
 
             Input.MouseSensivity *= 5.0F;
 
+            Physics.Gravity = new Vector3D(0, -27, 0);
+
             WObject playerWobj = new WObject("Player");
             RigidBody rb = playerWobj.AddModule<RigidBody>();
             BoxCollider bc = playerWobj.AddModule<BoxCollider>();
