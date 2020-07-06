@@ -12,7 +12,7 @@ namespace Winecrash.Client
     {
         public Camera FPSCamera;
 
-        public float WalkMaxSpeed = 2.8F;
+        public float WalkMaxSpeed = 1.5F;
         public float RunMaxSpeed = 5.0F;
         public float FallMaxSpeed = -10.0F;
 

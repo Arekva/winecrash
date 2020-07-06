@@ -235,45 +235,19 @@ namespace Winecrash.Client
             if (!NorthNeighbor && other.Position == this.Position + Vector3I.Up)
             {
                 NorthNeighbor = other;
-                /*if(other.BuiltOnce)
-                {
-                    other.Construct();
-                }*/
             }
             else if (!SouthNeighbor && other.Position == this.Position + Vector3I.Down)
             {
                 SouthNeighbor = other;
-
-                /*if (other.BuiltOnce)
-                {
-                    other.Construct();
-                }*/
             }
             else if (!WestNeighbor && other.Position == this.Position + Vector3I.Left)
             {
                 WestNeighbor = other;
-
-                /*if (other.BuiltOnce)
-                {
-                    other.Construct();
-                }*/
             }
             else if (!EastNeighbor && other.Position == this.Position + Vector3I.Right)
             {
                 EastNeighbor = other;
-
-                /*if (other.BuiltOnce)
-                {
-                    other.Construct();
-                }*/
             }
-
-            /*if(rebuild && BuiltOnce)
-            {
-                StopCurrentConstruction();
-
-                Construct();
-            }*/
         }
         private void OnAnyChunkDeleted(ChunkEventArgs args)
         {
@@ -357,14 +331,68 @@ namespace Winecrash.Client
 
             this.Renderer.OnRender += () =>
             {
+                if (lightSSBO == -1) return;
+
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, lightSSBO);
 
                 int idx = GL.GetProgramResourceIndex(Renderer.Material.Shader.Handle, ProgramInterface.ShaderStorageBlock, "chunk_lights");
 
                 if (idx != -1)
                 {
-                    GL.ShaderStorageBlockBinding(Renderer.Material.Shader.Handle, idx, 8);
-                    GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 8, lightSSBO);
+                    GL.ShaderStorageBlockBinding(Renderer.Material.Shader.Handle, idx, 10);
+                    GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 10, lightSSBO);
+                }
+
+                if(NorthNeighbor && NorthNeighbor.lightSSBO != -1)
+                {
+                    GL.BindBuffer(BufferTarget.ShaderStorageBuffer, NorthNeighbor.lightSSBO);
+
+                    idx = GL.GetProgramResourceIndex(Renderer.Material.Shader.Handle, ProgramInterface.ShaderStorageBlock, "north_chunk_lights");
+
+                    if (idx != -1)
+                    {
+                        GL.ShaderStorageBlockBinding(Renderer.Material.Shader.Handle, idx, 11);
+                        GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 11, NorthNeighbor.lightSSBO);
+                    }
+                }
+
+                if(SouthNeighbor && SouthNeighbor.lightSSBO != -1)
+                {
+                    GL.BindBuffer(BufferTarget.ShaderStorageBuffer, SouthNeighbor.lightSSBO);
+
+                    idx = GL.GetProgramResourceIndex(Renderer.Material.Shader.Handle, ProgramInterface.ShaderStorageBlock, "south_chunk_lights");
+
+                    if (idx != -1)
+                    {
+                        GL.ShaderStorageBlockBinding(Renderer.Material.Shader.Handle, idx, 12);
+                        GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 12, SouthNeighbor.lightSSBO);
+                    }
+                }
+
+                if(EastNeighbor && EastNeighbor.lightSSBO != -1)
+                {
+                    GL.BindBuffer(BufferTarget.ShaderStorageBuffer, EastNeighbor.lightSSBO);
+
+                    idx = GL.GetProgramResourceIndex(Renderer.Material.Shader.Handle, ProgramInterface.ShaderStorageBlock, "east_chunk_lights");
+
+                    if (idx != -1)
+                    {
+                        GL.ShaderStorageBlockBinding(Renderer.Material.Shader.Handle, idx, 13);
+                        GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 13, EastNeighbor.lightSSBO);
+                    }
+                }
+
+                if(WestNeighbor && WestNeighbor.lightSSBO != -1)
+                {
+                    GL.BindBuffer(BufferTarget.ShaderStorageBuffer, WestNeighbor.lightSSBO);
+
+                    idx = GL.GetProgramResourceIndex(Renderer.Material.Shader.Handle, ProgramInterface.ShaderStorageBlock, "west_chunk_lights");
+
+                    if (idx != -1)
+                    {
+                        GL.ShaderStorageBlockBinding(Renderer.Material.Shader.Handle, idx, 14);
+                        GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 14, WestNeighbor.lightSSBO);
+                    }
                 }
             };
 
@@ -390,15 +418,9 @@ namespace Winecrash.Client
 
             Loading++;
 
-
-            
-
             NorthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Up)?.Chunk;
-
             SouthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Down)?.Chunk;
-
             EastNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Right)?.Chunk;
-
             WestNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Left)?.Chunk;
 
 
@@ -437,6 +459,9 @@ namespace Winecrash.Client
             uint level = baseLevel - 1;
             BlockFaces to;
             BlockFaces from = BlockFaces.Up;
+
+            Chunk c;
+
             for (int i = 0; i < 6; i++)
             {
                 to = (BlockFaces)i;
@@ -506,10 +531,43 @@ namespace Winecrash.Client
                         break;
                 }
 
-                if (x < 0 || x > Chunk.Width - 1 || y < 0 || y > Chunk.Height - 1 || z < 0 || z > Chunk.Depth - 1) return;
+                if (x < 0 || x > 15 || y < 0 || y > 255 || z < 0 || z > 15) return;
+
+                /*if (y < 0 || y > Chunk.Height - 1) return;
+
+
+                if (x < 0 && WestNeighbor != null)
+                {
+                    c = WestNeighbor;
+                    x = 15;
+                }
+
+                else if (x > Chunk.Width - 1 && EastNeighbor != null)
+                {
+                    c = EastNeighbor;
+                    x = 0;
+                }
+
+                else if (z < 0 && SouthNeighbor != null)
+                {
+                    c = SouthNeighbor;
+                    z = 15;
+                }
+
+                else if (z > Chunk.Depth - 1 && NorthNeighbor != null)
+                {
+                    c = NorthNeighbor;
+                    z = 0;
+                }
+
+                else
+                {*/
+                    //c = this;
+                //}
+
 
                 uint lvl = GetLightLevel(x, y, z);
-                if (!this[x,y,z].Transparent || lvl >= level) continue;
+                if (!this[x,y,z].Transparent || lvl > level - 1) continue;
 
                 SetLightLevel(x, y, z, level);
 

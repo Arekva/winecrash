@@ -3,32 +3,32 @@
     [
         {
             "Identifier": "winecrash:air",
-            "RuntimeType": "Winecrash.Client.Block, Winecrash.Client",
+            "RuntimeType": "Winecrash.Client.Block, Winecrash",
             "Path": "assets/items/air.json"
         },
         {
             "Identifier": "winecrash:grass",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash.Client",
+            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
             "Path": "assets/items/grass.json"
         },
         {
             "Identifier": "winecrash:dirt",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash.Client",
+            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
             "Path": "assets/items/dirt.json"
         },
         {
             "Identifier": "winecrash:stone",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash.Client",
+            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
             "Path": "assets/items/stone.json"
         },
         {
             "Identifier": "winecrash:bedrock",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash.Client",
+            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
             "Path": "assets/items/bedrock.json"
         },
         {
             "Identifier": "winecrash:direction",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash.Client",
+            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
             "Path": "assets/items/direction.json"
         }
     ]
