@@ -23,6 +23,7 @@ namespace Winecrash.Engine
         public static event UpdateEventHandler Update;
         public static event UpdateEventHandler Render;
         public static event ViewportDoOnceDelegate DoOnce;
+        public static event ViewportDoOnceDelegate DoOnceRender;
 
         public static event ViewportLoadDelegate OnLoaded;
 
@@ -67,8 +68,8 @@ namespace Winecrash.Engine
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            //Layer.Render
-
+            DoOnceRender?.Invoke();
+            DoOnceRender = null;
             Render?.Invoke(new UpdateEventArgs(e.Time));
             
             SwapBuffers();

@@ -31,7 +31,7 @@ namespace Winecrash.Engine
             Cache.Add(this);
             this.Shader = shader;
 
-            this.Name = "Material[" + shader.Name + "]";
+            this.Name = shader.Name;
         }
 
         private class MaterialData
@@ -102,7 +102,17 @@ namespace Winecrash.Engine
                         this.SetFloat(data.Location, (float)data.Data);
                         break;
                     case ActiveUniformType.Int:
-                        this.SetInt(data.Location, (int)data.Data);
+                        {
+                            if (data.GetType() == typeof(int[]))
+                            {
+                                this.SetIntArray(data.Location, (int[])data.Data);
+                            }
+
+                            else
+                            {
+                                this.SetInt(data.Location, (int)data.Data);
+                            }
+                        }
                         break;
                     case ActiveUniformType.FloatVec4:
                         this.SetVector4(data.Location, (Vector4)data.Data);
@@ -125,10 +135,12 @@ namespace Winecrash.Engine
             Shader.ShaderUniformData[] shaderData = this._Shader.Uniforms;
             this._Data = new MaterialData[shaderData.Length];
 
+            
 
             for (int i = 0; i < shaderData.Length; i++)
             {
                 Type csType = GetCsharpType(shaderData[i].Type);
+
                 if (csType == null)
                 {
                     Debug.LogError("Unknown type \"" + shaderData[i].Type + "\", ignoring.");
@@ -161,6 +173,7 @@ namespace Winecrash.Engine
                 ActiveUniformType.Double => typeof(double),
                 ActiveUniformType.Float => typeof(float),
                 ActiveUniformType.Int => typeof(int),
+                ActiveUniformType.UnsignedInt => typeof(uint),
                 ActiveUniformType.FloatVec4 => typeof(Vector4),
                 ActiveUniformType.FloatVec3 => typeof(Vector3),
                 ActiveUniformType.FloatVec2 => typeof(Vector2),
@@ -251,6 +264,11 @@ namespace Winecrash.Engine
         private void SetVector4(int location, Vector4 data)
         {
             GL.Uniform4(location, ref data);
+        }
+
+        private void SetIntArray(int location, int[] data)
+        {
+            GL.Uniform3(location, data.Length, data);
         }
 
 

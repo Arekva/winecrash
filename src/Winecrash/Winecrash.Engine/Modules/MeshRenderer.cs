@@ -11,6 +11,7 @@ using System.Diagnostics;
 
 namespace Winecrash.Engine
 {
+    public delegate void MeshRenderDelegate();
     public sealed class MeshRenderer : Module
     {
         public Mesh Mesh
@@ -35,6 +36,8 @@ namespace Winecrash.Engine
         private int VertexBufferObject = -1;
         private int ElementBufferObject = -1;
         private int VertexArrayObject = -1;
+
+        public event MeshRenderDelegate OnRender;
 
         public bool UseMask { get; set; } = true;
         public bool Wireframe { get; set; } = false;
@@ -97,6 +100,8 @@ namespace Winecrash.Engine
 
             this.Material.Use();
             GL.DepthMask(UseMask);
+
+            OnRender?.Invoke();
 
             if (_Mesh == null || _Mesh.Deleted || tris == null || VertexArrayObject == -1 || VertexBufferObject == -1) return;
             GL.DrawElements(Wireframe ? PrimitiveType.LineLoop : PrimitiveType.Triangles, tris.Length, DrawElementsType.UnsignedInt, 0);

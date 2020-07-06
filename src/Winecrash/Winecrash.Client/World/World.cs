@@ -73,7 +73,7 @@ namespace Winecrash.Client
             ChunkPosition = new Vector3I(
                 ((int)global.X / Chunk.Width) + (global.X < 0.0F ? -1 : 0), //X position
                 ((int)global.Z / Chunk.Depth) + (global.Z < 0.0F ? -1 : 0), //Y position
-                0);                                                 //Z dimension
+                0);                                                         //Z dimension
 
             float localX = global.X % Chunk.Width;
             if (localX < 0) localX += Chunk.Width;

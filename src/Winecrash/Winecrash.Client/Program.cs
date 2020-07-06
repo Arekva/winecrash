@@ -59,10 +59,9 @@ namespace Winecrash.Client
 
             db.ParseItems();
 
+            new Shader("assets/shaders/chunk/Chunk.vert", "assets/shaders/chunk/Chunk.frag");
 
-            Material mat = Chunk.ChunkMaterial = new Material(Shader.Find("Unlit"));
-            mat.SetData<Texture>("albedo", ItemCache.BuildChunkTexture(out int xsize, out int ysize));
-            mat.SetData<Vector4>("color", new Color256(1,1,1,1));
+            Chunk.ChunkTexture = ItemCache.BuildChunkTexture(out int xsize, out int ysize);
             Chunk.TexWidth = xsize;
             Chunk.TexHeight = ysize;
             CreateSkybox();

@@ -197,9 +197,11 @@ namespace Winecrash.Client
 
                 if (Input.IsPressing(Keys.MouseRightButton))
                 {
-                    Vector3I p = ViewRayHit.Value.LocalPosition + (Vector3I)ViewRayHit.Value.Normal;
+                    World.GlobalToLocal(ViewRayHit.Value.GlobalPosition + ViewRayHit.Value.Normal, out Vector3I cpos, out Vector3I bpos);
 
-                    ViewRayHit.Value.Chunk.Edit(p.X, p.Y, p.Z, ItemCache.Get<Block>("winecrash:stone"));
+                    Ticket tck = Ticket.GetTicket(new Vector2I(cpos.X, cpos.Y));
+
+                    tck?.Chunk.Edit(bpos.X, bpos.Y, bpos.Z, ItemCache.Get<Block>("winecrash:stone"));
                 }
             }
 
@@ -232,6 +234,16 @@ namespace Winecrash.Client
             }
 
             Collisions();
+
+            if (Input.IsPressed(Keys.F3) && Input.IsPressing(Keys.A))
+            {
+                Debug.Log("Reconstructing");
+                Debug.Log(Chunk.Chunks.Count);
+                foreach (Chunk chunk in Chunk.Chunks)
+                {
+                    Task.Run(chunk.Construct);
+                }
+            }
         }
 
         private void Collisions()
@@ -470,6 +482,11 @@ namespace Winecrash.Client
         }
         private void CheckGrounded()
         {
+            if (this._Rb.Velocity.Y > 0)
+            {
+                Grounded = false;
+                return;
+            }
             //front right
             Grounded = RaycastChunk(
                 new Ray(
@@ -556,8 +573,14 @@ namespace Winecrash.Client
                         block = chunk[bpos.X, bpos.Y, bpos.Z];
                         if (!block.Transparent)
                         {
-                            Vector3F normal = ray.Direction.Face().Direction();
-                            hit = new RaycastChunkHit(pos, -normal, distance, block, chunk, bpos);
+                            Vector3F blockGlobalPos = (Vector3F)bpos + (Vector3F)cpos * new Vector3F(16, 1, 16) + Vector3F.One * 0.5F;
+
+
+                            Vector3D relDir = (Vector3D)(blockGlobalPos - (Vector3F)pos).Normalized;
+
+                            
+
+                            hit = new RaycastChunkHit(pos, relDir.Face().Direction(), distance, block, chunk, bpos);
 
                             return true;
                         }

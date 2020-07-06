@@ -45,11 +45,16 @@ namespace Winecrash.Engine
             public ActiveAttribType Type { get; }
         }
 
-        internal int Handle = -1;
+        internal class ShaderResourceData
+        {
+
+        }
+
+        public int Handle { get; private set; } = -1;
 
         internal ShaderUniformData[] Uniforms { get; private set; }
-
         internal ShaderAttributeData[] Attributes { get; private set; }
+
 
         internal static List<Shader> Cache = new List<Shader>();
 
@@ -118,12 +123,12 @@ namespace Winecrash.Engine
             GL.GetProgram(Handle, GetProgramParameterName.ActiveAttributes, out int nAttribs);
             Attributes = new ShaderAttributeData[nAttribs];
 
-            
-
             for (int i = 0; i < nAttribs; i++)
             {
                 GL.GetActiveAttrib(Handle, i, 16, out int ALength, out int ASize, out ActiveAttribType AType, out string AName);
 
+
+                
                 this.Attributes[i] = new ShaderAttributeData(AName, i, ASize, ALength, AType);
             }
 
@@ -304,7 +309,7 @@ namespace Winecrash.Engine
             }
         }
 
-        internal void Use()
+        public void Use()
         {
             GL.UseProgram(Handle);
         }

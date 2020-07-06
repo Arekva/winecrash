@@ -30,6 +30,7 @@ namespace Winecrash.Client
         }
 
         static LibNoise.Primitive.SimplexPerlin perlin = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
+        static LibNoise.Primitive.ImprovedPerlin caves = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
 
         public static ushort[] Generate(int chunkx, int chunky, bool save = false, bool erase = false)
         {
@@ -47,9 +48,17 @@ namespace Winecrash.Client
                         const float shiftX = 10000;
                         const float shiftZ = 10000;
 
+                        const float caveScale = 0.1F;
+
+
+                        const float thresold = 0.4F;
+
                         int height = (int)(perlin.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 5) + 60;
 
-                        if(y == height)
+                        bool isCave = (((caves.GetValue((chunkx * Chunk.Width + shiftX + (float)x) * caveScale, y * caveScale, (chunky * Chunk.Depth + shiftZ + (float)z) * caveScale)) + 1) /2.0F) < thresold;
+
+                        
+                        if (y == height)
                         {
                             id = "winecrash:grass";
                         }
@@ -59,6 +68,11 @@ namespace Winecrash.Client
                                 id = "winecrash:dirt";
                             else
                                 id = "winecrash:stone";
+                        }
+
+                        if(isCave)
+                        {
+                            id = "winecrash:air";
                         }
 
                         if (y == 2)

@@ -7,12 +7,13 @@ using Winecrash.Engine;
 using System.Threading;
 using Newtonsoft.Json;
 using System.IO;
+using OpenTK;
+using OpenTK.Graphics.OpenGL4;
 
 namespace Winecrash.Client
 {
     public class ChunkEventArgs : EventArgs
     {
-        
         public Chunk Chunk { get; } = null;
 
         public ChunkEventArgs(Chunk chunk) : base()
@@ -74,7 +75,72 @@ namespace Winecrash.Client
         {
             return ItemCache.Get<Block>(this._Blocks[x + Width * y + Width * Height * z]);
         }
-#endregion
+
+
+
+        #endregion
+
+
+        public const int UintSize = 32;
+        public const int LightDataSize = 4;
+        public const int LightPackSize = UintSize / LightDataSize;
+        public const uint MaxLight = 0XF;
+        private uint[] _Light = new uint[8192];
+
+        public void SetLightLevel(int x, int y, int z, uint level)
+        {
+            level = WMath.Clamp(level, 0u, 15u);
+
+            int baseFullIndex = x + Chunk.Width * y + Chunk.Width * Chunk.Height * z;
+            
+            int basePackedIndex = baseFullIndex / LightPackSize;
+            int shiftPackedIndex = baseFullIndex % LightPackSize;
+
+            //Debug.Log("full: " + baseFullIndex + " | packed: " + basePackedIndex + " | shift: " + shiftPackedIndex + " | x;y;z: " + x + ";" + y + ";" + z + "");
+
+            _Light[basePackedIndex] |= level << (LightDataSize * shiftPackedIndex);
+
+        }
+
+        public uint GetLightLevel(int x, int y, int z)
+        {
+            int baseFullIndex = x + Chunk.Width * y + Chunk.Width * Chunk.Height * z;
+
+            int basePackedIndex = baseFullIndex / LightPackSize;
+            int shiftPackedIndex = baseFullIndex % LightPackSize;
+
+            uint mask = 0x0;
+
+            switch (shiftPackedIndex)
+            {
+                case 0:
+                    mask = 0xF;
+                    break;
+                case 1:
+                    mask = 0xF0;
+                    break;
+                case 2:
+                    mask = 0xF00;
+                    break;
+                case 3:
+                    mask = 0xF000;
+                    break;
+                case 4:
+                    mask = 0xF0000;
+                    break;
+                case 5:
+                    mask = 0xF00000;
+                    break;
+                case 6:
+                    mask = 0xF000000;
+                    break;
+                case 7:
+                    mask = 0xF0000000;
+                    break;
+            }
+
+            return (_Light[basePackedIndex] & mask) >> (LightDataSize * shiftPackedIndex);
+        }
 
         /// <summary>
         /// The blocks references of this chunk.
@@ -94,7 +160,7 @@ namespace Winecrash.Client
         /// </summary>
         public Vector3I Position { get; private set; }
 
-        public static Material ChunkMaterial { get; set; }
+        public static Texture ChunkTexture { get; set; }
 
         public static int TexWidth;
         public static int TexHeight;
@@ -266,8 +332,10 @@ namespace Winecrash.Client
             }, Formatting.None);
         }
 
-
 #region Game Logic
+
+        int lightSSBO = -1;
+
         protected override void Creation()
         {
             AnyChunkCreated += OnAnyChunkCreated;
@@ -275,12 +343,33 @@ namespace Winecrash.Client
 
             MeshRenderer mr = this.Renderer = this.WObject.AddModule<MeshRenderer>();
 
-            mr.Material = Chunk.ChunkMaterial;
-               
+            mr.Material = new Material(Shader.Find("Chunk"));
+            mr.Material.SetData<Texture>("albedo", Chunk.ChunkTexture);
+            mr.Material.SetData<Vector4>("color", new Color256(1, 1, 1, 1));
+
+            mr.Material.SetData<float>("minLight", 0.2F);
+            mr.Material.SetData<float>("maxLight", 0.8F);
+
+            Viewport.DoOnce += () =>
+            {
+                lightSSBO = GL.GenBuffer();
+            };
+
+            this.Renderer.OnRender += () =>
+            {
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, lightSSBO);
+
+                int idx = GL.GetProgramResourceIndex(Renderer.Material.Shader.Handle, ProgramInterface.ShaderStorageBlock, "chunk_lights");
+
+                if (idx != -1)
+                {
+                    GL.ShaderStorageBlockBinding(Renderer.Material.Shader.Handle, idx, 8);
+                    GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 8, lightSSBO);
+                }
+            };
 
             Chunks.Add(this);
         }
-
         protected override void Start()
         {
 
@@ -323,7 +412,6 @@ namespace Winecrash.Client
             
             this.RunAsync = false;      // Be sure to undo the asynchronous run mode.
         }
-
         protected override void OnDelete()
         {
             Chunks.Remove(this);
@@ -333,12 +421,132 @@ namespace Winecrash.Client
 
             AnyChunkDeleted?.Invoke(new ChunkEventArgs(this));
 
+            GL.DeleteBuffer(lightSSBO);
+
             base.OnDelete();
         }
 #endregion
 
 
 #region Generation
+        public void DiffuseLight(int basex, int basey, int basez, uint baseLevel,  BlockFaces comingFrom = BlockFaces.Up)
+        {
+            if (baseLevel == 0) return;
+            int x = 0, y = 0, z = 0;
+            uint level = baseLevel - 1;
+            BlockFaces to;
+            BlockFaces from = BlockFaces.Up;
+            for (int i = 0; i < 6; i++)
+            {
+                to = (BlockFaces)i;
+
+                if (to == comingFrom) continue;
+
+                switch(to)
+                {
+                    case BlockFaces.Up:
+                        {
+                            x = basex;
+                            y = basey + 1;
+                            z = basez;
+
+                            from = BlockFaces.Down;
+                        }
+                        break;
+
+                    case BlockFaces.Down:
+                        {
+                            x = basex;
+                            y = basey - 1;
+                            z = basez;
+
+                            from = BlockFaces.Up;
+                        }
+                        break;
+
+                    case BlockFaces.West:
+                        {
+                            x = basex - 1;
+                            y = basey;
+                            z = basez;
+
+                            from = BlockFaces.East;
+                        }
+                        break;
+
+                    case BlockFaces.East:
+                        {
+                            x = basex + 1;
+                            y = basey;
+                            z = basez;
+
+                            from = BlockFaces.West;
+                        }
+                        break;
+
+                    case BlockFaces.North:
+                        {
+                            x = basex;
+                            y = basey;
+                            z = basez + 1;
+
+                            from = BlockFaces.South;
+                        }
+                        break;
+
+                    case BlockFaces.South:
+                        {
+                            x = basex;
+                            y = basey;
+                            z = basez - 1;
+
+                            from = BlockFaces.North;
+                        }
+                        break;
+                }
+
+                if (x < 0 || x > Chunk.Width - 1 || y < 0 || y > Chunk.Height - 1 || z < 0 || z > Chunk.Depth - 1) return;
+
+                uint lvl = GetLightLevel(x, y, z);
+                if (!this[x,y,z].Transparent || lvl >= level) continue;
+
+                SetLightLevel(x, y, z, level);
+
+                DiffuseLight(x, y, z, level, from);
+            }
+        }
+        public void GenerateLights()
+        {
+            Block b;
+            for (int z = 0; z < Chunk.Depth; z++)
+            {
+                for (int x = 0; x < Chunk.Width; x++)
+                {
+                    int y = Chunk.Height - 1;
+
+                    b = this[x, y, z];
+
+                    //while sky, light coming from sky, do not spread
+                    while (y > -1 && b.Transparent)
+                    {
+                        SetLightLevel(x, y, z, 15);
+                        y--;
+                        b = this[x, y, z];
+                    }
+
+                    //then diffuse around..
+                    DiffuseLight(x, y, z, 15, BlockFaces.Up);
+                }
+            }
+
+            Viewport.DoOnceRender += () =>
+            {
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, lightSSBO);
+                GL.BufferData(BufferTarget.ShaderStorageBuffer, sizeof(uint) * 8192, this._Light, BufferUsageHint.DynamicCopy);
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
+            };
+            //this.Renderer.Material.SetData<byte[]>("light", this._Light);
+        }
 
         public void StopCurrentConstruction()
         {
@@ -347,13 +555,8 @@ namespace Winecrash.Client
         }
         private bool StopCurrentConstruct = false;
 
-        public void Edit(int x, int y, int z, Block b = null, bool async = true)
+        public void Edit(int x, int y, int z, Block b = null)
         {
-            if(async)
-            {
-                Task.Run(() => PrivateEdit(x,y,z,b));
-            }
-
             PrivateEdit(x,y,z,b);
         }
         private void PrivateEdit(int x, int y, int z, Block b = null)
@@ -385,22 +588,15 @@ namespace Winecrash.Client
         public void Construct()
         {
             if (Constructing) return;
+
+            GenerateLights();
+
             Constructing = true;
-
-
 
             List<Vector3F> vertices = new List<Vector3F>();
             List<Vector2F> uv = new List<Vector2F>();
             List<Vector3F> normals = new List<Vector3F>();
             List<uint> triangles = new List<uint>();
-
-            //No tangents yet
-            //List<Vector4F> tangents = null; 
-
-            //No texture editing yet
-            //Vector2Int TextureSize = new Vector2Int(Item.ItemAtlas.width, Item.ItemAtlas.height);
-            //Vector2 TextureSizeF = new Vector2(TextureSize.x, TextureSize.y);
-
 
             //No tangents yet
             //Vector4 tangent = new Vector4(1f, 0f, 0f, -1f);
@@ -538,7 +734,6 @@ namespace Winecrash.Client
             }
 
             float idx = (float)cubeIdx;
-            //cubeIdx = 1;//ItemCache.GetIndex("winecrash:grass");
 
             switch(face)
             {

@@ -66,11 +66,9 @@ namespace Winecrash.Engine
                 Vertex[vert * 8 + 7] = normal.Z;
             }
 
-            //Indices = Triangles;
-
             Indices = this.Triangles/*.Reverse().ToArray()*/;
 
-            if(deleteWorkArrays)
+            if (deleteWorkArrays)
             {
                 Vertices = null;
                 Triangles = null;
@@ -78,7 +76,6 @@ namespace Winecrash.Engine
                 Tangents = null;
                 Normals = null;
             }
-            
 
             AskedForApply = true;
         }
