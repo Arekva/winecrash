@@ -18,5 +18,10 @@ namespace Winecrash.Engine
         {
             throw new NotImplementedException();
         }
+
+        public void SetMousePosition(Vector2I position)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

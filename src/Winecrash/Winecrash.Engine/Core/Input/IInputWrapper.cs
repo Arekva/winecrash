@@ -14,5 +14,7 @@ namespace Winecrash.Engine
         bool GetKey(Keys key);
 
         Vector2I GetMousePosition();
+
+        void SetMousePosition(Vector2I position);
     }
 }

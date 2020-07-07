@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-
+using System.Drawing;
 
 using FKeys = System.Windows.Forms.Keys;
 using WKeys = Winecrash.Engine.Keys;
@@ -54,8 +54,6 @@ namespace Winecrash.Engine
 
         public override bool Undeletable { get; internal set; } = true;
 
-        private static Vector2I PreviousCursorPosition { get; set; }
-
         protected internal override void Creation()
         {
             if(Instance)
@@ -77,6 +75,27 @@ namespace Winecrash.Engine
 
         protected internal override void Update()
         {
+            Vector2I pos = InputWrapper.GetMousePosition();
+
+            if(Viewport.Instance == null)
+            {
+                MouseDelta = Vector2D.Zero;
+            }
+
+            else
+            {
+                Size s = Viewport.Instance.Size;
+                Vector2I centre = new Vector2I((int)(Viewport.Instance.X + s.Width / 2f), (int)(Viewport.Instance.Y + s.Height / 2f));
+
+                MouseDelta = Viewport.Instance.Focused ? centre - (Vector2D)pos: Vector2D.Zero;
+
+                if (Input.LockMode == CursorLockModes.Lock && Focused)
+                {
+                    
+                    InputWrapper.SetMousePosition(centre);
+                }
+            }
+            
             UpdateKeysStates();
         }
 

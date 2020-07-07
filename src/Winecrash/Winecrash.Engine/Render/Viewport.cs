@@ -134,12 +134,12 @@ namespace Winecrash.Engine
             Time.DeltaTime = e.Time;
             MouseState ms = Mouse.GetState();
             Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);
-            Input.MouseDelta = Focused ? delta : Vector2D.Zero;
+            //Input.MouseDelta = Focused ? delta : Vector2D.Zero;
             this._PreviousState = ms;
-            if (Input.LockMode == CursorLockModes.Lock && Focused)
+            /*if (Input.LockMode == CursorLockModes.Lock && Focused)
             {
                 Mouse.SetPosition(X + Width / 2f, Y + Height / 2f);
-            }
+            }*/
 
             
             Update?.Invoke(new UpdateEventArgs(e.Time));
