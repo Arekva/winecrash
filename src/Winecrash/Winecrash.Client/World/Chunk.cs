@@ -578,7 +578,7 @@ namespace Winecrash.Client
         public void GenerateLights()
         {
             this._Light = new uint[8192];
-            Block b;
+            /*Block b;
             for (int z = 0; z < Chunk.Depth; z++)
             {
                 for (int x = 0; x < Chunk.Width; x++)
@@ -598,6 +598,11 @@ namespace Winecrash.Client
                     //then diffuse around..
                     DiffuseLight(x, y, z, 15, BlockFaces.Up);
                 }
+            }*/
+
+            for (int i = 0; i < this._Light.Length; i++)
+            {
+                this._Light[i] = uint.MaxValue;
             }
 
             Viewport.DoOnceRender += () =>

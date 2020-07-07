@@ -16,6 +16,7 @@ namespace Winecrash.Client
             { "Left", Keys.Q },
             { "Right", Keys.D },
             { "Jump", Keys.Space },
+            { "Run", Keys.LeftControl },
             { "Destroy", Keys.MouseLeftButton },
             { "Interract", Keys.MouseRightButton }
         };

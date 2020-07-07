@@ -45,8 +45,8 @@ namespace Winecrash.Client
                     {
                         string id = "winecrash:air";
 
-                        const float scale = 0.025F;
-                        const float shiftX = 13550800;
+                        const float scale = 0.0085F;
+                        const float shiftX = 0;
                         const float shiftZ = 0;
 
                         const float caveScale = 0.1F;
@@ -56,7 +56,7 @@ namespace Winecrash.Client
                         const float torsadeThresold = 0.4F;
 
 
-                        int height = (int)(perlin.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 5) + 60;
+                        int height = (int)(perlin.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 15) + 60;
 
                         float torsadePercent = ((((torsades.GetValue((chunkx * Chunk.Width + shiftX + (float)x) * torsadeScale, y * torsadeScale, (chunky * Chunk.Depth + shiftZ + (float)z) * torsadeScale)) + 1) / 2.0F));
                         bool isCave = (((caves.GetValue((chunkx * Chunk.Width + shiftX + (float)x) * caveScale, y * caveScale, (chunky * Chunk.Depth + shiftZ + (float)z) * caveScale)) + 1) /2.0F) < thresold;
@@ -66,7 +66,7 @@ namespace Winecrash.Client
                         
                         if (y == height)
                         {
-                            id = "winecrash:direction";
+                            id = "winecrash:grass";
                         }
                         else if(y < height)
                         {

@@ -12,8 +12,8 @@ namespace Winecrash.Client
     {
         public Camera FPSCamera;
 
-        public float WalkMaxSpeed = 1.5F;
-        public float RunMaxSpeed = 5.0F;
+        public float WalkMaxSpeed = 5.0F;
+        public float RunMaxSpeed = 7.5F;
         public float FallMaxSpeed = -10.0F;
 
         public float WalkForce = 10.0F;
@@ -95,8 +95,13 @@ namespace Winecrash.Client
 
 
             bool dirInputPressed = false;
+            bool run = false;
             if (Input.IsPressed(GameInput.Key("Forward")))
             {
+                if (Input.IsPressed(GameInput.Key("Run")))
+                {
+                    run = true;
+                }
                 walkdir += walkForward;
                 dirInputPressed = true;
             }
@@ -120,7 +125,14 @@ namespace Winecrash.Client
 
 
             walkdir.Normalize();
-            walkdir *= WalkForce;
+            if (run)
+            {
+                walkdir *= (WalkForce * RunMaxSpeed);
+            }
+            else
+            {
+                walkdir *= WalkForce;
+            }
 
             this._Rb.Velocity += walkdir * Time.DeltaTime;
 
@@ -129,7 +141,15 @@ namespace Winecrash.Client
             CheckGrounded();
 
 
-            if (this._Rb.Velocity.XZ.Length > this.RunMaxSpeed)
+            if (this._Rb.Velocity.XZ.Length > this.WalkMaxSpeed && !run)
+            {
+                double velY = this._Rb.Velocity.Y;
+                this._Rb.Velocity = new Vector3D(this._Rb.Velocity.X, 0, this._Rb.Velocity.Z).Normalized * WalkMaxSpeed;
+
+                this._Rb.Velocity += Vector3D.Up * velY;
+
+            }
+            else if (this._Rb.Velocity.XZ.Length > this.RunMaxSpeed && run)
             {
                 double velY = this._Rb.Velocity.Y;
                 this._Rb.Velocity = new Vector3D(this._Rb.Velocity.X, 0, this._Rb.Velocity.Z).Normalized * RunMaxSpeed;
