@@ -137,7 +137,7 @@ namespace Winecrash.Engine
 
                                 case UpdateTypes.Update:
                                     {
-                                        modules[i].Update();
+                                         modules[i].Update();
                                     }
                                     break;
 

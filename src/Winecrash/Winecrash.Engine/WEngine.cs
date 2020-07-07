@@ -60,7 +60,7 @@ namespace Winecrash.Engine
 
             finally
             {
-                using (Viewport vp = new Viewport(1024, 1024, "Winecraft Viewport", icon))
+                using (Viewport vp = new Viewport(1024, 1024, "Winecrash Viewport", icon))
                 {
                     vp.Run();
                 }

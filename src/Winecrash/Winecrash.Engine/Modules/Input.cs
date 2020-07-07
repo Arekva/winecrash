@@ -54,6 +54,8 @@ namespace Winecrash.Engine
 
         public override bool Undeletable { get; internal set; } = true;
 
+        private static Vector2I PreviousCursorPosition { get; set; }
+
         protected internal override void Creation()
         {
             if(Instance)

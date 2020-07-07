@@ -13,5 +13,10 @@ namespace Winecrash.Engine
         {
             throw new NotImplementedException();
         }
+
+        public Vector2I GetMousePosition()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

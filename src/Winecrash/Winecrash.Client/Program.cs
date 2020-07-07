@@ -36,6 +36,8 @@ namespace Winecrash.Client
 
             Physics.Gravity = new Vector3D(0, -27, 0);
 
+            Viewport.Instance.VSync = OpenTK.VSyncMode.Off;
+
             WObject playerWobj = new WObject("Player");
             RigidBody rb = playerWobj.AddModule<RigidBody>();
             BoxCollider bc = playerWobj.AddModule<BoxCollider>();

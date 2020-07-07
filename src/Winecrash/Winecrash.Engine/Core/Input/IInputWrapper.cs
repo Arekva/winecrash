@@ -12,5 +12,7 @@ namespace Winecrash.Engine
     {
         OSPlatform CorrespondingOS { get; }
         bool GetKey(Keys key);
+
+        Vector2I GetMousePosition();
     }
 }

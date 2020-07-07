@@ -321,8 +321,8 @@ namespace Winecrash.Client
             mr.Material.SetData<Texture>("albedo", Chunk.ChunkTexture);
             mr.Material.SetData<Vector4>("color", new Color256(1, 1, 1, 1));
 
-            mr.Material.SetData<float>("minLight", 0.2F);
-            mr.Material.SetData<float>("maxLight", 0.8F);
+            mr.Material.SetData<float>("minLight", 0.1F);
+            mr.Material.SetData<float>("maxLight", 0.75F);
 
             Viewport.DoOnce += () =>
             {
@@ -413,8 +413,8 @@ namespace Winecrash.Client
 
             AnyChunkCreated?.Invoke(new ChunkEventArgs(this));
 
-            while (Loading >= LoadRate)  // Wait for other chunks to build.
-                Thread.Sleep(1);
+            /*while (Loading >= LoadRate)  // Wait for other chunks to build.
+                Thread.Sleep(1);*/
 
             Loading++;
 
@@ -423,6 +423,7 @@ namespace Winecrash.Client
             EastNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Right)?.Chunk;
             WestNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Left)?.Chunk;
 
+            GenerateLights();
 
             this.Construct();
             this.BuiltOnce = true;
@@ -643,13 +644,14 @@ namespace Winecrash.Client
                 this.NorthNeighbor?.Construct();
             }
 
+            Task.Run(GenerateLights);
             this.Construct();
         }
         public void Construct()
         {
             if (Constructing) return;
 
-            GenerateLights();
+            
 
             Constructing = true;
 
@@ -890,8 +892,6 @@ namespace Winecrash.Client
             }
             
         }
-
-
         private static void CreateNormalsCube(BlockFaces face, List<Vector3F> normals)
         {
             switch (face)
@@ -951,7 +951,6 @@ namespace Winecrash.Client
                     break;
             }
         }
-
 
         /// <summary>
         /// Creates the vertices required to display a cube.

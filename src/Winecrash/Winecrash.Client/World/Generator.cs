@@ -31,6 +31,7 @@ namespace Winecrash.Client
 
         static LibNoise.Primitive.SimplexPerlin perlin = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
         static LibNoise.Primitive.ImprovedPerlin caves = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
+        static LibNoise.Primitive.ImprovedPerlin torsades = new LibNoise.Primitive.SimplexPerlin("lolol".GetHashCode(), NoiseQuality.Standard);
 
         public static ushort[] Generate(int chunkx, int chunky, bool save = false, bool erase = false)
         {
@@ -45,22 +46,27 @@ namespace Winecrash.Client
                         string id = "winecrash:air";
 
                         const float scale = 0.025F;
-                        const float shiftX = 10000;
-                        const float shiftZ = 10000;
+                        const float shiftX = 13550800;
+                        const float shiftZ = 0;
 
                         const float caveScale = 0.1F;
-
-
                         const float thresold = 0.4F;
+
+                        const float torsadeScale = 0.1F;
+                        const float torsadeThresold = 0.4F;
+
 
                         int height = (int)(perlin.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 5) + 60;
 
+                        float torsadePercent = ((((torsades.GetValue((chunkx * Chunk.Width + shiftX + (float)x) * torsadeScale, y * torsadeScale, (chunky * Chunk.Depth + shiftZ + (float)z) * torsadeScale)) + 1) / 2.0F));
                         bool isCave = (((caves.GetValue((chunkx * Chunk.Width + shiftX + (float)x) * caveScale, y * caveScale, (chunky * Chunk.Depth + shiftZ + (float)z) * caveScale)) + 1) /2.0F) < thresold;
+
+
 
                         
                         if (y == height)
                         {
-                            id = "winecrash:grass";
+                            id = "winecrash:direction";
                         }
                         else if(y < height)
                         {

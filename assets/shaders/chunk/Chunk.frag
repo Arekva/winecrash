@@ -59,16 +59,16 @@ uint getLightLevel(int x, int y, int z)
     if(x < 0)
     {
         x = 15;
-        east = true;
+        west = true;
     }
 
     else if(x > CHUNK_WIDTH - 1)
     {
         x = 0;
-        west = true;
+        east = true;
     }
 
-    else if(z < 0)
+    if(z < 0)
     {
         z = 15;
         south = true;
@@ -90,25 +90,25 @@ uint getLightLevel(int x, int y, int z)
     switch (shiftPackedIndex)
     {
         case 0:
-            mask = 0xF;
+            mask = 0x0000000F;
             break;   
         case 1:
-            mask = 0xF0;
+            mask = 0x000000F0;
             break;
         case 2:
-            mask = 0xF00;
+            mask = 0x00000F00;
             break;
         case 3:
-            mask = 0xF000;
+            mask = 0x0000F000;
             break;
         case 4:
-            mask = 0xF0000;
+            mask = 0x000F0000;
             break;
         case 5:
-            mask = 0xF00000;
+            mask = 0x00F00000;
             break;
         case 6:
-            mask = 0xF000000;
+            mask = 0x0F000000;
             break;
         case 7:
             mask = 0xF0000000;
@@ -120,30 +120,27 @@ uint getLightLevel(int x, int y, int z)
         return (west_lights[basePackedIndex] & mask) >> (LIGHT_DATA_SIZE * shiftPackedIndex);
     }
 
-    else if(east)
+    if(east)
     {
         return (east_lights[basePackedIndex] & mask) >> (LIGHT_DATA_SIZE * shiftPackedIndex);
     }
 
-    else if(north)
+    if(north)
     {
         return (north_lights[basePackedIndex] & mask) >> (LIGHT_DATA_SIZE * shiftPackedIndex);
     }
+
     if(south)
     {
         return (south_lights[basePackedIndex] & mask) >> (LIGHT_DATA_SIZE * shiftPackedIndex);
     }
 
-    else
-    {
-        return (lights[basePackedIndex] & mask) >> (LIGHT_DATA_SIZE * shiftPackedIndex);
-    }
-    
+    return (lights[basePackedIndex] & mask) >> (LIGHT_DATA_SIZE * shiftPackedIndex);
 }
 
 float getLight(float x, float y, float z)
 {
-    return float(getLightLevel(int(x), int(y), int(z))) / LIGHT_MAX_LEVEL;
+    return float(getLightLevel(int(x), int(y), int(z)));
 }
 
 float remap(float value, float low1, float high1, float low2, float high2)
@@ -155,11 +152,12 @@ void main()
 {
     vec4 diffuse = texture(albedo, texCoord);
 
-    vec3 blockpos = objPos + Normal * 0.5;
+    vec3 blockpos = objPos + Normal * 0.1;
+    if(blockpos.x < 0) blockpos.x -= 1;
+    if(blockpos.y < 0) blockpos.y -= 1;
+    if(blockpos.z < 0) blockpos.z -= 1;
     
     float light = getLight(blockpos.x, blockpos.y, blockpos.z);
 
-
-
-    outputColor = vec4(diffuse.xyz, 1.0) * color * remap(light, 0.0, 1.0, minLight, maxLight);//getLight(0,0,0);
+    outputColor = vec4(diffuse.xyz, 1.0) * color * remap(light, 0.0, LIGHT_MAX_LEVEL, minLight, maxLight);//getLight(0,0,0);
 }

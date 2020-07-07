@@ -11,7 +11,7 @@ namespace Winecrash.Client
     public enum BlockFaces
     {
         /// <summary>
-        /// Refers to <see cref="Vector3F.up"/>
+        /// Refers to <see cref="Vector3F.Up"/>
         /// </summary>
         Up,
         /// <summary>
@@ -31,7 +31,7 @@ namespace Winecrash.Client
         /// </summary>
         North,
         /// <summary>
-        /// Refers to <see cref="Vector3F.Back"/>
+        /// Refers to <see cref="Vector3F.Backward"/>
         /// </summary>
         South
     }
