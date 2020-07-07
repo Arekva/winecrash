@@ -259,6 +259,11 @@ namespace Winecrash.Engine
         {
             return new Vector2I(vec.X, vec.Y);
         }
+
+        public static implicit operator Vector2D(Vector2I vec)
+        {
+            return new Vector2D(vec.X, vec.Y);
+        }
         #endregion
     }
 }

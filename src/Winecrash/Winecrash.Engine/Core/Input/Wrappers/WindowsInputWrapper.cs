@@ -21,8 +21,6 @@ namespace Winecrash.Engine
             }
         }
 
-
-
         public OSPlatform CorrespondingOS { get; } = OSPlatform.Windows;
 
         public bool GetKey(Keys key)
@@ -36,10 +34,18 @@ namespace Winecrash.Engine
             return new Vector2I(lpPoint.X, lpPoint.Y);
         }
 
+        public void SetMousePosition(Vector2I position)
+        {
+            SetCursorPos(position.X, position.Y);
+        }
+
         [DllImport("user32.dll")]
         public static extern short GetAsyncKeyState(System.Windows.Forms.Keys vKey);
 
         [DllImport("user32.dll")]
         public static extern bool GetCursorPos(out POINT lpPoint);
+
+        [DllImport("user32.dll")]
+        static extern bool SetCursorPos(int X, int Y);
     }
 }
