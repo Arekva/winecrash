@@ -208,7 +208,7 @@ namespace Winecrash.Client
             //chunk.Position = new Vector3I(Position, 0);
             chunkwobj.Parent = World.Instance.WObject;
             
-            chunk.Group = (this.Position.X / 8) * 1000 + ((this.Position.Y / 8) * 1000);
+            chunk.Group = (this.Position.X / 4) * 1000 + ((this.Position.Y / 4) * 1000);
 
             chunk.RunAsync = true;
 

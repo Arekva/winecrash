@@ -10,6 +10,8 @@ using System.IO;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
+using System.Diagnostics;
+
 namespace Winecrash.Client
 {
     public class ChunkEventArgs : EventArgs
@@ -413,8 +415,8 @@ namespace Winecrash.Client
 
             AnyChunkCreated?.Invoke(new ChunkEventArgs(this));
 
-            /*while (Loading >= LoadRate)  // Wait for other chunks to build.
-                Thread.Sleep(1);*/
+            while (Loading >= LoadRate)  // Wait for other chunks to build.
+                Thread.Sleep(1);
 
             Loading++;
 
@@ -423,9 +425,18 @@ namespace Winecrash.Client
             EastNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Right)?.Chunk;
             WestNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Left)?.Chunk;
 
-            GenerateLights();
 
+
+            Task.Run(GenerateLights);
+
+
+            //Stopwatch sw = new Stopwatch();
+
+            
             this.Construct();
+            
+
+            //Engine.Debug.Log("Chunk built in " + sw.ElapsedMilliseconds + " ms");
             this.BuiltOnce = true;
 
             Loading--;
@@ -654,9 +665,23 @@ namespace Winecrash.Client
         }
         public void Construct()
         {
+            //Stopwatch sw = new Stopwatch();
+            //Stopwatch swt = new Stopwatch();
+            //Stopwatch swf = new Stopwatch();
+            //Stopwatch swi = new Stopwatch();
+
+
+            //Stopwatch swVerts = new Stopwatch();
+            //Stopwatch swUVs = new Stopwatch();
+            //Stopwatch swNorms = new Stopwatch();
+
+            //sw.Start();
             if (Constructing) return;
 
-            
+            cwest = this.WestNeighbor != null;
+            ceast = this.EastNeighbor != null;
+            cnorth = this.NorthNeighbor != null;
+            csouth = this.SouthNeighbor != null;
 
             Constructing = true;
 
@@ -668,11 +693,14 @@ namespace Winecrash.Client
             //No tangents yet
             //Vector4 tangent = new Vector4(1f, 0f, 0f, -1f);
             //Vector4[] tan = new Vector4[6] { tangent, tangent, tangent, tangent, tangent, tangent };
-
+            
+            
             Stack<BlockFaces> faces = new Stack<BlockFaces>(6);
             uint triangle = 0;
             Item item = null;
             ushort index = 0;
+
+            Dictionary<ushort, Item> items = new Dictionary<ushort, Item>();
 
             for (int z = 0; z < Depth; z++)
             {
@@ -680,15 +708,19 @@ namespace Winecrash.Client
                 {
                     for (int x = 0; x < Width; x++)
                     {
-                        if (StopCurrentConstruct)
+                        /*if (StopCurrentConstruct)
                         {
                             StopCurrentConstruct = false;
                             return;
+                        }*/
+
+                        index = this._Blocks[x + Width * y + Width * Height * z];
+
+                        if(!items.TryGetValue(index, out item))
+                        {
+                            item = ItemCache.Get<Item>(index);
+                            items.Add(index, item);
                         }
-
-                        index = GetBlockIndex(x,y,z);
-
-                        item = ItemCache.Get<Item>(index);
 
                         if (item.Identifier == "winecrash:air") continue; // ignore if air
 
@@ -704,7 +736,6 @@ namespace Winecrash.Client
                             CreateVerticesCube(x, y, z, face, vertices);
 
                             CreateUVsCube(face, uv, index);
-                            //uv.AddRange(new Vector2F[6]); // no uv yet.
 
                             CreateNormalsCube(face, normals);
 
@@ -717,9 +748,9 @@ namespace Winecrash.Client
                 }
             }
 
-            if(vertices.Count != 0)
+            if (vertices.Count != 0)
             {
-                if(Renderer.Mesh == null)
+                if (Renderer.Mesh == null)
                 {
                     Mesh m = new Mesh("Chunk Mesh");
 
@@ -734,6 +765,7 @@ namespace Winecrash.Client
                     Renderer.Mesh = m;
                 }
 
+
                 else
                 {
                     Mesh m = Renderer.Mesh;
@@ -747,17 +779,19 @@ namespace Winecrash.Client
                     m.Apply(true);
                 }
 
-                
-
                 vertices = null;
                 triangles = null;
                 uv = null;
                 normals = null;
             }
 
-            cwest = ceast = cnorth = csouth = null;
+            cwest = ceast = cnorth = csouth = false;
 
             Constructing = false;
+
+            //sw.Stop();
+
+            //Engine.Debug.Log(sw.ElapsedMilliseconds + " ms build (faces " + swf.ElapsedMilliseconds + " ms; V/U/N: " + swVerts.ElapsedMilliseconds + "/" + swUVs.ElapsedMilliseconds + "/" + swNorms.ElapsedMilliseconds + " ms)");
         }
 
 
@@ -802,19 +836,23 @@ namespace Winecrash.Client
 
             float idx = (float)cubeIdx;
 
-            switch(face)
+            float w = ItemCache.TextureSize / (float)TexWidth;
+            float h = ItemCache.TextureSize / (float)TexHeight;
+            const int incr = 1;
+
+            switch (face)
             {
                 case BlockFaces.Up:
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //0
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //1
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //2
+                            new Vector2F(faceIDX * w, idx * h), //0
+                            new Vector2F(faceIDX * w, (idx + incr) * h), //incr
+                            new Vector2F((faceIDX + incr) * w, idx * h), //2
                             
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //3
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //4
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //5
+                            new Vector2F((faceIDX + incr) * w, idx * h), //3
+                            new Vector2F(faceIDX * w, (idx + incr) * h), //4
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //5
                         });
                     }
                     break;
@@ -823,13 +861,13 @@ namespace Winecrash.Client
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1)* ItemCache.TextureSize / TexHeight), //top left
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //bottom left
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //top right
+                            new Vector2F((faceIDX + incr) * w, (idx + incr)* h), //top left
+                            new Vector2F((faceIDX + incr) * w, idx * h), //bottom left
+                            new Vector2F(faceIDX * w, (idx + incr) * h), //top right
 
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //top right
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //bottom left
-                            new Vector2F((faceIDX ) * ItemCache.TextureSize / TexWidth, (idx)* ItemCache.TextureSize / TexHeight), //top left
+                            new Vector2F(faceIDX * w, (idx + incr) * h), //top right
+                            new Vector2F((faceIDX + incr) * w, idx * h), //bottom left
+                            new Vector2F((faceIDX ) * w, (idx)* h), //top left
                         });
                     }
                     break;
@@ -838,13 +876,13 @@ namespace Winecrash.Client
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //5
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //4
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //3
+                            new Vector2F((faceIDX + incr) * w, idx * h), //5
+                            new Vector2F(faceIDX * w, idx * h), //4
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //3
 
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //2
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //1
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //0
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //2
+                            new Vector2F(faceIDX * w, idx * h), //incr
+                            new Vector2F(faceIDX * w, (idx + incr) * h), //0
                         });
                     }
                     break;
@@ -853,13 +891,13 @@ namespace Winecrash.Client
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //0 topleft
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //2 bottom left
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //1 top right
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //0 topleft
+                            new Vector2F((faceIDX + incr) * w, idx * h), //2 bottom left
+                            new Vector2F(faceIDX * w, (idx + incr) * h), //incr top right
                             
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), // 4 top right
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //3 bottom left
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //5 bottom right
+                            new Vector2F(faceIDX * w, (idx + incr) * h), // 4 top right
+                            new Vector2F((faceIDX + incr) * w, idx * h), //3 bottom left
+                            new Vector2F(faceIDX * w, idx * h), //5 bottom right
                         });
                     }
                     break;
@@ -869,13 +907,13 @@ namespace Winecrash.Client
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //5
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //4
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //3
+                            new Vector2F((faceIDX + incr) * w, idx * h), //5
+                            new Vector2F(faceIDX * w, idx * h), //4
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //3
 
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //2
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //1
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //0
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //2
+                            new Vector2F(faceIDX * w, idx * h), //incr
+                            new Vector2F(faceIDX * w, (idx + incr) * h), //0
                         });
                     }
                     break;
@@ -884,13 +922,13 @@ namespace Winecrash.Client
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //5
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //3
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //4
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //5
+                            new Vector2F((faceIDX + incr) * w, idx * h), //3
+                            new Vector2F(faceIDX * w, (idx + incr) * h), //4
                             
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, (idx + 1) * ItemCache.TextureSize / TexHeight), //1
-                            new Vector2F((faceIDX + 1) * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //2
-                            new Vector2F(faceIDX * ItemCache.TextureSize / TexWidth, idx * ItemCache.TextureSize / TexHeight), //0
+                            new Vector2F(faceIDX * w, (idx + incr) * h), //incr
+                            new Vector2F((faceIDX + incr) * w, idx * h), //2
+                            new Vector2F(faceIDX * w, idx * h), //0
                         });
                     }
                     break;
@@ -967,17 +1005,18 @@ namespace Winecrash.Client
         /// <param name="vertices">The vertice list to add to.</param>
         private static void CreateVerticesCube(int x, int y, int z, BlockFaces face, List<Vector3F> vertices)
         {
+            const int incr = 1;
             switch (face)
             {
                 case BlockFaces.Up:
                     {
                         vertices.AddRange(new[] {
-                            new Vector3F(x, y + 1, z),
-                            new Vector3F(x, y + 1, z + 1),
-                            new Vector3F(x + 1, y + 1, z),
-                            new Vector3F(x + 1, y + 1, z),
-                            new Vector3F(x, y + 1, z + 1),
-                            new Vector3F(x + 1, y + 1, z + 1)
+                            new Vector3F(x, y + incr, z),
+                            new Vector3F(x, y + incr, z + incr),
+                            new Vector3F(x + incr, y + incr, z),
+                            new Vector3F(x + incr, y + incr, z),
+                            new Vector3F(x, y + incr, z + incr),
+                            new Vector3F(x + incr, y + incr, z + incr)
                         });
                     }
                     break;
@@ -985,12 +1024,12 @@ namespace Winecrash.Client
                 case BlockFaces.Down:
                     {
                         vertices.AddRange(new[] {
-                            new Vector3F(x, y, z + 1),
+                            new Vector3F(x, y, z + incr),
                             new Vector3F(x, y, z),
-                            new Vector3F(x + 1, y, z + 1),
-                            new Vector3F(x + 1, y, z + 1),
+                            new Vector3F(x + incr, y, z + incr),
+                            new Vector3F(x + incr, y, z + incr),
                             new Vector3F(x, y, z),
-                            new Vector3F(x + 1, y, z)
+                            new Vector3F(x + incr, y, z)
                         });
                     }
                     break;
@@ -999,11 +1038,11 @@ namespace Winecrash.Client
                     {
                         vertices.AddRange(new[] {
                             new Vector3F(x, y, z),
-                            new Vector3F(x, y, z + 1),
-                            new Vector3F(x, y + 1, z),
-                            new Vector3F(x, y + 1, z),
-                            new Vector3F(x, y, z + 1),
-                            new Vector3F(x, y + 1, z + 1)
+                            new Vector3F(x, y, z + incr),
+                            new Vector3F(x, y + incr, z),
+                            new Vector3F(x, y + incr, z),
+                            new Vector3F(x, y, z + incr),
+                            new Vector3F(x, y + incr, z + incr)
                         });
                     }
                     break;
@@ -1012,12 +1051,12 @@ namespace Winecrash.Client
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(x + 1, y + 1, z + 1),
-                            new Vector3F(x + 1, y, z + 1),
-                            new Vector3F(x + 1, y + 1, z),
-                            new Vector3F(x + 1, y + 1, z),
-                            new Vector3F(x + 1, y, z + 1),
-                            new Vector3F(x + 1, y, z)
+                            new Vector3F(x + incr, y + incr, z + incr),
+                            new Vector3F(x + incr, y, z + incr),
+                            new Vector3F(x + incr, y + incr, z),
+                            new Vector3F(x + incr, y + incr, z),
+                            new Vector3F(x + incr, y, z + incr),
+                            new Vector3F(x + incr, y, z)
                         });
                     }
                     break;
@@ -1026,12 +1065,12 @@ namespace Winecrash.Client
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(x, y, z + 1),
-                            new Vector3F(x + 1, y, z + 1),
-                            new Vector3F(x, y + 1, z + 1),
-                            new Vector3F(x, y + 1, z + 1),
-                            new Vector3F(x + 1, y, z + 1),
-                            new Vector3F(x + 1, y + 1, z + 1)
+                            new Vector3F(x, y, z + incr),
+                            new Vector3F(x + incr, y, z + incr),
+                            new Vector3F(x, y + incr, z + incr),
+                            new Vector3F(x, y + incr, z + incr),
+                            new Vector3F(x + incr, y, z + incr),
+                            new Vector3F(x + incr, y + incr, z + incr)
                         });
                     }
                     break;
@@ -1040,11 +1079,11 @@ namespace Winecrash.Client
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(x + 1, y + 1, z),
-                            new Vector3F(x + 1, y, z),
-                            new Vector3F(x, y + 1, z),
-                            new Vector3F(x, y + 1, z),
-                            new Vector3F(x + 1, y, z),
+                            new Vector3F(x + incr, y + incr, z),
+                            new Vector3F(x + incr, y, z),
+                            new Vector3F(x, y + incr, z),
+                            new Vector3F(x, y + incr, z),
+                            new Vector3F(x + incr, y, z),
                             new Vector3F(x, y, z)
                         });
                     }
@@ -1052,96 +1091,34 @@ namespace Winecrash.Client
             }
         }
 
-        JSONChunk cwest;
-        JSONChunk ceast;
-        JSONChunk cnorth;
-        JSONChunk csouth;
+        bool cwest;
+        bool ceast;
+        bool cnorth;
+        bool csouth;
 
         private bool IsTranparent(int x, int y, int z)
         {
             //if outside world, yes
             if (y < 0 || y > 255) return true;
 
-            //if not in chunk
-            if (x < 0 || x > 15 || z < 0 || z > 15)
+            if (x < 0 && cwest) // check west neighbor
             {
-                if (x < 0) // check west neighbor
-                {
-                    if(this.WestNeighbor != null && this.WestNeighbor._Blocks != null)
-                    {
-                        return this.WestNeighbor[15, y, z].Transparent;
-                    }
+                return this.WestNeighbor[15, y, z].Transparent;
+            }
 
-                    else
-                    {
-                        return false;
-                        if(cwest == null)
-                        {
-                            cwest = (JSONChunk)JsonConvert.DeserializeObject(File.ReadAllText("save/" + $"c{this.Position.X - 1}_{this.Position.Y}.json"), typeof(JSONChunk));
-                        }
+            else if (x > 15 && ceast) // check east neighbor
+            {
+                return this.EastNeighbor[0, y, z].Transparent;
+            }
 
-                        return ItemCache.Get<Block>(cwest.Data[15 + Width * y + Width * Height * z]).Transparent;
-                    }
-                }
+            else if (z < 0 && cnorth) //check south neighbor
+            {
+                return this.SouthNeighbor[x, y, 15].Transparent;
+            }
 
-                else if (x > 15) // check east neighbor
-                {
-
-                    if (this.EastNeighbor != null && this.EastNeighbor._Blocks != null)
-                    {
-                        return this.EastNeighbor[0, y, z].Transparent;
-                    }
-
-                    else
-                    {
-                        return false;
-                        if (ceast == null)
-                        {
-                            ceast = (JSONChunk)JsonConvert.DeserializeObject(File.ReadAllText("save/" + $"c{this.Position.X + 1}_{this.Position.Y}.json"), typeof(JSONChunk));
-                        }
-
-                        return ItemCache.Get<Block>(ceast.Data[0 + Width * y + Width * Height * z]).Transparent;
-                    }
-                }
-
-                else if (z < 0) //check south neighbor
-                {
-                    if (this.SouthNeighbor != null && this.SouthNeighbor._Blocks != null)
-                    {
-                        return this.SouthNeighbor[x, y, 15].Transparent;
-                    }
-
-                    else
-                    {
-                        return false;
-                        if (csouth == null)
-                        {
-                            csouth = (JSONChunk)JsonConvert.DeserializeObject(File.ReadAllText("save/" + $"c{this.Position.X}_{this.Position.Y - 1}.json"), typeof(JSONChunk));
-                        }
-
-                        return ItemCache.Get<Block>(csouth.Data[x + Width * y + Width * Height * 15]).Transparent;
-                    }
-                }
-
-                else
-                {
-                    if (this.NorthNeighbor != null && this.NorthNeighbor._Blocks != null)
-                    {
-                        return this.NorthNeighbor[x, y, 0].Transparent;
-                    }
-
-                    
-                    else
-                    {
-                        return false;
-                        if (cnorth == null)
-                        {
-                            cnorth = (JSONChunk)JsonConvert.DeserializeObject(File.ReadAllText("save/" + $"c{this.Position.X}_{this.Position.Y + 1}.json"), typeof(JSONChunk));
-                        }
-
-                        return ItemCache.Get<Block>(cnorth.Data[x + Width * y + Width * Height * 0]).Transparent;
-                    }
-                }
+            else if (z > 15 && csouth)
+            {
+                return this.NorthNeighbor[x, y, 0].Transparent;
             }
 
             else

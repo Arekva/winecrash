@@ -68,8 +68,11 @@ namespace Winecrash.Engine
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            DoOnceRender?.Invoke();
+
+            ViewportDoOnceDelegate once = DoOnceRender;
             DoOnceRender = null;
+            once?.Invoke();
+
             Render?.Invoke(new UpdateEventArgs(e.Time));
             
             SwapBuffers();
@@ -128,8 +131,10 @@ namespace Winecrash.Engine
         static Stopwatch updatesw = new Stopwatch();
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            DoOnce?.Invoke();
+            ViewportDoOnceDelegate once = DoOnce;
             DoOnce = null;
+            once?.Invoke();
+            
             //Debug.Log((1D/e.Time).ToString("C0").Split('¤')[1] + " FPS");
             Time.DeltaTime = e.Time;
             MouseState ms = Mouse.GetState();

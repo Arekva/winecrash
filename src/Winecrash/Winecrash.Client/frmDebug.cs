@@ -42,10 +42,16 @@ namespace Winecrash.Client
 
         public static void Log(object obj)
         {
-            InvokeMain(() =>
-            {
-                Instance.richTextBox1.Text += $"{obj}\n";
-            });
+            /*Task.Run(() =>
+            {*/
+                InvokeMain(() =>
+                {
+                    Instance.richTextBox1.Text += $"{obj}\n";
+
+                    Instance.richTextBox1.Select(Instance.richTextBox1.Text.Length - 1, 0);
+                    Instance.richTextBox1.ScrollToCaret();
+                });
+            //});
         }
     }
 }

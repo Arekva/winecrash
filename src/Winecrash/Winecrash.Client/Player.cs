@@ -12,17 +12,28 @@ namespace Winecrash.Client
     {
         public Camera FPSCamera;
 
-        public float WalkMaxSpeed = 5.0F;
-        public float RunMaxSpeed = 7.5F;
-        public float FallMaxSpeed = -10.0F;
+        public float WalkMaxSpeed = 4.3F;
+        public float RunMaxSpeed = 5.6F;
+        public float SneakSpeed = 1.30F;
+        public float AirWalkMaxSpeed = 10.9F;
+        public float AirRunMaxSpeed = 21.8F;
+        public float FallMaxSpeed = -78.0F;
+        
 
-        public float WalkForce = 10.0F;
-        public float JumpForce = 8F;
+        public float WalkForce = 30F;
+        public float RunForce = 40F;
+        public float AirWalkForce = 2.5F;
+        public float AirRunForce = 2.5F;
+        public float JumpForce = 8.2F;
+
+        public float TurnFactor = 0.8F;
+        public float SlowFactor = 20.0F;
 
         public float JumpCooldown = 0.25F;
-        private float TimeSinceLastJump = 0.0F;
+        public float WaitTimeBeforeJump = 0.06F;
 
-        public float WalkSlowFactor = 0.9F;
+        private float JumpWaitTime = 0.0F;
+        private float TimeSinceLastJump = 0.0F;
 
         public float CameraRotationSpeed = 5.0F;
 
@@ -93,9 +104,10 @@ namespace Winecrash.Client
 
             Vector3D walkRight = new Vector3D(rightDir.X, 0, rightDir.Z).Normalize();
 
-
-            bool dirInputPressed = false;
             bool run = false;
+
+            
+
             if (Input.IsPressed(GameInput.Key("Forward")))
             {
                 if (Input.IsPressed(GameInput.Key("Run")))
@@ -103,56 +115,55 @@ namespace Winecrash.Client
                     run = true;
                 }
                 walkdir += walkForward;
-                dirInputPressed = true;
             }
             if (Input.IsPressed(GameInput.Key("Backward")))
             {
                 walkdir -= walkForward;
-                dirInputPressed = true;
             }
 
             if (Input.IsPressed(GameInput.Key("Right")))
             {
                 walkdir -= walkRight;
-                dirInputPressed = true;
             }
             if (Input.IsPressed(GameInput.Key("Left")))
             {
                 walkdir += walkRight;
-                dirInputPressed = true;
             }
 
+            Vector3D walkDirBase = walkdir.Normalize();
 
-
-            walkdir.Normalize();
-            if (run)
+            float force = 0.0F;
+            CheckGrounded();
+            if (Grounded)
             {
-                walkdir *= (WalkForce * RunMaxSpeed);
+                force = run ? RunForce : WalkForce;
             }
             else
             {
-                walkdir *= WalkForce;
-            }
-
-            this._Rb.Velocity += walkdir * Time.DeltaTime;
-
-
-
-            CheckGrounded();
-
-
-            if (this._Rb.Velocity.XZ.Length > this.WalkMaxSpeed && !run)
-            {
-                double velY = this._Rb.Velocity.Y;
-                this._Rb.Velocity = new Vector3D(this._Rb.Velocity.X, 0, this._Rb.Velocity.Z).Normalized * WalkMaxSpeed;
-
-                this._Rb.Velocity += Vector3D.Up * velY;
+                
+                force = run ? AirRunForce : AirWalkForce;
 
             }
-            else if (this._Rb.Velocity.XZ.Length > this.RunMaxSpeed && run)
+
+            this._Rb.Velocity += walkdir * force * Time.DeltaTime;
+
+            float MaxHorizontalSpeed = 0.0F;
+
+            if (Grounded)
+            {
+                MaxHorizontalSpeed = run ? RunMaxSpeed : WalkMaxSpeed;
+            }
+
+            else
+            {
+                MaxHorizontalSpeed = run ? AirRunMaxSpeed : AirWalkMaxSpeed;
+            }
+
+
+            if (this._Rb.Velocity.XZ.Length > MaxHorizontalSpeed)
             {
                 double velY = this._Rb.Velocity.Y;
-                this._Rb.Velocity = new Vector3D(this._Rb.Velocity.X, 0, this._Rb.Velocity.Z).Normalized * RunMaxSpeed;
+                this._Rb.Velocity = new Vector3D(this._Rb.Velocity.X, 0, this._Rb.Velocity.Z).Normalized * MaxHorizontalSpeed;
 
                 this._Rb.Velocity += Vector3D.Up * velY;
 
@@ -166,23 +177,60 @@ namespace Winecrash.Client
                 this._Rb.Velocity += new Vector3D(0, fallSpeed, 0);
             }
 
-            // slow down
-            if (!dirInputPressed)
+
+            Vector3D flattenVel = new Vector3D(this._Rb.Velocity.X, 0, this._Rb.Velocity.Z);
+
+            //slowdown
+            if (force == 0.0F || walkDirBase == Vector3D.Zero)
             {
-                /*if (this._Rb.Velocity.XZ.Length < 0.05F)
+                Vector2D flatVel = this._Rb.Velocity.XZ;
+
+                Vector3D horVel = new Vector3D(flatVel.X, 0, flatVel.Y);
+
+                if (flatVel.Length < 1.0F)
                 {
                     this._Rb.Velocity *= Vector3D.Up;
                 }
 
                 else
-                {*/
-                Vector2D xz = this._Rb.Velocity.XZ * this.WalkSlowFactor * (Time.DeltaTime);
-
-                this._Rb.Velocity *= Vector3D.Up;
-
-                //this._Rb.Velocity += new Vector3D(xz.X, this._Rb.Velocity.Y, xz.Y);
-                //}
+                {
+                    this._Rb.Velocity -= horVel.Normalized * SlowFactor * Time.DeltaTime;
+                }
             }
+
+            else
+            {
+                double angleVelFwd = Vector3D.Angle(walkDirBase, _Rb.Velocity.Normalized);
+
+                this._Rb.Velocity.RotateAround(Vector3D.Zero, Vector3D.Up, (float)angleVelFwd * TurnFactor * (float)Time.DeltaTime);
+            }
+            
+            //undo 
+            //else if(walkDirBase == walkForward || walkDirBase == -walkForward)
+            //{
+                //this._Rb.Velocity += rightDir * TurnForce * Time.DeltaTime;
+            //}
+           
+            // slow down forward
+            /*else if (walkDirBase == -walkRight)
+            {
+                this._Rb.Velocity += rightDir * TurnForce * Time.DeltaTime;
+            }
+
+            else if (walkDirBase == walkRight)
+            {
+                this._Rb.Velocity -= rightDir * TurnForce * Time.DeltaTime;
+            }
+
+            else if (walkDirBase == walkForward)
+            {
+                this._Rb.Velocity -= lookDir * TurnForce * Time.DeltaTime;
+            }
+
+            else if (walkDirBase == -walkForward)
+            {
+                this._Rb.Velocity += lookDir * TurnForce * Time.DeltaTime;
+            }*/
         }
 
 
@@ -198,7 +246,6 @@ namespace Winecrash.Client
                 ViewRayHit = null;
             }
         }
-
         private void MainInteraction()
         {
             Cursor3D.Enabled = HitSphere.Enabled = ViewRayHit != null;
@@ -242,12 +289,18 @@ namespace Winecrash.Client
                 this._Rb.Velocity *= new Vector3D(1, 0, 1);
             }
 
+            if(Grounded)
+            {
+                JumpWaitTime += (float)Time.DeltaTime;
+            }
+
             TimeSinceLastJump += (float)Time.DeltaTime;
 
             if (Input.IsPressed(GameInput.Key("Jump")))
             {
-                if (Grounded && TimeSinceLastJump >= JumpCooldown)
+                if (Grounded && JumpWaitTime >= WaitTimeBeforeJump && TimeSinceLastJump >= JumpCooldown)
                 {
+                    JumpWaitTime = 0.0F;
                     TimeSinceLastJump = 0.0F;
                     this._Rb.Velocity += Vector3D.Up * JumpForce;
                 }
@@ -591,6 +644,10 @@ namespace Winecrash.Client
 
                     if(chunk != null)
                     {
+                        bpos.X = WMath.Clamp(bpos.X, 0, 15);
+                        bpos.Y = WMath.Clamp(bpos.Y, 0, 255);
+                        bpos.Z = WMath.Clamp(bpos.Z, 0, 15);
+
                         block = chunk[bpos.X, bpos.Y, bpos.Z];
                         if (!block.Transparent)
                         {

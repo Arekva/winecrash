@@ -46,38 +46,41 @@ namespace Winecrash.Engine
 
         public void Apply(bool deleteWorkArrays)
         {
-            Vertex = new float[this.Vertices.Length * 8];
+            /*Task.Run(() =>
+            {*/
+                Vertex = new float[this.Vertices.Length * 8];
 
-            for (int vert = 0; vert < this.Vertices.Length; vert++)
-            {
-                Vector3F vertice = this.Vertices[vert];
-                Vertex[vert * 8 + 0] = vertice.X;
-                Vertex[vert * 8 + 1] = vertice.Y;
-                Vertex[vert * 8 + 2] = vertice.Z;
+                for (int vert = 0; vert < this.Vertices.Length; vert++)
+                {
+                    Vector3F vertice = this.Vertices[vert];
+                    Vertex[vert * 8 + 0] = vertice.X;
+                    Vertex[vert * 8 + 1] = vertice.Y;
+                    Vertex[vert * 8 + 2] = vertice.Z;
 
-                Vector2F uvs = this.UVs[vert];
-                Vertex[vert * 8 + 3] = uvs.X;
-                Vertex[vert * 8 + 4] = uvs.Y;
+                    Vector2F uvs = this.UVs[vert];
+                    Vertex[vert * 8 + 3] = uvs.X;
+                    Vertex[vert * 8 + 4] = uvs.Y;
 
-                Vector3F normal = this.Normals[vert];
+                    Vector3F normal = this.Normals[vert];
 
-                Vertex[vert * 8 + 5] = normal.X;
-                Vertex[vert * 8 + 6] = normal.Y;
-                Vertex[vert * 8 + 7] = normal.Z;
-            }
+                    Vertex[vert * 8 + 5] = normal.X;
+                    Vertex[vert * 8 + 6] = normal.Y;
+                    Vertex[vert * 8 + 7] = normal.Z;
+                }
 
-            Indices = this.Triangles/*.Reverse().ToArray()*/;
+                Indices = this.Triangles/*.Reverse().ToArray()*/;
 
-            if (deleteWorkArrays)
-            {
-                Vertices = null;
-                Triangles = null;
-                UVs = null;
-                Tangents = null;
-                Normals = null;
-            }
+                if (deleteWorkArrays)
+                {
+                    Vertices = null;
+                    Triangles = null;
+                    UVs = null;
+                    Tangents = null;
+                    Normals = null;
+                }
 
-            AskedForApply = true;
+                AskedForApply = true;
+            //});
         }
 
         public static Mesh LoadFile(string path, MeshFormats format)
