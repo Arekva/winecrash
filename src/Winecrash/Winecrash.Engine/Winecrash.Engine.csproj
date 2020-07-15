@@ -50,6 +50,7 @@
     <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -63,6 +64,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="OpenCL.Net, Version=2.2.9.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\OpenCL.Net.2.2.9.0\lib\net40\OpenCL.Net.dll</HintPath>
       <Private>True</Private>
@@ -87,6 +91,7 @@
     <Compile Include="Core\Color\Color.cs" />
     <Compile Include="Core\Color\Color256.cs" />
     <Compile Include="Core\Color\Color32.cs" />
+    <Compile Include="GUI\Font.cs" />
     <Compile Include="Core\Input\CursorLockModes.cs" />
     <Compile Include="Core\Input\Keys.cs" />
     <Compile Include="Core\Math\Vector\Vector2I.cs" />
@@ -117,6 +122,8 @@
     <Compile Include="Core\Math\WMath.cs" />
     <Compile Include="Core\Time.cs" />
     <Compile Include="Core\Update\UpdateTypes.cs" />
+    <Compile Include="GUI\Glyph.cs" />
+    <Compile Include="GUI\GlyphTable.cs" />
     <Compile Include="Modules\Camera.cs" />
     <Compile Include="Modules\EngineCore.cs" />
     <Compile Include="Modules\Input.cs" />
@@ -130,17 +137,18 @@
     <Compile Include="Physics\HitInfo.cs" />
     <Compile Include="Physics\Physics.cs" />
     <Compile Include="Physics\Ray.cs" />
-    <Compile Include="Physics\RigidBody.cs" />
+    <Compile Include="Modules\RigidBody.cs" />
     <Compile Include="Render\AttributeTypes.cs" />
     <Compile Include="Modules\DirectionalLight.cs" />
     <Compile Include="Modules\Light.cs" />
     <Compile Include="Modules\PointLight.cs" />
+    <Compile Include="Render\CameraProjectionType.cs" />
     <Compile Include="Render\Material.cs" />
     <Compile Include="Render\Mesh\Loaders\Wavefront.cs" />
     <Compile Include="Render\Mesh\Mesh.cs" />
     <Compile Include="Render\Mesh\MeshFormats.cs" />
     <Compile Include="Render\Shader.cs" />
-    <Compile Include="Render\Text.cs" />
+    <Compile Include="GUI\Label.cs" />
     <Compile Include="Render\Texture.cs" />
     <Compile Include="WEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -9,13 +9,14 @@ using OpenTK;
 using System.IO;
 
 using Newtonsoft.Json;
+using System.Runtime.InteropServices;
 
 namespace Winecrash.Client
 {
     static class Program
     {
         static void Main()
-       {
+        {
             Task.Run(CreateDebugWindow);
 
             WEngine.Run();
@@ -40,6 +41,7 @@ namespace Winecrash.Client
 
             WObject playerWobj = new WObject("Player");
             RigidBody rb = playerWobj.AddModule<RigidBody>();
+            rb.UseGravity = false;
             BoxCollider bc = playerWobj.AddModule<BoxCollider>();
 
             bc.Extents = new Vector3D(0.4F, 0.9F, 0.4F);
@@ -47,10 +49,7 @@ namespace Winecrash.Client
             //rb.UseGravity = false;
             playerWobj.AddModule<Player>();
 
-            
-
-
-            //Camera.Main.WObject.AddModule<FreeCam>();
+            Camera.Main.WObject.AddModule<FreeCam>();
             Camera.Main.RenderLayers &= ~(1L << 32);
             //Camera.Main.WObject.AddModule<RigidBody>();
 
@@ -123,11 +122,32 @@ namespace Winecrash.Client
         [STAThread]
         static void CreateDebugWindow()
         {
-            WEngine.OnStop += () => Application.Exit();
+            Debug.AddLogger(new Logger(LogVerbose, LogWarning, LogError, LogException));
+            Debug.Log("Winecraft Predev 0.2 - (C) Arthur Carré 2020");
+        }
 
-            Debug.AddLogger(new Logger(frmDebug.Log));
+        static void LogVerbose(object msg)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(msg.ToString());
+        }
 
-            Application.Run(new frmDebug());
+        static void LogWarning(object msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(msg.ToString());
+        }
+
+        static void LogError(object msg)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(msg.ToString());
+        }
+
+        static void LogException(object msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(msg.ToString());
         }
     }
 }

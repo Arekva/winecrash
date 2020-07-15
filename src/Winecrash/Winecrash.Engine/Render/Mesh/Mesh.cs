@@ -14,9 +14,13 @@ namespace Winecrash.Engine
 {
     public sealed class Mesh : BaseObject
     {
-        public Mesh() : base() {}
+        public Mesh() : base() 
+        {
+        }
 
-        public Mesh(string name) : base(name) { }
+        public Mesh(string name) : base(name) 
+        {
+        }
 
         public Mesh(Mesh original) : base()
         {
@@ -26,8 +30,14 @@ namespace Winecrash.Engine
             this.Tangents = original.Tangents;
             this.Normals = original.Normals;
 
+            
+
             this.Apply(true);
         }
+
+        internal int VertexBufferObject = -1;
+        internal int ElementBufferObject = -1;
+        internal int VertexArrayObject = -1;
 
         public Vector3F[] Vertices { get; set; }
         public UInt32[] Triangles { get; set; }
@@ -38,49 +48,65 @@ namespace Winecrash.Engine
         internal float[] Vertex { get; set; } = null;
         internal uint[] Indices { get; private set; } = null;
 
-        internal bool AskedForApply { get; set; } = false;
-
         public delegate void MeshDeleteDelegate();
 
         public event MeshDeleteDelegate OnDelete;
 
         public void Apply(bool deleteWorkArrays)
         {
-            /*Task.Run(() =>
-            {*/
-                Vertex = new float[this.Vertices.Length * 8];
+            Vertex = new float[this.Vertices.Length * 8];
 
-                for (int vert = 0; vert < this.Vertices.Length; vert++)
+            for (int vert = 0; vert < this.Vertices.Length; vert++)
+            {
+                Vector3F vertice = this.Vertices[vert];
+                Vertex[vert * 8 + 0] = vertice.X;
+                Vertex[vert * 8 + 1] = vertice.Y;
+                Vertex[vert * 8 + 2] = vertice.Z;
+
+                Vector2F uvs = this.UVs[vert];
+                Vertex[vert * 8 + 3] = uvs.X;
+                Vertex[vert * 8 + 4] = uvs.Y;
+
+                Vector3F normal = this.Normals[vert];
+
+                Vertex[vert * 8 + 5] = normal.X;
+                Vertex[vert * 8 + 6] = normal.Y;
+                Vertex[vert * 8 + 7] = normal.Z;
+            }
+
+            Indices = this.Triangles;
+
+            if (deleteWorkArrays)
+            {
+                Vertices = null;
+                Triangles = null;
+                UVs = null;
+                Tangents = null;
+                Normals = null;
+            }
+
+
+            Viewport.DoOnceRender += () =>
+            {
+                if (VertexArrayObject == -1)
                 {
-                    Vector3F vertice = this.Vertices[vert];
-                    Vertex[vert * 8 + 0] = vertice.X;
-                    Vertex[vert * 8 + 1] = vertice.Y;
-                    Vertex[vert * 8 + 2] = vertice.Z;
-
-                    Vector2F uvs = this.UVs[vert];
-                    Vertex[vert * 8 + 3] = uvs.X;
-                    Vertex[vert * 8 + 4] = uvs.Y;
-
-                    Vector3F normal = this.Normals[vert];
-
-                    Vertex[vert * 8 + 5] = normal.X;
-                    Vertex[vert * 8 + 6] = normal.Y;
-                    Vertex[vert * 8 + 7] = normal.Z;
+                    VertexBufferObject = GL.GenBuffer();
+                    ElementBufferObject = GL.GenBuffer();
+                    VertexArrayObject = GL.GenVertexArray();
                 }
 
-                Indices = this.Triangles/*.Reverse().ToArray()*/;
 
-                if (deleteWorkArrays)
-                {
-                    Vertices = null;
-                    Triangles = null;
-                    UVs = null;
-                    Tangents = null;
-                    Normals = null;
-                }
+                GL.BindVertexArray(VertexArrayObject);
 
-                AskedForApply = true;
-            //});
+                GL.BindBuffer(BufferTarget.ArrayBuffer, this.VertexBufferObject);
+                GL.BufferData(BufferTarget.ArrayBuffer, Vertex.Length * sizeof(float), Vertex, BufferUsageHint.StaticDraw);
+
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.ElementBufferObject);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, Indices.Length * sizeof(uint), Indices, BufferUsageHint.StaticDraw);
+
+                this.Vertex = null;
+            };
+            
         }
 
         public static Mesh LoadFile(string path, MeshFormats format)
@@ -116,6 +142,14 @@ namespace Winecrash.Engine
 
             this.Vertex = null;
             this.Indices = null;
+
+            Viewport.DoOnce += () =>
+            {
+                GL.DeleteBuffer(ElementBufferObject);
+                GL.DeleteBuffer(VertexBufferObject);
+                GL.DeleteVertexArray(VertexArrayObject);
+            };
+
 
             OnDelete?.Invoke();
             OnDelete = null;

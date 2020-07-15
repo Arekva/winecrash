@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Winecrash.Engine;
 
@@ -33,15 +34,28 @@ namespace Winecrash.Client
             else
             {
                 Instance = this;
+
+                Player.OnChangeChunk += UpdateChunks;
             }
+        }
+
+        private void UpdateChunks(Chunk c)
+        {
+            Winecrash.Engine.Debug.Log("Updating chunks");
+            Task.Run(() => Ticket.CreateTicket(c.Position.X, c.Position.Y, 31, TicketTypes.Player, TicketPreviousDirection.None, true));
         }
 
         protected override void Start()
         {
             //Stopwatch sw = new Stopwatch();
             //sw.Start();
-            
-            Task.Run(() => Ticket.CreateTicket(0, 0, StartLevel, TicketTypes.Start, TicketPreviousDirection.None, true));
+            Thread worldGenerationThread = new Thread(() => Ticket.CreateTicket(0, 0, StartLevel, TicketTypes.Start, TicketPreviousDirection.None, true))
+            {
+                IsBackground = true,
+                Priority = ThreadPriority.Lowest
+            };
+
+            worldGenerationThread.Start();
             //sw.Stop();
             //Engine.Debug.Log("World created in " + sw.Elapsed.TotalMilliseconds.ToString("N2") + " ms");
 

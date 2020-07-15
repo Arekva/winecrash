@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 
 using Winecrash.Engine;
+using System.Threading;
 
 namespace Winecrash.Client
 {
@@ -36,17 +37,18 @@ namespace Winecrash.Client
         {
             if (level >= MaxLevel) return null;
 
-            Ticket ticket = new Ticket(level, invokeType, lifeTime, new Vector2I(x,y));
+            
 
-            if(Get(new Vector2I(x,y)) != null)
+            Ticket ticket = GetTicket(new Vector2I(x, y));
+
+            if (ticket != null)
             {
-                ticket = Get(new Vector2I(x, y));
-
                 ticket.EditLevel(level, TicketEditTypes.Inferior);
             }
 
             else
             {
+                ticket = new Ticket(level, invokeType, lifeTime, new Vector2I(x, y));
                 _Tickets.Add(ticket);
             }
 
@@ -201,8 +203,9 @@ namespace Winecrash.Client
 
         private Chunk CreateChunk()
         {
-           
+            //Debug.Log("Creating chunk " + this.Position);
             WObject chunkwobj = new WObject($"Chunk [{this.Position.X};{this.Position.Y}]");
+            chunkwobj.AddModule<MeshRenderer>();
             Chunk chunk = chunkwobj.AddModule<Chunk>();
             chunk.Ticket = this;
             //chunk.Position = new Vector3I(Position, 0);
@@ -210,7 +213,29 @@ namespace Winecrash.Client
             
             chunk.Group = (this.Position.X / 4) * 1000 + ((this.Position.Y / 4) * 1000);
 
-            chunk.RunAsync = true;
+            //chunk.RunAsync = true;
+
+            Task.Run(() =>
+            {
+                chunk.Position = new Vector3I(chunk.Ticket.Position.X, chunk.Ticket.Position.Y, 0);
+                chunk.WObject.Position = new Vector3F(this.Position.X * Chunk.Width, 0, this.Position.Y * Chunk.Depth);
+                Chunk.TriggerAnyChunkCreated(chunk);
+
+                chunk.NorthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Up)?.Chunk;
+                chunk.SouthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Down)?.Chunk;
+                chunk.EastNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Right)?.Chunk;
+                chunk.WestNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Left)?.Chunk;
+
+
+                chunk._Blocks = Generator.GetChunk(this.Position.X, this.Position.Y, out _);
+                chunk.BuiltOnce = true;
+
+                Task.Run(chunk.GenerateLights);
+
+                chunk.Construct();
+
+                Chunk.TriggerAnyChunkFirstBuilt(chunk);
+            });
 
             /*if (gen)
             {

@@ -20,6 +20,11 @@ namespace Winecrash.Engine
 
         public double Depth { get; set; } = 0.0D;
 
+
+        public CameraProjectionType ProjectionType { get; set; } = CameraProjectionType.Perspective;
+
+        public Vector2F OrthographicSize { get; set; } = Vector2F.One;
+
         /// <summary>
         /// -Vertical- Field of View
         /// </summary>
@@ -108,7 +113,9 @@ namespace Winecrash.Engine
         {
             get
             {
-                return Matrix4.CreatePerspectiveFieldOfView(this.FOV * (float)WMath.DegToRad, this.AspectRatio, this._NearClip, this._FarClip);
+                return this.ProjectionType == CameraProjectionType.Perspective ? 
+                    Matrix4.CreatePerspectiveFieldOfView(this.FOV * (float)WMath.DegToRad, this.AspectRatio, this._NearClip, this._FarClip):
+                    Matrix4.CreateOrthographic(OrthographicSize.X, OrthographicSize.Y, this._NearClip, this._FarClip);
             }
         }
 

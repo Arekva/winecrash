@@ -60,7 +60,6 @@ namespace Winecrash.Engine
             //return Mater
         }
 
-        Stopwatch sw = new Stopwatch();
         internal void Use()
         {
             Shader.Use();
@@ -134,8 +133,6 @@ namespace Winecrash.Engine
         {
             Shader.ShaderUniformData[] shaderData = this._Shader.Uniforms;
             this._Data = new MaterialData[shaderData.Length];
-
-            
 
             for (int i = 0; i < shaderData.Length; i++)
             {
@@ -216,14 +213,7 @@ namespace Winecrash.Engine
 
         public object GetData(string name)
         {
-            try
-            {
-                return this._Data.First(d => d.Name == name).Data;
-            }
-            catch
-            {
-                return null;
-            }
+            return this._Data.FirstOrDefault(d => d.Name == name).Data;
         }
 
         public T GetData<T>(string name)

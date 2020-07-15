@@ -98,10 +98,7 @@ namespace Winecrash.Client
             int basePackedIndex = baseFullIndex / LightPackSize;
             int shiftPackedIndex = baseFullIndex % LightPackSize;
 
-            //Debug.Log("full: " + baseFullIndex + " | packed: " + basePackedIndex + " | shift: " + shiftPackedIndex + " | x;y;z: " + x + ";" + y + ";" + z + "");
-
             _Light[basePackedIndex] |= level << (LightDataSize * shiftPackedIndex);
-
         }
 
         public uint GetLightLevel(int x, int y, int z)
@@ -147,7 +144,7 @@ namespace Winecrash.Client
         /// <summary>
         /// The blocks references of this chunk.
         /// </summary>
-        private ushort[] _Blocks = new ushort[Width * Height * Depth];
+        internal ushort[] _Blocks = new ushort[Width * Height * Depth];
         /// <summary>
         /// The ticket responsible of this chunk.
         /// </summary>
@@ -155,12 +152,12 @@ namespace Winecrash.Client
         /// <summary>
         /// If the chunk has at least been built once.
         /// </summary>
-        public bool BuiltOnce { get; private set; } = false;
+        public bool BuiltOnce { get; internal set; } = false;
         /// <summary>
         /// The position of the chunk in chunk scale.
         /// X and Y are North/East and Z is the dimension.
         /// </summary>
-        public Vector3I Position { get; private set; }
+        public Vector3I Position { get; internal set; }
 
         public static Texture ChunkTexture { get; set; }
 
@@ -195,7 +192,7 @@ namespace Winecrash.Client
         /// <summary>
         /// The maximum chunk loading rate, in number of chunks at once.
         /// </summary>
-        public static int LoadRate { get; set; } = 1000;
+        public static int LoadRate { get; set; } = 200;
         /// <summary>
         /// The amount of chunks loading right now.
         /// </summary>
@@ -228,7 +225,7 @@ namespace Winecrash.Client
         public static event ChunkLoadDelegate AnyChunkDeleted;
         #endregion
 
-        #region Subscribers
+#region Subscribers
         private void OnAnyChunkCreated(ChunkEventArgs args)
         {
             Chunk other = args.Chunk;
@@ -267,11 +264,25 @@ namespace Winecrash.Client
         {
             for (int i = 0; i < Chunk.TotalBlocks; i += Chunk.TotalBlocks / 16)
             {
-                for (int j = 0; j < GameManager.RandomTickSpeed; j++)
-                {
+                //for (int j = 0; j < GameManager.RandomTickSpeed; j++)
+                //{
                     //_blocks[World.WorldRandom.Next(i, ChunkTotalBlocks)].Tick();
-                }
+                //}
             }
+        }
+
+        public static void TriggerAnyChunkCreated(Chunk chunk)
+        {
+            AnyChunkCreated?.Invoke(new ChunkEventArgs(chunk));
+        }
+        public static void TriggerAnyChunkFirstBuilt(Chunk chunk)
+        {
+            AnyChunkFirstBuilt?.Invoke(new ChunkEventArgs(chunk));
+        }
+
+        public static void TriggerAnyChunkFirstDeleted(Chunk chunk)
+        {
+            AnyChunkDeleted?.Invoke(new ChunkEventArgs(chunk));
         }
 
         public string ToJSON()
@@ -317,7 +328,7 @@ namespace Winecrash.Client
             AnyChunkCreated += OnAnyChunkCreated;
             AnyChunkDeleted += OnAnyChunkDeleted;
 
-            MeshRenderer mr = this.Renderer = this.WObject.AddModule<MeshRenderer>();
+            MeshRenderer mr = this.Renderer = this.WObject.AddOrGetModule<MeshRenderer>();
 
             mr.Material = new Material(Shader.Find("Chunk"));
             mr.Material.SetData<Texture>("albedo", Chunk.ChunkTexture);
@@ -402,48 +413,6 @@ namespace Winecrash.Client
         }
         protected override void Start()
         {
-
-            while(this.Ticket == null)  // Make sure the ticket is actually assigned.
-                Thread.Sleep(1);        // I should be, but sometime the assignation
-                                        // is not done at the right time due to the
-                                        // multithreaded nature of the engine.
-
-            this.Position = new Vector3I(this.Ticket.Position.X, this.Ticket.Position.Y, 0);
-            this.WObject.Position = new Vector3F(this.Position.X * Width, 0, this.Position.Y * Depth);
-
-            this._Blocks = Generator.GetChunk(this.Position.X, this.Position.Y, out _);
-
-            AnyChunkCreated?.Invoke(new ChunkEventArgs(this));
-
-            while (Loading >= LoadRate)  // Wait for other chunks to build.
-                Thread.Sleep(1);
-
-            Loading++;
-
-            NorthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Up)?.Chunk;
-            SouthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Down)?.Chunk;
-            EastNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Right)?.Chunk;
-            WestNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Left)?.Chunk;
-
-
-
-            Task.Run(GenerateLights);
-
-
-            //Stopwatch sw = new Stopwatch();
-
-            
-            this.Construct();
-            
-
-            //Engine.Debug.Log("Chunk built in " + sw.ElapsedMilliseconds + " ms");
-            this.BuiltOnce = true;
-
-            Loading--;
-            
-            AnyChunkFirstBuilt?.Invoke(new ChunkEventArgs(this));
-
-            
             this.RunAsync = false;      // Be sure to undo the asynchronous run mode.
         }
         protected override void OnDelete()
@@ -619,18 +588,11 @@ namespace Winecrash.Client
             Viewport.DoOnceRender += () =>
             {
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, lightSSBO);
-                GL.BufferData(BufferTarget.ShaderStorageBuffer, sizeof(uint) * 8192, this._Light, BufferUsageHint.DynamicCopy);
+                GL.BufferData(BufferTarget.ShaderStorageBuffer, sizeof(uint) * 8192, this._Light, BufferUsageHint.DynamicDraw);
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
             };
             //this.Renderer.Material.SetData<byte[]>("light", this._Light);
         }
-
-        public void StopCurrentConstruction()
-        {
-            if(Constructing)
-                StopCurrentConstruct = true;
-        }
-        private bool StopCurrentConstruct = false;
 
         public void Edit(int x, int y, int z, Block b = null)
         {
@@ -665,25 +627,29 @@ namespace Winecrash.Client
         }
         public void Construct()
         {
-            //Stopwatch sw = new Stopwatch();
-            //Stopwatch swt = new Stopwatch();
-            //Stopwatch swf = new Stopwatch();
-            //Stopwatch swi = new Stopwatch();
+            if (!NorthNeighbor)
+            {
+                NorthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Up)?.Chunk;
+            }
+            else if (!SouthNeighbor)
+            {
+                SouthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Down)?.Chunk;
+            }
+            else if (!WestNeighbor)
+            {
+                WestNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Left)?.Chunk;
+            }
+            else if (!EastNeighbor)
+            {
+                EastNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Right)?.Chunk;
+            }
 
 
-            //Stopwatch swVerts = new Stopwatch();
-            //Stopwatch swUVs = new Stopwatch();
-            //Stopwatch swNorms = new Stopwatch();
-
-            //sw.Start();
-            if (Constructing) return;
 
             cwest = this.WestNeighbor != null;
             ceast = this.EastNeighbor != null;
             cnorth = this.NorthNeighbor != null;
             csouth = this.SouthNeighbor != null;
-
-            Constructing = true;
 
             List<Vector3F> vertices = new List<Vector3F>();
             List<Vector2F> uv = new List<Vector2F>();
@@ -693,14 +659,14 @@ namespace Winecrash.Client
             //No tangents yet
             //Vector4 tangent = new Vector4(1f, 0f, 0f, -1f);
             //Vector4[] tan = new Vector4[6] { tangent, tangent, tangent, tangent, tangent, tangent };
-            
-            
+
+
             Stack<BlockFaces> faces = new Stack<BlockFaces>(6);
             uint triangle = 0;
-            Item item = null;
+            Block block = null;
             ushort index = 0;
 
-            Dictionary<ushort, Item> items = new Dictionary<ushort, Item>();
+            Dictionary<ushort, Block> blocks = new Dictionary<ushort, Block>();
 
             for (int z = 0; z < Depth; z++)
             {
@@ -708,28 +674,23 @@ namespace Winecrash.Client
                 {
                     for (int x = 0; x < Width; x++)
                     {
-                        /*if (StopCurrentConstruct)
-                        {
-                            StopCurrentConstruct = false;
-                            return;
-                        }*/
 
                         index = this._Blocks[x + Width * y + Width * Height * z];
 
-                        if(!items.TryGetValue(index, out item))
+                        if (!blocks.TryGetValue(index, out block))
                         {
-                            item = ItemCache.Get<Item>(index);
-                            items.Add(index, item);
+                            block = ItemCache.Get<Block>(index);
+                            blocks.Add(index, block);
                         }
 
-                        if (item.Identifier == "winecrash:air") continue; // ignore if air
+                        if (block.Identifier == "winecrash:air") continue; // ignore if air
 
-                        if (IsTranparent(x, y + 1, z)) faces.Push(BlockFaces.Up);   // up
-                        if (IsTranparent(x, y - 1, z)) faces.Push(BlockFaces.Down); // down
-                        if (IsTranparent(x - 1, y, z)) faces.Push(BlockFaces.West); // west
-                        if (IsTranparent(x + 1, y, z)) faces.Push(BlockFaces.East); // east
-                        if (IsTranparent(x, y, z + 1)) faces.Push(BlockFaces.North);// north
-                        if (IsTranparent(x, y, z - 1)) faces.Push(BlockFaces.South);// south
+                        if (IsTranparent(x, y + 1, z, blocks)) faces.Push(BlockFaces.Up);   // up
+                        if (IsTranparent(x, y - 1, z, blocks)) faces.Push(BlockFaces.Down); // down
+                        if (IsTranparent(x - 1, y, z, blocks)) faces.Push(BlockFaces.West); // west
+                        if (IsTranparent(x + 1, y, z, blocks)) faces.Push(BlockFaces.East); // east
+                        if (IsTranparent(x, y, z + 1, blocks)) faces.Push(BlockFaces.North);// north
+                        if (IsTranparent(x, y, z - 1, blocks)) faces.Push(BlockFaces.South);// south
 
                         foreach (BlockFaces face in faces)
                         {
@@ -750,34 +711,20 @@ namespace Winecrash.Client
 
             if (vertices.Count != 0)
             {
+                
                 if (Renderer.Mesh == null)
                 {
-                    Mesh m = new Mesh("Chunk Mesh");
-
-                    m.Vertices = vertices.ToArray();
-                    m.Triangles = triangles.ToArray();
-                    m.UVs = uv.ToArray();
-                    m.Normals = normals.ToArray();
-                    m.Tangents = new Vector4F[vertices.Count];
-
-                    m.Apply(true);
-
-                    Renderer.Mesh = m;
+                    Renderer.Mesh = new Mesh("Chunk Mesh");
+                    Engine.Debug.Log("Created mesh for " + this.Position);
                 }
 
+                Renderer.Mesh.Vertices = vertices.ToArray();
+                Renderer.Mesh.Triangles = triangles.ToArray();
+                Renderer.Mesh.UVs = uv.ToArray();
+                Renderer.Mesh.Normals = normals.ToArray();
+                Renderer.Mesh.Tangents = new Vector4F[vertices.Count];
 
-                else
-                {
-                    Mesh m = Renderer.Mesh;
-
-                    m.Vertices = vertices.ToArray();
-                    m.Triangles = triangles.ToArray();
-                    m.UVs = uv.ToArray();
-                    m.Normals = normals.ToArray();
-                    m.Tangents = new Vector4F[vertices.Count];
-
-                    m.Apply(true);
-                }
+                Renderer.Mesh.Apply(true);
 
                 vertices = null;
                 triangles = null;
@@ -787,11 +734,6 @@ namespace Winecrash.Client
 
             cwest = ceast = cnorth = csouth = false;
 
-            Constructing = false;
-
-            //sw.Stop();
-
-            //Engine.Debug.Log(sw.ElapsedMilliseconds + " ms build (faces " + swf.ElapsedMilliseconds + " ms; V/U/N: " + swVerts.ElapsedMilliseconds + "/" + swUVs.ElapsedMilliseconds + "/" + swNorms.ElapsedMilliseconds + " ms)");
         }
 
 
@@ -1096,35 +1038,46 @@ namespace Winecrash.Client
         bool cnorth;
         bool csouth;
 
-        private bool IsTranparent(int x, int y, int z)
+
+        ushort transpid;
+        Block transblock;
+        private bool IsTranparent(int x, int y, int z, Dictionary<ushort, Block> cache)
         {
             //if outside world, yes
             if (y < 0 || y > 255) return true;
 
             if (x < 0 && cwest) // check west neighbor
             {
-                return this.WestNeighbor[15, y, z].Transparent;
+                transpid = this.WestNeighbor.GetBlockIndex(15, y, z);
             }
 
             else if (x > 15 && ceast) // check east neighbor
             {
-                return this.EastNeighbor[0, y, z].Transparent;
+                transpid = this.EastNeighbor.GetBlockIndex(0, y, z);
             }
 
             else if (z < 0 && cnorth) //check south neighbor
             {
-                return this.SouthNeighbor[x, y, 15].Transparent;
+                transpid = this.SouthNeighbor.GetBlockIndex(x, y, 15);
             }
 
             else if (z > 15 && csouth)
             {
-                return this.NorthNeighbor[x, y, 0].Transparent;
+                transpid = this.NorthNeighbor.GetBlockIndex(x, y, 0);
             }
 
             else
             {
-                return this[x, y, z].Transparent;
+                transpid = this.GetBlockIndex(x, y, z);
             }
+
+            if (!cache.TryGetValue(transpid, out transblock))
+            {
+                transblock = ItemCache.Get<Block>(transpid);
+                cache.Add(transpid, transblock);
+            }
+
+            return transblock.Transparent;
         }
 
         #endregion

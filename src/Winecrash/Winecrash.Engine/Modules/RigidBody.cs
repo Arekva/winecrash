@@ -11,15 +11,15 @@ namespace Winecrash.Engine
         public Vector3D Velocity { get; set; } = Vector3D.Zero;
         public bool UseGravity { get; set; } = true;
 
-        protected internal override void Update()
+        protected internal override void FixedUpdate()
         {
             if (UseGravity)
-                this.Velocity += Physics.Gravity * Time.DeltaTime;
+                this.Velocity += Physics.Gravity * Time.FixedDeltaTime;
         }
 
-        protected internal override void LateUpdate()
+        internal override void LateFixedUpdate()
         {
-            this.WObject.Position += (Vector3F)Velocity * (float)Time.DeltaTime;
+            this.WObject.Position += (Vector3F)Velocity * (float)Time.FixedDeltaTime;
         }
     }
 }

@@ -71,10 +71,22 @@ namespace Winecrash.Engine
 
             ViewportDoOnceDelegate once = DoOnceRender;
             DoOnceRender = null;
+            
             once?.Invoke();
 
+            //updatesw.Start();
+            Time.ResetRender();
+            Time.BeginRender();
             Render?.Invoke(new UpdateEventArgs(e.Time));
+            Time.EndRender();
             
+
+           // updatesw.Stop();
+
+            //Debug.Log("Renderer done within " + updatesw.Elapsed.TotalSeconds + " secs");
+
+            //updatesw.Reset();
+
             SwapBuffers();
 
             base.OnRenderFrame(e);
@@ -82,9 +94,9 @@ namespace Winecrash.Engine
 
         protected override void OnUnload(EventArgs e)
         {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            /*GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
-            GL.UseProgram(0);
+            GL.UseProgram(0);*/
 
             //GL.DeleteBuffer(_VertexBufferObject);
             //GL.DeleteVertexArray(_VertexArrayObject);
@@ -132,10 +144,22 @@ namespace Winecrash.Engine
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             ViewportDoOnceDelegate once = DoOnce;
+            //bool isnull = once == null;
             DoOnce = null;
+
+            //updatesw.Start();
             once?.Invoke();
-            
+
+            /*updatesw.Stop();
+
+            Debug.Log("Done things once [update] within " + updatesw.Elapsed.TotalSeconds + " secs");
+
+            updatesw.Reset();*/
+
             //Debug.Log((1D/e.Time).ToString("C0").Split('¤')[1] + " FPS");
+
+            Input.SetMouseScroll(Mouse.GetState().WheelPrecise);
+
             Time.DeltaTime = e.Time;
             MouseState ms = Mouse.GetState();
             Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);

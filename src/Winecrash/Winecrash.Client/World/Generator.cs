@@ -36,14 +36,18 @@ namespace Winecrash.Client
         public static ushort[] Generate(int chunkx, int chunky, bool save = false, bool erase = false)
         {
             ushort[] blocks = new ushort[Chunk.Width * Chunk.Height * Chunk.Depth];
-            
+
+            string id;
+            ushort cacheindex = 0;
+            Dictionary<string, ushort> idscache = new Dictionary<string, ushort>();
+
             for (int z = 0; z < Chunk.Depth; z++)
             {
                 for (int y = 0; y < Chunk.Height; y++)
                 {
                     for (int x = 0; x < Chunk.Width; x++)
                     {
-                        string id = "winecrash:air";
+                        id = "winecrash:air";
 
                         const float scale = 0.0085F;
                         const float shiftX = 0;
@@ -100,9 +104,13 @@ namespace Winecrash.Client
                             id = "winecrash:bedrock";
                         }
 
-
+                        if(!idscache.TryGetValue(id, out cacheindex))
+                        {
+                            cacheindex = ItemCache.GetIndex(id);
+                            idscache.Add(id, cacheindex);
+                        }
                         //Server.Log(id);
-                        blocks[x + Chunk.Width * y + Chunk.Width * Chunk.Height * z] = ItemCache.GetIndex(id);//new Block(id);
+                        blocks[x + Chunk.Width * y + Chunk.Width * Chunk.Height * z] = cacheindex;//new Block(id);
                     }
                 }
             }

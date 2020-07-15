@@ -8,25 +8,31 @@ using Winecrash.Engine;
 
 namespace Winecrash.Client
 {
+    public delegate void PlayerChangeChunkDelegate(Chunk chunk);
+
     public class Player : Module
     {
+        public static event PlayerChangeChunkDelegate OnChangeChunk;
+
+        public static Player Instance { get; private set; }
+
         public Camera FPSCamera;
 
         public float WalkMaxSpeed = 4.3F;
         public float RunMaxSpeed = 5.6F;
         public float SneakSpeed = 1.30F;
-        public float AirWalkMaxSpeed = 10.9F;
-        public float AirRunMaxSpeed = 21.8F;
+        public float AirWalkMaxSpeed = 4.5F;
+        public float AirRunMaxSpeed = 6.0F;
         public float FallMaxSpeed = -78.0F;
         
 
         public float WalkForce = 30F;
         public float RunForce = 40F;
-        public float AirWalkForce = 2.5F;
-        public float AirRunForce = 2.5F;
+        public float AirWalkForce = 20F;
+        public float AirRunForce = 30F;
         public float JumpForce = 8.2F;
 
-        public float TurnFactor = 0.8F;
+        public float TurnFactor = 0.0F;
         public float SlowFactor = 20.0F;
 
         public float JumpCooldown = 0.25F;
@@ -57,6 +63,7 @@ namespace Winecrash.Client
 
         protected override void Creation()
         {
+            Instance = this;
             this.FPSCamera = Camera.Main;
             this._Rb = this.WObject.GetModule<RigidBody>();
             this._Bc = this.WObject.GetModule<BoxCollider>();
@@ -94,146 +101,125 @@ namespace Winecrash.Client
         }
         private void Move()
         {
-            Vector3D walkdir = Vector3D.Zero;
-
-            Vector3D lookDir = FPSCamera.WObject.Forward;
-
-            Vector3D walkForward = new Vector3D(lookDir.X, 0, lookDir.Z).Normalize();
-
-            Vector3D rightDir = FPSCamera.WObject.Right;
-
-            Vector3D walkRight = new Vector3D(rightDir.X, 0, rightDir.Z).Normalize();
-
-            bool run = false;
-
-            
-
-            if (Input.IsPressed(GameInput.Key("Forward")))
+            if (!FreeCam.FreeCTRL)
             {
-                if (Input.IsPressed(GameInput.Key("Run")))
+                Vector3D walkdir = Vector3D.Zero;
+
+                Vector3D lookDir = FPSCamera.WObject.Forward;
+
+                Vector3D walkForward = new Vector3D(lookDir.X, 0, lookDir.Z).Normalize();
+
+                Vector3D rightDir = FPSCamera.WObject.Right;
+
+                Vector3D walkRight = new Vector3D(rightDir.X, 0, rightDir.Z).Normalize();
+
+                bool run = false;
+
+
+
+                if (Input.IsPressed(GameInput.Key("Forward")))
                 {
-                    run = true;
+                    if (Input.IsPressed(GameInput.Key("Run")))
+                    {
+                        run = true;
+                    }
+                    walkdir += walkForward;
                 }
-                walkdir += walkForward;
-            }
-            if (Input.IsPressed(GameInput.Key("Backward")))
-            {
-                walkdir -= walkForward;
-            }
-
-            if (Input.IsPressed(GameInput.Key("Right")))
-            {
-                walkdir -= walkRight;
-            }
-            if (Input.IsPressed(GameInput.Key("Left")))
-            {
-                walkdir += walkRight;
-            }
-
-            Vector3D walkDirBase = walkdir.Normalize();
-
-            float force = 0.0F;
-            CheckGrounded();
-            if (Grounded)
-            {
-                force = run ? RunForce : WalkForce;
-            }
-            else
-            {
-                
-                force = run ? AirRunForce : AirWalkForce;
-
-            }
-
-            this._Rb.Velocity += walkdir * force * Time.DeltaTime;
-
-            float MaxHorizontalSpeed = 0.0F;
-
-            if (Grounded)
-            {
-                MaxHorizontalSpeed = run ? RunMaxSpeed : WalkMaxSpeed;
-            }
-
-            else
-            {
-                MaxHorizontalSpeed = run ? AirRunMaxSpeed : AirWalkMaxSpeed;
-            }
-
-
-            if (this._Rb.Velocity.XZ.Length > MaxHorizontalSpeed)
-            {
-                double velY = this._Rb.Velocity.Y;
-                this._Rb.Velocity = new Vector3D(this._Rb.Velocity.X, 0, this._Rb.Velocity.Z).Normalized * MaxHorizontalSpeed;
-
-                this._Rb.Velocity += Vector3D.Up * velY;
-
-            }
-
-            if (this._Rb.Velocity.Y < this.FallMaxSpeed)
-            {
-                double fallSpeed = this._Rb.Velocity.Y;
-
-                this._Rb.Velocity *= new Vector3D(1, 0, 1);
-                this._Rb.Velocity += new Vector3D(0, fallSpeed, 0);
-            }
-
-
-            Vector3D flattenVel = new Vector3D(this._Rb.Velocity.X, 0, this._Rb.Velocity.Z);
-
-            //slowdown
-            if (force == 0.0F || walkDirBase == Vector3D.Zero)
-            {
-                Vector2D flatVel = this._Rb.Velocity.XZ;
-
-                Vector3D horVel = new Vector3D(flatVel.X, 0, flatVel.Y);
-
-                if (flatVel.Length < 1.0F)
+                if (Input.IsPressed(GameInput.Key("Backward")))
                 {
-                    this._Rb.Velocity *= Vector3D.Up;
+                    walkdir -= walkForward;
+                }
+
+                if (Input.IsPressed(GameInput.Key("Right")))
+                {
+                    walkdir -= walkRight;
+                }
+                if (Input.IsPressed(GameInput.Key("Left")))
+                {
+                    walkdir += walkRight;
+                }
+
+                Vector3D walkDirBase = walkdir.Normalize();
+
+                float force = 0.0F;
+                CheckGrounded();
+                if (Grounded)
+                {
+                    force = run ? RunForce : WalkForce;
+                }
+                else
+                {
+
+                    force = run ? AirRunForce : AirWalkForce;
+
+                }
+
+                this._Rb.Velocity += walkdir * force * Time.DeltaTime;
+
+                float MaxHorizontalSpeed = 0.0F;
+
+                if (Grounded)
+                {
+                    MaxHorizontalSpeed = run ? RunMaxSpeed : WalkMaxSpeed;
                 }
 
                 else
                 {
-                    this._Rb.Velocity -= horVel.Normalized * SlowFactor * Time.DeltaTime;
+                    MaxHorizontalSpeed = run ? AirRunMaxSpeed : AirWalkMaxSpeed;
+                }
+
+
+                if (this._Rb.Velocity.XZ.Length > MaxHorizontalSpeed)
+                {
+                    double velY = this._Rb.Velocity.Y;
+                    this._Rb.Velocity = new Vector3D(this._Rb.Velocity.X, 0, this._Rb.Velocity.Z).Normalized * MaxHorizontalSpeed;
+
+                    this._Rb.Velocity += Vector3D.Up * velY;
+
+                }
+
+                if (this._Rb.Velocity.Y < this.FallMaxSpeed)
+                {
+                    double fallSpeed = this._Rb.Velocity.Y;
+
+                    this._Rb.Velocity *= new Vector3D(1, 0, 1);
+                    this._Rb.Velocity += new Vector3D(0, fallSpeed, 0);
+                }
+
+
+                Vector3D flattenVel = new Vector3D(this._Rb.Velocity.X, 0, this._Rb.Velocity.Z);
+
+                //slowdown
+                if (force == 0.0F || walkDirBase == Vector3D.Zero)
+                {
+                    Vector2D flatVel = this._Rb.Velocity.XZ;
+
+                    Vector3D horVel = new Vector3D(flatVel.X, 0, flatVel.Y);
+
+                    if (flatVel.Length < 1.0F)
+                    {
+                        this._Rb.Velocity *= Vector3D.Up;
+                    }
+
+                    else
+                    {
+                        this._Rb.Velocity -= horVel.Normalized * SlowFactor * Time.DeltaTime;
+                    }
+                }
+
+                else
+                {
+                    double angleVelFwd = Vector3D.Angle(walkDirBase, _Rb.Velocity.Normalized);
+
+                    this._Rb.Velocity.RotateAround(Vector3D.Zero, Vector3D.Up, (float)angleVelFwd * TurnFactor * (float)Time.DeltaTime);
                 }
             }
 
-            else
-            {
-                double angleVelFwd = Vector3D.Angle(walkDirBase, _Rb.Velocity.Normalized);
 
-                this._Rb.Velocity.RotateAround(Vector3D.Zero, Vector3D.Up, (float)angleVelFwd * TurnFactor * (float)Time.DeltaTime);
-            }
             
-            //undo 
-            //else if(walkDirBase == walkForward || walkDirBase == -walkForward)
-            //{
-                //this._Rb.Velocity += rightDir * TurnForce * Time.DeltaTime;
-            //}
-           
-            // slow down forward
-            /*else if (walkDirBase == -walkRight)
-            {
-                this._Rb.Velocity += rightDir * TurnForce * Time.DeltaTime;
-            }
-
-            else if (walkDirBase == walkRight)
-            {
-                this._Rb.Velocity -= rightDir * TurnForce * Time.DeltaTime;
-            }
-
-            else if (walkDirBase == walkForward)
-            {
-                this._Rb.Velocity -= lookDir * TurnForce * Time.DeltaTime;
-            }
-
-            else if (walkDirBase == -walkForward)
-            {
-                this._Rb.Velocity += lookDir * TurnForce * Time.DeltaTime;
-            }*/
         }
 
-
+        private Chunk previousChunk = null;
 
         private void ViewHit()
         {
@@ -264,7 +250,7 @@ namespace Winecrash.Client
 
                 if (Input.IsPressing(Keys.MouseRightButton))
                 {
-                    World.GlobalToLocal(ViewRayHit.Value.GlobalPosition + ViewRayHit.Value.Normal, out Vector3I cpos, out Vector3I bpos);
+                    World.GlobalToLocal(ViewRayHit.Value.GlobalPosition + ViewRayHit.Value.Normal * -0.5F, out Vector3I cpos, out Vector3I bpos);
 
                     Ticket tck = Ticket.GetTicket(new Vector2I(cpos.X, cpos.Y));
 
@@ -274,28 +260,82 @@ namespace Winecrash.Client
 
         }
 
-        protected override void Update()
+        protected override void FixedUpdate()
         {
-            CameraRotation();
+            if (FreeCam.FreeCTRL)
+            {
+                this._Rb.UseGravity = false;
+                this._Rb.Velocity = Vector3D.Zero;
 
+                if (Input.IsPressing(Keys.MouseMiddleButton))
+                {
+                    this.WObject.Position += Vector3F.Left * 12_550_821;
+                }
+
+               
+
+                World.GlobalToLocal(this.WObject.Position, out Vector3I cpos, out _);
+
+                if (Input.IsPressing(Keys.K))
+                {
+                    Ticket.CreateTicket(cpos.X, cpos.Y, 30, TicketTypes.Player, TicketPreviousDirection.None);
+                }
+
+                Ticket tck = Ticket.GetTicket(cpos.XY);
+
+                if (tck != null)
+                {
+                    Chunk c = tck.Chunk;
+
+                    if (c != null)
+                    {
+                        if (previousChunk != null && (previousChunk != c))
+                        {
+                            Debug.Log("chunk changed to " + c.Position);
+                            OnChangeChunk?.Invoke(c);
+                        }
+                    }
+
+                    previousChunk = c;
+                }
+
+                return;
+            }
+
+            else
+            {
+                this._Rb.UseGravity = true;
+            }
             Move();
-
-            ViewHit();
-
-            MainInteraction();
 
             if (CurrentChunk == null || !CurrentChunk.BuiltOnce || Grounded)
             {
                 this._Rb.Velocity *= new Vector3D(1, 0, 1);
             }
 
-            if(Grounded)
+            if (Grounded)
             {
-                JumpWaitTime += (float)Time.DeltaTime;
+                JumpWaitTime += (float)Time.FixedDeltaTime;
             }
 
-            TimeSinceLastJump += (float)Time.DeltaTime;
+            TimeSinceLastJump += (float)Time.FixedDeltaTime;
 
+            Collisions();
+
+
+        }
+        protected override void Update()
+        {
+            //if (!FreeCam.FreeCTRL)
+                CameraRotation();
+
+            
+
+            ViewHit();
+
+            MainInteraction();
+
+            if (!FreeCam.FreeCTRL)
             if (Input.IsPressed(GameInput.Key("Jump")))
             {
                 if (Grounded && JumpWaitTime >= WaitTimeBeforeJump && TimeSinceLastJump >= JumpCooldown)
@@ -306,7 +346,7 @@ namespace Winecrash.Client
                 }
             }
 
-            Collisions();
+            
 
             if (Input.IsPressed(Keys.F3) && Input.IsPressing(Keys.A))
             {
@@ -330,7 +370,7 @@ namespace Winecrash.Client
             //CheckLeft();
         }
 
-        #region Rays
+#region Rays
         private void ChechBackward()
         {
             if (this._Rb.Velocity.Z > 0) return;
@@ -605,6 +645,8 @@ namespace Winecrash.Client
                 this._Rb.Velocity *= new Vector3D(1, 0, 1);
                 this.WObject.Position *= new Vector3F(1, 0, 1);
                 this.WObject.Position += Vector3F.Up * ((float)hit.LocalPosition.Y + (float)_Bc.Extents.Y * 2 + 0.05F);
+
+                
             }
             CurrentChunk = hit.Chunk;
         }

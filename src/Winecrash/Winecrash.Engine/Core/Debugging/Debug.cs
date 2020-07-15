@@ -77,21 +77,21 @@ namespace Winecrash.Engine
         {
             foreach (Logger logger in Loggers)
             {
-                logger.Log(message);
+                logger.Log(message ?? "Null");
             }
         }
         public static void LogWarning(object message)
         {
             foreach (Logger logger in Loggers)
             {
-                logger.LogWarning(message);
+                logger.LogWarning(message ?? "Null");
             }
         }
         public static void LogError(object message)
         {
             foreach (Logger logger in Loggers)
             {
-                logger.LogError(message);
+                logger.LogError(message ?? "Null");
             }
         }
         public static void LogException(Exception e)

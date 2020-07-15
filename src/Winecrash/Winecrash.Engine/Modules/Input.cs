@@ -48,11 +48,21 @@ namespace Winecrash.Engine
 
         public static Vector2D MouseDelta { get; internal set; } = Vector2D.Zero;
 
+        public static double MouseScrollDelta { get; private set; } = 0.0D;
+
         public static double MouseSensivity { get; set; } = 1.0D;
 
         public static CursorLockModes LockMode { get; set; } = CursorLockModes.Free;
 
         public override bool Undeletable { get; internal set; } = true;
+
+        private static double _PreviousScroll = 0.0D;
+        internal static void SetMouseScroll(double scroll)
+        {
+            MouseScrollDelta = scroll - _PreviousScroll;
+
+            _PreviousScroll = scroll;
+        }
 
         protected internal override void Creation()
         {

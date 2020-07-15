@@ -97,6 +97,30 @@ namespace Winecrash.Engine
         }
 
         internal static UpdateTypes UpdateType = UpdateTypes.PreUpdate;
+
+        internal void FixedUpdate()
+        {
+            Module[] modules = this._Modules.ToArray();
+
+            if(modules != null)
+            for (int i = 0; i < modules.Length; i++)
+            {
+                modules[i]?.FixedUpdate();
+            }
+        }
+
+        internal void LateFixedUpdate()
+        {
+            if (this._Modules != null)
+            {
+                Module[] modules = this._Modules.ToArray();
+
+                for (int i = 0; i < modules.Length; i++)
+                {
+                    modules[i]?.LateFixedUpdate();
+                }
+            }
+        }
         private void Update()
         {
             while (true)

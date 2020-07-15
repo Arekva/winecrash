@@ -35,7 +35,7 @@ namespace Winecrash.Engine
             Thread winThread = Viewport.ThreadRunner = new Thread(ShowWindow)
             {
                 IsBackground = false,
-                Priority = ThreadPriority.Highest
+                Priority = ThreadPriority.Highest, Name = "OpenGL"
             };
             winThread.Start();
 
@@ -86,6 +86,8 @@ namespace Winecrash.Engine
                 Viewport.ThreadRunner?.Abort();
             }
 
+            Layer.FixedThread?.Abort();
+
             foreach(Layer layer in Layer._Layers)
             {
                 foreach(Group group in layer._Groups)
@@ -123,6 +125,15 @@ namespace Winecrash.Engine
             }
 
             CreateEngineWObject();
+
+
+            GUI.Font pixelized = new GUI.Font("assets/fonts/pixelized.json", "Pixelized");
+
+            for (int i = 0; i < pixelized.Glyphs.Set.Length; i++)
+            {
+                Debug.LogWarning(pixelized.Glyphs[pixelized.Glyphs.Set[i]].Character);
+            }
+            
         }
 
         private static WObject CreateEngineWObject()

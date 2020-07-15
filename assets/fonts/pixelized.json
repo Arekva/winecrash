@@ -1,0 +1,20 @@
+{
+    "MapPath": "assets/fonts/maps/pixelized_map.png",
+
+    "Table": [
+        {
+            "Character": "A",
+            "X" : 0,
+            "Y" : 21,
+            "Width" : 52,
+            "Height" : 21
+        },
+        {
+            "Character": "a",
+            "X" : 62,
+            "Y" : 21,
+            "Width" : 52,
+            "Height" : 21
+        }
+    ]
+}

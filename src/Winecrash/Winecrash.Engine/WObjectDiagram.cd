@@ -3,7 +3,7 @@
   <Class Name="Winecrash.Engine.WObject" Collapsed="true">
     <Position X="5.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAiAAKCgAAAAIAgAAIUQAAAgAFYAgCICACAAAAQAAI=</HashCode>
+      <HashCode>IAAiAAKCgAAAAIAgAAIUQAAAgAFYAgCMCACAAAAQAAI=</HashCode>
       <FileName>Core\WObject.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -18,22 +18,22 @@
   <Class Name="Winecrash.Engine.Module" Collapsed="true">
     <Position X="8" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>MAQAAEACACAAAIABIAAAAAAAAAEAQgCIBAAAIAAACAA=</HashCode>
+      <HashCode>MAQAAUACAiAAAIABIAAAIAAAAAEAQgCIBAAAIAEACAA=</HashCode>
       <FileName>Core\Module.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Winecrash.Engine.Material" Collapsed="true">
     <Position X="10.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>QAAAAAIhEAAAAgAIAAAAAIAAAAEMAAQDIACMAAAAAAA=</HashCode>
+      <HashCode>QAAAAAIhEAAAAgAIAAEAAIAAAAEMAAUDIACMAAAAAAA=</HashCode>
       <FileName>Render\Material.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Winecrash.Engine.Mesh" Collapsed="true">
     <Position X="12.5" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AACAAAAIEEABAAABAAACAAAAAAEAAgQAEIABAAAABBA=</HashCode>
-      <FileName>Render\Mesh.cs</FileName>
+      <HashCode>AAAAAAAAEFABAAABoAACAAAAAAEAAgAAEIIBAAAABBA=</HashCode>
+      <FileName>Render\Mesh\Mesh.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Winecrash.Engine.Shader" Collapsed="true">
@@ -46,14 +46,14 @@
   <Class Name="Winecrash.Engine.Texture" Collapsed="true">
     <Position X="17" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAAAAgBAAAgAAAAAAAAEAAAAEMAAIAAAAIAAAAAAA=</HashCode>
+      <HashCode>ACABABAgBBAggAAAAAAAAEAAAAEMABIAAAAAAAAAAAA=</HashCode>
       <FileName>Render\Texture.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Winecrash.Engine.Camera" Collapsed="true">
     <Position X="3.5" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAwAAAACIAMAABIAIgAAAAAAAEIgAAgAAEACJAgAAAA=</HashCode>
+      <HashCode>AAggAAACIAMAAAIAogAAAAAAAEIgAAggAAACJAgAAAA=</HashCode>
       <FileName>Modules\Camera.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -67,41 +67,62 @@
   <Class Name="Winecrash.Engine.Input" Collapsed="true">
     <Position X="8" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gGQAEAACwAAAgEAAJAgAAAAAAAAAEgAgQAABAAAAEAg=</HashCode>
+      <HashCode>gGQAkAACwAAAgEAAJAgAAAAAAAAAEiAgQACBAAAAEAg=</HashCode>
       <FileName>Modules\Input.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Winecrash.Engine.MeshRenderer" Collapsed="true">
     <Position X="10.25" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AEQACAAiAAAAAAQAIEEAAAAAAAAEAAAIAQAAAAAECCA=</HashCode>
+      <HashCode>AEAACgAigAAAAAQAIAAAAAAAAAAEAgAIAQAAIAAGCCA=</HashCode>
       <FileName>Modules\MeshRenderer.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Winecrash.Engine.Light" Collapsed="true">
     <Position X="12.5" Y="4" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAACAAAABAAAIAAAAgAAAAAAAAAIAAAAgAAACAA=</HashCode>
-      <FileName>Render\Lightening\Light.cs</FileName>
+      <HashCode>AAAAAAACAAAABAAAIAAAAgAIAAAAAAAIAAAAgAAACAA=</HashCode>
+      <FileName>Modules\Light.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Winecrash.Engine.DirectionalLight" Collapsed="true">
     <Position X="13.75" Y="5.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAACAAAAAAAAIAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
-      <FileName>Render\Lightening\DirectionalLight.cs</FileName>
+      <HashCode>AAAAAAACAAAAAgAAIAAAAAAAAAAAAAAAAAAABEAAAAA=</HashCode>
+      <FileName>Modules\DirectionalLight.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Winecrash.Engine.PointLight" Collapsed="true">
     <Position X="11.5" Y="5.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Render\Lightening\PointLight.cs</FileName>
+      <HashCode>AAAAAAACAAAACAAAIAAAAAAAAAAAAAAAAAgAAAAAAAE=</HashCode>
+      <FileName>Modules\PointLight.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="System.Object" Collapsed="true">
     <Position X="14.75" Y="0.75" Width="1.5" />
     <TypeIdentifier />
+  </Class>
+  <Class Name="Winecrash.Engine.Collider" Collapsed="true">
+    <Position X="1.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAACAAAAAAAAIAAAAAAAAAAAAAAYAAAAAAAACAA=</HashCode>
+      <FileName>Modules\Collider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Winecrash.Engine.RigidBody" Collapsed="true">
+    <Position X="14.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAgAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Modules\RigidBody.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Winecrash.Engine.BoxCollider" Collapsed="true">
+    <Position X="1.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAKAAAQAAAAIAAAAAAAACAAAAAIAAAAAAAACAA=</HashCode>
+      <FileName>Modules\BoxCollider.cs</FileName>
+    </TypeIdentifier>
   </Class>
   <Interface Name="System.IComparable" Collapsed="true">
     <Position X="10" Y="0.75" Width="1.5" />

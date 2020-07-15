@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Winecrash.Client
+namespace Winecrash.Engine
 {
-    public static class GameManager
+    public enum CameraProjectionType
     {
-        public static int RandomTickSpeed { get; set; } = 3;
+        Perspective,
+        Orthographic
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -39,6 +40,8 @@ namespace Winecrash.Engine
 
         internal bool Deleted { get; set; } = false;
 
+        public static Thread FixedThread;
+
         [Initializer]
         private static void Initialize()
         {
@@ -47,6 +50,63 @@ namespace Winecrash.Engine
 
             Viewport.Update += new UpdateEventHandler(Update);
             Viewport.Render += new UpdateEventHandler(Render);
+
+            FixedThread = new Thread(() =>
+            {
+                Stopwatch sw = new Stopwatch();
+                while (true)
+                {
+                    sw.Start();
+
+                    Layer[] layers = _Layers.ToArray();
+
+                    //fixedupdate
+                    for (int i = 0; i < layers.Length; i++)
+                    {
+                        Layer layer = layers[i];
+
+                        if (layer.Deleted) continue;
+
+                        Group[] groups = layer._Groups.ToArray();
+                        for (int j = 0; j < groups.Length; j++)
+                        {
+                            groups[j].FixedUpdate();
+                        }
+                    }
+
+                    for (int i = 0; i < layers.Length; i++)
+                    {
+                        Layer layer = layers[i];
+
+                        if (layer.Deleted) continue;
+
+                        Group[] groups = layer._Groups.ToArray();
+                        for (int j = 0; j < groups.Length; j++)
+                        {
+                            groups[j].LateFixedUpdate();
+                        }
+                    }
+
+                    sw.Stop();
+
+                    double waitTime = Physics.FixedRate - sw.Elapsed.TotalSeconds;
+
+                    if (waitTime > 0.0D)
+                    {
+                        Time.FixedDeltaTime = Physics.FixedRate;
+                        Thread.Sleep((int)(waitTime * 1000));
+                    }
+
+                    else
+                    {
+                        Time.FixedDeltaTime = sw.Elapsed.TotalSeconds;
+                    }
+
+                    sw.Reset();
+                }
+            });
+
+            Viewport.OnLoaded += FixedThread.Start;
         }
 
         private Layer(string name, int order, IEnumerable<Group> groups)

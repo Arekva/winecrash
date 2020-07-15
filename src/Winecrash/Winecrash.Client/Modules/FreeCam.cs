@@ -10,30 +10,45 @@ namespace Winecrash.Client
 {
     public class FreeCam : Module
     {
-        public float MoveSpeed = 5.0F;
+        public float MoveSpeed = 20.0F;
+        public float MoveSpeedSensivity = 5.0F;
         private Vector2D Angles = new Vector2D();
 
         public Camera EditedCamera { get; set; }
+
+
+        public static bool FreeCTRL = false;
 
         protected override void Creation()
         {
             EditedCamera = Camera.Main;
 
-            Input.MouseSensivity *= 5.0F;
+            //Input.MouseSensivity *= 5.0F;
         }
 
         protected override void Update()
         {
+            if(Input.IsPressing(Keys.End))
+            {
+                FreeCTRL = !FreeCTRL;
+            }
+
+            if (!FreeCTRL) return;
+
+            float newSpeed = (float)Input.MouseScrollDelta * MoveSpeedSensivity;
+
+            this.MoveSpeed += newSpeed;
+            //if(Input.IsPressed(Keys.Mouse))
             //Debug.Log(this.WObject.Position);
 
-            Vector2D deltas = Input.MouseDelta;
+            /*Vector2D deltas = Input.MouseDelta;
 
             double ax = (Angles.X + (deltas.X * Input.MouseSensivity * (float)Time.DeltaTime)) % 360.0F;
             double ay = WMath.Clamp((Angles.Y + (deltas.Y * Input.MouseSensivity * (float)Time.DeltaTime)), -90.0F, 90.0F);
 
             Angles = new Vector2D(ax, ay);
 
-            this.WObject.Rotation = new Quaternion(-ay, ax, 0.0F);
+            this.WObject.Rotation = new Quaternion(-ay, ax, 0.0F);*/
 
             Vector3F fwd = this.WObject.Forward;
             Vector3F rght = this.WObject.Right;
@@ -80,7 +95,7 @@ namespace Winecrash.Client
                 up *= 0.0F;
             }
 
-            this.WObject.Position = pos + fwd - rght + up;
+            Player.Instance.WObject.Position += fwd - rght + up;
              
             
             if(Input.IsPressed(Keys.F3) && Input.IsPressing(Keys.A))
@@ -104,12 +119,12 @@ namespace Winecrash.Client
 
 
 
-            if(Input.IsPressed(Keys.Delete))
+            /*if(Input.IsPressed(Keys.Delete))
             {
                 World.Instance.WObject.Delete();
 
                 WEngine.TraceLayers();
-            }
+            }*/
 
             /*if (Input.IsPressing(Keys.MouseLeftButton))
             {
