@@ -97,7 +97,7 @@ namespace Winecrash.Engine
                 Size s = Viewport.Instance.Size;
                 Vector2I centre = new Vector2I((int)(Viewport.Instance.X + s.Width / 2f), (int)(Viewport.Instance.Y + s.Height / 2f));
 
-                MouseDelta = Viewport.Instance.Focused ? centre - (Vector2D)pos: Vector2D.Zero;
+                MouseDelta = Viewport.Instance.Focused && Input.LockMode == CursorLockModes.Lock ? centre - (Vector2D)pos: Vector2D.Zero;
 
                 if (Input.LockMode == CursorLockModes.Lock && Focused)
                 {

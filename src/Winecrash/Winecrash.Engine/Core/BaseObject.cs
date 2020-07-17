@@ -5,7 +5,7 @@ namespace Winecrash.Engine
     public abstract class BaseObject : IComparable
     {
         public string Name { get; set; } = "BaseObject";
-        private Guid Identifier { get; }
+        public Guid Identifier { get; }
 
         internal bool Deleted { get; private set; } = false;
 

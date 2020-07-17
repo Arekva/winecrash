@@ -48,7 +48,8 @@ namespace Winecrash.Engine
         {
             new Texture();
             WObject camWobj = new WObject("Main Camera");
-            camWobj.AddModule<Camera>();
+            Camera cam = camWobj.AddModule<Camera>();
+            Camera.Main = cam;
 
             Shader.CreateError();
 
@@ -59,8 +60,12 @@ namespace Winecrash.Engine
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
 
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
             new Shader("assets/shaders/Standard/Standard.vert", "assets/shaders/Standard/Standard.frag");
             new Shader("assets/shaders/Unlit/Unlit.vert", "assets/shaders/Unlit/Unlit.frag");
+            new Shader("assets/shaders/Text/Text.vert", "assets/shaders/Text/Text.frag");
 
             OnLoaded?.Invoke();
         }
@@ -68,7 +73,7 @@ namespace Winecrash.Engine
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
+            GL.ClearDepth(1.0D);
             ViewportDoOnceDelegate once = DoOnceRender;
             DoOnceRender = null;
             

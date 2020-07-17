@@ -10,9 +10,10 @@ using System.IO;
 
 namespace Winecrash.Engine.GUI
 {
-    class Font : BaseObject
+    public class Font : BaseObject
     {
         private static List<Font> _FontCache = new List<Font>();
+
         public GlyphTable Glyphs { get; } = null;
 
         public Font(string path, string name = null) : base()
@@ -20,11 +21,14 @@ namespace Winecrash.Engine.GUI
             this.Name = name ?? path.Split('/', '\\').Last().Split('.')[0];
 
             Glyphs = JsonConvert.DeserializeObject<GlyphTable>(File.ReadAllText(path));
+
+            _FontCache.Add(this);
         }
 
         public Font(string name, GlyphTable glyphs) : base(name)
         {
             this.Glyphs = glyphs;
+            _FontCache.Add(this);
         }
 
         public static Font Find(string name)

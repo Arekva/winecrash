@@ -142,6 +142,7 @@ namespace Winecrash.Engine
                 Uniforms[i] = new ShaderUniformData(UName, GL.GetUniformLocation(Handle, UName), USize, UType);
             }
 
+
             Cache.Add(this);
         }
 
@@ -293,7 +294,7 @@ namespace Winecrash.Engine
             if (code != (int)All.True)
             {
                 string infoLog = GL.GetShaderInfoLog(shader);
-                throw new Exception($"Error occurred whilst compiling Shader({shader}).\n\n{infoLog}");
+                Debug.LogError($"[OpenGL] Error occurred while compiling Shader({shader}).\n\n{infoLog}");
             }
         }
 

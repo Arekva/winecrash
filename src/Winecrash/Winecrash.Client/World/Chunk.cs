@@ -715,7 +715,7 @@ namespace Winecrash.Client
                 if (Renderer.Mesh == null)
                 {
                     Renderer.Mesh = new Mesh("Chunk Mesh");
-                    Engine.Debug.Log("Created mesh for " + this.Position);
+                    //Engine.Debug.Log("Created mesh for " + this.Position);
                 }
 
                 Renderer.Mesh.Vertices = vertices.ToArray();

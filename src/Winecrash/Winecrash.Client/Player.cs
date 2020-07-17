@@ -71,11 +71,12 @@ namespace Winecrash.Client
 
             Cursor3D = new WObject("Block Cursor");
             MeshRenderer mr = Cursor3D.AddModule<MeshRenderer>();
-            mr.Material = new Material(Shader.Find("Unlit"));
-            mr.Material.SetData<Vector4>("color", new Color256());
+            mr.Material = new Material(Shader.Find("Cursor"));
+            mr.Material.SetData<Vector4>("color", new Color256(0.0D,0.0D,0.0D,1.0D));
+            mr.Material.SetData<float>("border", 0.1F);
             mr.Mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront);
-            mr.Wireframe = true;
-            Cursor3D.Scale *= 0.505F;
+            //mr.Wireframe = true;
+            Cursor3D.Scale *= 1.005F;
 
             HitSphere = new WObject("Debug hit sphere");
             MeshRenderer hmr = HitSphere.AddModule<MeshRenderer>();
@@ -99,8 +100,44 @@ namespace Winecrash.Client
 
             this.FPSCamera.WObject.Rotation = new Engine.Quaternion(-ay, ax, 0.0F);
         }
+
+        double sensi = 300;
         private void Move()
         {
+            WObject wobj = WObject.Find("1");
+
+            Engine.GUI.Image img = wobj?.GetModule<Engine.GUI.Image>();
+
+            double scroll = Time.DeltaTime * Input.MouseScrollDelta * sensi;
+
+            if (img != null)
+            {
+                if(Input.IsPressed(Keys.LeftShift))
+                {
+                    if (Input.IsPressed(Keys.LeftControl))
+                    {
+                        img.Right += (float)scroll;
+                    }
+                    else
+                    {
+                        img.Left += (float)scroll;
+                    }
+                }
+                else
+                {
+                    if (Input.IsPressed(Keys.LeftControl))
+                    {
+                        img.Bottom += (float)scroll;
+                    }
+                    else
+                    {
+                        img.Top += (float)scroll;
+                    }
+                }
+                
+            }
+
+
             if (!FreeCam.FreeCTRL)
             {
                 Vector3D walkdir = Vector3D.Zero;
@@ -232,6 +269,7 @@ namespace Winecrash.Client
                 ViewRayHit = null;
             }
         }
+
         private void MainInteraction()
         {
             Cursor3D.Enabled = HitSphere.Enabled = ViewRayHit != null;
@@ -326,8 +364,14 @@ namespace Winecrash.Client
         }
         protected override void Update()
         {
+            if(Input.IsPressing(Keys.Escape))
+            {
+                Input.CursorVisible = !Input.CursorVisible;
+                Input.LockMode = Input.LockMode == CursorLockModes.Free ? CursorLockModes.Lock : CursorLockModes.Free;
+            }
+
             //if (!FreeCam.FreeCTRL)
-                CameraRotation();
+            CameraRotation();
 
             
 

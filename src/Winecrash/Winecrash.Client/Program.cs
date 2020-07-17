@@ -21,15 +21,13 @@ namespace Winecrash.Client
 
             WEngine.Run();
 
-            //Block b = new Block();
-            //b.Textures = new TexturePaths();
-            //File.WriteAllText("debug.json", JsonConvert.SerializeObject(b, Formatting.Indented));
-
             Viewport.OnLoaded += Start;
         }
 
         static void Start()
         {
+            new Shader("assets/shaders/cursor/Cursor.vert", "assets/shaders/cursor/Cursor.frag");
+
             Input.LockMode = CursorLockModes.Lock;
             Input.CursorVisible = false;
 
@@ -51,6 +49,7 @@ namespace Winecrash.Client
 
             Camera.Main.WObject.AddModule<FreeCam>();
             Camera.Main.RenderLayers &= ~(1L << 32);
+            Camera.Main.RenderLayers &= ~(1L << 48);
             //Camera.Main.WObject.AddModule<RigidBody>();
 
             Camera.Main._FarClip = 1000.0F;
@@ -71,11 +70,7 @@ namespace Winecrash.Client
 
             WObject worldwobj = new WObject("World");
             worldwobj.AddModule<World>();
-
-
         }
-
-
 
         static Color256 HorizonColourDay = new Color256(0.82D, 0.92D, 0.98D, 1.0D);
         static Color256 HorizonColourSunset = new Color256(1.0D, 0.48D, 0.0D, 1.0D);
@@ -115,11 +110,63 @@ namespace Winecrash.Client
             SkyboxCamera skycam = new WObject("Skybox Camera").AddModule<SkyboxCamera>();
             skycam.ReferenceCamera = Camera.Main;
 
+            Texture fidget = new Texture("assets/uv.png");
+
+            WObject testpic = new WObject("1");
+            testpic.Parent = Engine.GUI.Canvas.Main.WObject;
+
+            Engine.GUI.Image img = testpic.AddModule<Engine.GUI.Image>();
+            img.Picture = fidget;
+
+            img.MinAnchor = new Vector2F(0, 0);
+            img.MaxAnchor = new Vector2F(0.5F, 1F);
+
+            
+
+            WObject testpic2 = new WObject("2");
+            testpic2.Parent = testpic;
+
+            Engine.GUI.Image img2 = testpic2.AddModule<Engine.GUI.Image>();
+            img2.Picture = fidget;
+
+            img2.MinAnchor = new Vector2F(0, 0);
+            img2.MaxAnchor = new Vector2F(0.5F, 0.5F);
+
+            //testpic.Position = Vector3F.One * 100.0F;
+
+            //testpic.Scale = new Vector3F(fidget.Width/2.0F, fidget.Height/2.0F, 1.0F);
+            /*WObject fpsWobj = new WObject("FPS Label");
+            fpsWobj.Parent = WObject.Find("Canvas");
+            fpsWobj.Position += Vector3F.Right * 50.0F;
+
+            Engine.GUI.Label label = fpsWobj.AddModule<Engine.GUI.Label>();
+            label.Text = "AaBbCcDdEeFfGgI";
+            label.FontSize = 20F;
+            label.InterCharacterSpace = 0F;
+            label.Color = new Color256(1.0, 1.0, 1.0, 1.0);
+
+            label.MinAnchor = new Vector2F(0, 0.85F);
+            label.MaxAnchor = new Vector2F(0.25F, 1.0F);
+
+            label.Fill = true;*/
+
+
+            /*WObject test = new WObject("test");
+            test.Layer = 1L << 48;
+            MeshRenderer testmr = test.AddModule<MeshRenderer>();
+            testmr.Material = new Material(Shader.Find("Unlit"));
+            testmr.Material.SetData<Vector4>("color", new Color256(1.0, 1.0, 1.0, 1.0));
+            testmr.Material.SetData<Texture>("albedo", Texture.Find("grass_top"));
+            testmr.Mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront);
+
+            test.Scale *= 0.2F;
+            test.Position += Vector3F.Forward * 0.5F;
+            test.Rotation = new Engine.Quaternion(Vector3F.Up, 45F);
+            test.Rotation *= new Engine.Quaternion(Vector3F.Right, 35F);*/
+
+            //fpsWobj.AddModule<Label>();
         }
 
-
-
-        [STAThread]
         static void CreateDebugWindow()
         {
             Debug.AddLogger(new Logger(LogVerbose, LogWarning, LogError, LogException));

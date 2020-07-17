@@ -257,7 +257,7 @@ namespace Winecrash.Engine
 
         public static implicit operator Vector2F(Vector2I vec)
         {
-            return new Vector2I(vec.X, vec.Y);
+            return new Vector2F(vec.X, vec.Y);
         }
 
         public static implicit operator Vector2D(Vector2I vec)

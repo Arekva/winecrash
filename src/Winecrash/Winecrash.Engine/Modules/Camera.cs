@@ -30,11 +30,12 @@ namespace Winecrash.Engine
         /// </summary>
         public float FOV { get; set; } = 45.0F;
 
+
         public Vector2I Resolution
         {
             get
             {
-                return Viewport.Instance == null ? new Vector2I(1024, 1024) : new Vector2I(Viewport.Instance.Width, Viewport.Instance.Height);
+                return Viewport.Instance == null ? new Vector2I(1024, 1024) : new Vector2I(Viewport.Instance.ClientSize.Width, Viewport.Instance.ClientSize.Height);
             }
         }
 
@@ -82,7 +83,7 @@ namespace Winecrash.Engine
             }
         }
 
-        private Color256 _ClearColor = new Color256(255, 28, 28, 255);
+        private Color256 _ClearColor = new Color256(1.0, 1.0, 1.0, 1.0);
         public Color256 ClearColor
         {
             get
@@ -93,7 +94,7 @@ namespace Winecrash.Engine
             set
             {
                 Color256 col = this._ClearColor = value;
-                GL.ClearColor((float)col.R, (float)col.G, (float)col.B, (float)col.A);
+                Viewport.DoOnceRender += () => GL.ClearColor((float)col.R, (float)col.G, (float)col.B, 255);
             }
         }
 
@@ -121,12 +122,9 @@ namespace Winecrash.Engine
 
         protected internal override void Creation()
         {
-            this.ClearColor = new Color256(0.11D, 0.11D, 0.11D, 0.11D);
+            //this.ClearColor = new Color256(0.11D, 0.11D, 0.11D, 1.0D);
 
             Cameras.Add(this);
-
-            if (Camera.Main == null)
-                Camera.Main = this;
         }
 
         protected internal override void OnDelete()

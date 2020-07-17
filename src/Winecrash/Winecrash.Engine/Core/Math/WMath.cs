@@ -36,7 +36,7 @@ namespace Winecrash.Engine
 
 
         #region CopySign
-        internal static Int64 CopySign(Int64 x, Int64 y)
+        public static Int64 CopySign(Int64 x, Int64 y)
         {
             //if x negative
             if (x < 0L)
@@ -111,7 +111,7 @@ namespace Winecrash.Engine
             //else return positive x
             return x;
         }
-        internal static decimal CopySign(decimal x, decimal y)
+        public static decimal CopySign(decimal x, decimal y)
         {
             //if x negative
             if (x < 0.0M)
@@ -189,5 +189,25 @@ namespace Winecrash.Engine
             return x;
         }
         #endregion
+
+        public static float Remap(float value, float oldLow, float oldHigh, float newLow, float newHigh)
+        {
+            return newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
+        }
+
+        public static double Remap(double value, double oldLow, double oldHigh, double newLow, double newHigh)
+        {
+            return newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
+        }
+
+        public static Vector2F Remap(Vector2F value, Vector2F oldLow, Vector2F oldHigh, Vector2F newLow, Vector2F newHigh)
+        {
+            return newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
+        }
+
+        public static Vector3F Remap(Vector3F value, Vector3F oldLow, Vector3F oldHigh, Vector3F newLow, Vector3F newHigh)
+        {
+            return newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
+        }
     }
 }

@@ -5,16 +5,121 @@
         {
             "Character": "A",
             "X" : 0,
-            "Y" : 21,
-            "Width" : 52,
-            "Height" : 21
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
         },
         {
             "Character": "a",
             "X" : 62,
-            "Y" : 21,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "B",
+            "X" : 124,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "b",
+            "X" : 186,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "C",
+            "X" : 248,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "c",
+            "X" : 310,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "D",
+            "X" : 372,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "d",
+            "X" : 434,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "E",
+            "X" : 496,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "e",
+            "X" : 558,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "F",
+            "X" : 620,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "f",
+            "X" : 682,
+            "Y" : 122,
             "Width" : 52,
-            "Height" : 21
+            "Height" : 122
+        },
+        {
+            "Character": "G",
+            "X" : 734,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "g",
+            "X" : 796,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "H",
+            "X" : 858,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "h",
+            "X" : 920,
+            "Y" : 122,
+            "Width" : 62,
+            "Height" : 122
+        },
+        {
+            "Character": "I",
+            "X" : 982,
+            "Y" : 122,
+            "Width" : 42,
+            "Height" : 122
         }
     ]
 }

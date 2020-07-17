@@ -126,14 +126,12 @@ namespace Winecrash.Engine
 
             CreateEngineWObject();
 
-
             GUI.Font pixelized = new GUI.Font("assets/fonts/pixelized.json", "Pixelized");
 
-            for (int i = 0; i < pixelized.Glyphs.Set.Length; i++)
+           /* for (int i = 0; i < pixelized.Glyphs.Set.Length; i++)
             {
                 Debug.LogWarning(pixelized.Glyphs[pixelized.Glyphs.Set[i]].Character);
-            }
-            
+            }*/
         }
 
         private static WObject CreateEngineWObject()
@@ -146,6 +144,8 @@ namespace Winecrash.Engine
             wobj.AddModule<Input>().ExecutionOrder = Int32.MinValue;
             wobj.AddModule<EngineCore>();
 
+            WObject wobjcan = new WObject("Canvas");
+            wobjcan.AddModule<GUI.Canvas>();
             
 
             Layer.CreateOrGetLayer(0).Name = "Default Layer";

@@ -11,5 +11,5 @@ void main()
 {
     vec4 diffuse = texture(albedo, texCoord);
 
-    outputColor = vec4(diffuse.xyz, 1.0) * color;
+    outputColor = diffuse * color;
 }

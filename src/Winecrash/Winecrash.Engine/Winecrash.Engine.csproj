@@ -91,6 +91,7 @@
     <Compile Include="Core\Color\Color.cs" />
     <Compile Include="Core\Color\Color256.cs" />
     <Compile Include="Core\Color\Color32.cs" />
+    <Compile Include="GUI\Anchor.cs" />
     <Compile Include="GUI\Font.cs" />
     <Compile Include="Core\Input\CursorLockModes.cs" />
     <Compile Include="Core\Input\Keys.cs" />
@@ -124,13 +125,19 @@
     <Compile Include="Core\Update\UpdateTypes.cs" />
     <Compile Include="GUI\Glyph.cs" />
     <Compile Include="GUI\GlyphTable.cs" />
+    <Compile Include="GUI\Image.cs" />
     <Compile Include="Modules\Camera.cs" />
+    <Compile Include="Modules\Canvas.cs" />
     <Compile Include="Modules\EngineCore.cs" />
+    <Compile Include="Modules\GUIModule.cs" />
+    <Compile Include="Modules\GUIRenderer.cs" />
+    <Compile Include="Modules\ImageRenderer.cs" />
     <Compile Include="Modules\Input.cs" />
     <Compile Include="Core\Update\Group.cs" />
     <Compile Include="Core\Update\UpdateEvent.cs" />
     <Compile Include="Core\BaseObject.cs" />
     <Compile Include="Core\WObject.cs" />
+    <Compile Include="Modules\LabelRenderer.cs" />
     <Compile Include="Modules\MeshRenderer.cs" />
     <Compile Include="Modules\BoxCollider.cs" />
     <Compile Include="Modules\Collider.cs" />

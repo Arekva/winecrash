@@ -13,7 +13,7 @@ namespace Winecrash.Engine
 {
     public delegate void MeshRenderDelegate();
     
-    public sealed class MeshRenderer : Module
+    public class MeshRenderer : Module
     {
         public Mesh Mesh
         {
@@ -27,7 +27,7 @@ namespace Winecrash.Engine
                 this._Mesh = value;
             }
         }
-        private Mesh _Mesh = null;
+        protected Mesh _Mesh = null;
 
         public Material Material { get; set; }
 
@@ -39,10 +39,9 @@ namespace Winecrash.Engine
         public bool UseMask { get; set; } = true;
         public bool Wireframe { get; set; } = false;
 
-        private Mesh previousMesh = null;
-        internal void Use(Camera sender)
+        internal virtual void Use(Camera sender)
         {
-            if (Deleted || Material == null || _Mesh == null) return;
+            if (Deleted || Material == null || _Mesh == null || _Mesh.Indices == null || _Mesh.ElementBufferObject == -1 || _Mesh.VertexArrayObject == -1 || _Mesh.VertexBufferObject == -1) return;
 
             Matrix4 transform = this.WObject.TransformMatrix * sender.ViewMatrix * sender.ProjectionMatrix;
 
@@ -56,14 +55,13 @@ namespace Winecrash.Engine
             this.Material.SetData<Matrix4>("transform", transform);
 
             this.Material.Use();
+
+            GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(UseMask);
 
             OnRender?.Invoke();
 
-            if (_Mesh == null || _Mesh.Deleted || _Mesh.Indices == null || _Mesh.ElementBufferObject == -1 || _Mesh.VertexArrayObject == -1 || _Mesh.VertexBufferObject == -1) return;
-            GL.DrawElements(Wireframe ? PrimitiveType.LineLoop : PrimitiveType.Triangles, _Mesh.Indices.Length, DrawElementsType.UnsignedInt, 0);
-
-            previousMesh = this._Mesh;
+            GL.DrawElements(Wireframe ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)_Mesh.Indices, DrawElementsType.UnsignedInt, 0);
         }
 
         protected internal override void Creation()

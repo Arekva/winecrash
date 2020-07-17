@@ -8,7 +8,7 @@ using OpenTK;
 
 namespace Winecrash.Engine
 {
-    public sealed class WObject : BaseObject
+    public class WObject : BaseObject
     {
         internal static List<WObject> _WObjects { get; set; } = new List<WObject>(1);
         internal List<Module> _Modules { get; set; } = new List<Module>(1);
@@ -164,7 +164,7 @@ namespace Winecrash.Engine
             }
         }
 
-        internal Matrix4 TransformMatrix
+        internal protected virtual Matrix4 TransformMatrix
         {
             get
             {

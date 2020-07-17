@@ -159,5 +159,7 @@ void main()
     
     float light = getLight(blockpos.x, blockpos.y, blockpos.z);
 
+    float alpha = (diffuse * color).w;
     outputColor = vec4(diffuse.xyz, 1.0) * color * remap(light, 0.0, LIGHT_MAX_LEVEL, minLight, maxLight);//getLight(0,0,0);
+    outputColor.a = alpha;
 }
