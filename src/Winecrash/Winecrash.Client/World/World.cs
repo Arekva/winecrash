@@ -41,24 +41,20 @@ namespace Winecrash.Client
 
         private void UpdateChunks(Chunk c)
         {
-            Winecrash.Engine.Debug.Log("Updating chunks");
+
             Task.Run(() => Ticket.CreateTicket(c.Position.X, c.Position.Y, 31, TicketTypes.Player, TicketPreviousDirection.None, true));
+
         }
 
         protected override void Start()
         {
-            //Stopwatch sw = new Stopwatch();
-            //sw.Start();
             Thread worldGenerationThread = new Thread(() => Ticket.CreateTicket(0, 0, StartLevel, TicketTypes.Start, TicketPreviousDirection.None, true))
             {
                 IsBackground = true,
-                Priority = ThreadPriority.Lowest
+                Priority = ThreadPriority.Normal
             };
 
             worldGenerationThread.Start();
-            //sw.Stop();
-            //Engine.Debug.Log("World created in " + sw.Elapsed.TotalMilliseconds.ToString("N2") + " ms");
-
         }
 
 

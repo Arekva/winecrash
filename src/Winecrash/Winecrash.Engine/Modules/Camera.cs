@@ -142,15 +142,16 @@ namespace Winecrash.Engine
             Matrix4 view = this.ViewMatrix;
             Matrix4 proj = this.ProjectionMatrix;
 
-            
-            MeshRenderer[] mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
+            MeshRenderer[] mrs = /*null;
 
-            MeshRenderer[] layerMrs = mrs.Where(mr => (mr.WObject.Layer & this.RenderLayers) != 0).ToArray();
-
-            
-            for (int i = 0; i < layerMrs.Length; i++)
+            object obj = new object();
+            lock(obj)
             {
-                layerMrs[i].Use(this);
+                mrs = */MeshRenderer.ActiveMeshRenderers.ToArray();
+            //}
+            foreach (MeshRenderer mr in mrs.Where(mr => (mr.WObject.Layer & this.RenderLayers) != 0))
+            {
+                mr.Use(this);
             }
         }
     }

@@ -66,24 +66,36 @@ namespace Winecrash.Engine
 
         protected internal override void Creation()
         {
-            MeshRenderers.Add(this);
+            lock(ActiveMeshRenderers)
+            {
+                MeshRenderers.Add(this);
+            }
             this.Group = -1;
         }
 
         protected internal override void OnEnable()
         {
-            ActiveMeshRenderers.Add(this);
+            lock(ActiveMeshRenderers)
+            {
+                ActiveMeshRenderers.Add(this);
+            }
         }
 
         protected internal override void OnDisable()
         {
-            ActiveMeshRenderers.Remove(this);
+            lock(ActiveMeshRenderers)
+            {
+                ActiveMeshRenderers.Remove(this);
+            }
         }
 
         protected internal override void OnDelete()
         {
-            MeshRenderers.Remove(this);
-            ActiveMeshRenderers.Remove(this);
+            lock(ActiveMeshRenderers)
+            {
+                MeshRenderers.Remove(this);
+                ActiveMeshRenderers.Remove(this);
+            }
             this._Mesh = null;
         }
     }

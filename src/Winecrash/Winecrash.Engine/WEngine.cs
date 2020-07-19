@@ -46,25 +46,13 @@ namespace Winecrash.Engine
 
         private static void ShowWindow()
         {
-            Icon icon = null;
+            Icon icon = new Icon("icon.ico");
 
-            try
+            using (Viewport vp = new Viewport(1024, 1024, "Winecrash Viewport", icon))
             {
-               icon = new Icon("icon.ico");
+                vp.Run();
             }
 
-            catch (Exception e)
-            {
-                MessageBox.Show("Unable to load icon : " + e.Message);
-            }
-
-            finally
-            {
-                using (Viewport vp = new Viewport(1024, 1024, "Winecrash Viewport", icon))
-                {
-                    vp.Run();
-                }
-            }
         }
 
         public static void Load()
@@ -76,29 +64,27 @@ namespace Winecrash.Engine
             try
             {
                 OnStop?.Invoke();
-            }
-            catch(Exception e)
-            {
-                MessageBox.Show(e.Message + "\n" + e.StackTrace, "Error when stopping engine", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            if (!(sender is Viewport))
-            {
-                Viewport.ThreadRunner?.Abort();
-            }
 
-            Layer.FixedThread?.Abort();
-
-            foreach(Layer layer in Layer._Layers)
-            {
-                foreach(Group group in layer._Groups)
+                if (!(sender is Viewport))
                 {
-                    group.Thread.Abort();
+                    Viewport.ThreadRunner?.Abort();
+                }
+
+                Layer.FixedThread?.Abort();
+
+                foreach (Layer layer in Layer._Layers)
+                {
+                    foreach (Group group in layer._Groups)
+                    {
+                        group.Thread.Abort();
+                    }
                 }
             }
 
-            //Updater.UpdateThread?.Abort();
-            //Updater.FixedUpdateThread?.Abort();
-            Debug.PrintThread?.Abort();
+            catch(Exception e)
+            {
+                Debug.LogError("Error when stopping engine: " + e);
+            }
         }
         public static void Stop()
         {
@@ -112,16 +98,7 @@ namespace Winecrash.Engine
 
             if(!SupportedOS.Contains(OS))
             {
-                string errorMessage = "Sorry, but Winecrash is not compatible with system " + OS.ToString();
-
-                try
-                {
-                    MessageBox.Show(errorMessage, "Fatal error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                catch
-                {
-                    throw new Exception(errorMessage);
-                }
+                Debug.LogError("Sorry, but Winecrash is not compatible with system " + OS.ToString());
             }
 
             CreateEngineWObject();

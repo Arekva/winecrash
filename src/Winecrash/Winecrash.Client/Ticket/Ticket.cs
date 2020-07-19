@@ -7,6 +7,7 @@ using System.IO;
 
 using Winecrash.Engine;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Winecrash.Client
 {
@@ -120,19 +121,6 @@ namespace Winecrash.Client
             OnCreation?.Invoke(this);
         }
 
-        public static Ticket Get(Vector2I position)
-        {
-            foreach (Ticket t in _Tickets)
-            {
-                if (t.Position == position)
-                {
-                    return t;
-                }
-            }
-
-            return null;
-        }
-
         public bool Equals(Ticket ticket)
         {
             if (ticket is Ticket)
@@ -217,24 +205,37 @@ namespace Winecrash.Client
 
             Task.Run(() =>
             {
-                chunk.Position = new Vector3I(chunk.Ticket.Position.X, chunk.Ticket.Position.Y, 0);
-                chunk.WObject.Position = new Vector3F(this.Position.X * Chunk.Width, 0, this.Position.Y * Chunk.Depth);
-                Chunk.TriggerAnyChunkCreated(chunk);
+                //try
+                //{
+                    chunk.Position = new Vector3I(chunk.Ticket.Position.X, chunk.Ticket.Position.Y, 0);
+                    chunk.WObject.Position = new Vector3F(this.Position.X * Chunk.Width, 0, this.Position.Y * Chunk.Depth);
+                    Chunk.TriggerAnyChunkCreated(chunk);
 
-                chunk.NorthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Up)?.Chunk;
-                chunk.SouthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Down)?.Chunk;
-                chunk.EastNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Right)?.Chunk;
-                chunk.WestNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Left)?.Chunk;
+                    chunk.NorthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Up)?.Chunk;
+                    chunk.SouthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Down)?.Chunk;
+                    chunk.EastNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Right)?.Chunk;
+                    chunk.WestNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Left)?.Chunk;
 
 
-                chunk._Blocks = Generator.GetChunk(this.Position.X, this.Position.Y, out _);
-                chunk.BuiltOnce = true;
+                    chunk._Blocks = Generator.GetChunk(this.Position.X, this.Position.Y, out _);
+                    chunk.BuiltOnce = true;
 
-                Task.Run(chunk.GenerateLights);
+                    Task.Run(chunk.GenerateLights);
 
-                chunk.Construct();
 
-                Chunk.TriggerAnyChunkFirstBuilt(chunk);
+                    chunk.Construct();
+
+                    Chunk.TriggerAnyChunkFirstBuilt(chunk);
+                /*}
+                catch(Exception e)
+                {
+                    var st = new StackTrace(e, true);
+                    // Get the top stack frame
+                    var frame = st.GetFrame(0);
+
+
+                    Engine.Debug.LogError("Error when building chunk " + this.Position + " : " + st);
+                }*/
             });
 
             /*if (gen)
@@ -260,7 +261,15 @@ namespace Winecrash.Client
 
         public static Ticket GetTicket(Vector2I pos)
         {
-            return _Tickets.ToArray().FirstOrDefault(t => t.Position == pos);
+            object obj = new object();
+
+            Ticket[] tickets = null;
+            lock (obj)
+            {
+                tickets = _Tickets.ToArray();
+            }
+
+            return tickets.FirstOrDefault(t => t.Position == pos);
         }
     }
 }

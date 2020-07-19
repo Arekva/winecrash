@@ -685,12 +685,12 @@ namespace Winecrash.Client
 
                         if (block.Identifier == "winecrash:air") continue; // ignore if air
 
-                        if (IsTranparent(x, y + 1, z, blocks)) faces.Push(BlockFaces.Up);   // up
-                        if (IsTranparent(x, y - 1, z, blocks)) faces.Push(BlockFaces.Down); // down
-                        if (IsTranparent(x - 1, y, z, blocks)) faces.Push(BlockFaces.West); // west
-                        if (IsTranparent(x + 1, y, z, blocks)) faces.Push(BlockFaces.East); // east
-                        if (IsTranparent(x, y, z + 1, blocks)) faces.Push(BlockFaces.North);// north
-                        if (IsTranparent(x, y, z - 1, blocks)) faces.Push(BlockFaces.South);// south
+                        if (IsTransparent(x, y + 1, z, blocks)) faces.Push(BlockFaces.Up);   // up
+                        if (IsTransparent(x, y - 1, z, blocks)) faces.Push(BlockFaces.Down); // down
+                        if (IsTransparent(x - 1, y, z, blocks)) faces.Push(BlockFaces.West); // west
+                        if (IsTransparent(x + 1, y, z, blocks)) faces.Push(BlockFaces.East); // east
+                        if (IsTransparent(x, y, z + 1, blocks)) faces.Push(BlockFaces.North);// north
+                        if (IsTransparent(x, y, z - 1, blocks)) faces.Push(BlockFaces.South);// south
 
                         foreach (BlockFaces face in faces)
                         {
@@ -743,7 +743,6 @@ namespace Winecrash.Client
         private static Vector3F right = Vector3F.Right;
         private static Vector3F forward = Vector3F.Forward;
         private static Vector3F south = Vector3F.Backward;
-
 
         private static void CreateUVsCube(BlockFaces face, List<Vector2F> uvs, int cubeIdx)
         {
@@ -1041,29 +1040,41 @@ namespace Winecrash.Client
 
         ushort transpid;
         Block transblock;
-        private bool IsTranparent(int x, int y, int z, Dictionary<ushort, Block> cache)
+        private bool IsTransparent(int x, int y, int z, Dictionary<ushort, Block> cache)
         {
             //if outside world, yes
             if (y < 0 || y > 255) return true;
 
-            if (x < 0 && cwest) // check west neighbor
+            if (x < 0) // check west neighbor
             {
-                transpid = this.WestNeighbor.GetBlockIndex(15, y, z);
+                if (cwest)
+                {
+                    transpid = this.WestNeighbor.GetBlockIndex(15, y, z);
+                }
             }
 
-            else if (x > 15 && ceast) // check east neighbor
+            else if (x > 15) // check east neighbor
             {
-                transpid = this.EastNeighbor.GetBlockIndex(0, y, z);
+                if (ceast)
+                {
+                    transpid = this.EastNeighbor.GetBlockIndex(0, y, z);
+                }
             }
 
-            else if (z < 0 && cnorth) //check south neighbor
+            else if (z > 15) //check south neighbor
             {
-                transpid = this.SouthNeighbor.GetBlockIndex(x, y, 15);
+                if (cnorth)
+                {
+                    transpid = this.NorthNeighbor.GetBlockIndex(x, y, 0);
+                }
             }
 
-            else if (z > 15 && csouth)
+            else if (z < 0)
             {
-                transpid = this.NorthNeighbor.GetBlockIndex(x, y, 0);
+                if(csouth)
+                {
+                    transpid = this.SouthNeighbor.GetBlockIndex(x, y, 15);
+                }
             }
 
             else

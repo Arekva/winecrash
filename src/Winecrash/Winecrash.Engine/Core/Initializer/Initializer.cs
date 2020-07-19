@@ -54,7 +54,7 @@ namespace Winecrash.Engine
 
                 catch(Exception e)
                 {
-                    throw new NotImplementedException("TODO: Logging\nError: " + e);
+                    Debug.LogError("Engine Initializer: error when tring to init " + init.Method + ": " + e);
                 }
             }
 

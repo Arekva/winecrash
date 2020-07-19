@@ -29,9 +29,18 @@ namespace Winecrash.Engine
         public Material(Shader shader) : base()
         {
             Cache.Add(this);
-            this.Shader = shader;
 
-            this.Name = shader.Name;
+            if(shader == null)
+            {
+                Debug.LogError("Material from null shader.");
+            }
+
+            else
+            {
+                this.Shader = shader;
+
+                this.Name = shader.Name;
+            }
         }
 
         private class MaterialData
@@ -192,6 +201,11 @@ namespace Winecrash.Engine
         public void SetData<T>(string name, T data)
         {
             if (this.Deleted) return;
+            if (data == null)
+            {
+                Debug.LogWarning($"Null data is set to \"{this.Name}:{name}\"");
+                return;
+            }
 
             MaterialData matdata = null;
 

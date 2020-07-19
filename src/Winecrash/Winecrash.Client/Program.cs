@@ -44,13 +44,11 @@ namespace Winecrash.Client
 
             bc.Extents = new Vector3D(0.4F, 0.9F, 0.4F);
 
-            //rb.UseGravity = false;
             playerWobj.AddModule<Player>();
 
             Camera.Main.WObject.AddModule<FreeCam>();
             Camera.Main.RenderLayers &= ~(1L << 32);
             Camera.Main.RenderLayers &= ~(1L << 48);
-            //Camera.Main.WObject.AddModule<RigidBody>();
 
             Camera.Main._FarClip = 1000.0F;
             Camera.Main.FOV = 80.0F;
@@ -131,40 +129,6 @@ namespace Winecrash.Client
 
             img2.MinAnchor = new Vector2F(0, 0);
             img2.MaxAnchor = new Vector2F(0.5F, 0.5F);
-
-            //testpic.Position = Vector3F.One * 100.0F;
-
-            //testpic.Scale = new Vector3F(fidget.Width/2.0F, fidget.Height/2.0F, 1.0F);
-            /*WObject fpsWobj = new WObject("FPS Label");
-            fpsWobj.Parent = WObject.Find("Canvas");
-            fpsWobj.Position += Vector3F.Right * 50.0F;
-
-            Engine.GUI.Label label = fpsWobj.AddModule<Engine.GUI.Label>();
-            label.Text = "AaBbCcDdEeFfGgI";
-            label.FontSize = 20F;
-            label.InterCharacterSpace = 0F;
-            label.Color = new Color256(1.0, 1.0, 1.0, 1.0);
-
-            label.MinAnchor = new Vector2F(0, 0.85F);
-            label.MaxAnchor = new Vector2F(0.25F, 1.0F);
-
-            label.Fill = true;*/
-
-
-            /*WObject test = new WObject("test");
-            test.Layer = 1L << 48;
-            MeshRenderer testmr = test.AddModule<MeshRenderer>();
-            testmr.Material = new Material(Shader.Find("Unlit"));
-            testmr.Material.SetData<Vector4>("color", new Color256(1.0, 1.0, 1.0, 1.0));
-            testmr.Material.SetData<Texture>("albedo", Texture.Find("grass_top"));
-            testmr.Mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront);
-
-            test.Scale *= 0.2F;
-            test.Position += Vector3F.Forward * 0.5F;
-            test.Rotation = new Engine.Quaternion(Vector3F.Up, 45F);
-            test.Rotation *= new Engine.Quaternion(Vector3F.Right, 35F);*/
-
-            //fpsWobj.AddModule<Label>();
         }
 
         static void CreateDebugWindow()
@@ -187,7 +151,7 @@ namespace Winecrash.Client
 
         static void LogError(object msg)
         {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(msg.ToString());
         }
 

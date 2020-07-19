@@ -216,8 +216,8 @@ namespace Winecrash.Engine
 
             this.Use();
 
-            try
-            {
+            /*try
+            {*/
                 unsafe
                 {
                     using (Bitmap img = new Bitmap(path))
@@ -267,12 +267,12 @@ namespace Winecrash.Engine
 
                     Cache.Add(this);
                 }
-            }
+            /*}
             catch(Exception e)
             {
                 Debug.LogError("Error when loading texture at " + path + " : " + e.Message + "\n" + "Source: " + e.Source + "\n"  + e.StackTrace);
                 this.Delete();
-            }
+            }*/
         }
 
         internal void Use(TextureUnit unit = TextureUnit.Texture0)

@@ -104,7 +104,10 @@ namespace Winecrash.Engine
 
                     sw.Reset();
                 }
-            });
+            })
+            {
+                Priority = ThreadPriority.Highest
+            };
 
             Viewport.OnLoaded += FixedThread.Start;
         }

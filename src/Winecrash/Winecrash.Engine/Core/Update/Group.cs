@@ -75,11 +75,9 @@ namespace Winecrash.Engine
             if (name == null) this._Name = "Group #" + order;
             else this._Name = name;
 
-            if (modules != null)
-                _Modules = modules.ToList();
+            _Modules = modules?.ToList();
 
             this._Order = order;
-
             _Groups.Add(this);
 
             Engine.Layer.CreateOrGetLayer(layer, null, new[] { this });
@@ -88,8 +86,8 @@ namespace Winecrash.Engine
 
             Thread = new Thread(Update)
             {
-                Priority = ThreadPriority.Highest,
-                IsBackground = false,
+                Priority = ThreadPriority.AboveNormal,
+                IsBackground = true,
                 Name = this._Name + " Thread"
             };
 
@@ -100,20 +98,34 @@ namespace Winecrash.Engine
 
         internal void FixedUpdate()
         {
-            Module[] modules = this._Modules.ToArray();
+            Module[] modules = null;
 
-            if(modules != null)
-            for (int i = 0; i < modules.Length; i++)
+            object obj = new object();
+            lock (obj)
             {
-                modules[i]?.FixedUpdate();
+                modules = this._Modules?.ToArray();
+            }
+
+            if (modules != null)
+            {
+                for (int i = 0; i < modules.Length; i++)
+                {
+                    modules[i]?.FixedUpdate();
+                }
             }
         }
 
         internal void LateFixedUpdate()
         {
-            if (this._Modules != null)
+            if(this._Modules != null)
             {
-                Module[] modules = this._Modules.ToArray();
+                Module[] modules = null;
+
+                object obj = new object();
+                lock(obj)
+                {
+                    modules = this._Modules?.ToArray();
+                }
 
                 for (int i = 0; i < modules.Length; i++)
                 {
@@ -129,16 +141,23 @@ namespace Winecrash.Engine
                 this.ResetEvent.WaitOne(); //wait for reset event
                 this.ResetEvent.Reset(); //set reset event to false
 
-                Module[] modules = this._Modules.ToArray();
-                
-                for (int i = 0; i < modules.Length; i++)
-                {
-                    if(modules[i] != null)
-                    lock (modules[i])
-                    {
-                        if (modules[i].Deleted) continue;
+                Module[] modules = null;
 
-                        switch(ut)
+                object obj = new object();
+                lock(obj)
+                {
+                    modules = this._Modules?.ToArray();
+                }
+
+                if (modules != null)
+                {
+                    for (int i = 0; i < modules.Length; i++)
+                    {
+                        if (modules[i] != null)
+                        {
+                            if (modules[i].Deleted) continue;
+
+                            switch (ut)
                             {
                                 case UpdateTypes.PreUpdate:
                                     {
@@ -161,7 +180,7 @@ namespace Winecrash.Engine
 
                                 case UpdateTypes.Update:
                                     {
-                                         modules[i].Update();
+                                        modules[i].Update();
                                     }
                                     break;
 
@@ -172,7 +191,8 @@ namespace Winecrash.Engine
                                     break;
                             }
 
-                        //modules[i].Update();
+                            //modules[i].Update();
+                        }
                     }
                 }
 
@@ -191,9 +211,9 @@ namespace Winecrash.Engine
 
             else
             {
-                if (modules != null)
+                if(modules != null)
                 {
-                    group._Modules.AddRange(modules);
+                    group._Modules?.AddRange(modules);
                 }
             }
 
@@ -202,11 +222,15 @@ namespace Winecrash.Engine
 
         internal void RemoveModule(Module module)
         {
+            if (this._Modules == null) return;
+
             this._Modules.Remove(module);
 
             if(this._Order != 0 && this._Modules.Count == 0) //remove if none
             {
+
                 this._Modules = null;
+
                 _Groups.Remove(this);
 
                 foreach(Layer layer in Engine.Layer._Layers)
@@ -248,7 +272,9 @@ namespace Winecrash.Engine
                 group.Thread = null;
 
                 group.Thread.Abort();
+
                 _Groups.Remove(group);
+
                 CreateOrGetGroup(0, null, group._Modules);
             }
             else
@@ -282,8 +308,8 @@ namespace Winecrash.Engine
             }
 
             first._Modules.AddRange(second._Modules);
-
             second._Modules = null;
+
             second.Thread.Abort();
             second.Thread = null;
 
@@ -294,12 +320,28 @@ namespace Winecrash.Engine
 
         public static Group GetGroup(int order)
         {
-            return _Groups.FindLast(g => g.Order == order);
+            object obj = new object();
+
+            Group[] groups = null;
+            lock(obj)
+            {
+                groups = _Groups.ToArray();
+            }
+
+            return groups?.FirstOrDefault(g => g.Order == order);
         }
 
         public static Group GetGroup(string name)
         {
-            return _Groups.FindLast(g => g.Name == name);
+            object obj = new object();
+
+            Group[] groups = null;
+            lock (obj)
+            {
+                groups = _Groups.ToArray();
+            }
+
+            return groups?.FirstOrDefault(g => g.Name == name);
         }
 
         private static void SortByOrder()

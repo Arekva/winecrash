@@ -46,6 +46,8 @@ namespace Winecrash.Engine
 
         protected override void OnLoad(EventArgs e)
         {
+            this.VSync = VSyncMode.Off;
+
             new Texture();
             WObject camWobj = new WObject("Main Camera");
             Camera cam = camWobj.AddModule<Camera>();
@@ -74,10 +76,13 @@ namespace Winecrash.Engine
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearDepth(1.0D);
+
+
+            object obj = new object();
+
             ViewportDoOnceDelegate once = DoOnceRender;
-            DoOnceRender = null;
-            
             once?.Invoke();
+            DoOnceRender -= once;
 
             //updatesw.Start();
             Time.ResetRender();
@@ -85,12 +90,6 @@ namespace Winecrash.Engine
             Render?.Invoke(new UpdateEventArgs(e.Time));
             Time.EndRender();
             
-
-           // updatesw.Stop();
-
-            //Debug.Log("Renderer done within " + updatesw.Elapsed.TotalSeconds + " secs");
-
-            //updatesw.Reset();
 
             SwapBuffers();
 
@@ -145,42 +144,35 @@ namespace Winecrash.Engine
             base.OnMouseMove(e);
         }
 
-        static Stopwatch updatesw = new Stopwatch();
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            ViewportDoOnceDelegate once = DoOnce;
-            //bool isnull = once == null;
-            DoOnce = null;
+            /*try
+            {*/
+                object obj = new object();
 
-            //updatesw.Start();
-            once?.Invoke();
+                ViewportDoOnceDelegate once = DoOnce;
+                once?.Invoke();
+                DoOnce -= once;
 
-            /*updatesw.Stop();
+                Input.SetMouseScroll(Mouse.GetState().WheelPrecise);
 
-            Debug.Log("Done things once [update] within " + updatesw.Elapsed.TotalSeconds + " secs");
+                Time.DeltaTime = e.Time;
+                MouseState ms = Mouse.GetState();
+                Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);
 
-            updatesw.Reset();*/
+                this._PreviousState = ms;
 
-            //Debug.Log((1D/e.Time).ToString("C0").Split('¤')[1] + " FPS");
 
-            Input.SetMouseScroll(Mouse.GetState().WheelPrecise);
+                Update?.Invoke(new UpdateEventArgs(e.Time));
 
-            Time.DeltaTime = e.Time;
-            MouseState ms = Mouse.GetState();
-            Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);
-            //Input.MouseDelta = Focused ? delta : Vector2D.Zero;
-            this._PreviousState = ms;
-            /*if (Input.LockMode == CursorLockModes.Lock && Focused)
+                GC.Collect();
+
+                base.OnUpdateFrame(e);
+            /*}
+            catch(Exception err)
             {
-                Mouse.SetPosition(X + Width / 2f, Y + Height / 2f);
+                Debug.LogException(err);
             }*/
-
-            
-            Update?.Invoke(new UpdateEventArgs(e.Time));
-            
-            GC.Collect();
-           
-            base.OnUpdateFrame(e);
         }
     }
 }

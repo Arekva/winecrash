@@ -84,15 +84,7 @@ namespace Winecrash.Engine
                 gl_Position = vec4(position, 1.0) * transform;
             }";
 
-            try
-            {
-                return ErrorShader = new Shader("Error", vert, frag);
-            }
-            catch (Exception e)
-            {
-                System.Windows.Forms.MessageBox.Show("Could not load Error shader: " + e.Message, "Fatal Error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-                throw new Exception("Fatal error : could not load Error shader: " + e.Message);
-            }
+            return ErrorShader = new Shader("Error", vert, frag);
         }
         private Shader(string name, string vert, string frag) : base(name)
         {

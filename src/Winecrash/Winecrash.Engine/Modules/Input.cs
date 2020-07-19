@@ -68,7 +68,7 @@ namespace Winecrash.Engine
         {
             if(Instance)
             {
-                Debug.Log("An Input instance is already existing !");
+                Debug.LogWarning("An Input instance is already existing !");
                 this.ForcedDelete();
                 return;
             }
