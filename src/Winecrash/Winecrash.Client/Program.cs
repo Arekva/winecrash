@@ -109,6 +109,7 @@ namespace Winecrash.Client
             skycam.ReferenceCamera = Camera.Main;
 
             new WObject("Debug").AddModule<DebugMenu>();
+            new WObject("EscapeMenu").AddModule<EscapeMenu>();
 
             WObject crosshair = new WObject("Crosshair");
             crosshair.Parent = Engine.GUI.Canvas.Main.WObject;

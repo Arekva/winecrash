@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DebugMenu.cs" />
+    <Compile Include="EscapeMenu.cs" />
     <Compile Include="GameInput.cs" />
     <Compile Include="Item\Block.cs" />
     <Compile Include="Item\BlockFaces.cs" />

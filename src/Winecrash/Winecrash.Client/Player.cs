@@ -342,11 +342,7 @@ namespace Winecrash.Client
         }
         protected override void Update()
         {
-            if(Input.IsPressing(Keys.Escape))
-            {
-                Input.CursorVisible = !Input.CursorVisible;
-                Input.LockMode = Input.LockMode == CursorLockModes.Free ? CursorLockModes.Lock : CursorLockModes.Free;
-            }
+            
 
             //if (!FreeCam.FreeCTRL)
             CameraRotation();

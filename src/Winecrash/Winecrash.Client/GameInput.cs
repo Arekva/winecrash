@@ -19,7 +19,8 @@ namespace Winecrash.Client
             { "Run", Keys.LeftControl },
             { "Destroy", Keys.MouseLeftButton },
             { "Interract", Keys.MouseRightButton },
-            { "Debug", Keys.F3 }
+            { "Debug", Keys.F3 },
+            { "Paused", Keys.Escape }
         };
 
         public static Keys Key(string name)
