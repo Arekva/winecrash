@@ -48,6 +48,16 @@ namespace Winecrash.Engine
             return new OpenTK.Vector4((float)col.R, (float)col.G, (float)col.B, (float)col.A);
         }
 
+        public static implicit operator Vector4F(Color256 col)
+        {
+            return new Vector4F((float)col.R, (float)col.G, (float)col.B, (float)col.A);
+        }
+
+        public static implicit operator Vector4D(Color256 col)
+        {
+            return new Vector4D(col.R, col.G, col.B, col.A);
+        }
+
         public static Color256 operator *(Color256 c, double v)
         {
             return new Color256(c.R * v, c.G * v, c.B * v, c.A * v);

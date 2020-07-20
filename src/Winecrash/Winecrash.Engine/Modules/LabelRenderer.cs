@@ -26,39 +26,63 @@ namespace Winecrash.Engine.GUI
 
             Glyph[] glyphs = Label.FontFamilly.Glyphs[Label.Text];
 
-            /*this.Material.Shader.SetAttribute("position", AttributeTypes.Vertice);
-            this.Material.Shader.SetAttribute("uv", AttributeTypes.UV);
-            this.Material.Shader.SetAttribute("normal", AttributeTypes.Normal);*/
-
-            //Debug.Log(Material.Shader);
-            
             Matrix4 transform;
-            float charPos;
-            Vector3F basePos = this.WObject.Position;
             Quaternion rot = this.WObject.Rotation;
-
-            Vector3F sca = Vector3F.One * this.Label.FontSize;
-
             Mesh[] meshes = Label.FontFamilly.Glyphs.GetMeshes(Label.Text);
 
-            GUIModule gui = this.Label.WObject.Parent.GetModule<GUIModule>();
+            Vector3F extents = this.Label.GlobalScale / 2.0F;
+            Vector3F middle = this.Label.GlobalPosition;
 
-            
-            float minX, minY, maxX, maxY;
+            float shiftX = 0;
+            float shiftY = Label.FontSize;
 
+            float space = Label.WordSpace * Label.FontSize;
+            float linespace = Label.LineSpace * Label.FontSize;
 
-            float maxPosX = basePos.X + glyphs.Length * Label.FontSize + glyphs.Length * Label.InterCharacterSpace;
+            float scale = Label.FontSize;
+
+            string txt = Label.Text;
+
+            float glyphratio;
+
+            Vector3F trans;
 
             for (int i = 0; i < glyphs.Length; i++)
             {
-                charPos = basePos.X + i * Label.FontSize + i * Label.InterCharacterSpace;
+                if (txt[i] == ' ')
+                {
+                    shiftX += space;
+                    continue;
+                }
+                else if (txt[i] == '\n')
+                {
+                    shiftY += linespace;
+                    shiftX = 0;
+                    continue;
+                }
+
+                glyphratio = (float)glyphs[i].Width / (float)glyphs[i].Height;
+                shiftX += glyphratio * Label.FontSize;
+
+                if (shiftX > extents.X * 2)
+                {
+                    shiftX = glyphratio * Label.FontSize;
+                    shiftY += linespace;
+                }
+
+                if (shiftY > extents.Y * 2)
+                {
+                    break;
+                }
+
+                trans = new Vector3F((middle.X + extents.X) - shiftX, (middle.Y + extents.Y) - shiftY, middle.Z);
 
                 
 
                 transform =
-                    (Matrix4.CreateScale(sca.X, sca.Y, sca.Z) *
+                    (Matrix4.CreateScale(scale, scale, scale) *
                     Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W)) *
-                    Matrix4.CreateTranslation(maxPosX - charPos, basePos.Y, basePos.Z) *
+                    Matrix4.CreateTranslation(trans.X, trans.Y, trans.Z) *
                     Matrix4.Identity) *
                     sender.ViewMatrix * sender.ProjectionMatrix;
 
@@ -74,8 +98,6 @@ namespace Winecrash.Engine.GUI
                 this.Material.Use();
 
                 GL.Enable(EnableCap.DepthTest);
-                //GL.DepthMask(this.UseMask);
-
 
                 GL.DrawElements(Wireframe ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)meshes[i].Indices, DrawElementsType.UnsignedInt, 0);
             }

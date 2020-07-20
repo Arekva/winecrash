@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.ComponentModel;
 
 namespace Winecrash.Engine
@@ -696,6 +697,11 @@ namespace Winecrash.Engine
         public static implicit operator Vector4F(Vector4D vec)
         {
             return new Vector4F((float)vec.X, (float)vec.Y, (float)vec.Z, (float)vec.W);
+        }
+
+        public static implicit operator Vector4(Vector4F vec)
+        {
+            return new Vector4(vec.X, vec.Y, vec.Z, vec.W);
         }
         #endregion
     }

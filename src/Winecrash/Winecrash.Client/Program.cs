@@ -108,27 +108,18 @@ namespace Winecrash.Client
             SkyboxCamera skycam = new WObject("Skybox Camera").AddModule<SkyboxCamera>();
             skycam.ReferenceCamera = Camera.Main;
 
-            Texture fidget = new Texture("assets/uv.png");
+            new WObject("Debug").AddModule<DebugMenu>();
 
-            WObject testpic = new WObject("1");
-            testpic.Parent = Engine.GUI.Canvas.Main.WObject;
+            WObject crosshair = new WObject("Crosshair");
+            crosshair.Parent = Engine.GUI.Canvas.Main.WObject;
+            Engine.GUI.Image reticule = crosshair.AddModule<Engine.GUI.Image>();
+            reticule.Picture = new Texture("assets/textures/crosshair.png");
+            reticule.KeepRatio = true;
 
-            Engine.GUI.Image img = testpic.AddModule<Engine.GUI.Image>();
-            img.Picture = fidget;
+            reticule.MinAnchor = new Vector2F(0.48F, 0.48F);
+            reticule.MaxAnchor = new Vector2F(0.52F, 0.52F);
 
-            img.MinAnchor = new Vector2F(0, 0);
-            img.MaxAnchor = new Vector2F(0.5F, 1F);
 
-            
-
-            WObject testpic2 = new WObject("2");
-            testpic2.Parent = testpic;
-
-            Engine.GUI.Image img2 = testpic2.AddModule<Engine.GUI.Image>();
-            img2.Picture = fidget;
-
-            img2.MinAnchor = new Vector2F(0, 0);
-            img2.MaxAnchor = new Vector2F(0.5F, 0.5F);
         }
 
         static void CreateDebugWindow()

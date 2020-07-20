@@ -8,6 +8,9 @@ namespace Winecrash.Client
 {
     public static class Loading
     {
+        public static void StartLoad()
+        {
 
+        }
     }
 }

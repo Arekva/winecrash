@@ -5,121 +5,618 @@
         {
             "Character": "A",
             "X" : 0,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "a",
-            "X" : 62,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 53,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "B",
-            "X" : 124,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 106,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "b",
-            "X" : 186,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 159,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "C",
-            "X" : 248,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 212,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "c",
-            "X" : 310,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 265,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "D",
-            "X" : 372,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 318,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "d",
-            "X" : 434,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 371,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "E",
-            "X" : 496,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 424,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "e",
-            "X" : 558,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 477,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "F",
-            "X" : 620,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 530,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "f",
-            "X" : 682,
-            "Y" : 122,
-            "Width" : 52,
-            "Height" : 122
+            "X" : 583,
+            "Y" : 123,
+            "Width" : 44,
+            "Height" : 123
         },
         {
             "Character": "G",
-            "X" : 734,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 627,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "g",
-            "X" : 796,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 680,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "H",
-            "X" : 858,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 733,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "h",
-            "X" : 920,
-            "Y" : 122,
-            "Width" : 62,
-            "Height" : 122
+            "X" : 786,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
         },
         {
             "Character": "I",
-            "X" : 982,
-            "Y" : 122,
-            "Width" : 42,
-            "Height" : 122
+            "X" : 839,
+            "Y" : 123,
+            "Width" : 35,
+            "Height" : 123
+        },
+        {
+            "Character": "i",
+            "X" : 874,
+            "Y" : 123,
+            "Width" : 18,
+            "Height" : 123
+        },
+        {
+            "Character": "J",
+            "X" : 892,
+            "Y" : 123,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "j",
+            "X" : 945,
+            "Y" : 123,
+            "Width" : 43,
+            "Height" : 123
+        },
+
+
+        {
+            "Character": "K",
+            "X" : 0,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "k",
+            "X" : 53,
+            "Y" : 246,
+            "Width" : 44,
+            "Height" : 123
+        },
+        {
+            "Character": "L",
+            "X" : 97,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "l",
+            "X" : 150,
+            "Y" : 246,
+            "Width" : 27,
+            "Height" : 123
+        },
+        {
+            "Character": "M",
+            "X" : 177,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "m",
+            "X" : 230,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "N",
+            "X" : 283,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "n",
+            "X" : 336,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "O",
+            "X" : 389,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "o",
+            "X" : 442,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "P",
+            "X" : 495,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "p",
+            "X" : 548,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Q",
+            "X" : 601,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "q",
+            "X" : 654,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "R",
+            "X" : 707,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "r",
+            "X" : 760,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "S",
+            "X" : 813,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "s",
+            "X" : 866,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "T",
+            "X" : 919,
+            "Y" : 246,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "t",
+            "X" : 972,
+            "Y" : 246,
+            "Width" : 32,
+            "Height" : 123
+        },
+        {
+            "Character": "U",
+            "X" : 0,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "u",
+            "X" : 53,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "V",
+            "X" : 106,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "v",
+            "X" : 159,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "W",
+            "X" : 212,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "w",
+            "X" : 265,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "X",
+            "X" : 318,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "x",
+            "X" : 371,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Y",
+            "X" : 424,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "y",
+            "X" : 477,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Z",
+            "X" : 530,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "z",
+            "X" : 583,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Á",
+            "X" : 636,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "á",
+            "X" : 689,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "À",
+            "X" : 742,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "à",
+            "X" : 795,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Â",
+            "X" : 848,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "â",
+            "X" : 901,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ä",
+            "X" : 954,
+            "Y" : 369,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ä",
+            "X" : 0,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ã",
+            "X" : 53,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ã",
+            "X" : 106,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Å",
+            "X" : 159,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "å",
+            "X" : 212,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Æ",
+            "X" : 265,
+            "Y" : 492,
+            "Width" : 88,
+            "Height" : 123
+        },
+        {
+            "Character": "æ",
+            "X" : 353,
+            "Y" : 492,
+            "Width" : 88,
+            "Height" : 123
+        },
+        {
+            "Character": "Ç",
+            "X" : 441,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ç",
+            "X" : 494,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+
+
+
+
+
+
+
+
+
+
+        
+        {
+            "Character": "0",
+            "X" : 319,
+            "Y" : 737,
+            "Width" : 52,
+            "Height" : 123
+        },
+        {
+            "Character": "1",
+            "X" : 371,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "2",
+            "X" : 423,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "3",
+            "X" : 477,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "4",
+            "X" : 530,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "5",
+            "X" : 583,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "6",
+            "X" : 636,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "7",
+            "X" : 689,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "8",
+            "X" : 742,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "9",
+            "X" : 795,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+
+
+
+
+
+        {
+            "Character": "-",
+            "X" : 212,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
+
+
+
+        {
+            "Character": "/",
+            "X" : 309,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
+
+
+        {
+            "Character": "(",
+            "X" : 864,
+            "Y" : 861,
+            "Width" : 44,
+            "Height" : 123
+        },
+        {
+            "Character": ")",
+            "X" : 908,
+            "Y" : 861,
+            "Width" : 44,
+            "Height" : 123
+        },
+
+
+        {
+            "Character": ".",
+            "X" : 970,
+            "Y" : 861,
+            "Width" : 18,
+            "Height" : 123
+        },
+
+
+        {
+            "Character": ":",
+            "X" : 1006,
+            "Y" : 861,
+            "Width" : 18,
+            "Height" : 123
         }
+
     ]
 }

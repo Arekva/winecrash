@@ -94,21 +94,6 @@ namespace Winecrash.Engine.GUI
                 float verticalScale = -(GlobalBottom / 2.0F) - (GlobalTop / 2.0F);
 
                 return totalExtentsScaled * this.WObject.Scale + new Vector3F(horizontalScale, verticalScale, 1.0F);
-                //* this.WObject.Scale;
-
-                /*else
-                {
-                    return this.WObject.Scale;
-                }*/
-                /*if (this.ParentGUI == null)
-                {*/
-
-                /*}
-
-                else
-                {
-
-                }*/
             }
         }
 
@@ -129,13 +114,10 @@ namespace Winecrash.Engine.GUI
 
                 else
                 {
-                    //Debug.Log("this " + this.Identifier + " / parent: " + this.ParentGUI.Identifier);
                     float[] panchors = this.ParentGUI.GlobalScreenAnchors;
 
                     Vector2F pmin = new Vector2F(panchors[0], panchors[1]);
                     Vector2F pmax = new Vector2F(panchors[2], panchors[3]);
-
-                    //Vector2F scale = pmax - pmin;
 
                     anchors[0] = WMath.Remap(this.MinAnchor.X, 0, 1, pmin.X, pmax.X); //pmin.X + this.MinAnchor.X * scale.X; //x min
                     anchors[1] = WMath.Remap(this.MinAnchor.Y, 0, 1, pmin.Y, pmax.Y); //pmin.Y + this.MinAnchor.Y * scale.Y; //y min

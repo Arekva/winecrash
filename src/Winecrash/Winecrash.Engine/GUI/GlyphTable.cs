@@ -28,14 +28,15 @@ namespace Winecrash.Engine.GUI
             get
             {
                 if (String.IsNullOrWhiteSpace(text))
-                { 
-                    return Array.Empty<Glyph>(); 
+                {
+                    return Array.Empty<Glyph>();
                 }
 
                 Glyph[] glyphs = new Glyph[text.Length];
 
                 for (int i = 0; i < text.Length; i++)
                 {
+                    if (text[i] == ' ' || text[i] == '\n') continue;
                     glyphs[i] = this[text[i]];
                 }
 
@@ -45,10 +46,13 @@ namespace Winecrash.Engine.GUI
 
         public Mesh[] GetMeshes(string text)
         {
+            if (String.IsNullOrEmpty(text)) return Array.Empty<Mesh>();
+
             Mesh[] meshes = new Mesh[text.Length];
 
             for (int i = 0; i < text.Length; i++)
             {
+                if (text[i] == ' ' || text[i] == '\n') continue;
                 meshes[i] = CharactersMeshes[CharIndices[text[i]]];
             }
 
@@ -82,15 +86,19 @@ namespace Winecrash.Engine.GUI
 
         public string Set { get; private set; } =
             "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz" + // Standard Letters
-            "ÁáÀaÂâÄäÃãÅåÆæ" +      //Accents A
+            "ÁáÀàÂâÄäÃãÅåÆæ" +      //Accents A
             "Çç" +                  //Accents C
             "ÉéÈèÊêËë" +            //Accents E
             "Ññ" +                  //Accents N
             "ÓóÒòÔôÖöÕõØøŒœ" +      //Accents O
             "ß" +                   //Accents S
             "ÚúÙùÛûÜü" +            //Accents U
-            "0123456789";           //Numbers
-
+            "0123456789" +          //Numbers
+            "$¢€£¥¤" +              //Argent
+            "+-*/÷=%‰" +            //Math
+            "\"\'#@&_()" +          //Signes
+            ",.;:¿?¡!" +            //Ponctuation
+            "\\|{}<>[]§¶µ`^~©®™";   //Autres
         public GlyphTable(Texture map, Glyph[] table) 
         {
             this.Map = map;

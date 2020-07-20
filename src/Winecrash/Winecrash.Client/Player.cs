@@ -104,39 +104,17 @@ namespace Winecrash.Client
         double sensi = 300;
         private void Move()
         {
-            WObject wobj = WObject.Find("1");
+           /* WObject wobj = WObject.Find("txt");
 
-            Engine.GUI.Image img = wobj?.GetModule<Engine.GUI.Image>();
+            Engine.GUI.Label img = wobj?.GetModule<Engine.GUI.Label>();
 
             double scroll = Time.DeltaTime * Input.MouseScrollDelta * sensi;
 
             if (img != null)
             {
-                if(Input.IsPressed(Keys.LeftShift))
-                {
-                    if (Input.IsPressed(Keys.LeftControl))
-                    {
-                        img.Right += (float)scroll;
-                    }
-                    else
-                    {
-                        img.Left += (float)scroll;
-                    }
-                }
-                else
-                {
-                    if (Input.IsPressed(Keys.LeftControl))
-                    {
-                        img.Bottom += (float)scroll;
-                    }
-                    else
-                    {
-                        img.Top += (float)scroll;
-                    }
-                }
-                
+                img.FontSize += (float)scroll;    
             }
-
+            */
 
             if (!FreeCam.FreeCTRL)
             {

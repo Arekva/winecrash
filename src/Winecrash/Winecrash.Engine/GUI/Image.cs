@@ -11,6 +11,9 @@ namespace Winecrash.Engine.GUI
         private ImageRenderer Renderer;
 
         private Texture _Picture = Texture.Blank;
+
+        public bool KeepRatio { get; set; } = false;
+
         public Texture Picture
         {
             get

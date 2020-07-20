@@ -11,10 +11,11 @@ namespace Winecrash.Engine.GUI
     {
         public string Text { get; set; } = null;
 
+        public float WordSpace = 0.33F; // defaults to 1.0 pixel, for each chars being 1.0 pixel
+        public float LineSpace = 1.0F;
+
         public LabelRenderer Renderer { get; set; } = null;
         public Font FontFamilly { get; set; } = Font.Find("Pixelized");
-
-        public float InterCharacterSpace { get; set; } = 0.025F;
 
         public bool Fill { get; set; } = false;
 
@@ -33,17 +34,17 @@ namespace Winecrash.Engine.GUI
             }
         }
 
-        public float FontSize { get; set; } = 0.5F;
+        public float FontSize { get; set; } = 16F;
 
         protected internal override void Creation()
         {
             this.WObject.Layer = 1L << 48;
-            this.WObject.Position += Vector3F.Forward * 0.5F;
-            this.WObject.Scale *= 0.2F;
 
             Renderer = this.WObject.AddModule<LabelRenderer>();
             Renderer.Material = new Material(Shader.Find("Text"));
             Renderer.Label = this;
+
+            this.ParentGUI = this.WObject.Parent.GetModule<GUIModule>();
 
             
             Renderer.Material.SetData<OpenTK.Vector4>("color", Color);
