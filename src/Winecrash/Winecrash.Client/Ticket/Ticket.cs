@@ -261,12 +261,17 @@ namespace Winecrash.Client
 
         public static Ticket GetTicket(Vector2I pos)
         {
+            if (_Tickets == null)
+            {
+                return null;
+            }
             object obj = new object();
 
-            Ticket[] tickets = null;
+            int n = _Tickets.Count();
+            Ticket[] tickets = new Ticket[n];
             lock (obj)
             {
-                tickets = _Tickets.ToArray();
+                _Tickets.CopyTo(0, tickets, 0, n);
             }
 
             return tickets.FirstOrDefault(t => t.Position == pos);

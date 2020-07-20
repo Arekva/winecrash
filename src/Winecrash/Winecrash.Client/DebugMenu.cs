@@ -31,7 +31,6 @@ namespace Winecrash.Client
             lbFPS.Left = 15;
         }
 
-
         int fpses;
         int frames;
 
@@ -41,11 +40,11 @@ namespace Winecrash.Client
         string fpstext = "0 FPS";
         protected override void Update()
         {
-            fpses += (int)(1D/Time.DeltaTime);
+            fpses += (int)(1D / Time.DeltaTime);
             timesincefpsupdate += Time.DeltaTime;
             frames++;
 
-            
+
             if (timesincefpsupdate > rate)
             {
                 timesincefpsupdate = 0.0D;
@@ -64,11 +63,14 @@ namespace Winecrash.Client
             World.GlobalToLocal(pos, out Vector3I cpos, out Vector3I lpos);
 
             txt += "\n";
-            txt += "\nWorld: " + (int)pos.X + " / " + (int)pos.Y + " / " + (int)pos.Z;
-            txt += "\nChunk: " + lpos.X + " / " + lpos.Y + " / " + lpos.Z;
-            txt += "\nIn " + cpos.X + " / " + cpos.Y + " (dimension " + cpos.Z + ")";
+            txt += "XYZ: " + pos.X.ToString("0.000") + " / " + pos.Y.ToString("0.000") + " / " + pos.Z.ToString("0.000");
 
             lbFPS.Text = txt;
+
+            if (Input.IsPressing(GameInput.Key("Debug")))
+            {
+                lbFPS.Enabled =! lbFPS.Enabled;
+            }
         }
     }
 }

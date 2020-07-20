@@ -54,7 +54,7 @@ namespace Winecrash.Client
                         const float shiftZ = 0;
 
                         const float caveScale = 0.1F;
-                        const float thresold = 0.4F;
+                        const float thresold = 0.2F;
 
                         const float torsadeScale = 0.1F;
                         const float torsadeThresold = 0.4F;
