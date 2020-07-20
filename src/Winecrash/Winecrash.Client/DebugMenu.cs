@@ -63,7 +63,12 @@ namespace Winecrash.Client
             World.GlobalToLocal(pos, out Vector3I cpos, out Vector3I lpos);
 
             txt += "\n";
-            txt += "XYZ: " + pos.X.ToString("0.000") + " / " + pos.Y.ToString("0.000") + " / " + pos.Z.ToString("0.000");
+            txt += "XYZ: " + pos.X.ToString("0.000") + " / " + pos.Y.ToString("0.000") + " / " + pos.Z.ToString("0.000") + "\n";
+            if (Player.Instance.ViewRayHit != null)
+            {
+                txt += "Pointed Block: " + Player.Instance.ViewRayHit.Value.Block.Identifier + "\n";
+                txt += "Block Location XYZ: " + Player.Instance.ViewRayHit.Value.GlobalPosition.X.ToString("0") + " / " + Player.Instance.ViewRayHit.Value.GlobalPosition.Y.ToString("0") + " / " + Player.Instance.ViewRayHit.Value.GlobalPosition.Z.ToString("0") + "\n";
+            }
 
             lbFPS.Text = txt;
 
