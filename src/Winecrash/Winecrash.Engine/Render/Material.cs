@@ -79,7 +79,7 @@ namespace Winecrash.Engine
             {
                 
                 this.SetData<Vector4>("mainLightColor", main.Color);
-                this.SetData<Vector3>("mainLightDirection", - main.WObject.Forward);
+                this.SetData<Vector3>("mainLightDirection", -main.WObject.Forward);
                 this.SetData<Vector4>("mainLightAmbiant", main.Ambient);
             }
             

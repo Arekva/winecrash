@@ -88,12 +88,12 @@
   <ItemGroup>
     <Compile Include="DebugMenu.cs" />
     <Compile Include="GameInput.cs" />
+    <Compile Include="GameLoad.cs" />
     <Compile Include="Item\Block.cs" />
     <Compile Include="Item\BlockFaces.cs" />
     <Compile Include="Item\Database\Database.cs" />
     <Compile Include="Item\Database\ItemDB.cs" />
     <Compile Include="Item\TexturePaths.cs" />
-    <Compile Include="Loading.cs" />
     <Compile Include="Modules\DayNightCycle.cs" />
     <Compile Include="Modules\FreeCam.cs" />
     <Compile Include="Player.cs" />
@@ -113,6 +113,8 @@
     <Compile Include="World\JSONChunk.cs" />
     <Compile Include="World\Chunk.cs" />
     <Compile Include="World\RaycastChunkHit.cs" />
+    <Compile Include="World\TickType.cs" />
+    <Compile Include="World\TickWaitItem.cs" />
     <Compile Include="World\World.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

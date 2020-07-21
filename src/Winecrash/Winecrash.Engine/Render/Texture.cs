@@ -9,6 +9,7 @@ using System.IO;
 
 using OpenTK.Graphics.OpenGL4;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Winecrash.Engine
 {
@@ -209,15 +210,15 @@ namespace Winecrash.Engine
 
         public Texture(string path, string name = null) : base(name)
         {
-            if(name == null)
-                this.Name = path.Split('/', '\\').Last().Split('.')[0];
+            Func<bool> del = new Func<bool>(() =>
+            {
+                if (name == null)
+                    this.Name = path.Split('/', '\\').Last().Split('.')[0];
 
-            this.Handle = GL.GenTexture();
+                this.Handle = GL.GenTexture();
 
-            this.Use();
+                this.Use();
 
-            /*try
-            {*/
                 unsafe
                 {
                     using (Bitmap img = new Bitmap(path))
@@ -267,12 +268,19 @@ namespace Winecrash.Engine
 
                     Cache.Add(this);
                 }
-            /*}
-            catch(Exception e)
+
+                return true;
+            });
+            
+            if(Thread.CurrentThread.Name == "OpenGL")
             {
-                Debug.LogError("Error when loading texture at " + path + " : " + e.Message + "\n" + "Source: " + e.Source + "\n"  + e.StackTrace);
-                this.Delete();
-            }*/
+                del.Invoke();
+            }
+
+            else
+            {
+                Viewport.DoOnceRender += () => del.Invoke();
+            }
         }
 
         internal void Use(TextureUnit unit = TextureUnit.Texture0)

@@ -71,6 +71,8 @@ namespace Winecrash.Engine.GUI
 
 			if (Image.KeepRatio)
 			{
+				float ratio = (float)Image.Picture.Size.X / (float)Image.Picture.Size.Y;
+
 				float smallest = sca.X;
 
 				if (sca.Y < sca.X)

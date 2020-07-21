@@ -23,6 +23,14 @@ namespace Winecrash.Client
 
         public static List<Chunk> SpawnNextUpdate = new List<Chunk>();
 
+
+
+        public static double TickTime = 1D / 20D;
+        private static double TimeSinceLastTick = 0.0D;
+        public static int RandomTickSpeed = 3;
+
+        internal static List<TickWaitItem> TickOnNextTick = new List<TickWaitItem>();
+
         protected override void Creation()
         {
             if(Instance)
@@ -57,6 +65,36 @@ namespace Winecrash.Client
             worldGenerationThread.Start();
         }
 
+        protected override void Update()
+        {
+            if(TimeSinceLastTick >= TickTime)
+            {
+                object obj = new object();
+
+                Ticket[] tickets;
+                TickWaitItem[] twi;
+                lock (obj)
+                {
+                    tickets = Ticket._Tickets.ToArray();
+                    twi = TickOnNextTick.ToArray();
+                    TickOnNextTick.Clear();
+                }
+
+                for (int i = 0; i < tickets.Length; i++)
+                {
+                    tickets[i].Chunk.Tick();
+                }
+
+                for (int i = 0; i < twi.Length; i++)
+                {
+                    twi[i].Block.Tick(twi[i].Type, twi[i].Chunk, twi[i].Position);
+                }
+
+                TimeSinceLastTick = 0.0D;
+            }
+
+            TimeSinceLastTick += Time.DeltaTime;
+        }
 
         internal static void Tick()
         {

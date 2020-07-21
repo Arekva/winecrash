@@ -262,12 +262,21 @@ namespace Winecrash.Client
 
         public void Tick()
         {
+            int chosen;
+            int x, y, z;
+
             for (int i = 0; i < Chunk.TotalBlocks; i += Chunk.TotalBlocks / 16)
             {
-                //for (int j = 0; j < GameManager.RandomTickSpeed; j++)
-                //{
-                    //_blocks[World.WorldRandom.Next(i, ChunkTotalBlocks)].Tick();
-                //}
+                for (int j = 0; j < World.RandomTickSpeed; j++)
+                {
+                    chosen = World.WorldRandom.Next(i, TotalBlocks);
+
+                    x = i % Width;
+                    y = (i / Width) % Height;
+                    z = i / (Width * Height);
+
+                    ItemCache.Get<Block>(_Blocks[chosen]).Tick(TickType.World, this, new Vector3I(x,y,z));
+                }
             }
         }
 
@@ -335,7 +344,7 @@ namespace Winecrash.Client
             mr.Material.SetData<Vector4>("color", new Color256(1, 1, 1, 1));
 
             mr.Material.SetData<float>("minLight", 0.1F);
-            mr.Material.SetData<float>("maxLight", 0.75F);
+            mr.Material.SetData<float>("maxLight", 1.0F);
 
             Viewport.DoOnce += () =>
             {
@@ -558,7 +567,7 @@ namespace Winecrash.Client
         public void GenerateLights()
         {
             this._Light = new uint[8192];
-            /*Block b;
+            Block b;
             for (int z = 0; z < Chunk.Depth; z++)
             {
                 for (int x = 0; x < Chunk.Width; x++)
@@ -578,7 +587,7 @@ namespace Winecrash.Client
                     //then diffuse around..
                     DiffuseLight(x, y, z, 15, BlockFaces.Up);
                 }
-            }*/
+            }
 
             for (int i = 0; i < this._Light.Length; i++)
             {

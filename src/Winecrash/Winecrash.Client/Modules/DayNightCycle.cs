@@ -9,10 +9,15 @@ namespace Winecrash.Client
 {
     class DayNightCycle : Module
     {
-        float rotationSpeed = 0.0F;
+        double sunAngle = 10;
+
+        double dayTime = 600;
+
         protected override void Update()
         {
-            DirectionalLight.Main.WObject.LocalRotation *= new Quaternion(0, rotationSpeed * (float)Time.DeltaTime, 0);
+            sunAngle += (360D / dayTime) * Time.DeltaTime;
+            //Engine.Debug.Log(sunAngle);
+            DirectionalLight.Main.WObject.LocalRotation = new Quaternion(sunAngle, 270, 0);
         }
     }
 }

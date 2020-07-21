@@ -609,6 +609,14 @@
             "Height" : 123
         },
 
+        {
+            "Character": ";",
+            "X" : 988,
+            "Y" : 861,
+            "Width" : 18,
+            "Height" : 123
+        },
+
 
         {
             "Character": ":",

@@ -11,8 +11,8 @@ namespace Winecrash.Engine.GUI
     {
         public string Text { get; set; } = null;
 
-        public float WordSpace = 0.33F; // defaults to 1.0 pixel, for each chars being 1.0 pixel
-        public float LineSpace = 1.0F;
+        public float WordSpace { get; set; } = 0.33F; // defaults to 1.0 pixel, for each chars being 1.0 pixel
+        public float LineSpace { get; set; } = 1.0F;
 
         public LabelRenderer Renderer { get; set; } = null;
         public Font FontFamilly { get; set; } = Font.Find("Pixelized");

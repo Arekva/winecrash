@@ -54,7 +54,7 @@ namespace Winecrash.Client
 
         public RaycastChunkHit? ViewRayHit = null;
 
-        public double HitRange = 30.0D;
+        public double HitRange = 3.0D;
 
         public Chunk CurrentChunk { get; private set; }
 
@@ -94,28 +94,15 @@ namespace Winecrash.Client
             Vector2D deltas = Input.MouseDelta;
 
             double ax = (Angles.X + (deltas.X * Input.MouseSensivity * (float)Time.DeltaTime)) % 360.0F;
-            double ay = WMath.Clamp((Angles.Y + (deltas.Y * Input.MouseSensivity * (float)Time.DeltaTime)), -90.0F, 90.0F);
+            double ay = WMath.Clamp((Angles.Y + (deltas.Y * Input.MouseSensivity * (float)Time.DeltaTime)), -89.9F, 89.9F);
 
             Angles = new Vector2D(ax, ay);
 
             this.FPSCamera.WObject.Rotation = new Engine.Quaternion(-ay, ax, 0.0F);
         }
 
-        double sensi = 300;
         private void Move()
         {
-           /* WObject wobj = WObject.Find("txt");
-
-            Engine.GUI.Label img = wobj?.GetModule<Engine.GUI.Label>();
-
-            double scroll = Time.DeltaTime * Input.MouseScrollDelta * sensi;
-
-            if (img != null)
-            {
-                img.FontSize += (float)scroll;    
-            }
-            */
-
             if (!FreeCam.FreeCTRL)
             {
                 Vector3D walkdir = Vector3D.Zero;
@@ -238,7 +225,7 @@ namespace Winecrash.Client
 
         private void ViewHit()
         {
-            if (RaycastChunk(new Ray(this.FPSCamera.WObject.Position, this.FPSCamera.WObject.Forward), HitRange, out RaycastChunkHit hit))
+            if (RaycastChunk(new Ray(this.FPSCamera.WObject.Position, this.FPSCamera.WObject.Forward), HitRange, out RaycastChunkHit hit, 0.01))
             {
                 ViewRayHit = new RaycastChunkHit?(hit);
             }
@@ -266,7 +253,9 @@ namespace Winecrash.Client
 
                 if (Input.IsPressing(Keys.MouseRightButton))
                 {
-                    World.GlobalToLocal(ViewRayHit.Value.GlobalPosition + ViewRayHit.Value.Normal * -0.5F, out Vector3I cpos, out Vector3I bpos);
+                    Vector3F normal = ViewRayHit.Value.Normal;
+
+                    World.GlobalToLocal(ViewRayHit.Value.GlobalPosition + normal, out Vector3I cpos, out Vector3I bpos);
 
                     Ticket tck = Ticket.GetTicket(new Vector2I(cpos.X, cpos.Y));
 
@@ -476,6 +465,7 @@ namespace Winecrash.Client
                     (Vector3F.Forward * (float)_Bc.Extents.Z),
                 Vector3D.Forward), 0.05D, out hit))
             {
+                
                 this._Rb.Velocity *= new Vector3D(1, 1, 0);
 
                 this.WObject.Position *= new Vector3F(1, 1, 0);
@@ -521,6 +511,7 @@ namespace Winecrash.Client
                     (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.8F,
                 Vector3D.Left), 0.05D, out hit))
             {
+
                 this._Rb.Velocity *= new Vector3D(0, 1, 1);
 
                 this.WObject.Position *= new Vector3F(0, 1, 1);
@@ -566,6 +557,7 @@ namespace Winecrash.Client
                     (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.8F,
                 Vector3D.Right), 0.05D, out hit))
             {
+
                 this._Rb.Velocity *= new Vector3D(0, 1, 1);
 
                 this.WObject.Position *= new Vector3F(0, 1, 1);
@@ -680,12 +672,10 @@ namespace Winecrash.Client
             this.FPSCamera.WObject.Position = this.WObject.Position + CameraShift;
         }
 
-        public bool RaycastChunk(Ray ray, double length, out RaycastChunkHit hit)
+        public bool RaycastChunk(Ray ray, double length, out RaycastChunkHit hit, double precision = 0.1D)
         {
             Vector3D pos = ray.Origin;
             double distance = 0.0D;
-
-            double step = 0.1D;
 
             Vector3I cpos;
             Vector3I bpos;
@@ -713,16 +703,61 @@ namespace Winecrash.Client
                         bpos.Z = WMath.Clamp(bpos.Z, 0, 15);
 
                         block = chunk[bpos.X, bpos.Y, bpos.Z];
+
                         if (!block.Transparent)
                         {
-                            Vector3F blockGlobalPos = (Vector3F)bpos + (Vector3F)cpos * new Vector3F(16, 1, 16) + Vector3F.One * 0.5F;
+                            Vector3I blockGlobalUnitPosition = new Vector3I(bpos.X + cpos.X * 16, bpos.Y, bpos.Z + cpos.Y * 16);
 
+                            Vector3D blockGlobalPosition = (Vector3D)blockGlobalUnitPosition + Vector3D.One * 0.5D;
 
-                            Vector3D relDir = (Vector3D)(blockGlobalPos - (Vector3F)pos).Normalized;
+                            Vector3D rp = pos - blockGlobalPosition;
 
+                            Vector3D n = new Vector3D();
                             
+                            //up
+                            if(rp.Y > Math.Abs(rp.X) && rp.Y > Math.Abs(rp.Z))
+                            {
+                                n.X = 0.0;
+                                n.Y = 1.0;
+                                n.Z = 0.0;
+                            }
+                            //down
+                            else if(rp.Y < Math.Abs(rp.X) * -1 && rp.Y < Math.Abs(rp.Z) * -1)
+                            {
+                                n.X = 0.0;
+                                n.Y = -1.0;
+                                n.Z = 0.0;
+                            }
+                            //east
+                            else if(rp.X > Math.Abs(rp.Z))
+                            {
+                                n.X = 1.0;
+                                n.Y = 0.0;
+                                n.Z = 0.0;
+                            }
+                            //west
+                            else if(rp.X < Math.Abs(rp.Z) * -1)
+                            {
+                                n.X = -1.0;
+                                n.Y = 0.0;
+                                n.Z = 0.0;
+                            }
+                            //North
+                            else if (rp.Z > 0.0)
+                            {
+                                n.X = 0.0;
+                                n.Y = 0.0;
+                                n.Z = 1.0;
+                            }
+                            //South
+                            else
+                            {
+                                n.X = 0.0;
+                                n.Y = 0.0;
+                                n.Z = -1.0;
+                            }
 
-                            hit = new RaycastChunkHit(pos, relDir.Face().Direction(), distance, block, chunk, bpos);
+                            hit = new RaycastChunkHit(pos, n, distance, block, chunk, bpos);
 
                             return true;
                         }
@@ -735,12 +770,13 @@ namespace Winecrash.Client
                     return false;
                 }
 
-                pos += ray.Direction * step;
-                distance += step;
+                pos += ray.Direction * precision;
+                distance += precision;
             }
 
             hit = new RaycastChunkHit(pos, Vector3D.Up, distance, block, chunk, Vector3I.Zero);
             return false;
         }
+
     }
 }
