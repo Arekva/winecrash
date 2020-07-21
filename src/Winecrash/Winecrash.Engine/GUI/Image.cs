@@ -69,5 +69,14 @@ namespace Winecrash.Engine.GUI
             Renderer.Delete();
             _Picture = null;
         }
+
+        protected internal override void OnEnable()
+        {
+            Renderer.Enabled = true;
+        }
+        protected internal override void OnDisable()
+        {
+            Renderer.Enabled = false;
+        }
     }
 }
