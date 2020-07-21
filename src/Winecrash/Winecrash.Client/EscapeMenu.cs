@@ -14,6 +14,7 @@ namespace Winecrash.Client
 
         private Label lbMenu;
         private Image imgBack;
+        
         protected override void Creation()
         {
             if (Instance)
@@ -44,7 +45,7 @@ namespace Winecrash.Client
 
             if (Input.IsPressing(GameInput.Key("Paused")))
             {
-                WObject.Find("Crosshair").Enabled = !WObject.Find("Crosshair").Enabled;
+                //WObject.Find("Crosshair").Enabled = !WObject.Find("Crosshair").Enabled;
                 //imgBack.Enabled = !imgBack.Enabled;
                 lbMenu.Enabled = !lbMenu.Enabled;
                 Input.CursorVisible = !Input.CursorVisible;
