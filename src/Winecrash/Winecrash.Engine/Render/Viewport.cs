@@ -156,7 +156,8 @@ namespace Winecrash.Engine
 
                 Input.SetMouseScroll(Mouse.GetState().WheelPrecise);
 
-                Time.DeltaTime = e.Time;
+                Time.DeltaTime = e.Time * Time.TimeScale;
+                Time.FixedDeltaTime = (1D / 60D) * Time.FixedTimeScale;
                 MouseState ms = Mouse.GetState();
                 Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);
 
