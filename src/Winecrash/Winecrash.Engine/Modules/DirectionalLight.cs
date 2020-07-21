@@ -15,10 +15,7 @@ namespace Winecrash.Engine
 
         protected internal override void Creation()
         {
-            if(Main == null)
-            {
-                Main = this;
-            }
+            Main = this;
 
             DirectionalLights.Add(this);
 

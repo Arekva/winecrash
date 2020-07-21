@@ -30,6 +30,12 @@
             "Identifier": "winecrash:direction",
             "RuntimeType": "Winecrash.Client.Cube, Winecrash",
             "Path": "assets/items/direction.json"
+        },
+
+        {
+            "Identifier": "winecrash:sand",
+            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
+            "Path": "assets/items/sand.json"
         }
     ]
 }

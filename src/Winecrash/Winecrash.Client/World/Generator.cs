@@ -66,16 +66,32 @@ namespace Winecrash.Client
                         bool isCave = (((caves.GetValue((chunkx * Chunk.Width + shiftX + (float)x) * caveScale, y * caveScale, (chunky * Chunk.Depth + shiftZ + (float)z) * caveScale)) + 1) /2.0F) < thresold;
 
 
-
+                        bool waterlevel = height < 64;
                         
                         if (y == height)
                         {
-                            id = "winecrash:grass";
+                            if (waterlevel)
+                            {
+                                id = "winecrash:sand";
+                            }
+                            else
+                            {
+                                id = "winecrash:grass";
+                            }
                         }
                         else if(y < height)
                         {
-                            if(y > height - 3)
-                                id = "winecrash:dirt";
+                            if (y > height - 3)
+                            {
+                                if (waterlevel)
+                                {
+                                    id = "winecrash:sand";
+                                }
+                                else
+                                {
+                                    id = "winecrash:dirt";
+                                }
+                            }
                             else
                                 id = "winecrash:stone";
                         }

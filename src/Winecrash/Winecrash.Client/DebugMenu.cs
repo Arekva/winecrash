@@ -29,6 +29,7 @@ namespace Winecrash.Client
             lbFPS.MinAnchor = new Vector2F(0.0F, 0.0F);
             lbFPS.MaxAnchor = new Vector2F(1.0F, 1.0F);
             lbFPS.Left = 15;
+            lbFPS.LineSpace = 1.0F;
         }
 
         int fpses;
@@ -66,8 +67,15 @@ namespace Winecrash.Client
             txt += "XYZ: " + pos.X.ToString("0.000") + " / " + pos.Y.ToString("0.000") + " / " + pos.Z.ToString("0.000") + "\n";
             if (Player.Instance.ViewRayHit != null)
             {
+                Vector3F n = Player.Instance.ViewRayHit.Value.Normal;
+
                 txt += "Pointed Block: " + Player.Instance.ViewRayHit.Value.Block.Identifier + "\n";
                 txt += "Block Location XYZ: " + Player.Instance.ViewRayHit.Value.GlobalPosition.X.ToString("0") + " / " + Player.Instance.ViewRayHit.Value.GlobalPosition.Y.ToString("0") + " / " + Player.Instance.ViewRayHit.Value.GlobalPosition.Z.ToString("0") + "\n";
+                txt += "Pointed normal: " + BlockFacesExtentions.Face(n).ToString() + $" ({n.X};{n.Y};{n.Z})";
+            }
+            else
+            {
+                txt += "Pointed Block: none";
             }
 
             lbFPS.Text = txt;

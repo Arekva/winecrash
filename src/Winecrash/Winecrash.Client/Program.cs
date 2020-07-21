@@ -83,6 +83,8 @@ namespace Winecrash.Client
             WObject sky = new WObject("Skybox");
             MeshRenderer mr = sky.AddModule<MeshRenderer>();
 
+            sky.AddModule<DayNightCycle>();
+
             mr.Mesh = Mesh.LoadFile("assets/models/Skysphere.obj", MeshFormats.Wavefront);
             mr.UseMask = false;
 
@@ -93,7 +95,7 @@ namespace Winecrash.Client
             mr.Material.SetData<Vector4>("highAtmosphereColour", HighAtmosphereColour);
             mr.Material.SetData<Vector4>("groundAtmosphereColour", GroundAtmosphereColour);
 
-            mr.Material.SetData<float>("sunSize", 0.025F);
+            mr.Material.SetData<float>("sunSize", 0.1F);
             mr.Material.SetData<Vector4>("sunInnerColor", new Color256(1.0D, 1.0D, 1.0D, 1.0D));
             mr.Material.SetData<Vector4>("sunOuterColor", new Color256(245D / 255D, 234D / 255D, 181D / 255D, 1.0D));
 
@@ -102,8 +104,7 @@ namespace Winecrash.Client
 
             WObject sun = new WObject("Sun");
             sun.AddModule<DirectionalLight>();
-            sun.LocalRotation = new Engine.Quaternion(90, 0, 0);
-            sun.AddModule<DayNightCycle>();
+            
 
             SkyboxCamera skycam = new WObject("Skybox Camera").AddModule<SkyboxCamera>();
             skycam.ReferenceCamera = Camera.Main;
@@ -120,13 +121,13 @@ namespace Winecrash.Client
             reticule.MinAnchor = new Vector2F(0.48F, 0.48F);
             reticule.MaxAnchor = new Vector2F(0.52F, 0.52F);
 
-
+            //GameLoad.StartLoad();
         }
 
         static void CreateDebugWindow()
         {
             Debug.AddLogger(new Logger(LogVerbose, LogWarning, LogError, LogException));
-            Debug.Log("Winecraft Predev 0.2 - (C) Arthur Carré 2020");
+            Debug.Log("Winecrash Predev 0.2 - (C) Arthur Carré 2020");
         }
 
         static void LogVerbose(object msg)
