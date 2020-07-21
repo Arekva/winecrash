@@ -9,6 +9,12 @@ namespace Winecrash.Engine
 {
     public struct Color256
     {
+        public static Color256 Red { get; } = new Color256(1.0, 0.0, 0.0, 1.0);
+        public static Color256 Green { get; } = new Color256(0.0, 1.0, 0.0, 1.0);
+        public static Color256 Blue { get; } = new Color256(0.0, 0.0, 1.0, 1.0);
+        public static Color256 Orange { get; } = new Color256(1.0, 0.5, 0.0, 1.0);
+
+
         public const double MinValue = 0.0D;
         public const double MaxValue = 1.0D;
 

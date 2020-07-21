@@ -30,7 +30,7 @@ namespace Winecrash.Engine.GUI
             set
             {
                 this._Color = value;
-                
+                Renderer.Material.SetData<Vector4>("color", value);
             }
         }
 

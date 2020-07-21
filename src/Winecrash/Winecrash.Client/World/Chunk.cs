@@ -79,6 +79,7 @@ namespace Winecrash.Client
         }
 
 
+        public bool BuildEndFrame { get; set; } = false;
 
         #endregion
 
@@ -271,9 +272,9 @@ namespace Winecrash.Client
                 {
                     chosen = World.WorldRandom.Next(i, TotalBlocks);
 
-                    x = i % Width;
-                    y = (i / Width) % Height;
-                    z = i / (Width * Height);
+                    x = chosen % Width;
+                    y = (chosen / Width) % Height;
+                    z = chosen / (Width * Height);
 
                     ItemCache.Get<Block>(_Blocks[chosen]).Tick(TickType.World, this, new Vector3I(x,y,z));
                 }
@@ -437,10 +438,19 @@ namespace Winecrash.Client
 
             base.OnDelete();
         }
-#endregion
+
+        protected override void LateUpdate()
+        {
+            if(BuildEndFrame)
+            {
+                BuildEndFrame = false;
+                Construct();
+            }
+        }
+        #endregion
 
 
-#region Generation
+        #region Generation
         public void DiffuseLight(int basex, int basey, int basez, uint baseLevel,  BlockFaces comingFrom = BlockFaces.Up)
         {
             if (baseLevel == 0) return;
@@ -613,29 +623,30 @@ namespace Winecrash.Client
 
             this[x, y, z] = b;
 
-            if (x == 0)
+            if (x == 0 && this.WestNeighbor)
             {
-                this.WestNeighbor?.Construct();
+                this.WestNeighbor.BuildEndFrame = true;
             }
-            else if (x == 15)
+            else if (x == 15 && this.EastNeighbor)
             {
-                this.EastNeighbor?.Construct();
-            }
-
-            if (z == 0)
-            {
-                this.SouthNeighbor?.Construct();
-            }
-            else if (z == 15)
-            {
-                this.NorthNeighbor?.Construct();
+                this.EastNeighbor.BuildEndFrame = true;
             }
 
-            Task.Run(GenerateLights);
-            this.Construct();
+            if (z == 0 && this.SouthNeighbor)
+            {
+                this.SouthNeighbor.BuildEndFrame = true;
+            }
+            else if (z == 15 && this.NorthNeighbor)
+            {
+                this.NorthNeighbor.BuildEndFrame = true;
+            }
+
+            BuildEndFrame = true;
         }
         public void Construct()
         {
+            GenerateLights();
+
             if (!NorthNeighbor)
             {
                 NorthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Up)?.Chunk;

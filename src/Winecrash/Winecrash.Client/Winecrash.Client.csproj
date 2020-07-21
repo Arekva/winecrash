@@ -93,6 +93,7 @@
     <Compile Include="Item\BlockFaces.cs" />
     <Compile Include="Item\Database\Database.cs" />
     <Compile Include="Item\Database\ItemDB.cs" />
+    <Compile Include="Item\Grass.cs" />
     <Compile Include="Item\TexturePaths.cs" />
     <Compile Include="Modules\DayNightCycle.cs" />
     <Compile Include="Modules\FreeCam.cs" />

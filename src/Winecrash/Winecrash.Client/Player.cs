@@ -240,15 +240,13 @@ namespace Winecrash.Client
             Cursor3D.Enabled = HitSphere.Enabled = ViewRayHit != null;
             if (Cursor3D.Enabled)
             {
-                //HitSphere.Position = ViewRayHit.Value.GlobalPosition;
-                //HitSphere.Up = ViewRayHit.Value.Normal;
-
                 Cursor3D.Position = Vector3F.One * 0.5F + (Vector3F)(ViewRayHit.Value.LocalPosition + new Vector3I(ViewRayHit.Value.Chunk.Position.X * 16, 0, ViewRayHit.Value.Chunk.Position.Y * 16));
 
                 if (Input.IsPressing(Keys.MouseLeftButton))
                 {
                     Vector3I p = ViewRayHit.Value.LocalPosition;
                     ViewRayHit.Value.Chunk.Edit(p.X, p.Y, p.Z, ItemCache.Get<Block>("winecrash:air"));
+                    Block.PlayerTickNeighbors(ViewRayHit.Value.Chunk, new Vector3I(p.X, p.Y, p.Z));
                 }
 
                 if (Input.IsPressing(Keys.MouseRightButton))

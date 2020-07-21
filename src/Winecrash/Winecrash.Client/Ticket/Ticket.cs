@@ -222,11 +222,11 @@ namespace Winecrash.Client
                     chunk._Blocks = Generator.GetChunk(this.Position.X, this.Position.Y, out _);
                     chunk.BuiltOnce = true;
 
-                    Task.Run(chunk.GenerateLights);
+                //Task.Run(chunk.GenerateLights);
 
 
-                    chunk.Construct();
-
+                chunk.Construct();
+                    //chunk.BuildEndFrame = true;
                     Chunk.TriggerAnyChunkFirstBuilt(chunk);
                 /*}
                 catch(Exception e)

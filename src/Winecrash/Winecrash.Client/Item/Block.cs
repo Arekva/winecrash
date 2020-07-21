@@ -35,7 +35,7 @@ namespace Winecrash.Client
 
         }
 
-        private static void PlayerTickNeighbors(Chunk chunk, Vector3I position)
+        public static void PlayerTickNeighbors(Chunk chunk, Vector3I position)
         {
             Chunk tickChunk;
             Vector3I tickPosition;
@@ -107,6 +107,24 @@ namespace Winecrash.Client
 
             if (tickChunk) World.TickOnNextTick.Add(new TickWaitItem(TickType.Block, tickChunk, tickPosition, chunk[tickPosition.X, tickPosition.Y, tickPosition.Z]));
 
+
+            if (position.Y != 0)
+            {
+                tickChunk = chunk;
+
+                tickPosition = new Vector3I(position.X, position.Y - 1, position.Z);
+
+                World.TickOnNextTick.Add(new TickWaitItem(TickType.Block, chunk, tickPosition, chunk[tickPosition.X, tickPosition.Y, tickPosition.Z]));
+            }
+
+            if (position.Y != 255)
+            {
+                tickChunk = chunk;
+
+                tickPosition = new Vector3I(position.X, position.Y + 1, position.Z);
+
+                World.TickOnNextTick.Add(new TickWaitItem(TickType.Block, tickChunk, tickPosition, chunk[tickPosition.X, tickPosition.Y, tickPosition.Z]));
+            }
         }
     }
 }

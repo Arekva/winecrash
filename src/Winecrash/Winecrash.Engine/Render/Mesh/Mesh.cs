@@ -141,7 +141,6 @@ namespace Winecrash.Engine
                 Normals = null;
             }
 
-
             Viewport.DoOnceRender += () =>
             {
                 if (VertexArrayObject == -1)
