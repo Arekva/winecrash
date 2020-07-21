@@ -54,7 +54,7 @@ namespace Winecrash.Client
 
         public RaycastChunkHit? ViewRayHit = null;
 
-        public double HitRange = 3.0D;
+        public double HitRange = 4.5D;
 
         public Chunk CurrentChunk { get; private set; }
 
@@ -255,9 +255,12 @@ namespace Winecrash.Client
 
                     World.GlobalToLocal(ViewRayHit.Value.GlobalPosition + normal, out Vector3I cpos, out Vector3I bpos);
 
-                    Ticket tck = Ticket.GetTicket(new Vector2I(cpos.X, cpos.Y));
+                    if (bpos.X != Math.Round(this._Bc.WObject.Position.X) && bpos.Y != Math.Round(this._Bc.WObject.Position.Y) - 2.8 && bpos.Y != Math.Round(this._Bc.WObject.Position.Y) && bpos.Z != Math.Round(this._Bc.WObject.Position.Z))
+                    {
+                        Ticket tck = Ticket.GetTicket(new Vector2I(cpos.X, cpos.Y));
 
-                    tck?.Chunk.Edit(bpos.X, bpos.Y, bpos.Z, ItemCache.Get<Block>("winecrash:stone"));
+                        tck?.Chunk.Edit(bpos.X, bpos.Y, bpos.Z, ItemCache.Get<Block>("winecrash:stone"));
+                    }
                 }
             }
 
