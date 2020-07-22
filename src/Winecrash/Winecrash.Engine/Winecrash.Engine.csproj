@@ -125,6 +125,8 @@
     <Compile Include="GUI\Glyph.cs" />
     <Compile Include="GUI\GlyphTable.cs" />
     <Compile Include="GUI\Image.cs" />
+    <Compile Include="GUI\IRatioKeeper.cs" />
+    <Compile Include="GUI\Model.cs" />
     <Compile Include="Modules\Camera.cs" />
     <Compile Include="Modules\Canvas.cs" />
     <Compile Include="Modules\EngineCore.cs" />
@@ -140,6 +142,7 @@
     <Compile Include="Modules\MeshRenderer.cs" />
     <Compile Include="Modules\BoxCollider.cs" />
     <Compile Include="Modules\Collider.cs" />
+    <Compile Include="Modules\ModelRenderer.cs" />
     <Compile Include="Physics\HitInfo.cs" />
     <Compile Include="Physics\Physics.cs" />
     <Compile Include="Physics\Ray.cs" />
@@ -156,6 +159,7 @@
     <Compile Include="Render\Shader.cs" />
     <Compile Include="GUI\Label.cs" />
     <Compile Include="Render\Texture.cs" />
+    <Compile Include="Render\WindowState.cs" />
     <Compile Include="WEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Render\Viewport.cs" />

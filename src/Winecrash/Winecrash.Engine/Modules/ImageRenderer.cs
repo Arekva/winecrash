@@ -69,28 +69,6 @@ namespace Winecrash.Engine.GUI
 			Quaternion rot = this.Image.WObject.Rotation;
 			Vector3F sca = this.Image.GlobalScale;
 
-			if (Image.KeepRatio)
-			{
-				float ratio = (float)Image.Picture.Size.X / (float)Image.Picture.Size.Y;
-
-				float smallest = sca.X;
-
-				if (sca.Y < sca.X)
-				{
-					smallest = sca.Y;
-				}
-
-				if(smallest == sca.X)
-				{
-					sca = new Vector3F(sca.Y * ratio, sca.Y, sca.Z);
-				}
-				else
-				{
-					sca = new Vector3F(sca.X, sca.X / ratio, sca.Z);
-				}
-				
-			}
-
 			Matrix4 transform =
 				(Matrix4.CreateScale(sca.X, sca.Y, sca.Z) *
 				Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W)) *

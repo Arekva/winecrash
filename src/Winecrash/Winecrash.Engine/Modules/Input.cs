@@ -17,7 +17,39 @@ namespace Winecrash.Engine
         private static int KeysAmount = Enum.GetValues(typeof(WKeys)).Length;
         private static Dictionary<WKeys, KeyStates> RegisteredKeyStates = new Dictionary<WKeys, KeyStates>(KeysAmount);
 
-        public static bool CursorVisible { get; set; } = true;
+
+        private static bool _UpdateCursorVisible = false;
+        private static bool _CursorVisible = true;
+        public static bool CursorVisible
+        {
+            get
+            {
+                return _CursorVisible;
+            }
+
+            set
+            {
+                _CursorVisible = value;
+                _UpdateCursorVisible = true;
+            }
+        }
+
+        private static bool _UpdateWindowMode = false;
+        private static WindowState _WindowMode = WindowState.Normal;
+        public static WindowState WindowMode
+        {
+            get
+            {
+                _WindowMode = (WindowState)Viewport.Instance.WindowState;
+                return _WindowMode;
+            }
+
+            set
+            {
+                _WindowMode = value;
+                _UpdateWindowMode = true;
+            }
+        }
 
         internal static bool Focused
         {
@@ -82,7 +114,6 @@ namespace Winecrash.Engine
 
                 if (Input.LockMode == CursorLockModes.Lock && Focused)
                 {
-                    
                     InputWrapper.SetMousePosition(centre);
                 }
             }
@@ -94,7 +125,14 @@ namespace Winecrash.Engine
 
         protected internal override void LateUpdate()
         {
-            Viewport.DoOnceRender += () => Viewport.Instance.CursorVisible = CursorVisible;
+            Viewport.DoOnceRender += () => Viewport.Instance.CursorVisible = Focused ? CursorVisible : true;
+
+            if(_UpdateWindowMode)
+            {
+                _UpdateWindowMode = false;
+                Viewport.DoOnceRender += () => Viewport.Instance.WindowState = (OpenTK.WindowState)_WindowMode;
+            }
+            
         }
 
         protected internal override void OnDelete()

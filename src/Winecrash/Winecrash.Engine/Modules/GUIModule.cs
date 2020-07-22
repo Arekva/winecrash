@@ -14,7 +14,7 @@ namespace Winecrash.Engine.GUI
         public GUIModule ParentGUI { get; set; } = null;
 
 
-        internal Vector3F GlobalPosition
+        internal virtual Vector3F GlobalPosition
         {
             get
             {
@@ -36,6 +36,13 @@ namespace Winecrash.Engine.GUI
                 float verticalShift = (GlobalBottom / 4.0F) - (GlobalTop / 4.0F);
 
                 Vector2F shift = new Vector2F(horizontalShift, verticalShift);
+
+
+                //Vector3F sca = new Vector3F(Canvas.ScreenToUISpace(screenSpacePosition) + shift;
+
+                //sca.X = WMath.Clamp(sca.X, Image.MinScale.X, Image.MaxScale.X);
+                //sca.Y = WMath.Clamp(sca.Y, Image.MinScale.Y, Image.MaxScale.Y);
+                //sca.Z = WMath.Clamp(sca.Z, Image.MinScale.Z, Image.MaxScale.Z);
 
                 return new Vector3F(Canvas.ScreenToUISpace(screenSpacePosition) + shift, Depth);
             }
@@ -73,7 +80,7 @@ namespace Winecrash.Engine.GUI
             }
         }
 
-        internal Vector3F GlobalScale
+        internal virtual Vector3F GlobalScale
         {
             get//GlobalScreenAnchors
             {
@@ -100,7 +107,7 @@ namespace Winecrash.Engine.GUI
         /// <summary>
         /// Get the global anchor position of the object, depending of the parents. Indices of the arary => xmin[0], ymin[1], xmax[2], ymax[3]
         /// </summary>
-        internal float[] GlobalScreenAnchors
+        internal virtual float[] GlobalScreenAnchors
         {
             get
             {
@@ -119,12 +126,23 @@ namespace Winecrash.Engine.GUI
                     Vector2F pmin = new Vector2F(panchors[0], panchors[1]);
                     Vector2F pmax = new Vector2F(panchors[2], panchors[3]);
 
-                    anchors[0] = WMath.Remap(this.MinAnchor.X, 0, 1, pmin.X, pmax.X); //pmin.X + this.MinAnchor.X * scale.X; //x min
-                    anchors[1] = WMath.Remap(this.MinAnchor.Y, 0, 1, pmin.Y, pmax.Y); //pmin.Y + this.MinAnchor.Y * scale.Y; //y min
-                    anchors[2] = WMath.Remap(this.MaxAnchor.X, 0, 1, pmin.X, pmax.X); //pmax.X - this.MaxAnchor.X * scale.X; //x max
-                    anchors[3] = WMath.Remap(this.MaxAnchor.Y, 0, 1, pmin.Y, pmax.Y);//pmax.Y - this.MaxAnchor.Y * scale.Y; //y min
+                    if(this.ParentGUI is IRatioKeeper)
+                    {
 
-                    new object();
+
+                        anchors[0] = WMath.Remap(this.MinAnchor.X, 0, 1, pmin.X, pmax.X); //x min
+                        anchors[1] = WMath.Remap(this.MinAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min
+                        anchors[2] = WMath.Remap(this.MaxAnchor.X, 0, 1, pmin.X, pmax.X); //x max
+                        anchors[3] = WMath.Remap(this.MaxAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min
+                    }
+
+                    else
+                    {
+                        anchors[0] = WMath.Remap(this.MinAnchor.X, 0, 1, pmin.X, pmax.X); //x min
+                        anchors[1] = WMath.Remap(this.MinAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min
+                        anchors[2] = WMath.Remap(this.MaxAnchor.X, 0, 1, pmin.X, pmax.X); //x max
+                        anchors[3] = WMath.Remap(this.MaxAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min
+                    }
                 }
 
                 return anchors;

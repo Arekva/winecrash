@@ -2,13 +2,18 @@
     "Items":
     [
         {
+            "Identifier": "winecrash:direction",
+            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
+            "Path": "assets/items/direction.json"
+        },
+        {
             "Identifier": "winecrash:air",
             "RuntimeType": "Winecrash.Client.Block, Winecrash",
             "Path": "assets/items/air.json"
         },
         {
             "Identifier": "winecrash:grass",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Client.Grass, Winecrash",
             "Path": "assets/items/grass.json"
         },
         {
@@ -26,11 +31,7 @@
             "RuntimeType": "Winecrash.Client.Cube, Winecrash",
             "Path": "assets/items/bedrock.json"
         },
-        {
-            "Identifier": "winecrash:direction",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
-            "Path": "assets/items/direction.json"
-        },
+        
 
         {
             "Identifier": "winecrash:sand",

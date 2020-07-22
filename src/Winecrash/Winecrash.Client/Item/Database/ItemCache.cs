@@ -117,7 +117,10 @@ namespace Winecrash.Client
             xSize = totalWidth;
             ySize = totalHeight;
 
-            Texture tex = new Texture(totalWidth, totalHeight);
+            Texture tex = new Texture(totalWidth, totalHeight)
+            {
+                Name = "Cache"
+            };
 
             for (int y = 0; y < (int)TotalItems; y++)
             {

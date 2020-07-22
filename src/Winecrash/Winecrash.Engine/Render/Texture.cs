@@ -125,7 +125,7 @@ namespace Winecrash.Engine
 
         public static Texture Find(string name)
         {
-            return Cache.FirstOrDefault(t => t.Name == name);
+            return Cache?.FirstOrDefault(t => t.Name == name);
         }
 
         public static Texture Blank { get; set; }

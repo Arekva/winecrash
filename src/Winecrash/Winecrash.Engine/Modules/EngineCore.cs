@@ -42,9 +42,9 @@ namespace Winecrash.Engine
             }
 
             // fullscreen
-            if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressed(Keys.Enter) || Input.IsPressed(Keys.F11))
+            if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressed(Keys.Enter))
             {
-                throw new NotImplementedException("Fullscreen switch not done yet.");
+                Input.WindowMode = Input.WindowMode == WindowState.Fullscreen ? WindowState.Normal : WindowState.Fullscreen;
             }
         }
 

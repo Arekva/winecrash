@@ -260,6 +260,10 @@ namespace Winecrash.Engine
         {
             return new Vector2D(vec.X, vec.Y);
         }
+        public static implicit operator OpenTK.Vector2(Vector2D vec)
+        {
+            return new OpenTK.Vector2((float)vec.X, (float)vec.Y);
+        }
         #endregion
     }
 }
