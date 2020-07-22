@@ -255,12 +255,12 @@ namespace Winecrash.Client
 
                     World.GlobalToLocal(ViewRayHit.Value.GlobalPosition + normal, out Vector3I cpos, out Vector3I bpos);
 
-                    if (bpos.X != Math.Round(this._Bc.WObject.Position.X) && bpos.Y != Math.Round(this._Bc.WObject.Position.Y) - 2.8 && bpos.Y != Math.Round(this._Bc.WObject.Position.Y) && bpos.Z != Math.Round(this._Bc.WObject.Position.Z))
-                    {
+                    /*if (bpos.X != Math.Round(this._Bc.WObject.Position.X) && bpos.Y != Math.Round(this._Bc.WObject.Position.Y) - 2.8 && bpos.Y != Math.Round(this._Bc.WObject.Position.Y) && bpos.Z != Math.Round(this._Bc.WObject.Position.Z))
+                    {*/
                         Ticket tck = Ticket.GetTicket(new Vector2I(cpos.X, cpos.Y));
 
                         tck?.Chunk.Edit(bpos.X, bpos.Y, bpos.Z, ItemCache.Get<Block>("winecrash:stone"));
-                    }
+                    //}
                 }
             }
 
