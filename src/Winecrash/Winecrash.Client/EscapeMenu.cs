@@ -48,17 +48,20 @@ namespace Winecrash.Client
                 //WObject.Find("Crosshair").Enabled = !WObject.Find("Crosshair").Enabled;
                 //imgBack.Enabled = !imgBack.Enabled;
                 lbMenu.Enabled = !lbMenu.Enabled;
-                Input.CursorVisible = !Input.CursorVisible;
                 Input.LockMode = Input.LockMode == CursorLockModes.Free ? CursorLockModes.Lock : CursorLockModes.Free;
                 if (lbMenu.Enabled == true)
                 {
                     Time.TimeScale = 0;
                     Time.FixedTimeScale = 0;
+
+                    Input.CursorVisible = true;
                 }
                 else
                 {
                     Time.TimeScale = 1;
                     Time.FixedTimeScale = 1;
+
+                    Input.CursorVisible = false;
                 }
             }
         }

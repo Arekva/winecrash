@@ -47,5 +47,8 @@ namespace Winecrash.Engine
 
         [DllImport("user32.dll")]
         static extern bool SetCursorPos(int X, int Y);
+
+        [DllImport("user32.dll")]
+        static extern int ShowCursor(bool bShow);
     }
 }

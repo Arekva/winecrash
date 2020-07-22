@@ -17,26 +17,7 @@ namespace Winecrash.Engine
         private static int KeysAmount = Enum.GetValues(typeof(WKeys)).Length;
         private static Dictionary<WKeys, KeyStates> RegisteredKeyStates = new Dictionary<WKeys, KeyStates>(KeysAmount);
 
-        public static bool CursorVisible
-        {
-            get
-            {
-                return Viewport.Instance != null ? Viewport.Instance.CursorVisible : true;
-            }
-
-            set
-            {
-                if (Viewport.Instance != null)
-                {
-                    Viewport.Instance.CursorVisible = value;
-                }
-                else
-                {
-                    Debug.LogError("Unable to change the cursor: viewport is null !");
-                }
-
-            }
-        }
+        public static bool CursorVisible { get; set; } = true;
 
         internal static bool Focused
         {
@@ -87,7 +68,7 @@ namespace Winecrash.Engine
         {
             Vector2I pos = InputWrapper.GetMousePosition();
 
-            if(Viewport.Instance == null)
+            if (Viewport.Instance == null)
             {
                 MouseDelta = Vector2D.Zero;
             }
@@ -107,6 +88,13 @@ namespace Winecrash.Engine
             }
             
             UpdateKeysStates();
+
+            
+        }
+
+        protected internal override void LateUpdate()
+        {
+            Viewport.DoOnceRender += () => Viewport.Instance.CursorVisible = CursorVisible;
         }
 
         protected internal override void OnDelete()
