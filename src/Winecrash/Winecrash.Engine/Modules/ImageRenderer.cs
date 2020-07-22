@@ -80,7 +80,15 @@ namespace Winecrash.Engine.GUI
 					smallest = sca.Y;
 				}
 
-				sca = new Vector3F(smallest, smallest, sca.Z);
+				if(smallest == sca.X)
+				{
+					sca = new Vector3F(sca.Y * ratio, sca.Y, sca.Z);
+				}
+				else
+				{
+					sca = new Vector3F(sca.X, sca.X / ratio, sca.Z);
+				}
+				
 			}
 
 			Matrix4 transform =

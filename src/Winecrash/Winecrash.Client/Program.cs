@@ -7,9 +7,10 @@ using Winecrash.Engine;
 using System.Threading;
 using OpenTK;
 using System.IO;
-
 using Newtonsoft.Json;
 using System.Runtime.InteropServices;
+
+using Winecrash.Engine.GUI;
 
 namespace Winecrash.Client
 {
@@ -120,6 +121,15 @@ namespace Winecrash.Client
 
             reticule.MinAnchor = new Vector2F(0.48F, 0.48F);
             reticule.MaxAnchor = new Vector2F(0.52F, 0.52F);
+
+            WObject itembar = new WObject("Item Bar");
+            itembar.Parent = Canvas.Main.WObject;
+            Image bar = itembar.AddModule<Image>();
+            bar.Picture = new Texture("assets/textures/itembar.png");
+            bar.KeepRatio = true;
+            bar.MinAnchor = new Vector2F(0.35F, 0.05F);
+            bar.MaxAnchor = new Vector2F(0.65F, 0.2F);
+            bar.Color = new Color256(1.0, 1.0, 1.0, 0.8F);
 
             //GameLoad.StartLoad();
         }

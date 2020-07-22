@@ -219,7 +219,14 @@ namespace Winecrash.Client
                     chunk.WestNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Left)?.Chunk;
 
 
-                    chunk._Blocks = Generator.GetChunk(this.Position.X, this.Position.Y, out _);
+                    chunk._Blocks = Generator.GetChunk(this.Position.X, this.Position.Y, out bool generated);
+
+#if RELEASE
+                if(generated)
+                {
+                    Save();
+                }
+#endif
                     chunk.BuiltOnce = true;
 
                 //Task.Run(chunk.GenerateLights);

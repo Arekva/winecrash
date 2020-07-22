@@ -89,18 +89,20 @@ namespace Winecrash.Engine
 
                     sw.Stop();
 
-                    double waitTime = Physics.FixedRate - sw.Elapsed.TotalSeconds;
+                    double waitTime = (Physics.FixedRate * Time.FixedTimeScale) - sw.Elapsed.TotalSeconds;
 
                     if (waitTime > 0.0D)
                     {
-                        Time.FixedDeltaTime = Physics.FixedRate;
                         Thread.Sleep((int)(waitTime * 1000));
                     }
 
-                    else
+
+                    Time.FixedDeltaTime = Physics.FixedRate * Time.FixedTimeScale;
+
+                   /* else
                     {
                         Time.FixedDeltaTime = sw.Elapsed.TotalSeconds;
-                    }
+                    }*/
 
                     sw.Reset();
                 }

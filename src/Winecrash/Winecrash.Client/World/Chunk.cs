@@ -330,7 +330,6 @@ namespace Winecrash.Client
         }
 
 #region Game Logic
-
         int lightSSBO = -1;
 
         protected override void Creation()
@@ -450,7 +449,7 @@ namespace Winecrash.Client
         #endregion
 
 
-        #region Generation
+#region Generation
         public void DiffuseLight(int basex, int basey, int basez, uint baseLevel,  BlockFaces comingFrom = BlockFaces.Up)
         {
             if (baseLevel == 0) return;
@@ -533,39 +532,6 @@ namespace Winecrash.Client
 
                 if (x < 0 || x > 15 || y < 0 || y > 255 || z < 0 || z > 15) return;
 
-                /*if (y < 0 || y > Chunk.Height - 1) return;
-
-
-                if (x < 0 && WestNeighbor != null)
-                {
-                    c = WestNeighbor;
-                    x = 15;
-                }
-
-                else if (x > Chunk.Width - 1 && EastNeighbor != null)
-                {
-                    c = EastNeighbor;
-                    x = 0;
-                }
-
-                else if (z < 0 && SouthNeighbor != null)
-                {
-                    c = SouthNeighbor;
-                    z = 15;
-                }
-
-                else if (z > Chunk.Depth - 1 && NorthNeighbor != null)
-                {
-                    c = NorthNeighbor;
-                    z = 0;
-                }
-
-                else
-                {*/
-                    //c = this;
-                //}
-
-
                 uint lvl = GetLightLevel(x, y, z);
                 if (!this[x,y,z].Transparent || lvl > level - 1) continue;
 
@@ -616,6 +582,11 @@ namespace Winecrash.Client
         public void Edit(int x, int y, int z, Block b = null)
         {
             PrivateEdit(x,y,z,b);
+
+#if RELEASE
+            this.Ticket.Save();
+#endif
+
         }
         private void PrivateEdit(int x, int y, int z, Block b = null)
         {
@@ -1111,7 +1082,7 @@ namespace Winecrash.Client
             return transblock.Transparent;
         }
 
-        #endregion
+#endregion
 
     }
 }

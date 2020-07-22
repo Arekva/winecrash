@@ -14,7 +14,9 @@ namespace Winecrash.Client
     {
         public static ushort[] GetChunk(int x, int y, out bool generated)
         {
+#if RELEASE
             string fileName = "save/" + $"c{x}_{y}.json";
+
 
             if (File.Exists(fileName))
             {
@@ -23,9 +25,13 @@ namespace Winecrash.Client
             }
             else
             {
-                generated = true;
-                return Generate(x, y);
+#endif
+            generated = true;
+            return Generate(x, y);
+
+#if RELEASE
             }
+#endif
 
         }
 
