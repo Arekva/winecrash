@@ -148,32 +148,27 @@ namespace Winecrash.Engine
         {
             /*try
             {*/
-                object obj = new object();
+            object obj = new object();
 
-                ViewportDoOnceDelegate once = DoOnce;
-                once?.Invoke();
-                DoOnce -= once;
+            ViewportDoOnceDelegate once = DoOnce;
+            once?.Invoke();
+            DoOnce -= once;
 
-                Input.SetMouseScroll(Mouse.GetState().WheelPrecise);
+            Input.SetMouseScroll(Mouse.GetState().WheelPrecise);
 
-                Time.DeltaTime = e.Time * Time.TimeScale;
-                
-                MouseState ms = Mouse.GetState();
-                Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);
+            Time.DeltaTime = e.Time * Time.TimeScale;
 
-                this._PreviousState = ms;
+            MouseState ms = Mouse.GetState();
+            Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);
+
+            this._PreviousState = ms;
 
 
-                Update?.Invoke(new UpdateEventArgs(e.Time));
+            Update?.Invoke(new UpdateEventArgs(e.Time));
 
-                GC.Collect();
+            //GC.Collect();
 
-                base.OnUpdateFrame(e);
-            /*}
-            catch(Exception err)
-            {
-                Debug.LogException(err);
-            }*/
+            base.OnUpdateFrame(e);
         }
     }
 }

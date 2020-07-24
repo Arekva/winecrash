@@ -11,5 +11,10 @@ namespace Winecrash.Engine.GUI
         public bool KeepRatio { get; set; }
 
         public float Ratio { get; }
+
+        public float GlobalRatio { get; }
+
+        public float SizeX {get;}
+        public float SizeY {get;}
     }
 }

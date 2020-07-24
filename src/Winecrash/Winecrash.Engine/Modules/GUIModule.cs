@@ -128,11 +128,12 @@ namespace Winecrash.Engine.GUI
 
                     if(this.ParentGUI is IRatioKeeper)
                     {
+                        Vector2F pscale = this.ParentGUI.GlobalScale.XY;
+                        Vector2F pextents = (pscale / (Vector2F)Canvas.Main.Extents) / 4.0F;
 
-
-                        anchors[0] = WMath.Remap(this.MinAnchor.X, 0, 1, pmin.X, pmax.X); //x min
+                        anchors[0] = WMath.Remap(this.MinAnchor.X, 0, 1, 0.5F - pextents.X, 0.5F + pextents.X); //x min
                         anchors[1] = WMath.Remap(this.MinAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min
-                        anchors[2] = WMath.Remap(this.MaxAnchor.X, 0, 1, pmin.X, pmax.X); //x max
+                        anchors[2] = WMath.Remap(this.MaxAnchor.X, 0, 1, 0.5F - pextents.X, 0.5F + pextents.X); //x max
                         anchors[3] = WMath.Remap(this.MaxAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min
                     }
 

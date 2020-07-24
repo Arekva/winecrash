@@ -14,11 +14,30 @@ namespace Winecrash.Engine.GUI
 
         public bool KeepRatio { get; set; } = false;
 
+        public float SizeX => (float)_Picture.Size.X;
+        public float SizeY => (float)_Picture.Size.Y;
+
         public float Ratio
         {
             get
             {
                 return (float)_Picture.Size.X / (float)_Picture.Size.Y;
+            }
+        }
+
+        public float GlobalRatio
+        {
+            get
+            {
+                if(this.WObject.Parent != null && this.WObject.Parent is IRatioKeeper keepr)
+                {
+                    return keepr.GlobalRatio * Ratio;
+                }
+
+                else
+                {
+                    return Ratio;
+                }
             }
         }
 
@@ -44,9 +63,9 @@ namespace Winecrash.Engine.GUI
 
                 Vector3F sca = totalExtentsScaled * this.WObject.Scale + new Vector3F(horizontalScale, verticalScale, 1.0F);
 
-                /*sca.X = WMath.Clamp(sca.X, MinScale.X, MaxScale.X);
-                sca.Y = WMath.Clamp(sca.Y, MinScale.Y, MaxScale.Y);
-                sca.Z = WMath.Clamp(sca.Z, MinScale.Z, MaxScale.Z);*/
+                //sca.X = WMath.Clamp(sca.X, MinScale.X, MaxScale.X);
+                //sca.Y = WMath.Clamp(sca.Y, MinScale.Y, MaxScale.Y);
+                //sca.Z = WMath.Clamp(sca.Z, MinScale.Z, MaxScale.Z);
 
                 if (KeepRatio)
                 {
@@ -59,44 +78,15 @@ namespace Winecrash.Engine.GUI
 
                     if (smallest == sca.X)
                     {
-                        sca = new Vector3F(sca.Y * Ratio, sca.Y, sca.Z);
+                        sca = new Vector3F(sca.X, sca.X * Ratio, sca.Z);
                     }
                     else
                     {
-                        sca = new Vector3F(sca.X, sca.X / Ratio, sca.Z);
+                        sca = new Vector3F(sca.Y * Ratio, sca.Y, sca.Z);
                     }
                 }
 
                 return sca;
-            }
-        }
-
-        internal override float[] GlobalScreenAnchors
-        {
-            get
-            {
-                float[] anchors = new float[4];
-
-                if (this.ParentGUI == null)
-                {
-                    anchors[0] = anchors[1] = 0.0F;
-                    anchors[2] = anchors[3] = 1.0F;
-                }
-
-                else
-                {
-                    float[] panchors = this.ParentGUI.GlobalScreenAnchors;
-
-                    Vector2F pmin = new Vector2F(panchors[0], panchors[1]);
-                    Vector2F pmax = new Vector2F(panchors[2], panchors[3]);
-
-                    anchors[0] = WMath.Remap(this.MinAnchor.X, 0, 1, pmin.X, pmax.X); //x min
-                    anchors[1] = WMath.Remap(this.MinAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min
-                    anchors[2] = WMath.Remap(this.MaxAnchor.X, 0, 1, pmin.X, pmax.X); //x max
-                    anchors[3] = WMath.Remap(this.MaxAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min            
-                }
-
-                return anchors;
             }
         }
 

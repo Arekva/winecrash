@@ -91,36 +91,53 @@ namespace Winecrash.Client
             Image bar = itembar.AddModule<Image>();
             bar.Picture = new Texture("assets/textures/itembar.png");
             bar.KeepRatio = true;
-            bar.MinAnchor = new Vector2F(0.35F, 0.05F);
-            bar.MaxAnchor = new Vector2F(0.65F, 0.2F);
+            bar.MinAnchor = new Vector2F(0.35F, 0.0F);
+            bar.MaxAnchor = new Vector2F(0.65F, 0.08F);
             bar.Color = new Color256(1.0, 1.0, 1.0, 0.8F);
-            bar.MinScale = new Vector3F(500.0F, -float.MaxValue, -float.MaxValue);
-            bar.MaxScale = new Vector3F(750.0F, float.MaxValue, float.MaxValue);
+            
+            Mesh mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront);
+            for (int i = 0; i < ItemCache.TotalItems; i++)
+            {
+                Cube item = ItemCache.Get<Cube>(i);
 
+                if (!(item is Cube)) continue;
 
-            Mesh mesh = Mesh.LoadFile("assets/models/ItemCube.obj", MeshFormats.Wavefront); ;
-            WObject cube = new WObject("Cube");
-            cube.Parent = itembar;
-            Model model = cube.AddModule<Model>();
-            Material mat = new Material(Shader.Find("ItemUnlit"));
-            mat.SetData<Vector2>("offset", new Vector2D(0, ((double)ItemCache.GetIndex("winecrash:stone") / ItemCache.TotalItems)));
-            mat.SetData<Vector2>("tiling", new Vector2D(1.0, 1.0/ ItemCache.TotalItems));
-            mat.SetData<Vector3>("lightDir", new Vector3D(0.8,1.0,-0.6));
-            mat.SetData<Vector4>("ambiant", new Color256(0.0, 0.0, 0.0, 1.0));
-            mat.SetData<Vector4>("lightColor", new Color256(1.75, 1.75, 1.75, 1.0));
+                WObject cube = new WObject("Cube");
 
-            model.Renderer.Mesh = mesh;
-            model.Renderer.Material = mat;
-            model.KeepRatio = true;
+                cube.Parent = itembar;
+                Model model = cube.AddModule<Model>();
+                Material mat = new Material(Shader.Find("ItemUnlit"));
+                mat.SetData<Vector2>("offset", new Vector2D(0, (double)i / ItemCache.TotalItems));
+                mat.SetData<Vector2>("tiling", new Vector2D(1.0, 1.0 / ItemCache.TotalItems));
+                mat.SetData<Vector3>("lightDir", new Vector3D(0.8, 1.0, -0.6));
+                mat.SetData<Vector4>("ambiant", new Color256(0.0, 0.0, 0.0, 1.0));
+                mat.SetData<Vector4>("lightColor", new Color256(2.0, 2.0, 2.0, 1.0));
+                mat.SetData<Texture>("albedo", Texture.Find("Cache"));
+                mat.SetData<Vector4>("color", Color256.White);
 
-            cube.Rotation = new Engine.Quaternion(-20, 45, -20);
+                model.Renderer.Mesh = mesh;
+                model.Renderer.Material = mat;
+                model.KeepRatio = true;
 
-            model.MinAnchor = new Vector2F(0.025F, 0.0F);
-            model.MaxAnchor = new Vector2F(0.075F, 1.0F);
+                //cube.Scale *= 1.2F;
+                cube.Rotation = new Engine.Quaternion(-21, 45, -20);
 
-            mat.SetData<Texture>("albedo", Texture.Find("Cache"));
-            mat.SetData<Vector4>("color", Color256.White);
+                float shift = i * 0.1093F;
+
+                model.MinAnchor = new Vector2F(0.0175F + shift, 0.0F);
+                model.MaxAnchor = new Vector2F(0.11F + shift, 1.0F);
+            }
+
+            WObject itemcursor = new WObject("Item Cursor");
+            itemcursor.Parent = bar.WObject;
+            Image itemcurs = itemcursor.AddModule<Image>();
+            itemcurs.Picture = new Texture("assets/textures/barcursor.png");
+            itemcurs.Color = new Color256(0.4, 0.4, 1.0, 1.0F);
+            itemcurs.MinAnchor = new Vector2F(0.0F, 0.0F);
+            itemcurs.MaxAnchor = new Vector2F(0.125F, 1.0F);
+            itemcurs.KeepRatio = true;
         }
+        
 
         static Color256 HorizonColourDay = new Color256(0.82D, 0.92D, 0.98D, 1.0D);
         static Color256 HorizonColourSunset = new Color256(1.0D, 0.48D, 0.0D, 1.0D);
@@ -148,8 +165,6 @@ namespace Winecrash.Client
             mr.Material.SetData<Vector4>("groundAtmosphereColour", GroundAtmosphereColour);
 
             mr.Material.SetData<float>("sunSize", 0.1F);
-
-
 
             mr.Material.SetData<Vector4>("sunInnerColor", new Color256(1.0D, 1.0D, 1.0D, 1.0D));
             mr.Material.SetData<Vector4>("sunOuterColor", new Color256(245D / 255D, 234D / 255D, 181D / 255D, 1.0D));

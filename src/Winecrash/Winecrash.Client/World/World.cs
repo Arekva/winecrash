@@ -19,8 +19,6 @@ namespace Winecrash.Client
 
         public static World Instance;
 
-        public static Mesh DebugChunkMesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront);
-
         public static List<Chunk> SpawnNextUpdate = new List<Chunk>();
 
 

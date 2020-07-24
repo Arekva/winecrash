@@ -13,12 +13,15 @@ namespace Winecrash.Engine.GUI
         public bool KeepRatio { get; set; } = false;
         public float Ratio { get; set; } = 1.0F;
 
+        public float SizeX => 1.0F;
+        public float SizeY => 1.0F;
+
 
         internal override Vector3F GlobalScale
         {
             get//GlobalScreenAnchors
             {
-                Vector3F totalExtentsScaled = new Vector3F(((Vector2F)Canvas.Main.Extents) * 2.0F, 1.0F) * this.WObject.Scale;
+                Vector3F totalExtentsScaled = new Vector3F(((Vector2F)Canvas.Main.Extents) * 2.0F, 1.0F) * (this.WObject.Scale / 2.0F);
 
 
                 float[] anchors = this.GlobalScreenAnchors;
@@ -53,6 +56,22 @@ namespace Winecrash.Engine.GUI
                 }
 
                 return sca;
+            }
+        }
+
+        public float GlobalRatio
+        {
+            get
+            {
+                if (this.WObject.Parent != null && this.WObject.Parent is IRatioKeeper keepr && keepr.KeepRatio)
+                {
+                    return keepr.GlobalRatio * Ratio;
+                }
+
+                else
+                {
+                    return Ratio;
+                }
             }
         }
 

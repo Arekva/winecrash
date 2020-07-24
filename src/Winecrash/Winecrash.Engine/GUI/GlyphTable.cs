@@ -13,9 +13,6 @@ namespace Winecrash.Engine.GUI
         public string MapPath { get; set; }
         private Glyph[] Table;
 
-        static Mesh debugMesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront);
-
-
         public Glyph this[char character]
         {
             get
