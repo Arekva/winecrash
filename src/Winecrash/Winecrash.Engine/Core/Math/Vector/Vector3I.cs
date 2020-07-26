@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using Newtonsoft.Json;
 
 namespace Winecrash.Engine
 {
+    [Serializable]
     public struct Vector3I : IComparable, IComparable<Vector3I>, IEquatable<Vector3I>, IFormattable
     {
+        [JsonIgnore]
         public int Dimensions { get; }
 
         #region Properties
@@ -17,6 +20,7 @@ namespace Winecrash.Engine
         public int Z { get; set; }
 
         #region Multi Dimensional Accessors
+        [JsonIgnore]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2I XY
         {
@@ -31,6 +35,7 @@ namespace Winecrash.Engine
                 this.Y = value.Y;
             }
         }
+        [JsonIgnore]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2I YX
         {
@@ -45,6 +50,7 @@ namespace Winecrash.Engine
                 this.X = value.Y;
             }
         }
+        [JsonIgnore]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2I YZ
         {
@@ -59,6 +65,7 @@ namespace Winecrash.Engine
                 this.Z = value.Y;
             }
         }
+        [JsonIgnore]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2I ZY
         {
@@ -73,7 +80,7 @@ namespace Winecrash.Engine
                 this.Y = value.Y;
             }
         }
-
+        [JsonIgnore]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2I XZ
         {
@@ -88,6 +95,7 @@ namespace Winecrash.Engine
                 this.Z = value.Y;
             }
         }
+        [JsonIgnore]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2I ZX
         {
@@ -193,8 +201,7 @@ namespace Winecrash.Engine
                 return new Vector3I(1);
             }
         }
-
-
+        [JsonIgnore]
         public int SquaredLength
         {
             get
@@ -202,6 +209,7 @@ namespace Winecrash.Engine
                 return this.X * this.X + this.Y * this.Y + this.Z * this.Z;
             }
         }
+        [JsonIgnore]
         public double Length
         {
             get

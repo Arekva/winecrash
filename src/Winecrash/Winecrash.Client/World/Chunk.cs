@@ -12,7 +12,7 @@ using OpenTK.Graphics.OpenGL4;
 
 using System.Diagnostics;
 
-namespace Winecrash.Client
+namespace Winecrash.Game
 {
     public class ChunkEventArgs : EventArgs
     {
@@ -168,6 +168,8 @@ namespace Winecrash.Client
         /// </summary>
         public Vector3I Position { get; internal set; }
 
+        public bool Populated { get; private set; } = false;
+
         public static Texture ChunkTexture { get; set; }
 
         public static int TexWidth;
@@ -278,7 +280,6 @@ namespace Winecrash.Client
 
         public void Tick()
         {
-            
             int chosen;
             int x, y, z;
 

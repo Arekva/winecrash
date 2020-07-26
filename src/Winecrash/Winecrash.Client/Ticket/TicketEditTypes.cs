@@ -1,4 +1,4 @@
-﻿namespace Winecrash.Client
+﻿namespace Winecrash.Game
 {
     public enum TicketEditTypes
     {

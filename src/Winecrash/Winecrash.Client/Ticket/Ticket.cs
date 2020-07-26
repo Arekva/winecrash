@@ -9,7 +9,7 @@ using Winecrash.Engine;
 using System.Threading;
 using System.Diagnostics;
 
-namespace Winecrash.Client
+namespace Winecrash.Game
 {
     public class Ticket : BaseObject, IEquatable<Ticket>
     {

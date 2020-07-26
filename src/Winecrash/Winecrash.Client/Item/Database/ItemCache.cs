@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Winecrash.Engine;
 
-namespace Winecrash.Client
+namespace Winecrash.Game
 {
     internal static class ItemCache
     {

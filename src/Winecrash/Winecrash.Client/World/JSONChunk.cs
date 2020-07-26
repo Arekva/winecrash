@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Winecrash.Client
+namespace Winecrash.Game
 {
     [Serializable]
     public class JSONChunk
     {
+        public bool Populated;
+
         public string[] Palette;
 
         public int[] Data;

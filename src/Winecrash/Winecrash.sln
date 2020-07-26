@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winecrash.Engine", "Winecrash.Engine\Winecrash.Engine.csproj", "{054FD1E0-5B69-4F51-B31C-053E3803C6E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winecrash.Client", "Winecrash.Client\Winecrash.Client.csproj", "{923EE1A4-151E-42DF-9534-D55C50CE52F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winecrash.Game", "Winecrash.Client\Winecrash.Game.csproj", "{923EE1A4-151E-42DF-9534-D55C50CE52F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,14 +31,6 @@ Global
 		{923EE1A4-151E-42DF-9534-D55C50CE52F1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{923EE1A4-151E-42DF-9534-D55C50CE52F1}.Release|x64.ActiveCfg = Release|x64
 		{923EE1A4-151E-42DF-9534-D55C50CE52F1}.Release|x64.Build.0 = Release|x64
-		{0160EB27-0A14-4DF4-A8F5-F0EB2A7D2F22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0160EB27-0A14-4DF4-A8F5-F0EB2A7D2F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0160EB27-0A14-4DF4-A8F5-F0EB2A7D2F22}.Debug|x64.ActiveCfg = Debug|x64
-		{0160EB27-0A14-4DF4-A8F5-F0EB2A7D2F22}.Debug|x64.Build.0 = Debug|x64
-		{0160EB27-0A14-4DF4-A8F5-F0EB2A7D2F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0160EB27-0A14-4DF4-A8F5-F0EB2A7D2F22}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0160EB27-0A14-4DF4-A8F5-F0EB2A7D2F22}.Release|x64.ActiveCfg = Release|x64
-		{0160EB27-0A14-4DF4-A8F5-F0EB2A7D2F22}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

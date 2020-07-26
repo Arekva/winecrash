@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 
 using LibNoise;
 
-namespace Winecrash.Client
+namespace Winecrash.Game
 {
     public static class Generator
     {
+        private static Random GeneratorRandom = new Random();
         public static ushort[] GetChunk(int x, int y, out bool generated)
         {
 #if RELEASE
@@ -27,7 +28,7 @@ namespace Winecrash.Client
             {
 #endif
             generated = true;
-            return Generate(x, y);
+            return CreateTerrain(x, y);
 
 #if RELEASE
             }
@@ -35,11 +36,42 @@ namespace Winecrash.Client
 
         }
 
-        static LibNoise.Primitive.SimplexPerlin perlin = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
+        static LibNoise.Primitive.SimplexPerlin plains = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
+        static LibNoise.Primitive.SimplexPerlin mountains = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
         static LibNoise.Primitive.ImprovedPerlin caves = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
-        static LibNoise.Primitive.ImprovedPerlin torsades = new LibNoise.Primitive.SimplexPerlin("lolol".GetHashCode(), NoiseQuality.Standard);
 
-        public static ushort[] Generate(int chunkx, int chunky, bool save = false, bool erase = false)
+        public static void Populate(ushort[] blocks, int chunkx, int chunky, bool save = false, bool erase = false)
+        {
+            string id;
+            ushort cacheindex;
+            Dictionary<ushort, string> idscache = new Dictionary<ushort, string>();
+
+            const double TreeSpawnChance = 0.01D;
+
+            for (int z = 0; z < Chunk.Depth; z++)
+            {
+                for (int y = 0; y < Chunk.Height; y++)
+                {
+                    for (int x = 0; x < Chunk.Width; x++)
+                    {
+                        cacheindex = blocks[x + Chunk.Width * y + Chunk.Width * Chunk.Height * z];
+
+                        if (!idscache.TryGetValue(cacheindex, out id))
+                        {
+                            id = ItemCache.GetIdentifier(cacheindex);
+                            idscache.Add(cacheindex, id);
+                        }
+
+                        if (id == "winecrash:grass" && GeneratorRandom.NextDouble() < TreeSpawnChance)
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+
+        public static ushort[] CreateTerrain(int chunkx, int chunky, bool save = false, bool erase = false)
         {
             ushort[] blocks = new ushort[Chunk.Width * Chunk.Height * Chunk.Depth];
 
@@ -65,15 +97,17 @@ namespace Winecrash.Client
                         const float torsadeScale = 0.1F;
                         const float torsadeThresold = 0.4F;
 
+                        int height = (int)(plains.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 15) + 60;
+                        
 
-                        int height = (int)(perlin.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 15) + 60;
 
-                        float torsadePercent = ((((torsades.GetValue((chunkx * Chunk.Width + shiftX + (float)x) * torsadeScale, y * torsadeScale, (chunky * Chunk.Depth + shiftZ + (float)z) * torsadeScale)) + 1) / 2.0F));
+
                         bool isCave = (((caves.GetValue((chunkx * Chunk.Width + shiftX + (float)x) * caveScale, y * caveScale, (chunky * Chunk.Depth + shiftZ + (float)z) * caveScale)) + 1) /2.0F) < thresold;
 
 
                         bool waterlevel = height < 64;
-                        
+
+
                         if (y == height)
                         {
                             if (waterlevel)

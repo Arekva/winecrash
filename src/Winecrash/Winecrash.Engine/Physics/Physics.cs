@@ -23,13 +23,7 @@ namespace Winecrash.Engine
                 _FixedRate = value;
             }
         }
-        /*public static bool Raycast(Ray ray, double length, out Vector3D position)
-        {
 
-        }
-        private static bool Intersects(Ray ray, AABB aabb)
-        {
 
-        }*/
     }
 }

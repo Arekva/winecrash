@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Winecrash.Engine;
 
-namespace Winecrash.Client
+namespace Winecrash.Game
 {
     public delegate void PlayerChangeChunkDelegate(Chunk chunk);
 
@@ -70,8 +70,8 @@ namespace Winecrash.Client
             "winecrash:stone",
             "winecrash:bedrock",
             "winecrash:sand",
-            "winecrash:air",
-            "winecrash:air"
+            "winecrash:leaves",
+            "winecrash:log"
         };
 
         public int SelectedIndex { get; set; } = 0;

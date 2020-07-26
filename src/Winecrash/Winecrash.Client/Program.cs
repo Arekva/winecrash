@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 
 using Winecrash.Engine.GUI;
 
-namespace Winecrash.Client
+namespace Winecrash.Game
 {
     static class Program
     {
@@ -136,6 +136,8 @@ namespace Winecrash.Client
             itemcurs.MinAnchor = new Vector2F(0.0F, 0.0F);
             itemcurs.MaxAnchor = new Vector2F(0.125F, 1.0F);
             itemcurs.KeepRatio = true;
+
+            //Structure.Load("assets/structures/test.json");
         }
         
 

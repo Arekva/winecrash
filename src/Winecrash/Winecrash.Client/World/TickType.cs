@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Winecrash.Client
+namespace Winecrash.Game
 {
     public enum TickType
     {

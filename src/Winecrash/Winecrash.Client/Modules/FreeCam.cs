@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Winecrash.Engine;
 
-namespace Winecrash.Client
+namespace Winecrash.Game
 {
     public class FreeCam : Module
     {

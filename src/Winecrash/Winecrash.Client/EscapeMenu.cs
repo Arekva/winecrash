@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Winecrash.Engine;
 using Winecrash.Engine.GUI;
 
-namespace Winecrash.Client
+namespace Winecrash.Game
 {
     public sealed class EscapeMenu : Module
     {

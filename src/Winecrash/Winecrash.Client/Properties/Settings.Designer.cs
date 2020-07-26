@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Winecrash.Client.Properties {
+namespace Winecrash.Game.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

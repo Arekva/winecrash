@@ -1,4 +1,4 @@
-﻿namespace Winecrash.Client
+﻿namespace Winecrash.Game
 {
     /// <summary>
     /// The load type of the ticket
