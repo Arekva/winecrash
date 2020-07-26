@@ -59,9 +59,9 @@ namespace Winecrash.Game
         public Chunk CurrentChunk { get; private set; }
 
         public WObject Cursor3D;
-        public WObject HitSphere;
+        //public WObject HitSphere;
 
-        public string[] debug_items = new[]
+        public static string[] debug_items = new[]
         {
             "winecrash:direction",
             "winecrash:air",
@@ -72,6 +72,20 @@ namespace Winecrash.Game
             "winecrash:sand",
             "winecrash:leaves",
             "winecrash:log"
+        };
+
+        public static Texture[] break_textures = new Texture[]
+        {
+            new Texture("assets/textures/break/break_0.png"),
+            new Texture("assets/textures/break/break_1.png"),
+            new Texture("assets/textures/break/break_2.png"),
+            new Texture("assets/textures/break/break_3.png"),
+            new Texture("assets/textures/break/break_4.png"),
+            new Texture("assets/textures/break/break_5.png"),
+            new Texture("assets/textures/break/break_6.png"),
+            new Texture("assets/textures/break/break_7.png"),
+            new Texture("assets/textures/break/break_8.png"),
+            new Texture("assets/textures/break/break_9.png")
         };
 
         public int SelectedIndex { get; set; } = 0;
@@ -93,15 +107,20 @@ namespace Winecrash.Game
             //mr.Wireframe = true;
             Cursor3D.Scale *= 1.005F;
 
-            HitSphere = new WObject("Debug hit sphere");
+            /*HitSphere = new WObject("Debug hit sphere");
             MeshRenderer hmr = HitSphere.AddModule<MeshRenderer>();
             hmr.Material = new Material(Shader.Find("Unlit"));
             hmr.Material.SetData<Vector4>("color", new Color256(0, 1, 0, 1));
             hmr.Mesh = Mesh.LoadFile("assets/models/Skysphere.obj", MeshFormats.Wavefront);
             hmr.Wireframe = true;
-            HitSphere.Scale *= 0.05F;
+            HitSphere.Scale *= 0.05F;*/
 
-            Cursor3D.Enabled = HitSphere.Enabled = false;
+            Cursor3D.Enabled /*= HitSphere.Enabled*/ = false;
+
+            for (int i = 0; i < 10; i++)
+            {
+                mr.Material.SetData<Texture>("albedo" + i, break_textures[i]);
+            }
         }
 
         private void CameraRotation()
@@ -250,18 +269,28 @@ namespace Winecrash.Game
             }
         }
 
+        public double TimeBreaking = 0.0D;
+        private Vector3I? previousFrameLPos = null;
+
         private void MainInteraction()
         {
-            Cursor3D.Enabled = HitSphere.Enabled = ViewRayHit != null;
+            Cursor3D.Enabled = /*HitSphere.Enabled =*/ ViewRayHit != null;
             if (Cursor3D.Enabled)
             {
                 Cursor3D.Position = Vector3F.One * 0.5F + (Vector3F)(ViewRayHit.Value.LocalPosition + new Vector3I(ViewRayHit.Value.Chunk.Position.X * 16, 0, ViewRayHit.Value.Chunk.Position.Y * 16));
 
-                if (Input.IsPressing(Keys.MouseLeftButton))
+                if(previousFrameLPos != ViewRayHit.Value.LocalPosition)
                 {
-                    Vector3I p = ViewRayHit.Value.LocalPosition;
-                    ViewRayHit.Value.Chunk.Edit(p.X, p.Y, p.Z, ItemCache.Get<Block>("winecrash:air"));
-                    Block.PlayerTickNeighbors(ViewRayHit.Value.Chunk, new Vector3I(p.X, p.Y, p.Z));
+                    TimeBreaking = 0.0D;
+                }
+
+                if (Input.IsPressed(Keys.MouseLeftButton))
+                {
+                    TimeBreaking += Time.DeltaTime;
+                }
+                else
+                {
+                    TimeBreaking = 0.0D;
                 }
 
                 if (Input.IsPressing(Keys.MouseRightButton))
@@ -273,7 +302,26 @@ namespace Winecrash.Game
 
                     tck?.Chunk.Edit(bpos.X, bpos.Y, bpos.Z, ItemCache.Get<Block>(debug_items[SelectedIndex]));
                 }
+
+                Cursor3D.GetModule<MeshRenderer>().Material.SetData<float>("breakPct", (float)(TimeBreaking / ViewRayHit.Value.Block.DigTime));
+
+                if(TimeBreaking >= ViewRayHit.Value.Block.DigTime)
+                {
+                    Vector3I p = ViewRayHit.Value.LocalPosition;
+                    ViewRayHit.Value.Chunk.Edit(p.X, p.Y, p.Z, ItemCache.Get<Block>("winecrash:air"));
+                    Block.PlayerTickNeighbors(ViewRayHit.Value.Chunk, new Vector3I(p.X, p.Y, p.Z));
+                }
+
+                previousFrameLPos = ViewRayHit.Value.LocalPosition;
             }
+            else
+            {
+                previousFrameLPos = null;
+                TimeBreaking = 0.0D;
+            }
+
+
+            
 
         }
 
@@ -292,11 +340,6 @@ namespace Winecrash.Game
                
 
                 World.GlobalToLocal(this.WObject.Position, out Vector3I cpos, out _);
-
-                if (Input.IsPressing(Keys.K))
-                {
-                    Ticket.CreateTicket(cpos.X, cpos.Y, 30, TicketTypes.Player, TicketPreviousDirection.None);
-                }
 
                 Ticket tck = Ticket.GetTicket(cpos.XY);
 
@@ -349,7 +392,7 @@ namespace Winecrash.Game
 
                 if (SelectedIndex < 0) SelectedIndex += 9;
                 else if (SelectedIndex > 8) SelectedIndex -= 9;
-                
+
 
                 Engine.GUI.Image img = WObject.Find("Item Cursor").GetModule<Engine.GUI.Image>();
 

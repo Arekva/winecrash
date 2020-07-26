@@ -23,7 +23,5 @@ namespace Winecrash.Engine
                 _FixedRate = value;
             }
         }
-
-
     }
 }

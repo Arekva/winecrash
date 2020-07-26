@@ -95,7 +95,7 @@ namespace Winecrash.Game
             bar.MaxAnchor = new Vector2F(0.65F, 0.08F);
             bar.Color = new Color256(1.0, 1.0, 1.0, 0.8F);
             
-            Mesh mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront);
+            Mesh mesh = Mesh.LoadFile("assets/models/BlockCube.obj", MeshFormats.Wavefront);
             for (int i = 0; i < ItemCache.TotalItems; i++)
             {
                 Cube item = ItemCache.Get<Cube>(i);

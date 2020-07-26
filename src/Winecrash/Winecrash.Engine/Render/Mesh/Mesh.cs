@@ -148,6 +148,9 @@ namespace Winecrash.Engine
 
             Viewport.DoOnceRender += () =>
             {
+                //already altered by another mesh build.
+                if (Vertex == null) return;
+
                 if (VertexArrayObject == -1)
                 {
                     VertexBufferObject = GL.GenBuffer();

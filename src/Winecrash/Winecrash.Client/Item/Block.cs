@@ -11,6 +11,8 @@ namespace Winecrash.Game
     {
         public bool Transparent { get; set; } = false;
 
+        public double DigTime { get; set; } = 1.0D;
+
         public void Tick(TickType type, Chunk chunk, Vector3I position) 
         {
             switch(type)
@@ -25,15 +27,9 @@ namespace Winecrash.Game
             }
         }
 
-        protected virtual void WorldTick(Chunk chunk, Vector3I position)
-        {
+        protected virtual void WorldTick(Chunk chunk, Vector3I position) { }
 
-        }
-
-        protected virtual void BlockTick(Chunk chunk, Vector3I position)
-        {
-
-        }
+        protected virtual void BlockTick(Chunk chunk, Vector3I position) { }
 
         public static void PlayerTickNeighbors(Chunk chunk, Vector3I position)
         {
