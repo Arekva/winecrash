@@ -11,7 +11,7 @@ uniform vec4 color;
 uniform float minLight;
 uniform float maxLight;
 
-layout (std430, binding=10) buffer chunk_lights
+/*layout (std430, binding=10) buffer chunk_lights
 {
     uint lights[8192];
 };
@@ -34,7 +34,7 @@ layout (std430, binding=13) buffer east_chunk_lights
 layout (std430, binding=14) buffer west_chunk_lights
 {
     uint west_lights[8192];
-};
+};*/
 
 #define CHUNK_WIDTH 16
 #define CHUNK_HEIGHT 256
@@ -49,7 +49,7 @@ layout (std430, binding=14) buffer west_chunk_lights
 
 #define LIGHT_PACK_SIZE (UINT_SIZE/LIGHT_DATA_SIZE)
 
-uint getLightLevel(int x, int y, int z)
+/*uint getLightLevel(int x, int y, int z)
 {
     bool north = false;
     bool south = false;
@@ -141,7 +141,7 @@ uint getLightLevel(int x, int y, int z)
 float getLight(float x, float y, float z)
 {
     return float(getLightLevel(int(x), int(y), int(z)));
-}
+}*/
 
 float remap(float value, float low1, float high1, float low2, float high2)
 {
@@ -157,7 +157,7 @@ void main()
     if(blockpos.y < 0) blockpos.y -= 1;
     if(blockpos.z < 0) blockpos.z -= 1;
     
-    float light = getLight(blockpos.x, blockpos.y, blockpos.z);
+    float light = 15;//getLight(blockpos.x, blockpos.y, blockpos.z);
 
     float alpha = (diffuse * color).w;
     outputColor = vec4(diffuse.xyz, 1.0) * color * remap(light, 0.0, LIGHT_MAX_LEVEL, minLight, maxLight);//getLight(0,0,0);

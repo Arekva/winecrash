@@ -21,7 +21,7 @@ namespace Winecrash.Engine.GUI
 
         internal override void Use(Camera sender)
         {
-			if (Deleted || Material == null || _Mesh == null || _Mesh.Indices == null || _Mesh.ElementBufferObject == -1 || _Mesh.VertexArrayObject == -1 || _Mesh.VertexBufferObject == -1) return;
+			if (CheckValidity(sender)) return;
 
 			Vector3F tra = this.Model.GlobalPosition;
 			Quaternion rot = this.Model.WObject.Rotation;

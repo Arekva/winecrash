@@ -77,7 +77,6 @@ namespace Winecrash.Engine
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearDepth(1.0D);
 
-
             object obj = new object();
 
             ViewportDoOnceDelegate once = DoOnceRender;
@@ -98,32 +97,22 @@ namespace Winecrash.Engine
 
         protected override void OnUnload(EventArgs e)
         {
-            /*GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindVertexArray(0);
-            GL.UseProgram(0);*/
-
-            //GL.DeleteBuffer(_VertexBufferObject);
-            //GL.DeleteVertexArray(_VertexArrayObject);
-
-            MeshRenderer[] renderers = MeshRenderer.MeshRenderers.ToArray();
-            if (renderers != null)
-                for (int i = 0; i < renderers.Length; i++)
-                    if (renderers[i] != null)
-                        renderers[i].Delete();
+            Mesh[] meshes = Mesh.Cache.ToArray();
+            if (meshes != null)
+                for (int i = 0; i < meshes.Length; i++)
+                    meshes[i]?.Delete();
 
             
             Shader[] shaders = Shader.Cache.ToArray();
             if(shaders != null)
                 for (int i = 0; i < shaders.Length; i++)
-                    if (shaders[i] != null)
-                        shaders[i].Delete();
+                    shaders[i]?.Delete();
             
             Texture[] textures = Texture.Cache.ToArray();
 
             if (textures != null)
                 for (int i = 0; i < textures.Length; i++)
-                    if (textures[i] != null)
-                        textures[i].Delete();
+                    textures[i]?.Delete();
 
             base.OnUnload(e);
         }
@@ -146,10 +135,6 @@ namespace Winecrash.Engine
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            /*try
-            {*/
-            object obj = new object();
-
             ViewportDoOnceDelegate once = DoOnce;
             once?.Invoke();
             DoOnce -= once;
@@ -163,10 +148,7 @@ namespace Winecrash.Engine
 
             this._PreviousState = ms;
 
-
             Update?.Invoke(new UpdateEventArgs(e.Time));
-
-            //GC.Collect();
 
             base.OnUpdateFrame(e);
         }

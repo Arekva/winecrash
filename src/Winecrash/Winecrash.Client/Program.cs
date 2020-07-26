@@ -119,7 +119,7 @@ namespace Winecrash.Client
                 model.Renderer.Material = mat;
                 model.KeepRatio = true;
 
-                //cube.Scale *= 1.2F;
+                cube.Scale *= 1.1F;
                 cube.Rotation = new Engine.Quaternion(-21, 45, -20);
 
                 float shift = i * 0.1093F;

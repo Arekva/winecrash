@@ -18,7 +18,7 @@
         },
         {
             "Identifier": "winecrash:dirt",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Client.Dirt, Winecrash",
             "Path": "assets/items/dirt.json"
         },
         {
@@ -31,8 +31,6 @@
             "RuntimeType": "Winecrash.Client.Cube, Winecrash",
             "Path": "assets/items/bedrock.json"
         },
-        
-
         {
             "Identifier": "winecrash:sand",
             "RuntimeType": "Winecrash.Client.Cube, Winecrash",

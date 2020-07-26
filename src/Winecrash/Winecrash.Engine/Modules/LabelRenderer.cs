@@ -22,8 +22,8 @@ namespace Winecrash.Engine.GUI
 
         internal override void Use(Camera sender)
         {
-            if (Deleted || Label == null || Material == null) return;
-
+            // if (CheckValidity(sender)) return;
+            if (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0 || Deleted || Label == null || Material == null) return;
             Glyph[] glyphs = Label.FontFamilly.Glyphs[Label.Text];
 
             Matrix4 transform;
@@ -46,6 +46,8 @@ namespace Winecrash.Engine.GUI
             float glyphratio;
 
             Vector3F trans;
+
+            
 
             for (int i = 0; i < glyphs.Length; i++)
             {
@@ -89,12 +91,11 @@ namespace Winecrash.Engine.GUI
                 GL.BindVertexArray(meshes[i].VertexArrayObject);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, meshes[i].VertexBufferObject);
 
-                this.Material.Shader.SetAttribute("position", AttributeTypes.Vertice);
-                this.Material.Shader.SetAttribute("uv", AttributeTypes.UV);
-                this.Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
+                //this.Material.Shader.SetAttribute("position", AttributeTypes.Vertice);
+                //this.Material.Shader.SetAttribute("uv", AttributeTypes.UV);
+                //this.Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
 
                 this.Material.SetData<Matrix4>("transform", transform);
-
                 this.Material.Use();
 
                 GL.Enable(EnableCap.DepthTest);

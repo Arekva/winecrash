@@ -63,7 +63,9 @@ namespace Winecrash.Engine.GUI
 				_Panel.ApplySafe(true);
 			}
 
-			if (Deleted || Image == null || Material == null) return;
+			//if (!CheckValidity(sender)) return;
+			if (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0 || Deleted || Image == null || Material == null) return;
+
 
 			Vector3F tra = this.Image.GlobalPosition;
 			Quaternion rot = this.Image.WObject.Rotation;
@@ -79,9 +81,9 @@ namespace Winecrash.Engine.GUI
 			GL.BindVertexArray(_Panel.VertexArrayObject);
 			GL.BindBuffer(BufferTarget.ArrayBuffer, _Panel.VertexBufferObject);
 
-			this.Material.Shader.SetAttribute("position", AttributeTypes.Vertice);
-			this.Material.Shader.SetAttribute("uv", AttributeTypes.UV);
-			this.Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
+			//this.Material.Shader.SetAttribute("position", AttributeTypes.Vertice);
+			//this.Material.Shader.SetAttribute("uv", AttributeTypes.UV);
+			//this.Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
 
 			this.Material.SetData<Matrix4>("transform", transform);
 			this.Material.Use();

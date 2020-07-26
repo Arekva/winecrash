@@ -52,7 +52,7 @@ namespace Winecrash.Client
 
         public Vector3F CameraShift = new Vector3F(0, 0.7F, 0);
 
-        public RaycastChunkHit? ViewRayHit = null;
+        public RaycastChunkHit? ViewRayHit { get; set; } = null;
 
         public double HitRange = 4.5D;
 
@@ -60,6 +60,21 @@ namespace Winecrash.Client
 
         public WObject Cursor3D;
         public WObject HitSphere;
+
+        public string[] debug_items = new[]
+        {
+            "winecrash:direction",
+            "winecrash:air",
+            "winecrash:grass",
+            "winecrash:dirt",
+            "winecrash:stone",
+            "winecrash:bedrock",
+            "winecrash:sand",
+            "winecrash:air",
+            "winecrash:air"
+        };
+
+        public int SelectedIndex { get; set; } = 0;
 
         protected override void Creation()
         {
@@ -254,13 +269,9 @@ namespace Winecrash.Client
                     Vector3F normal = ViewRayHit.Value.Normal;
 
                     World.GlobalToLocal(ViewRayHit.Value.GlobalPosition + normal, out Vector3I cpos, out Vector3I bpos);
+                    Ticket tck = Ticket.GetTicket(new Vector2I(cpos.X, cpos.Y));
 
-                    /*if (bpos.X != Math.Round(this._Bc.WObject.Position.X) && bpos.Y != Math.Round(this._Bc.WObject.Position.Y) - 2.8 && bpos.Y != Math.Round(this._Bc.WObject.Position.Y) && bpos.Z != Math.Round(this._Bc.WObject.Position.Z))
-                    {*/
-                        Ticket tck = Ticket.GetTicket(new Vector2I(cpos.X, cpos.Y));
-
-                        tck?.Chunk.Edit(bpos.X, bpos.Y, bpos.Z, ItemCache.Get<Block>("winecrash:stone"));
-                    //}
+                    tck?.Chunk.Edit(bpos.X, bpos.Y, bpos.Z, ItemCache.Get<Block>(debug_items[SelectedIndex]));
                 }
             }
 
@@ -273,10 +284,10 @@ namespace Winecrash.Client
                 this._Rb.UseGravity = false;
                 this._Rb.Velocity = Vector3D.Zero;
 
-                if (Input.IsPressing(Keys.MouseMiddleButton))
+                /*if (Input.IsPressing(Keys.MouseMiddleButton))
                 {
                     this.WObject.Position += Vector3F.Left * 12_550_821;
-                }
+                }*/
 
                
 
@@ -297,7 +308,6 @@ namespace Winecrash.Client
                     {
                         if (previousChunk != null && (previousChunk != c))
                         {
-                            Debug.Log("chunk changed to " + c.Position);
                             OnChangeChunk?.Invoke(c);
                         }
                     }
@@ -332,6 +342,22 @@ namespace Winecrash.Client
         }
         protected override void Update()
         {
+            int scroll = (int)Input.MouseScrollDelta;
+            if (!FreeCam.FreeCTRL && scroll != 0.0D)
+            {
+                SelectedIndex -= (int)Input.MouseScrollDelta;
+
+                if (SelectedIndex < 0) SelectedIndex += 9;
+                else if (SelectedIndex > 8) SelectedIndex -= 9;
+                
+
+                Engine.GUI.Image img = WObject.Find("Item Cursor").GetModule<Engine.GUI.Image>();
+
+                const float shift = 0.1093F;
+
+                img.MinAnchor = new Vector2F(SelectedIndex * shift, 0.0F);
+                img.MaxAnchor = new Vector2F(0.125F + SelectedIndex * shift, 1.0F);
+            }
             
 
             //if (!FreeCam.FreeCTRL)
@@ -358,12 +384,10 @@ namespace Winecrash.Client
 
             if (Input.IsPressed(Keys.F3) && Input.IsPressing(Keys.A))
             {
-                Debug.Log("Reconstructing");
-                Debug.Log(Chunk.Chunks.Count);
-                Debug.Log("Total Light size: " + (Chunk.Chunks.Count * sizeof(uint) * 8192));
+                Debug.Log("Reconstructing " + Chunk.Chunks.Count + " chunks");
                 foreach (Chunk chunk in Chunk.Chunks)
                 {
-                    Task.Run(chunk.Construct);
+                    chunk.BuildEndFrame = true;
                 }
             }
         }

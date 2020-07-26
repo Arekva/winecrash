@@ -29,25 +29,25 @@ namespace Winecrash.Client
     public class Chunk : Module
     {
 
-#region Constants
+        #region Constants
         public const int Width = 16;
         public const int Height = 256;
         public const int Depth = 16;
 
         public const int TotalBlocks = Width * Height * Depth;
-#endregion
+        #endregion
 
-#region Blocks Getters/Setters
+        #region Blocks Getters/Setters
         public Block this[int x, int y, int z]
         {
             get
             {
-                return this.GetBlock(x,y,z);
+                return this.GetBlock(x, y, z);
             }
 
             set
             {
-                this.SetBlock(x,y,z, value);
+                this.SetBlock(x, y, z, value);
             }
         }
 
@@ -95,7 +95,7 @@ namespace Winecrash.Client
             level = WMath.Clamp(level, 0u, 15u);
 
             int baseFullIndex = x + Chunk.Width * y + Chunk.Width * Chunk.Height * z;
-            
+
             int basePackedIndex = baseFullIndex / LightPackSize;
             int shiftPackedIndex = baseFullIndex % LightPackSize;
 
@@ -104,6 +104,14 @@ namespace Winecrash.Client
 
         public uint GetLightLevel(int x, int y, int z)
         {
+            if (y > Height - 1)
+            {
+                return 0XF;
+            }
+            else if (y < 0)
+            {
+                return 0X0;
+            }
             int baseFullIndex = x + Chunk.Width * y + Chunk.Width * Chunk.Height * z;
 
             int basePackedIndex = baseFullIndex / LightPackSize;
@@ -165,7 +173,7 @@ namespace Winecrash.Client
         public static int TexWidth;
         public static int TexHeight;
 
-#region Neighbors
+        #region Neighbors
         /// <summary>
         /// Northern neighbor chunk
         /// </summary>
@@ -182,14 +190,14 @@ namespace Winecrash.Client
         /// Western neighbor chunk
         /// </summary>
         public Chunk WestNeighbor { get; internal set; } = null;
-#endregion
+        #endregion
 
         /// <summary>
         /// All the chunks loaded into the game.
         /// </summary>
         public static List<Chunk> Chunks { get; private set; } = new List<Chunk>(1000);
 
-#region Loading Properties
+        #region Loading Properties
         /// <summary>
         /// The maximum chunk loading rate, in number of chunks at once.
         /// </summary>
@@ -202,13 +210,20 @@ namespace Winecrash.Client
         /// The amount of chunks waiting to be loaded.
         /// </summary>
         public static int LoadWait { get; private set; } = 0;
-#endregion
+        #endregion
 
         /// <summary>
         /// The renderer of this chunk.
         /// </summary>
         public MeshRenderer Renderer { get; private set; } = null;
         public bool Constructing { get; private set; } = false;
+
+        private bool _ConstructedOnce = false;
+        public bool ForceNextConstruct = false;
+
+        public bool TickEndFrame {get; set;}= false;
+
+        public static Material ChunkMaterial;
 
 
 #region Events
@@ -263,14 +278,15 @@ namespace Winecrash.Client
 
         public void Tick()
         {
+            
             int chosen;
             int x, y, z;
 
-            for (int i = 0; i < Chunk.TotalBlocks; i += Chunk.TotalBlocks / 16)
+            for (int i = 0; i < 16; i ++)
             {
                 for (int j = 0; j < World.RandomTickSpeed; j++)
                 {
-                    chosen = World.WorldRandom.Next(i, TotalBlocks);
+                    chosen = World.WorldRandom.Next(4096 + i * 4096);
 
                     x = chosen % Width;
                     y = (chosen / Width) % Height;
@@ -337,21 +353,27 @@ namespace Winecrash.Client
             AnyChunkCreated += OnAnyChunkCreated;
             AnyChunkDeleted += OnAnyChunkDeleted;
 
+            if(ChunkMaterial == null)
+            {
+                ChunkMaterial = new Material(Shader.Find("Chunk"));
+                ChunkMaterial.SetData<Texture>("albedo", Chunk.ChunkTexture);
+                ChunkMaterial.SetData<Vector4>("color", new Color256(1, 1, 1, 1));
+
+                ChunkMaterial.SetData<float>("minLight", 0.1F);
+                ChunkMaterial.SetData<float>("maxLight", 1.0F);
+            }
+
             MeshRenderer mr = this.Renderer = this.WObject.AddOrGetModule<MeshRenderer>();
+            mr.Material = ChunkMaterial;
 
-            mr.Material = new Material(Shader.Find("Chunk"));
-            mr.Material.SetData<Texture>("albedo", Chunk.ChunkTexture);
-            mr.Material.SetData<Vector4>("color", new Color256(1, 1, 1, 1));
+            
 
-            mr.Material.SetData<float>("minLight", 0.1F);
-            mr.Material.SetData<float>("maxLight", 1.0F);
-
-            Viewport.DoOnce += () =>
+            /*Viewport.DoOnce += () =>
             {
                 lightSSBO = GL.GenBuffer();
-            };
-
-            this.Renderer.OnRender += () =>
+            };*/
+            
+            /*this.Renderer.OnRender += () =>
             {
                 if (lightSSBO == -1) return;
 
@@ -417,7 +439,7 @@ namespace Winecrash.Client
                     }
                 }
             };
-
+            */
             Chunks.Add(this);
         }
         protected override void Start()
@@ -440,10 +462,20 @@ namespace Winecrash.Client
 
         protected override void LateUpdate()
         {
-            if(BuildEndFrame)
+            if((ForceNextConstruct || _ConstructedOnce ) && BuildEndFrame)
             {
+                ForceNextConstruct = false;
                 BuildEndFrame = false;
-                Construct();
+                //Task.Run(GenerateLights);
+                Task.Run(Construct);
+            }
+
+            if(TickEndFrame)
+            {
+                //Engine.Debug.Log("tick");
+                TickEndFrame = false;
+
+                this.Tick();
             }
         }
         #endregion
@@ -588,6 +620,7 @@ namespace Winecrash.Client
 #endif
 
         }
+
         private void PrivateEdit(int x, int y, int z, Block b = null)
         {
             if (b == null) b = ItemCache.Get<Block>("winecrash:air");
@@ -616,8 +649,6 @@ namespace Winecrash.Client
         }
         public void Construct()
         {
-            GenerateLights();
-
             if (!NorthNeighbor)
             {
                 NorthNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Up)?.Chunk;
@@ -634,8 +665,6 @@ namespace Winecrash.Client
             {
                 EastNeighbor = Ticket.GetTicket(this.Position.XY + Vector2I.Right)?.Chunk;
             }
-
-
 
             cwest = this.WestNeighbor != null;
             ceast = this.EastNeighbor != null;
@@ -665,7 +694,6 @@ namespace Winecrash.Client
                 {
                     for (int x = 0; x < Width; x++)
                     {
-
                         index = this._Blocks[x + Width * y + Width * Height * z];
 
                         if (!blocks.TryGetValue(index, out block))
@@ -725,6 +753,10 @@ namespace Winecrash.Client
 
             cwest = ceast = cnorth = csouth = false;
 
+            if(!_ConstructedOnce)
+            {
+                Viewport.DoOnceRender += () => _ConstructedOnce = true;
+            }
         }
 
 

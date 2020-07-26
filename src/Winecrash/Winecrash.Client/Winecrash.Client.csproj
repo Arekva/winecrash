@@ -58,7 +58,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -94,6 +95,7 @@
     <Compile Include="Item\BlockFaces.cs" />
     <Compile Include="Item\Database\Database.cs" />
     <Compile Include="Item\Database\ItemDB.cs" />
+    <Compile Include="Item\Dirt.cs" />
     <Compile Include="Item\Grass.cs" />
     <Compile Include="Item\TexturePaths.cs" />
     <Compile Include="Modules\DayNightCycle.cs" />

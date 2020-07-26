@@ -86,7 +86,7 @@ namespace Winecrash.Engine
 
             Thread = new Thread(Update)
             {
-                Priority = ThreadPriority.AboveNormal,
+                Priority = ThreadPriority.Highest,
                 IsBackground = true,
                 Name = this._Name + " Thread"
             };

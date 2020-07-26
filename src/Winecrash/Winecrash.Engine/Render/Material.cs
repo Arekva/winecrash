@@ -9,9 +9,11 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Winecrash.Engine
 {
+    public delegate void MaterialUseDelegate(Camera camera);
     public sealed class Material : BaseObject
     {
         private Shader _Shader;
+
         public Shader Shader
         {
             get
@@ -27,10 +29,10 @@ namespace Winecrash.Engine
         }
 
         public Material(Shader shader) : base()
-        {
+        { 
             Cache.Add(this);
 
-            if(shader == null)
+            if (shader == null)
             {
                 Debug.LogError("Material from null shader.");
             }
@@ -49,6 +51,7 @@ namespace Winecrash.Engine
             public int Location { get; }
             public object Data { get; set; }
             public ActiveUniformType GLType { get; }
+            public bool NeedUpdate { get; set; }
 
             public MaterialData(string name, int location, object data, ActiveUniformType type)
             {
@@ -56,6 +59,7 @@ namespace Winecrash.Engine
                 this.Data = data;
                 this.GLType = type;
                 this.Location = location;
+                NeedUpdate = true;
             }
         }
 
@@ -65,8 +69,7 @@ namespace Winecrash.Engine
 
         public static Material Find(string name)
         {
-            return Cache.First(mat => mat.Name == name);
-            //return Mater
+            return Cache.FirstOrDefault(mat => mat.Name == name);
         }
 
         internal void Use()
@@ -76,65 +79,83 @@ namespace Winecrash.Engine
             //set the lights
             DirectionalLight main = DirectionalLight.Main;
             if(main != null)
-            {
-                
+            {  
                 this.SetData<Vector4>("mainLightColor", main.Color);
                 this.SetData<Vector3>("mainLightDirection", -main.WObject.Forward);
                 this.SetData<Vector4>("mainLightAmbiant", main.Ambient);
             }
-            
-
 
             int texCount = 0;
             for (int i = 0; i < _Data.Length; i++)
             {
                 MaterialData data = _Data[i];
 
-                switch (data.GLType) //if texture
+                /*if(data.GLType == ActiveUniformType.Sampler2D)
+                    //always update
                 {
-                    case ActiveUniformType.Sampler2D:
-                        {
-                            const string textureEnumText = "Texture";
+                    const string textureEnumText = "Texture";
 
-                            ((Texture)data.Data).Use((TextureUnit)Enum.Parse(typeof(TextureUnit), textureEnumText + texCount));
-                            this.SetInt(data.Location, texCount);
+                    ((Texture)data.Data).Use((TextureUnit)Enum.Parse(typeof(TextureUnit), textureEnumText + texCount));
+                    this.SetInt(data.Location, texCount);
 
-                            texCount++;
-                            break;
-                        }
-
-                    case ActiveUniformType.Double:
-                        this.SetDouble(data.Location, (double)data.Data);
-                        break;
-                    case ActiveUniformType.Float:
-                        this.SetFloat(data.Location, (float)data.Data);
-                        break;
-                    case ActiveUniformType.Int:
-                        {
-                            if (data.GetType() == typeof(int[]))
-                            {
-                                this.SetIntArray(data.Location, (int[])data.Data);
-                            }
-
-                            else
-                            {
-                                this.SetInt(data.Location, (int)data.Data);
-                            }
-                        }
-                        break;
-                    case ActiveUniformType.FloatVec4:
-                        this.SetVector4(data.Location, (Vector4)data.Data);
-                        break;
-                    case ActiveUniformType.FloatVec2:
-                        this.SetVector2(data.Location, (Vector2)data.Data);
-                        break;
-                    case ActiveUniformType.FloatVec3:
-                        this.SetVector3(data.Location, (Vector3)data.Data);
-                        break;
-                    case ActiveUniformType.FloatMat4:
-                        this.SetMatrix4(data.Location, (Matrix4)data.Data);
-                        break;
+                    texCount++;
                 }
+
+                else if (data.NeedUpdate)
+                {
+                    data.NeedUpdate = false;*/
+                    SetGLData(ref data, ref texCount);
+                //}
+            }
+        }
+
+
+        private void SetGLData(ref MaterialData data, ref int texCount)
+        {
+            switch (data.GLType) //if texture
+            {
+                case ActiveUniformType.Sampler2D:
+                    {
+                        const string textureEnumText = "Texture";
+
+                        ((Texture)data.Data).Use((TextureUnit)Enum.Parse(typeof(TextureUnit), textureEnumText + texCount));
+                        this.SetInt(data.Location, texCount);
+
+                        texCount++;
+                        break;
+                    }
+
+                case ActiveUniformType.Double:
+                    this.SetDouble(data.Location, (double)data.Data);
+                    break;
+                case ActiveUniformType.Float:
+                    this.SetFloat(data.Location, (float)data.Data);
+                    break;
+                case ActiveUniformType.Int:
+                    {
+                        if (data.GetType() == typeof(int[]))
+                        {
+                            this.SetIntArray(data.Location, (int[])data.Data);
+                        }
+
+                        else
+                        {
+                            this.SetInt(data.Location, (int)data.Data);
+                        }
+                    }
+                    break;
+                case ActiveUniformType.FloatVec4:
+                    this.SetVector4(data.Location, (Vector4)data.Data);
+                    break;
+                case ActiveUniformType.FloatVec2:
+                    this.SetVector2(data.Location, (Vector2)data.Data);
+                    break;
+                case ActiveUniformType.FloatVec3:
+                    this.SetVector3(data.Location, (Vector3)data.Data);
+                    break;
+                case ActiveUniformType.FloatMat4:
+                    this.SetMatrix4(data.Location, (Matrix4)data.Data);
+                    break;
             }
         }
 
@@ -194,10 +215,37 @@ namespace Winecrash.Engine
             this.Shader = null;
             this._Data = null;
             Cache.Remove(this);
-
             base.Delete();
         }
 
+        internal void SetDataFast<T>(string name, T data)
+        {
+            if (this.Deleted) return;
+            if (data == null)
+            {
+                Debug.LogWarning($"Null data is set to \"{this.Name}:{name}\"");
+                return;
+            }
+
+            MaterialData matdata = null;
+
+            for (int i = 0; i < this._Data.Length; i++)
+            {
+                if (this._Data[i].Name == name)
+                {
+                    matdata = this._Data[i];
+                    break;
+                }
+            }
+
+            if (matdata != null && data.GetType() == matdata.Data.GetType())
+            {
+                //Texture previous = matdata.Data;
+                matdata.Data = data;
+                int i = 0;
+                SetGLData(ref matdata,ref i);
+            }
+        }
         public void SetData<T>(string name, T data)
         {
             if (this.Deleted) return;
@@ -220,8 +268,8 @@ namespace Winecrash.Engine
 
             if (matdata != null && data.GetType() == matdata.Data.GetType())
             {
-                    //Texture previous = matdata.Data;
-                    matdata.Data = data;
+                matdata.NeedUpdate = true;
+                matdata.Data = data;
             }
         }
 

@@ -34,32 +34,34 @@ namespace Winecrash.Engine
         internal static List<MeshRenderer> ActiveMeshRenderers { get; set; } = new List<MeshRenderer>();
         internal static List<MeshRenderer> MeshRenderers { get; set; } = new List<MeshRenderer>();
 
-        public event MeshRenderDelegate OnRender;
+        //public event MeshRenderDelegate OnRender;
 
         public bool UseMask { get; set; } = true;
         public bool Wireframe { get; set; } = false;
 
+        protected bool CheckValidity(Camera sender)
+        {
+            return (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0) || Deleted || Material == null || _Mesh == null  || _Mesh.ElementBufferObject == -1 || _Mesh.VertexArrayObject == -1 || _Mesh.VertexBufferObject == -1;
+        }
+
         internal virtual void Use(Camera sender)
         {
-            if (Deleted || Material == null || _Mesh == null || _Mesh.Indices == null || _Mesh.ElementBufferObject == -1 || _Mesh.VertexArrayObject == -1 || _Mesh.VertexBufferObject == -1) return;
-
+            if (CheckValidity(sender)) return;
+            
             Matrix4 transform = this.WObject.TransformMatrix * sender.ViewMatrix * sender.ProjectionMatrix;
 
             GL.BindVertexArray(_Mesh.VertexArrayObject);
             GL.BindBuffer(BufferTarget.ArrayBuffer, _Mesh.VertexBufferObject);
 
-            this.Material.Shader.SetAttribute("position", AttributeTypes.Vertice);
-            this.Material.Shader.SetAttribute("uv", AttributeTypes.UV);
-            this.Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
-
             this.Material.SetData<Matrix4>("transform", transform);
 
             this.Material.Use();
 
+
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(UseMask);
 
-            OnRender?.Invoke();
+            //OnRender?.Invoke();
 
             GL.DrawElements(Wireframe ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)_Mesh.Indices, DrawElementsType.UnsignedInt, 0);
         }
@@ -75,7 +77,8 @@ namespace Winecrash.Engine
 
         protected internal override void OnEnable()
         {
-            lock(ActiveMeshRenderers)
+            object obj = new object();
+            lock(obj)
             {
                 ActiveMeshRenderers.Add(this);
             }
@@ -83,7 +86,8 @@ namespace Winecrash.Engine
 
         protected internal override void OnDisable()
         {
-            lock(ActiveMeshRenderers)
+            object obj = new object();
+            lock (obj)
             {
                 ActiveMeshRenderers.Remove(this);
             }
@@ -91,8 +95,10 @@ namespace Winecrash.Engine
 
         protected internal override void OnDelete()
         {
-            lock(ActiveMeshRenderers)
+            object obj = new object();
+            lock(obj)
             {
+                Material = null;
                 MeshRenderers.Remove(this);
                 ActiveMeshRenderers.Remove(this);
             }

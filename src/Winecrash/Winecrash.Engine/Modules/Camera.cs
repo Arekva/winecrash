@@ -139,16 +139,8 @@ namespace Winecrash.Engine
 
         protected internal override void OnRender()
         {
-            Matrix4 view = this.ViewMatrix;
-            Matrix4 proj = this.ProjectionMatrix;
+            MeshRenderer[] mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
 
-            MeshRenderer[] mrs = /*null;
-
-            object obj = new object();
-            lock(obj)
-            {
-                mrs = */MeshRenderer.ActiveMeshRenderers.ToArray();
-            //}
             foreach (MeshRenderer mr in mrs.Where(mr => (mr.WObject.Layer & this.RenderLayers) != 0))
             {
                 mr.Use(this);

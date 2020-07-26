@@ -16,10 +16,12 @@ namespace Winecrash.Engine
     {
         public Mesh() : base() 
         {
+            Cache.Add(this);
         }
 
         public Mesh(string name) : base(name) 
         {
+            Cache.Add(this);
         }
 
         public Mesh(Mesh original) : base()
@@ -30,7 +32,8 @@ namespace Winecrash.Engine
             this.Tangents = original.Tangents;
             this.Normals = original.Normals;
 
-            
+            Cache.Add(this);
+
 
             this.Apply(true);
         }
@@ -51,6 +54,8 @@ namespace Winecrash.Engine
         public delegate void MeshDeleteDelegate();
 
         public event MeshDeleteDelegate OnDelete;
+
+        internal static List<Mesh> Cache = new List<Mesh>();
 
         internal void ApplySafe(bool deleteWorkArrays)
         {
@@ -212,6 +217,8 @@ namespace Winecrash.Engine
 
             OnDelete?.Invoke();
             OnDelete = null;
+
+            Cache.Remove(this);
 
             base.Delete();
         }

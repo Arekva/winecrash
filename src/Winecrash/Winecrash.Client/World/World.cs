@@ -12,7 +12,7 @@ namespace Winecrash.Client
 {
     class World : Module
     {
-        public static Random WorldRandom = new Random();
+        public static WRandom WorldRandom = new WRandom();
         public static int Seed { get; private set; }
         public static uint StartRadius = 37 - 22;
         public const uint StartLevel = 22;
@@ -20,8 +20,6 @@ namespace Winecrash.Client
         public static World Instance;
 
         public static List<Chunk> SpawnNextUpdate = new List<Chunk>();
-
-
 
         public static double TickTime = 1D / 20D;
         private static double TimeSinceLastTick = 0.0D;
@@ -63,24 +61,36 @@ namespace Winecrash.Client
             worldGenerationThread.Start();
         }
 
+        /*internal static void Tick()
+        {
+            Engine.Debug.Log("Tick");
+            Ticket[] tickets = Ticket._Tickets.Where(t => t.Level < Ticket.TickingLevel).ToArray();
+
+            for (int i = 0; i < tickets.Length; i++)
+            {
+                tickets[i].Chunk.TickEndFrame = true;
+            }
+        }*/
+
         protected override void Update()
         {
             if(TimeSinceLastTick >= TickTime)
             {
+                //Engine.Debug.Log("Time since last tick " + TimeSinceLastTick*1000 + " ms");
                 object obj = new object();
 
                 Ticket[] tickets;
                 TickWaitItem[] twi;
                 lock (obj)
                 {
-                    tickets = Ticket._Tickets.ToArray();
+                    tickets = Ticket._Tickets/*.Where(t => t.Level < Ticket.TickingLevel)*/.ToArray();
                     twi = TickOnNextTick.ToArray();
                     TickOnNextTick.Clear();
                 }
 
                 for (int i = 0; i < tickets.Length; i++)
                 {
-                    tickets[i].Chunk.Tick();
+                    tickets[i].Chunk.TickEndFrame = true;
                 }
 
                 for (int i = 0; i < twi.Length; i++)
@@ -92,16 +102,6 @@ namespace Winecrash.Client
             }
 
             TimeSinceLastTick += Time.DeltaTime;
-        }
-
-        internal static void Tick()
-        {
-            Ticket[] tickets = Ticket._Tickets.ToArray();
-
-            for (int i = 0; i < tickets.Length; i++)
-            {
-                tickets[i].Tick();
-            }
         }
 
         protected override void OnDelete()
@@ -128,6 +128,18 @@ namespace Winecrash.Client
             if (localZ < 0) localZ += Chunk.Depth;
 
             LocalPosition = new Vector3I((int)localX, WMath.Clamp((int)global.Y, 0, 255), (int)localZ);
+        }
+
+        public static Vector3I LocalToGlobal(Vector2I chunk, Vector3I block)
+        {
+            return new Vector3I(chunk.X * Chunk.Width, 0, chunk.Y * Chunk.Depth) + block;
+        }
+
+        public static Block GetBlock(Vector3I position, int dimension = 0)
+        {
+            GlobalToLocal(position, out Vector3I cpos, out Vector3I bpos);
+
+            return Ticket.GetTicket(cpos.XY)?.Chunk[bpos.X, bpos.Y, bpos.Z];
         }
     }
 }

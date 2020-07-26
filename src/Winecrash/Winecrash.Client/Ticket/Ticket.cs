@@ -169,7 +169,7 @@ namespace Winecrash.Client
 
         
 
-        public void Tick()
+        /*public void Tick()
         {
             if (LifeTime == 0) return;
 
@@ -180,7 +180,7 @@ namespace Winecrash.Client
             {
                 Chunk.Tick();
             }
-        }
+        }*/
 
         public override void Delete()
         {
@@ -231,8 +231,9 @@ namespace Winecrash.Client
 
                 //Task.Run(chunk.GenerateLights);
 
-
-                chunk.Construct();
+                chunk.ForceNextConstruct = true;
+                chunk.BuildEndFrame = true;
+                //chunk.Construct();
                     //chunk.BuildEndFrame = true;
                     Chunk.TriggerAnyChunkFirstBuilt(chunk);
                 /*}

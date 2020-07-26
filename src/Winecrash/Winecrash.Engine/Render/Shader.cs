@@ -134,6 +134,9 @@ namespace Winecrash.Engine
                 Uniforms[i] = new ShaderUniformData(UName, GL.GetUniformLocation(Handle, UName), USize, UType);
             }
 
+            this.SetAttribute("position", AttributeTypes.Vertice);
+            this.SetAttribute("uv", AttributeTypes.UV);
+            this.SetAttribute("normal", AttributeTypes.Normal);
 
             Cache.Add(this);
         }
@@ -304,6 +307,10 @@ namespace Winecrash.Engine
 
         public void Use()
         {
+            this.SetAttribute("position", AttributeTypes.Vertice);
+            this.SetAttribute("uv", AttributeTypes.UV);
+            this.SetAttribute("normal", AttributeTypes.Normal);
+
             GL.UseProgram(Handle);
         }
 
