@@ -103,6 +103,7 @@ namespace Winecrash.Game
             mr.Material = new Material(Shader.Find("Cursor"));
             mr.Material.SetData<Vector4>("color", new Color256(0.0D,0.0D,0.0D,1.0D));
             mr.Material.SetData<float>("border", 0.1F);
+            mr.Material.SetData<float>("opacity", 0.85F);
             mr.Mesh = Mesh.LoadFile("assets/models/Cube.obj", MeshFormats.Wavefront);
             //mr.Wireframe = true;
             Cursor3D.Scale *= 1.005F;
@@ -305,7 +306,7 @@ namespace Winecrash.Game
 
                 Cursor3D.GetModule<MeshRenderer>().Material.SetData<float>("breakPct", (float)(TimeBreaking / ViewRayHit.Value.Block.DigTime));
 
-                if(TimeBreaking >= ViewRayHit.Value.Block.DigTime)
+                if(ViewRayHit.Value.Block.DigTime != -1 && TimeBreaking >= ViewRayHit.Value.Block.DigTime)
                 {
                     Vector3I p = ViewRayHit.Value.LocalPosition;
                     ViewRayHit.Value.Chunk.Edit(p.X, p.Y, p.Z, ItemCache.Get<Block>("winecrash:air"));
@@ -319,10 +320,6 @@ namespace Winecrash.Game
                 previousFrameLPos = null;
                 TimeBreaking = 0.0D;
             }
-
-
-            
-
         }
 
         protected override void FixedUpdate()

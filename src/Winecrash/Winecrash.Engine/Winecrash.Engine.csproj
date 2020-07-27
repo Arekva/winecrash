@@ -92,6 +92,7 @@
     <Compile Include="Core\Color\Color32.cs" />
     <Compile Include="Core\WRandom.cs" />
     <Compile Include="GUI\Anchor.cs" />
+    <Compile Include="GUI\Button.cs" />
     <Compile Include="GUI\Font.cs" />
     <Compile Include="Core\Input\CursorLockModes.cs" />
     <Compile Include="Core\Input\Keys.cs" />

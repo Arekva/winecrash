@@ -3,38 +3,48 @@
     [
         {
             "Identifier": "winecrash:direction",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
             "Path": "assets/items/direction.json"
         },
         {
             "Identifier": "winecrash:air",
-            "RuntimeType": "Winecrash.Client.Block, Winecrash",
+            "RuntimeType": "Winecrash.Game.Block, Winecrash",
             "Path": "assets/items/air.json"
         },
         {
             "Identifier": "winecrash:grass",
-            "RuntimeType": "Winecrash.Client.Grass, Winecrash",
+            "RuntimeType": "Winecrash.Game.Grass, Winecrash",
             "Path": "assets/items/grass.json"
         },
         {
             "Identifier": "winecrash:dirt",
-            "RuntimeType": "Winecrash.Client.Dirt, Winecrash",
+            "RuntimeType": "Winecrash.Game.Dirt, Winecrash",
             "Path": "assets/items/dirt.json"
         },
         {
             "Identifier": "winecrash:stone",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
             "Path": "assets/items/stone.json"
         },
         {
             "Identifier": "winecrash:bedrock",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
             "Path": "assets/items/bedrock.json"
         },
         {
             "Identifier": "winecrash:sand",
-            "RuntimeType": "Winecrash.Client.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
             "Path": "assets/items/sand.json"
+        },
+        {
+            "Identifier": "winecrash:leaves",
+            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
+            "Path": "assets/items/leaves.json"
+        },
+        {
+            "Identifier": "winecrash:log",
+            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
+            "Path": "assets/items/log.json"
         }
     ]
 }

@@ -51,6 +51,9 @@ namespace Winecrash.Engine
             }
         }
 
+
+        public static Vector2I MousePosition { get; internal set; }
+
         internal static bool Focused
         {
             get
@@ -99,6 +102,7 @@ namespace Winecrash.Engine
         protected internal override void Update()
         {
             Vector2I pos = InputWrapper.GetMousePosition();
+            
 
             if (Viewport.Instance == null)
             {
@@ -110,7 +114,10 @@ namespace Winecrash.Engine
                 Size s = Viewport.Instance.Size;
                 Vector2I centre = new Vector2I((int)(Viewport.Instance.X + s.Width / 2f), (int)(Viewport.Instance.Y + s.Height / 2f));
 
-                MouseDelta = Viewport.Instance.Focused && Input.LockMode == CursorLockModes.Lock ? centre - (Vector2D)pos: Vector2D.Zero;
+                MouseDelta = Viewport.Instance.Focused && Input.LockMode == CursorLockModes.Lock ? centre - (Vector2D)pos : Vector2D.Zero;
+
+                MousePosition = Viewport.Instance.Focused && Input.LockMode == CursorLockModes.Free ? centre - pos : Vector2I.Zero;
+
 
                 if (Input.LockMode == CursorLockModes.Lock && Focused)
                 {

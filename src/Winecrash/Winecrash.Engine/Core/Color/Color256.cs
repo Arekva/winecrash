@@ -9,11 +9,57 @@ namespace Winecrash.Engine
 {
     public struct Color256
     {
+        /// <summary>
+        /// Flashy red.
+        /// </summary>
         public static Color256 Red { get; } = new Color256(1.0, 0.0, 0.0, 1.0);
+        /// <summary>
+        /// Flashy green.
+        /// </summary>
         public static Color256 Green { get; } = new Color256(0.0, 1.0, 0.0, 1.0);
+        /// <summary>
+        /// Deep blue.
+        /// </summary>
         public static Color256 Blue { get; } = new Color256(0.0, 0.0, 1.0, 1.0);
+
+        /// <summary>
+        /// As blue as the sky.
+        /// </summary>
+        public static Color256 SkyBlue { get; } = new Color256(0.529D, 0.808D, 0.922D, 1.0D);
+
+        /// <summary>
+        /// Orange like the sky. At sunset, of course.
+        /// </summary>
         public static Color256 Orange { get; } = new Color256(1.0, 0.5, 0.0, 1.0);
+        /// <summary>
+        /// As white as the snow topping the mountain of NordVPN.
+        /// </summary>
         public static Color256 White { get; } = new Color256(1.0, 1.0, 1.0, 1.0);
+        /// <summary>
+        /// Half white.
+        /// </summary>
+        public static Color256 Gray => new Color256(0.5, 0.5, 0.5, 1.0);
+        /// <summary>
+        /// 3/4th white.
+        /// </summary>
+        public static Color256 LightGray => new Color256(0.75, 0.75, 0.75, 1.0);
+        /// <summary>
+        /// 1/4th white.
+        /// </summary>
+        public static Color256 DarkGray => new Color256(0.25, 0.25, 0.25, 1.0);
+        /// <summary>
+        /// ⠀
+        /// </summary>
+        public static Color256 Transparent => new Color256(1.0D, 1.0D, 1.0D, 0.0D);
+        /// <summary>
+        /// The color of the NordVPN's logo (#508AFF).
+        /// </summary>
+        public static Color256 NordVPN => new Color256(0.314D, 0.541D, 1.0D, 1.0D);
+
+        /// <summary>
+        /// Black
+        /// </summary>
+        public static Color256 Black => new Color256(0.0D, 0.0D, 0.0D, 1.0D);
 
         public const double MinValue = 0.0D;
         public const double MaxValue = 1.0D;

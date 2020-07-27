@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Winecrash.Engine;
 using System.Threading;
 using OpenTK;
@@ -137,6 +136,15 @@ namespace Winecrash.Game
             itemcurs.MaxAnchor = new Vector2F(0.125F, 1.0F);
             itemcurs.KeepRatio = true;
 
+
+            WObject testbtn = new WObject("Button");
+            testbtn.Parent = Canvas.Main.WObject;
+            Button btn = testbtn.AddModule<Button>();
+            btn.Label.Color = Color256.White;
+            btn.Label.FontSize = 60;
+            btn.MinAnchor = new Vector2F(0.1F, 0.6F);
+            btn.MaxAnchor = new Vector2F(0.6F, 0.7F);
+            btn.Background.Picture = new Texture("assets/textures/ugly_button.png");
             //Structure.Load("assets/structures/test.json");
         }
         

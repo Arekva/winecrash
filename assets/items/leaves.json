@@ -1,0 +1,12 @@
+{
+    "Transparent": true,
+    
+    "Textures": {
+      "Up": "assets/textures/blocks/leaves.png",
+      "Down": "assets/textures/blocks/leaves.png",
+      "West": "assets/textures/blocks/leaves.png",
+      "East": "assets/textures/blocks/leaves.png",
+      "North": "assets/textures/blocks/leaves.png",
+      "South": "assets/textures/blocks/leaves.png"
+    }
+  }
