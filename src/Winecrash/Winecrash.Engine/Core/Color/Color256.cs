@@ -71,10 +71,10 @@ namespace Winecrash.Engine
 
         public Color256(double r, double g, double b, double a)
         {
-            this.R = WMath.Clamp(r, MinValue, MaxValue);
-            this.G = WMath.Clamp(g, MinValue, MaxValue);
-            this.B = WMath.Clamp(b, MinValue, MaxValue);
-            this.A = WMath.Clamp(a, MinValue, MaxValue);
+            this.R = r;//WMath.Clamp(r, MinValue, MaxValue);
+            this.G = g;//WMath.Clamp(g, MinValue, MaxValue);
+            this.B = b;//WMath.Clamp(b, MinValue, MaxValue);
+            this.A = a;//WMath.Clamp(a, MinValue, MaxValue);
         }
 
         public Color256(Color32 colour)
@@ -113,6 +113,11 @@ namespace Winecrash.Engine
         public static Color256 operator *(Color256 c, double v)
         {
             return new Color256(c.R * v, c.G * v, c.B * v, c.A * v);
+        }
+
+        public static Color256 operator *(Color256 c, Color256 v)
+        {
+            return new Color256(c.R * v.R, c.G * v.G, c.B * v.B, c.A * v.A);
         }
 
         public override string ToString()

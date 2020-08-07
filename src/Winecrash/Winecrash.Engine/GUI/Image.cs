@@ -24,7 +24,6 @@ namespace Winecrash.Engine.GUI
                 return (float)_Picture.Size.X / (float)_Picture.Size.Y;
             }
         }
-
         public float GlobalRatio
         {
             get
@@ -38,55 +37,6 @@ namespace Winecrash.Engine.GUI
                 {
                     return Ratio;
                 }
-            }
-        }
-
-        internal override Vector3F GlobalScale
-        {
-            get//GlobalScreenAnchors
-            {
-                Vector3F totalExtentsScaled = new Vector3F(((Vector2F)Canvas.Main.Extents) * 2.0F, 1.0F) * this.WObject.Scale;
-
-
-                float[] anchors = this.GlobalScreenAnchors;
-
-
-                Vector2F minanchors = new Vector2F(anchors[0], anchors[1]);
-                Vector2F maxanchors = new Vector2F(anchors[2], anchors[3]);
-
-                Vector2F deltas = maxanchors - minanchors;
-
-                totalExtentsScaled.XY *= deltas;
-
-                float horizontalScale = -(GlobalRight / 2.0F) - (GlobalLeft / 2.0F);
-                float verticalScale = -(GlobalBottom / 2.0F) - (GlobalTop / 2.0F);
-
-                Vector3F sca = totalExtentsScaled * this.WObject.Scale + new Vector3F(horizontalScale, verticalScale, 1.0F);
-
-                //sca.X = WMath.Clamp(sca.X, MinScale.X, MaxScale.X);
-                //sca.Y = WMath.Clamp(sca.Y, MinScale.Y, MaxScale.Y);
-                //sca.Z = WMath.Clamp(sca.Z, MinScale.Z, MaxScale.Z);
-
-                if (KeepRatio)
-                {
-                    float smallest = sca.X;
-
-                    if (sca.Y < sca.X)
-                    {
-                        smallest = sca.Y;
-                    }
-
-                    if (smallest == sca.X)
-                    {
-                        sca = new Vector3F(sca.X, sca.X * Ratio, sca.Z);
-                    }
-                    else
-                    {
-                        sca = new Vector3F(sca.Y * Ratio, sca.Y, sca.Z);
-                    }
-                }
-
-                return sca;
             }
         }
 
@@ -121,6 +71,57 @@ namespace Winecrash.Engine.GUI
             }
         }
 
+        private Vector2F _Tiling = Vector2F.One;
+        public Vector2F Tiling
+        {
+            get
+            {
+                return _Tiling;
+            }
+
+            set
+            {
+                _Tiling = value;
+
+                if(AutoTile)
+                {
+                    Vector2F scale = this._Picture.Size;
+
+                    float ratio = scale.X / scale.Y;
+
+                    scale.Y = scale.X;
+                    scale.X *= ratio;
+
+                    Vector2F canSca = Canvas.Main.Size.XY;
+                    float canRatio = canSca.X / canSca.Y;
+
+                    Vector2F canPct = scale / canSca;
+                    scale *= AutoTileScale;
+
+
+                    //scale *= canPct;
+
+
+                    //scale.X *= canRatioX;
+                    //scale.Y *= 1/ canPct;
+
+                    scale.X *= (canSca.X / canSca.Y);
+
+                    this.Renderer.Material.SetData("tiling", (OpenTK.Vector2)scale);
+                }
+
+                else
+                {
+                    this.Renderer.Material.SetData("tiling", (OpenTK.Vector2)value);
+                }
+            }
+        }
+
+
+
+        public bool AutoTile { get; set; } = false;
+        public float AutoTileScale { get; set; } = 1.0F;
+
         public Vector3F MaxScale { get; set; } = Vector3F.One * float.MaxValue;
         public Vector3F MinScale { get; set; } = -Vector3F.One * float.MaxValue;
 
@@ -136,13 +137,21 @@ namespace Winecrash.Engine.GUI
             this.Renderer.Material.SetData<OpenTK.Vector4>("color", _Color);
             this.Renderer.Material.SetData<Texture>("albedo", _Picture);
 
-            Renderer.Material.SetData<OpenTK.Vector2>("tiling", new Vector2D(1.0,1.0));
+            Tiling = _Tiling;
+            Viewport.Instance.Resize += Instance_Resize;
+            Viewport.Instance.WindowStateChanged += Instance_Resize;
+            Viewport.Instance.WindowBorderChanged += Instance_Resize;
 
             GUIModule guimod = this.WObject.Parent?.GetModule<GUIModule>();
             if(guimod != null)
             {
                 this.ParentGUI = guimod;
             }
+        }
+
+        private void Instance_Resize(object sender, EventArgs e)
+        {
+            Tiling = _Tiling;
         }
 
         protected internal override void OnDelete()

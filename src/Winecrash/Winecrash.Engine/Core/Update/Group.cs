@@ -119,17 +119,17 @@ namespace Winecrash.Engine
         {
             if(this._Modules != null)
             {
-                Module[] modules = null;
+                List<Module> modules = null;
 
                 object obj = new object();
                 lock(obj)
                 {
-                    modules = this._Modules?.ToArray();
+                    modules = this._Modules.ToList();
                 }
 
-                for (int i = 0; i < modules.Length; i++)
+                foreach (Module mod in modules)
                 {
-                    modules[i]?.LateFixedUpdate();
+                    mod?.LateFixedUpdate();
                 }
             }
         }
@@ -141,57 +141,52 @@ namespace Winecrash.Engine
                 this.ResetEvent.WaitOne(); //wait for reset event
                 this.ResetEvent.Reset(); //set reset event to false
 
-                Module[] modules = null;
+                List<Module> modules = null;
 
                 object obj = new object();
                 lock(obj)
                 {
-                    modules = this._Modules?.ToArray();
+                    modules = _Modules?.ToList();
                 }
 
                 if (modules != null)
                 {
-                    for (int i = 0; i < modules.Length; i++)
+                    foreach (Module mod in modules)
                     {
-                        if (modules[i] != null)
+                        if (mod == null || mod.Deleted) continue;
+
+                        switch (ut)
                         {
-                            if (modules[i].Deleted) continue;
-
-                            switch (ut)
-                            {
-                                case UpdateTypes.PreUpdate:
+                            case UpdateTypes.PreUpdate:
+                                {
+                                    if (mod.StartDone == false)
                                     {
-                                        if (modules[i].StartDone == false)
+                                        mod.StartDone = true;
+                                        if (mod.RunAsync)
                                         {
-                                            modules[i].StartDone = true;
-                                            if (modules[i].RunAsync)
-                                            {
-                                                Task.Run(modules[i].Start);
-                                            }
-                                            else
-                                            {
-                                                modules[i].Start();
-                                            }
+                                            Task.Run(mod.Start);
                                         }
-
-                                        modules[i].PreUpdate();
+                                        else
+                                        {
+                                            mod.Start();
+                                        }
                                     }
-                                    break;
 
-                                case UpdateTypes.Update:
-                                    {
-                                        modules[i].Update();
-                                    }
-                                    break;
+                                    mod.PreUpdate();
+                                }
+                                break;
 
-                                case UpdateTypes.LateUpdate:
-                                    {
-                                        modules[i].LateUpdate();
-                                    }
-                                    break;
-                            }
+                            case UpdateTypes.Update:
+                                {
+                                    mod.Update();
+                                }
+                                break;
 
-                            //modules[i].Update();
+                            case UpdateTypes.LateUpdate:
+                                {
+                                    mod.LateUpdate();
+                                }
+                                break;
                         }
                     }
                 }
@@ -307,7 +302,11 @@ namespace Winecrash.Engine
                 return null;
             }
 
-            first._Modules.AddRange(second._Modules);
+            object obj = new object();
+            lock (obj)
+            {
+                first._Modules.AddRange(second._Modules);
+            }
             second._Modules = null;
 
             second.Thread.Abort();
@@ -322,26 +321,26 @@ namespace Winecrash.Engine
         {
             object obj = new object();
 
-            Group[] groups = null;
+            List<Group> groups = null;
             lock(obj)
             {
-                groups = _Groups.ToArray();
+                groups = _Groups.ToList();
             }
 
-            return groups?.FirstOrDefault(g => g.Order == order);
+            return groups.FirstOrDefault(g => g.Order == order);
         }
 
         public static Group GetGroup(string name)
         {
             object obj = new object();
 
-            Group[] groups = null;
+            List<Group> groups = null;
             lock (obj)
             {
-                groups = _Groups.ToArray();
+                groups = _Groups.ToList();
             }
 
-            return groups?.FirstOrDefault(g => g.Name == name);
+            return groups.FirstOrDefault(g => g.Name == name);
         }
 
         private static void SortByOrder()

@@ -13,7 +13,7 @@ namespace Winecrash.Engine
         internal static List<WObject> _WObjects { get; set; } = new List<WObject>(1);
         internal List<Module> _Modules { get; set; } = new List<Module>(1);
 
-        public WObject() : base() 
+        public WObject() : base()
         {
             _WObjects.Add(this);
         }
@@ -44,6 +44,8 @@ namespace Winecrash.Engine
 
             set
             {
+                //Debug.Log("setting " + this.Name + "'s parent as " + value.Name);
+
                 Vector3F oldGlobalPosition = this.Position;
                 Quaternion oldGlobalRotation = this.Rotation;
                 Vector3F oldGlobalScale = this.Scale;
@@ -54,6 +56,8 @@ namespace Winecrash.Engine
                 this.Position = oldGlobalPosition;
                 this.Rotation = oldGlobalRotation;
                 this.Scale = oldGlobalScale;
+
+                //Debug.Log(this.Name + "'s parent is now " + value.Name);
             }
         }
 
@@ -184,7 +188,7 @@ namespace Winecrash.Engine
 
         public static WObject Find(string name)
         {
-            return _WObjects.Find(w => w.Name == name);
+            return _WObjects.FirstOrDefault(w => w.Name == name);
         }
 
         public T AddModule<T>() where T : Module
@@ -250,7 +254,7 @@ namespace Winecrash.Engine
                 modules[i].Enabled = status;
             }
 
-            if (status == true && this._Parent)
+            if (status == true && this._Parent && !this._Parent.Enabled)
                 this._Parent.Enabled = true;
 
             base.SetEnable(status);

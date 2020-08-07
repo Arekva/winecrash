@@ -6,36 +6,49 @@ using System.Threading.Tasks;
 
 namespace Winecrash.Engine.GUI
 {
-    
-
     public delegate void ButtonClickDelegate();
     public delegate void ButtonHoverDelegate();
     public delegate void ButtonLockDelegate();
-    public delegate void ButtonColorChange();
+    public delegate void ButtonPropertyChange();
 
     public class Button : GUIModule
     {
-        private static Winecrash.Engine.WRandom r = new WRandom();
-
-
+#region Events
         /// <summary>
-        /// Event triggered when the button is clicked
+        /// Event triggered when the button is clicked.
         /// </summary>
         public event ButtonClickDelegate OnClick;
         /// <summary>
-        /// Event triggered when the button is hovered by the mouse
+        /// Event triggered when the button is hovered by the mouse.
         /// </summary>
         public event ButtonHoverDelegate OnHover;
-        /// <summary>
+        /// <summary>.
         /// Event triggered when the button is not hovered anymore by the mouse
         /// </summary>
         public event ButtonHoverDelegate OnUnhover;
+        /// <summary>
+        /// Event triggered when the button gets locked.
+        /// </summary>
         public event ButtonLockDelegate OnLock;
+        /// <summary>
+        /// Event triggered when the button gets unlocked.
+        /// </summary>
         public event ButtonLockDelegate OnUnlock;
+        /// <summary>
+        /// Event triggered when the color is changed.
+        /// </summary>
+        public event ButtonPropertyChange OnColorChanged;
+#endregion
 
-        public event ButtonColorChange OnColorChanged;
-
+#region Fields
         private bool _Locked = false;
+        private bool _Hovered = false;
+        private Color256 _LockedColor = Color256.DarkGray;
+        private Color256 _IdleColor = Color256.White;
+        private Color256 _HoverColor = Color256.SkyBlue;
+#endregion
+
+#region Properties
         /// <summary>
         /// Is the button clickable or locked?
         /// </summary>
@@ -48,12 +61,15 @@ namespace Winecrash.Engine.GUI
 
             set
             {
-                (value ? OnLock : OnUnlock)?.Invoke();
+                //if both true or both false, do not invoke
+                if(!(_Locked && value) && !(!_Locked && !value))
+                {
+                    (value ? OnLock : OnUnlock)?.Invoke();
+                }
 
                 _Locked = value;
             }
-        }
-        private bool _Hovered = false;
+        }      
         /// <summary>
         /// Is the button hovered?
         /// </summary>
@@ -78,7 +94,21 @@ namespace Winecrash.Engine.GUI
                 _Hovered = value;
             }
         }
+        /// <summary>
+        /// Do the background image should keep its ratio?
+        /// </summary>
+        public bool KeepRatio
+        {
+            get
+            {
+                return Background.KeepRatio;
+            }
 
+            set
+            {
+                Background.KeepRatio = value;
+            }
+        }
         /// <summary>
         /// The label used to display button's text
         /// </summary>
@@ -86,10 +116,7 @@ namespace Winecrash.Engine.GUI
         /// <summary>
         /// The button's background image.
         /// </summary>
-        public Image Background { get; private set; } = null;
-
-
-        private Color256 _LockedColor = Color256.DarkGray;
+        public Image Background { get; private set; } = null;    
         /// <summary>
         /// The color of the button when locked.
         /// </summary>
@@ -105,8 +132,7 @@ namespace Winecrash.Engine.GUI
                 _LockedColor = value;
                 OnColorChanged?.Invoke();
             }
-        }
-        private Color256 _IdleColor = Color256.White;
+        }      
         /// <summary>
         /// The color of the button when nothing specific happens.
         /// </summary>
@@ -123,7 +149,6 @@ namespace Winecrash.Engine.GUI
                 OnColorChanged?.Invoke();
             }
         }
-        private Color256 _HoverColor = Color256.SkyBlue;
         /// <summary>
         /// The color of the button when nothing specific happens.
         /// </summary>
@@ -140,57 +165,56 @@ namespace Winecrash.Engine.GUI
                 OnColorChanged?.Invoke();
             }
         }
+        #endregion
 
+#region Engine Logic
         protected internal override void Creation()
         {
-            this.ParentGUI = this.WObject.Parent.GetModule<GUIModule>();
+            this.ParentGUI = this.WObject.Parent?.GetModule<GUIModule>();
 
             WObject bgWobj = new WObject("Image")
             {
                 Parent = this.WObject
             };
-            Background = bgWobj.AddModule<Image>();
+            this.Background = bgWobj.AddModule<Image>();
 
             WObject lbWobj = new WObject("Label")
             {
                 Parent = bgWobj
             };
-            Label = lbWobj.AddModule<Label>();
-            Label.Text = "Button";
-            Label.Color = Color256.Black;
+
+            this.Label = lbWobj.AddModule<Label>();
+            this.Label.Text = "Button";
+
+            this.Label.Color = Color256.Black;
             this.Background.Color = IdleColor;
 
-            OnHover += () =>
+            this.OnHover += () =>
             {
-                this.Background.Color = Locked ? LockedColor : HoverColor;
+                this.Background.Color = this.Locked ? this.LockedColor : this.HoverColor;
             };
 
-            OnUnhover += () =>
+            this.OnUnhover += () =>
             {
-                this.Background.Color = Locked ? LockedColor : IdleColor;
+                this.Background.Color = this.Locked ? this.LockedColor : this.IdleColor;
             };
 
-            OnLock += () =>
+            this.OnLock += () =>
             {
-                this.Background.Color = LockedColor;
+                this.Background.Color = this.LockedColor;
             };
 
-            OnUnlock += () =>
+            this.OnUnlock += () =>
             {
-                this.Background.Color = Hovered ? HoverColor : IdleColor;
+                this.Background.Color = this.Hovered ? this.HoverColor : this.IdleColor;
             };
 
-            OnClick += () =>
+            this.OnColorChanged += () =>
             {
-                this.HoverColor = new Color32(r.Next(128, 256), r.Next(128, 256), r.Next(128, 256), 255);
+                this.Background.Color = this.Locked ? this._LockedColor : (this.Hovered ? this._HoverColor : this._IdleColor);
             };
 
-            OnColorChanged += () =>
-            {
-                Background.Color = Locked ? _LockedColor : (Hovered ? _HoverColor : _IdleColor);
-            };
         }
-
         protected internal override void OnDisable()
         {
             if (Hovered)
@@ -200,7 +224,6 @@ namespace Winecrash.Engine.GUI
 
             base.OnEnable();
         }
-
         protected internal override void Update()
         {
             // if locked => FPS view => ignore.
@@ -210,8 +233,8 @@ namespace Winecrash.Engine.GUI
             }
 
             Vector2I mpos = Input.MousePosition;
-            Vector2I bpos = this.GlobalPosition.XY;
-            Vector2I bsca = this.GlobalScale.XY / 2;
+            Vector2I bpos = this.Background.GlobalPosition.XY;
+            Vector2I bsca = this.Background.GlobalScale.XY / 2;
 
             //AABB with mouse point
             bool isHovered =
@@ -225,5 +248,6 @@ namespace Winecrash.Engine.GUI
                 OnClick?.Invoke();
             }
         }
+#endregion
     }
 }

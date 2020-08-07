@@ -346,7 +346,7 @@ namespace Winecrash.Engine
         {
             double X = rotation.X * 2.0D;
             double Y = rotation.Y * 2.0D;
-            double Z = rotation.Z * 2F;
+            double Z = rotation.Z * 2.0D;
             double XX = rotation.X * X;
             double YY = rotation.Y * Y;
             double ZZ = rotation.Z * Z;

@@ -18,10 +18,10 @@ namespace Winecrash.Engine.GUI
         {
             get
             {
-                if(this.ParentGUI == null)
+                /*if(this.ParentGUI == null)
                 {
                     return this.WObject.Position;
-                }
+                }*/
 
                 float[] ganchors = GlobalScreenAnchors;
 
@@ -36,7 +36,6 @@ namespace Winecrash.Engine.GUI
                 float verticalShift = (GlobalBottom / 4.0F) - (GlobalTop / 4.0F);
 
                 Vector2F shift = new Vector2F(horizontalShift, verticalShift);
-
 
                 //Vector3F sca = new Vector3F(Canvas.ScreenToUISpace(screenSpacePosition) + shift;
 
@@ -100,7 +99,9 @@ namespace Winecrash.Engine.GUI
                 float horizontalScale = -(GlobalRight / 2.0F) - (GlobalLeft / 2.0F);
                 float verticalScale = -(GlobalBottom / 2.0F) - (GlobalTop / 2.0F);
 
-                return totalExtentsScaled * this.WObject.Scale + new Vector3F(horizontalScale, verticalScale, 1.0F);
+                Vector3F sca = totalExtentsScaled * this.WObject.Scale + new Vector3F(horizontalScale, verticalScale, 1.0F);
+
+                return sca;
             }
         }
 
@@ -115,35 +116,54 @@ namespace Winecrash.Engine.GUI
 
                 if(this.ParentGUI == null)
                 {
-                    anchors[0] = anchors[1] = 0.0F;
-                    anchors[2] = anchors[3] = 1.0F;
+                    anchors[0] = this.MinAnchor.X;
+                    anchors[1] = this.MinAnchor.Y;
+                    anchors[2] = this.MaxAnchor.X;
+                    anchors[3] = this.MaxAnchor.Y;
                 }
 
                 else
                 {
+                    //TODO le pb est ici
                     float[] panchors = this.ParentGUI.GlobalScreenAnchors;
 
-                    Vector2F pmin = new Vector2F(panchors[0], panchors[1]);
-                    Vector2F pmax = new Vector2F(panchors[2], panchors[3]);
+                    float xMin = WMath.Remap(this.MinAnchor.X, 0, 1, panchors[0], panchors[2]);      
+                    float yMin = WMath.Remap(this.MinAnchor.Y, 0, 1, panchors[1], panchors[3]);                  
+                    float xMax = WMath.Remap(this.MaxAnchor.X, 0, 1, panchors[0], panchors[2]);               
+                    float yMax = WMath.Remap(this.MaxAnchor.Y, 0, 1, panchors[1], panchors[3]);
+                    
 
-                    if(this.ParentGUI is IRatioKeeper)
+                    if (this is IRatioKeeper keepr && keepr.KeepRatio)
                     {
-                        Vector2F pscale = this.ParentGUI.GlobalScale.XY;
-                        Vector2F pextents = (pscale / (Vector2F)Canvas.Main.Extents) / 4.0F;
+                        float screenRatio = (float)Canvas.Main.Size.X / (float)Canvas.Main.Size.Y;
+                        float invScreenRatio = 1F / screenRatio;
 
-                        anchors[0] = WMath.Remap(this.MinAnchor.X, 0, 1, 0.5F - pextents.X, 0.5F + pextents.X); //x min
-                        anchors[1] = WMath.Remap(this.MinAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min
-                        anchors[2] = WMath.Remap(this.MaxAnchor.X, 0, 1, 0.5F - pextents.X, 0.5F + pextents.X); //x max
-                        anchors[3] = WMath.Remap(this.MaxAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min
+                        // X bigger than Y
+                        if (keepr.Ratio > 1.0F)
+                        {
+                            float yRatio = 1F / keepr.Ratio;
+
+                            float yCentre = yMin + (yMax - yMin);
+                            yCentre /= 2.0F;
+
+                            
+
+                            /*yMin = (yCentre - (yRatio / 2.0F)) * invScreenRatio;
+                            yMax = (yCentre + (yRatio / 2.0F)) * invScreenRatio;*/
+
+                            if (this.ParentGUI?.WObject.Name == "Singleplayer Button")
+                            {
+                                Debug.Log($"min:{yMin} / max:{yMax}");
+                            }
+                        }
+                        
                     }
 
-                    else
-                    {
-                        anchors[0] = WMath.Remap(this.MinAnchor.X, 0, 1, pmin.X, pmax.X); //x min
-                        anchors[1] = WMath.Remap(this.MinAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min
-                        anchors[2] = WMath.Remap(this.MaxAnchor.X, 0, 1, pmin.X, pmax.X); //x max
-                        anchors[3] = WMath.Remap(this.MaxAnchor.Y, 0, 1, pmin.Y, pmax.Y); //y min
-                    }
+
+                    anchors[0] = xMin;
+                    anchors[1] = yMin;
+                    anchors[2] = xMax;
+                    anchors[3] = yMax;
                 }
 
                 return anchors;

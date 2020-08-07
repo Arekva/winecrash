@@ -11,6 +11,8 @@ using System.Runtime.InteropServices;
 
 using Winecrash.Engine.GUI;
 
+using True = System.Boolean;
+
 namespace Winecrash.Game
 {
     static class Program
@@ -26,10 +28,8 @@ namespace Winecrash.Game
 
         static void Start()
         {
-            new Shader("assets/shaders/cursor/Cursor.vert", "assets/shaders/cursor/Cursor.frag");
-
-            Input.LockMode = CursorLockModes.Lock;
-            Input.CursorVisible = false;
+            Input.LockMode = CursorLockModes.Free;
+            Input.CursorVisible = true;
 
             Input.MouseSensivity *= 5.0F;
 
@@ -37,6 +37,21 @@ namespace Winecrash.Game
 
             Viewport.Instance.VSync = OpenTK.VSyncMode.Off;
 
+            Camera.Main.RenderLayers &= ~(1L << 32);
+            Camera.Main.RenderLayers &= ~(1L << 48);
+
+            MainMenu.Show();
+            //MainMenu.Hide();
+
+
+
+            return;
+
+
+
+
+
+            new Shader("assets/shaders/cursor/Cursor.vert", "assets/shaders/cursor/Cursor.frag");
             WObject playerWobj = new WObject("Player");
             RigidBody rb = playerWobj.AddModule<RigidBody>();
             rb.UseGravity = false;
@@ -47,8 +62,6 @@ namespace Winecrash.Game
             playerWobj.AddModule<Player>();
 
             Camera.Main.WObject.AddModule<FreeCam>();
-            Camera.Main.RenderLayers &= ~(1L << 32);
-            Camera.Main.RenderLayers &= ~(1L << 48);
 
             Camera.Main._FarClip = 1000.0F;
             Camera.Main.FOV = 80.0F;
@@ -137,15 +150,6 @@ namespace Winecrash.Game
             itemcurs.KeepRatio = true;
 
 
-            WObject testbtn = new WObject("Button");
-            testbtn.Parent = Canvas.Main.WObject;
-            Button btn = testbtn.AddModule<Button>();
-            btn.Label.Color = Color256.White;
-            btn.Label.FontSize = 60;
-            btn.MinAnchor = new Vector2F(0.1F, 0.6F);
-            btn.MaxAnchor = new Vector2F(0.6F, 0.7F);
-            btn.Background.Picture = new Texture("assets/textures/ugly_button.png");
-            //Structure.Load("assets/structures/test.json");
         }
         
 
