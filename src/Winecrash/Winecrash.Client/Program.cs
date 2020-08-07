@@ -33,7 +33,7 @@ namespace Winecrash.Game
 
             Input.MouseSensivity *= 5.0F;
 
-            Physics.Gravity = new Vector3D(0, -27, 0);
+            Physics.Gravity = new Vector3D(0, -27, 0); //-27
 
             Viewport.Instance.VSync = OpenTK.VSyncMode.Off;
 

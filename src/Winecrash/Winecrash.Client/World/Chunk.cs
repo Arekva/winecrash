@@ -744,7 +744,7 @@ namespace Winecrash.Game
                 Renderer.Mesh.Normals = normals.ToArray();
                 Renderer.Mesh.Tangents = new Vector4F[vertices.Count];
 
-                Renderer.Mesh.Apply(true);
+                Renderer?.Mesh.Apply(true);
 
                 vertices = null;
                 triangles = null;
@@ -1109,7 +1109,7 @@ namespace Winecrash.Game
             if (!cache.TryGetValue(transpid, out transblock))
             {
                 transblock = ItemCache.Get<Block>(transpid);
-                cache.Add(transpid, transblock);
+                   cache.Add(transpid, transblock);
             }
 
             return transblock.Transparent;

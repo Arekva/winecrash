@@ -87,17 +87,17 @@ namespace Winecrash.Game
                     {
                         id = "winecrash:air";
 
-                        const float scale = 0.0085F;
-                        const float shiftX = 0;
+                        const float scale = 0.015F;
+                        const float shiftX = 0; //Début des farlands : 16000000 | Grosses Farlands : 200000000
                         const float shiftZ = 0;
 
                         const float caveScale = 0.1F;
-                        const float thresold = 0.2F;
+                        const float thresold = 0.3F;
 
                         const float torsadeScale = 0.1F;
                         const float torsadeThresold = 0.4F;
 
-                        int height = (int)(plains.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 15) + 60;
+                        int height = (int)(plains.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 15) + 64;
                         
 
 
@@ -112,11 +112,11 @@ namespace Winecrash.Game
                         {
                             if (waterlevel)
                             {
-                                id = "winecrash:sand";
+                                id = "winecrash:sand"; //sand
                             }
                             else
                             {
-                                id = "winecrash:grass";
+                                id = "winecrash:grass"; //grass
                             }
                         }
                         else if(y < height)
@@ -125,11 +125,11 @@ namespace Winecrash.Game
                             {
                                 if (waterlevel)
                                 {
-                                    id = "winecrash:sand";
+                                    id = "winecrash:sand"; //sand
                                 }
                                 else
                                 {
-                                    id = "winecrash:dirt";
+                                    id = "winecrash:dirt"; //dirt
                                 }
                             }
                             else
