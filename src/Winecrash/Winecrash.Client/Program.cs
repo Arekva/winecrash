@@ -28,8 +28,8 @@ namespace Winecrash.Game
 
         static void Start()
         {
-            Input.LockMode = CursorLockModes.Free;
-            Input.CursorVisible = true;
+            Input.LockMode = CursorLockModes.Lock;
+            Input.CursorVisible = false;
 
             Input.MouseSensivity *= 5.0F;
 
@@ -40,12 +40,12 @@ namespace Winecrash.Game
             Camera.Main.RenderLayers &= ~(1L << 32);
             Camera.Main.RenderLayers &= ~(1L << 48);
 
-            MainMenu.Show();
+            //MainMenu.Show();
             //MainMenu.Hide();
 
 
 
-            return;
+            //return;
 
 
 
@@ -60,6 +60,8 @@ namespace Winecrash.Game
             bc.Extents = new Vector3D(0.4F, 0.9F, 0.4F);
 
             playerWobj.AddModule<Player>();
+
+            FreeCam.FreeCTRL = true;
 
             Camera.Main.WObject.AddModule<FreeCam>();
 
@@ -92,7 +94,7 @@ namespace Winecrash.Game
             Engine.GUI.Image reticule = crosshair.AddModule<Engine.GUI.Image>();
             reticule.Picture = new Texture("assets/textures/crosshair.png");
             reticule.KeepRatio = true;
-
+            reticule.Material.SourceColorBlending = OpenTK.Graphics.OpenGL4.BlendingFactorSrc.OneMinusDstColor;
             reticule.MinAnchor = new Vector2F(0.48F, 0.48F);
             reticule.MaxAnchor = new Vector2F(0.52F, 0.52F);
 

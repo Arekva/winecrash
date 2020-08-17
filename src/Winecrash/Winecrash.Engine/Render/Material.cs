@@ -72,9 +72,26 @@ namespace Winecrash.Engine
             return Cache.FirstOrDefault(mat => mat.Name == name);
         }
 
+        public BlendEquationMode BlendEquation { get; set; } = BlendEquationMode.FuncAdd;
+
+
+
+        public BlendingFactorSrc SourceAlphaBlending { get; set; } = BlendingFactorSrc.SrcAlpha;
+        public BlendingFactorDest DestinationAlphaBlending { get; set; } = BlendingFactorDest.OneMinusSrcAlpha;
+
+        public BlendingFactorSrc SourceColorBlending { get; set; } = BlendingFactorSrc.SrcAlpha;
+        public BlendingFactorDest DestinationColorBlending { get; set; } = BlendingFactorDest.OneMinusSrcAlpha;
+
         internal void Use()
         {
             Shader.Use();
+            GL.BlendFuncSeparate(SourceColorBlending, DestinationColorBlending, SourceAlphaBlending, DestinationAlphaBlending);
+            //GL.BlendFunc(BlendingFactor.SrcAlpha, AlphaBlending);
+            //GL.BlendFunc(BlendingFactor.SrcColor, ColorBlending);
+
+            //GL.BlendEquation(BlendEquation);
+
+            //GL.BlendFunc(BlendingFactor.SrcColor, ColorBlending);
 
             //set the lights
             DirectionalLight main = DirectionalLight.Main;

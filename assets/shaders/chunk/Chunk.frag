@@ -7,6 +7,7 @@ in vec3 objPos;
 
 uniform sampler2D albedo;
 uniform vec4 color;
+uniform float showPercent;
 
 uniform float minLight;
 uniform float maxLight;
@@ -143,6 +144,11 @@ float getLight(float x, float y, float z)
     return float(getLightLevel(int(x), int(y), int(z)));
 }*/
 
+vec4 lerp(vec4 v0, vec4 v1, float t)
+{
+  return (1.0 - t) * v0 + t * v1;
+}
+
 float remap(float value, float low1, float high1, float low2, float high2)
 {
     return low2 + (value - low1) * (high2 - low2) / (high1 - low1);
@@ -160,6 +166,8 @@ void main()
     float light = 15;//getLight(blockpos.x, blockpos.y, blockpos.z);
 
     float alpha = (diffuse * color).w;
-    outputColor = vec4(diffuse.xyz, 1.0) * color * remap(light, 0.0, LIGHT_MAX_LEVEL, minLight, maxLight);//getLight(0,0,0);
-    outputColor.a = alpha;
+    vec4 chunkCol = vec4(diffuse.xyz, 1.0) * color * remap(light, 0.0, LIGHT_MAX_LEVEL, minLight, maxLight);//getLight(0,0,0);
+    chunkCol.a = alpha;
+
+    outputColor = chunkCol;//lerp(gl_FrontColor, chunkCol, showPercent);
 }

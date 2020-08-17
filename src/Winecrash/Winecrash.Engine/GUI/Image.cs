@@ -40,6 +40,18 @@ namespace Winecrash.Engine.GUI
             }
         }
 
+        public Material Material
+        {
+            get
+            {
+                return Renderer.Material;
+            }
+            set
+            {
+                Renderer.Material = value;
+            }
+        }
+
         public Texture Picture
         {
             get

@@ -94,8 +94,8 @@ namespace Winecrash.Game
                         const float caveScale = 0.1F;
                         const float thresold = 0.3F;
 
-                        const float torsadeScale = 0.1F;
-                        const float torsadeThresold = 0.4F;
+                        //const float torsadeScale = 0.1F;
+                        //const float torsadeThresold = 0.4F;
 
                         int height = (int)(plains.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 15) + 64;
                         

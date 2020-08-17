@@ -113,13 +113,14 @@ namespace Winecrash.Engine.GUI
             get
             {
                 float[] anchors = new float[4];
+                float xMin, yMin, xMax, yMax;
 
-                if(this.ParentGUI == null)
+                if (this.ParentGUI == null)
                 {
-                    anchors[0] = this.MinAnchor.X;
-                    anchors[1] = this.MinAnchor.Y;
-                    anchors[2] = this.MaxAnchor.X;
-                    anchors[3] = this.MaxAnchor.Y;
+                    xMin = this.MinAnchor.X;
+                    yMin = this.MinAnchor.Y;
+                    xMax = this.MaxAnchor.X;
+                    yMax = this.MaxAnchor.Y;
                 }
 
                 else
@@ -127,44 +128,45 @@ namespace Winecrash.Engine.GUI
                     //TODO le pb est ici
                     float[] panchors = this.ParentGUI.GlobalScreenAnchors;
 
-                    float xMin = WMath.Remap(this.MinAnchor.X, 0, 1, panchors[0], panchors[2]);      
-                    float yMin = WMath.Remap(this.MinAnchor.Y, 0, 1, panchors[1], panchors[3]);                  
-                    float xMax = WMath.Remap(this.MaxAnchor.X, 0, 1, panchors[0], panchors[2]);               
-                    float yMax = WMath.Remap(this.MaxAnchor.Y, 0, 1, panchors[1], panchors[3]);
-                    
-
-                    if (this is IRatioKeeper keepr && keepr.KeepRatio)
-                    {
-                        float screenRatio = (float)Canvas.Main.Size.X / (float)Canvas.Main.Size.Y;
-                        float invScreenRatio = 1F / screenRatio;
-
-                        // X bigger than Y
-                        if (keepr.Ratio > 1.0F)
-                        {
-                            float yRatio = 1F / keepr.Ratio;
-
-                            float yCentre = yMin + (yMax - yMin);
-                            yCentre /= 2.0F;
-
-                            
-
-                            /*yMin = (yCentre - (yRatio / 2.0F)) * invScreenRatio;
-                            yMax = (yCentre + (yRatio / 2.0F)) * invScreenRatio;*/
-
-                            if (this.ParentGUI?.WObject.Name == "Singleplayer Button")
-                            {
-                                Debug.Log($"min:{yMin} / max:{yMax}");
-                            }
-                        }
-                        
-                    }
-
-
-                    anchors[0] = xMin;
-                    anchors[1] = yMin;
-                    anchors[2] = xMax;
-                    anchors[3] = yMax;
+                    xMin = WMath.Remap(this.MinAnchor.X, 0, 1, panchors[0], panchors[2]);      
+                    yMin = WMath.Remap(this.MinAnchor.Y, 0, 1, panchors[1], panchors[3]);                  
+                    xMax = WMath.Remap(this.MaxAnchor.X, 0, 1, panchors[0], panchors[2]);               
+                    yMax = WMath.Remap(this.MaxAnchor.Y, 0, 1, panchors[1], panchors[3]);
                 }
+
+                if (this is IRatioKeeper keepr && keepr.KeepRatio)
+                {
+                    float screenRatio = (float)Canvas.Main.Size.X / (float)Canvas.Main.Size.Y;
+                    float invScreenRatio = 1F / screenRatio;
+
+                    // X bigger than Y
+                    /*if (keepr.Ratio >= 1.0F)
+                    {*/
+                        float xRatio = keepr.Ratio;
+                        float yRatio = 1F / keepr.Ratio;
+
+                        float xCentre = xMin + ((xMax - xMin) / 2.0F);
+                        float yCentre = yMin + ((yMax - yMin) / 2.0F);
+
+                        float xCurrentRatio = xMax / yMax;
+                        float yCurrentRatio = 1F / xCurrentRatio;
+
+                    //todo: ratio < 1.0
+                        float x = xMax - xCentre;
+                        float y = x * yRatio * screenRatio;
+
+                        yMin = yCentre - y;
+                        yMax = yCentre + y;
+                    //}
+                }
+
+                //Vector2D
+
+
+                anchors[0] = xMin;
+                anchors[1] = yMin;
+                anchors[2] = xMax;
+                anchors[3] = yMax;
 
                 return anchors;
             }
