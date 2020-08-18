@@ -49,7 +49,7 @@ namespace Winecrash.Engine
         {
             Icon icon = new Icon("icon.ico");
 
-            using (Viewport vp = new Viewport(800, 600, "Winecrash Viewport", icon))
+            using (Viewport vp = new Viewport(854, 512-31, "Winecrash Viewport", icon))
             {
                 vp.Run(0.0D, 0.0D);
             }

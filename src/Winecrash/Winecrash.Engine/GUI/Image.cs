@@ -134,9 +134,6 @@ namespace Winecrash.Engine.GUI
         public bool AutoTile { get; set; } = false;
         public float AutoTileScale { get; set; } = 1.0F;
 
-        public Vector3F MaxScale { get; set; } = Vector3F.One * float.MaxValue;
-        public Vector3F MinScale { get; set; } = -Vector3F.One * float.MaxValue;
-
         protected internal override void Creation()
         {
             this.WObject.Layer = 1L << 48;
@@ -163,7 +160,8 @@ namespace Winecrash.Engine.GUI
 
         private void Instance_Resize(object sender, EventArgs e)
         {
-            Tiling = _Tiling;
+            Viewport.DoOnceRender += () =>
+            this.Tiling = _Tiling;
         }
 
         protected internal override void OnDelete()

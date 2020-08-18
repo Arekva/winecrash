@@ -13,7 +13,8 @@ namespace Winecrash.Engine.GUI
 
         public GUIModule ParentGUI { get; set; } = null;
 
-
+        public Vector3F MinSize { get; set; } = Vector3F.One * Single.NegativeInfinity;
+        public Vector3F MaxSize { get; set; } = Vector3F.One * Single.PositiveInfinity;
         internal virtual Vector3F GlobalPosition
         {
             get
@@ -134,34 +135,48 @@ namespace Winecrash.Engine.GUI
                     yMax = WMath.Remap(this.MaxAnchor.Y, 0, 1, panchors[1], panchors[3]);
                 }
 
+                float xCentre = xMin + ((xMax - xMin) / 2.0F);
+                float yCentre = yMin + ((yMax - yMin) / 2.0F);
+
                 if (this is IRatioKeeper keepr && keepr.KeepRatio)
                 {
                     float screenRatio = (float)Canvas.Main.Size.X / (float)Canvas.Main.Size.Y;
                     float invScreenRatio = 1F / screenRatio;
 
-                    // X bigger than Y
-                    /*if (keepr.Ratio >= 1.0F)
-                    {*/
-                        float xRatio = keepr.Ratio;
-                        float yRatio = 1F / keepr.Ratio;
+                    float xRatio = keepr.Ratio;
+                    float yRatio = 1F / keepr.Ratio;
 
-                        float xCentre = xMin + ((xMax - xMin) / 2.0F);
-                        float yCentre = yMin + ((yMax - yMin) / 2.0F);
-
-                        float xCurrentRatio = xMax / yMax;
-                        float yCurrentRatio = 1F / xCurrentRatio;
+                    float xCurrentRatio = xMax / yMax;
+                    float yCurrentRatio = 1F / xCurrentRatio;
 
                     //todo: ratio < 1.0
-                        float x = xMax - xCentre;
-                        float y = x * yRatio * screenRatio;
+                    float x = xMax - xCentre;
+                    float y = x * yRatio * screenRatio;
 
-                        yMin = yCentre - y;
-                        yMax = yCentre + y;
-                    //}
+                    yMin = yCentre - y;
+                    yMax = yCentre + y;
                 }
 
-                //Vector2D
+                Vector3F halfExtents = new Vector3F(Canvas.Main.Extents, 0.5F);
+                
+                Vector3F totalExtents = halfExtents * 2.0F;
+                Vector3F sizes = new Vector3F(xMax - xMin, yMax - yMin, 0.0F);
+                Vector3F scaledSizes = totalExtents * sizes;
 
+                Vector3F min = this.MinSize;
+                Vector3F max = this.MaxSize;
+
+                scaledSizes.X = WMath.Clamp(scaledSizes.X, min.X, max.X);
+                scaledSizes.Y = WMath.Clamp(scaledSizes.Y, min.Y, max.Y);
+                scaledSizes.Z = WMath.Clamp(scaledSizes.Z, min.Z, max.Z);
+
+                sizes = scaledSizes / totalExtents;
+                Vector3F halfSizes = sizes / 2.0F;
+
+                xMin = xCentre - halfSizes.X;
+                xMax = xCentre + halfSizes.X;
+                yMin = yCentre - halfSizes.Y;
+                yMax = yCentre + halfSizes.Y;
 
                 anchors[0] = xMin;
                 anchors[1] = yMin;

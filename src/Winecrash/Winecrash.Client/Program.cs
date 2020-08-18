@@ -28,8 +28,8 @@ namespace Winecrash.Game
 
         static void Start()
         {
-            Input.LockMode = CursorLockModes.Lock;
-            Input.CursorVisible = false;
+            Input.LockMode = CursorLockModes.Free;
+            Input.CursorVisible = true;
 
             Input.MouseSensivity *= 5.0F;
 
@@ -40,16 +40,14 @@ namespace Winecrash.Game
             Camera.Main.RenderLayers &= ~(1L << 32);
             Camera.Main.RenderLayers &= ~(1L << 48);
 
-            //MainMenu.Show();
-            //MainMenu.Hide();
+            MainMenu.Show();
+        }
+        public static void RunGameDebug()
+        {
+            MainMenu.Hide();
 
-
-
-            //return;
-
-
-
-
+            Input.LockMode = CursorLockModes.Lock;
+            Input.CursorVisible = false;
 
             new Shader("assets/shaders/cursor/Cursor.vert", "assets/shaders/cursor/Cursor.frag");
             WObject playerWobj = new WObject("Player");
@@ -61,7 +59,7 @@ namespace Winecrash.Game
 
             playerWobj.AddModule<Player>();
 
-            FreeCam.FreeCTRL = true;
+            //FreeCam.FreeCTRL = true;
 
             Camera.Main.WObject.AddModule<FreeCam>();
 
@@ -98,7 +96,7 @@ namespace Winecrash.Game
             reticule.MinAnchor = new Vector2F(0.48F, 0.48F);
             reticule.MaxAnchor = new Vector2F(0.52F, 0.52F);
 
-            reticule.MaxScale = Vector3F.One * 30.0F;
+            reticule.MaxSize = Vector3F.One * 30.0F;
 
             WObject itembar = new WObject("Item Bar");
             itembar.Parent = Canvas.Main.WObject;
@@ -150,8 +148,6 @@ namespace Winecrash.Game
             itemcurs.MinAnchor = new Vector2F(0.0F, 0.0F);
             itemcurs.MaxAnchor = new Vector2F(0.125F, 1.0F);
             itemcurs.KeepRatio = true;
-
-
         }
         
 
