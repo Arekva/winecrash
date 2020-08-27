@@ -222,6 +222,13 @@ namespace Winecrash.Engine.GUI
                 Hovered = false;
             }
 
+            this.Background.Enabled = false;
+
+            base.OnEnable();
+        }
+        protected internal override void OnEnable()
+        {
+            this.Background.Enabled = true;
             base.OnEnable();
         }
         protected internal override void Update()
@@ -243,7 +250,7 @@ namespace Winecrash.Engine.GUI
 
             Hovered = isHovered;
 
-            if(Input.IsPressing(Keys.MouseLeftButton))
+            if(Hovered && Input.IsPressing(Keys.MouseLeftButton))
             {
                 OnClick?.Invoke();
             }

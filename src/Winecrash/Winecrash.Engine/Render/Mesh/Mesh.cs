@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 
 using OpenTK.Graphics.OpenGL4;
+using System.Windows.Forms;
 
 namespace Winecrash.Engine
 {
@@ -41,6 +42,8 @@ namespace Winecrash.Engine
         internal int VertexBufferObject = -1;
         internal int ElementBufferObject = -1;
         internal int VertexArrayObject = -1;
+
+        private readonly static object applyLocker = new object();
 
         public Vector3F[] Vertices { get; set; }
         public UInt32[] Triangles { get; set; }
@@ -113,43 +116,95 @@ namespace Winecrash.Engine
             this.Vertex = null;
         }
 
-        public void Apply(bool deleteWorkArrays)
+        bool alreadyBuilding = false;
+        bool abort = false;
+        public void Apply(bool deleteWorkArrays = false)
         {
-            Vertex = new float[this.Vertices.Length * 8];
+            if (alreadyBuilding) abort = true;
+            alreadyBuilding = true;
+            if (this.Vertices == null)
+            {
+                Debug.LogWarning($"Cannot apply Mesh \"{this.Name}\": no vertices.");
+                return;
+            }
+
+            if (abort)
+            {
+                abort = false;
+                return;
+            }
+
+            float[] vertex = new float[this.Vertices.Length * 8];
 
             for (int vert = 0; vert < this.Vertices.Length; vert++)
             {
+                if(abort)
+                {
+                    abort = false;
+                    return;
+                }
                 Vector3F vertice = this.Vertices[vert];
-                Vertex[vert * 8 + 0] = vertice.X;
-                Vertex[vert * 8 + 1] = vertice.Y;
-                Vertex[vert * 8 + 2] = vertice.Z;
+                vertex[vert * 8 + 0] = vertice.X;
+                vertex[vert * 8 + 1] = vertice.Y;
+                vertex[vert * 8 + 2] = vertice.Z;
 
                 Vector2F uvs = this.UVs[vert];
-                Vertex[vert * 8 + 3] = uvs.X;
-                Vertex[vert * 8 + 4] = uvs.Y;
+                vertex[vert * 8 + 3] = uvs.X;
+                vertex[vert * 8 + 4] = uvs.Y;
 
                 Vector3F normal = this.Normals[vert];
 
-                Vertex[vert * 8 + 5] = normal.X;
-                Vertex[vert * 8 + 6] = normal.Y;
-                Vertex[vert * 8 + 7] = normal.Z;
+                vertex[vert * 8 + 5] = normal.X;
+                vertex[vert * 8 + 6] = normal.Y;
+                vertex[vert * 8 + 7] = normal.Z;
             }
 
+            if (abort)
+            {
+                abort = false;
+                return;
+            }
             Indices = (uint)this.Triangles.Length;
-
+            if (abort)
+            {
+                abort = false;
+                return;
+            }
             if (deleteWorkArrays)
             {
                 Vertices = null;
-                
                 UVs = null;
                 Tangents = null;
                 Normals = null;
             }
+            if (abort)
+            {
+                abort = false;
+                return;
+            }
+
+            lock (applyLocker)
+            {
+                Vertex = vertex;
+            }
 
             Viewport.DoOnceRender += () =>
             {
-                //already altered by another mesh build.
-                if (Vertex == null) return;
+                if (abort)
+                {
+                    abort = false;
+                    return;
+                }
+
+                float[] vertex = null;
+                lock (applyLocker)
+                {
+                    //already altered by another mesh build.
+                    if (Vertex == null) return;
+
+                    vertex = Vertex;
+                    this.Vertex = null;
+                }
 
                 if (VertexArrayObject == -1)
                 {
@@ -161,19 +216,17 @@ namespace Winecrash.Engine
                 GL.BindVertexArray(VertexArrayObject);
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, this.VertexBufferObject);
-                GL.BufferData(BufferTarget.ArrayBuffer, Vertex.Length * sizeof(float), Vertex, BufferUsageHint.StaticDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, vertex.Length * sizeof(float), vertex, BufferUsageHint.StaticDraw);
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.ElementBufferObject);
                 GL.BufferData(BufferTarget.ElementArrayBuffer, (int)Indices * sizeof(uint), this.Triangles, BufferUsageHint.StaticDraw);
 
-                this.Vertex = null;
-                
-                if(deleteWorkArrays)
+                if (deleteWorkArrays)
                 {
                     Triangles = null;
                 }
+                alreadyBuilding = false;
             };
-            
         }
 
         public static Mesh LoadFile(string path, MeshFormats format)

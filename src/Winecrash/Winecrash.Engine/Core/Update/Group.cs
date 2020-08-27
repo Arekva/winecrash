@@ -56,7 +56,8 @@ namespace Winecrash.Engine
         }
 
         internal List<Module> _Modules { get; set; } = new List<Module>(1);
-
+        internal readonly static object moduleLocker = new object();
+        internal readonly static object groupLocker = new object();
         internal static List<Group> _Groups { get; set; } = new List<Group>(1);
         internal int GroupCount
         {
@@ -75,7 +76,8 @@ namespace Winecrash.Engine
             if (name == null) this._Name = "Group #" + order;
             else this._Name = name;
 
-            _Modules = modules?.ToList();
+            lock (moduleLocker)
+                _Modules = modules?.ToList();
 
             this._Order = order;
             _Groups.Add(this);
@@ -100,11 +102,8 @@ namespace Winecrash.Engine
         {
             Module[] modules = null;
 
-            object obj = new object();
-            lock (obj)
-            {
+            lock (moduleLocker)
                 modules = this._Modules?.ToArray();
-            }
 
             if (modules != null)
             {
@@ -121,11 +120,8 @@ namespace Winecrash.Engine
             {
                 List<Module> modules = null;
 
-                object obj = new object();
-                lock(obj)
-                {
+                lock(moduleLocker)
                     modules = this._Modules.ToList();
-                }
 
                 foreach (Module mod in modules)
                 {
@@ -143,11 +139,8 @@ namespace Winecrash.Engine
 
                 List<Module> modules = null;
 
-                object obj = new object();
-                lock(obj)
-                {
+                lock(moduleLocker)
                     modules = _Modules?.ToList();
-                }
 
                 if (modules != null)
                 {
@@ -208,7 +201,8 @@ namespace Winecrash.Engine
             {
                 if(modules != null)
                 {
-                    group._Modules?.AddRange(modules);
+                    lock (moduleLocker)
+                        group._Modules?.AddRange(modules);
                 }
             }
 
@@ -219,12 +213,13 @@ namespace Winecrash.Engine
         {
             if (this._Modules == null) return;
 
-            this._Modules.Remove(module);
+            lock (moduleLocker)
+                this._Modules.Remove(module);
 
             if(this._Order != 0 && this._Modules.Count == 0) //remove if none
             {
-
-                this._Modules = null;
+                lock (moduleLocker)
+                    this._Modules = null;
 
                 _Groups.Remove(this);
 
@@ -302,12 +297,11 @@ namespace Winecrash.Engine
                 return null;
             }
 
-            object obj = new object();
-            lock (obj)
-            {
+            lock (moduleLocker)
                 first._Modules.AddRange(second._Modules);
-            }
-            second._Modules = null;
+
+            lock (moduleLocker)
+                second._Modules = null;
 
             second.Thread.Abort();
             second.Thread = null;
@@ -319,23 +313,18 @@ namespace Winecrash.Engine
 
         public static Group GetGroup(int order)
         {
-            object obj = new object();
-
             List<Group> groups = null;
-            lock(obj)
-            {
+            //lock(moduleLocker)
                 groups = _Groups.ToList();
-            }
+
 
             return groups.FirstOrDefault(g => g.Order == order);
         }
 
         public static Group GetGroup(string name)
         {
-            object obj = new object();
-
             List<Group> groups = null;
-            lock (obj)
+            lock (groupLocker)
             {
                 groups = _Groups.ToList();
             }
@@ -350,7 +339,8 @@ namespace Winecrash.Engine
 
         internal void SortModules()
         {
-            this._Modules = _Modules.OrderBy(m => m.ExecutionOrder).ToList();
+            lock (moduleLocker)
+                this._Modules = _Modules.OrderBy(m => m.ExecutionOrder).ToList();
         }
 
         internal static void SetGroupLayer(int group, int newLayer)

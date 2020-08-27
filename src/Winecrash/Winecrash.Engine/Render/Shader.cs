@@ -301,7 +301,7 @@ namespace Winecrash.Engine
 
             if (code != (int)All.True)
             {
-                throw new Exception($"Error occurred whilst linking Program {program} : " + GL.GetProgramInfoLog(program));
+                throw new Exception($"Error occurred when linking Program {program} : " + GL.GetProgramInfoLog(program));
             }
         }
 

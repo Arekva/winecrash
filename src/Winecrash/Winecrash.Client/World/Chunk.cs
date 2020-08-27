@@ -29,7 +29,7 @@ namespace Winecrash.Game
     public class Chunk : Module
     {
 
-        #region Constants
+#region Constants
         public const int Width = 16;
         public const int Height = 256;
         public const int Depth = 16;
@@ -37,7 +37,7 @@ namespace Winecrash.Game
         public const int TotalBlocks = Width * Height * Depth;
         #endregion
 
-        #region Blocks Getters/Setters
+#region Blocks Getters/Setters
         public Block this[int x, int y, int z]
         {
             get
@@ -175,7 +175,7 @@ namespace Winecrash.Game
         public static int TexWidth;
         public static int TexHeight;
 
-        #region Neighbors
+#region Neighbors
         /// <summary>
         /// Northern neighbor chunk
         /// </summary>
@@ -199,7 +199,7 @@ namespace Winecrash.Game
         /// </summary>
         public static List<Chunk> Chunks { get; private set; } = new List<Chunk>(1000);
 
-        #region Loading Properties
+#region Loading Properties
         /// <summary>
         /// The maximum chunk loading rate, in number of chunks at once.
         /// </summary>
@@ -225,7 +225,7 @@ namespace Winecrash.Game
 
         public bool TickEndFrame {get; set;}= false;
 
-        public static Material ChunkMaterial;
+        public /*static*/ Material ChunkMaterial;
 
 
 #region Events
@@ -348,26 +348,28 @@ namespace Winecrash.Game
 
 #region Game Logic
         int lightSSBO = -1;
+        bool wasConstructedOnce = false;
+        double animationTime = 0.5D;
+        double timeSinceAnimate = 0.0D;
+        
 
         protected override void Creation()
         {
             AnyChunkCreated += OnAnyChunkCreated;
             AnyChunkDeleted += OnAnyChunkDeleted;
 
-            if(ChunkMaterial == null)
-            {
+            /*if(ChunkMaterial == null)
+            {*/
                 ChunkMaterial = new Material(Shader.Find("Chunk"));
                 ChunkMaterial.SetData<Texture>("albedo", Chunk.ChunkTexture);
-                ChunkMaterial.SetData<Vector4>("color", new Color256(1, 1, 1, 1));
+                ChunkMaterial.SetData<Vector4>("color", new Color256(1, 1, 1, 0));
 
                 ChunkMaterial.SetData<float>("minLight", 0.1F);
                 ChunkMaterial.SetData<float>("maxLight", 1.0F);
-            }
+            /*}*/
 
             MeshRenderer mr = this.Renderer = this.WObject.AddOrGetModule<MeshRenderer>();
             mr.Material = ChunkMaterial;
-
-            
 
             /*Viewport.DoOnce += () =>
             {
@@ -460,7 +462,25 @@ namespace Winecrash.Game
 
             base.OnDelete();
         }
+        protected override void Update()
+        {
+            if(_ConstructedOnce)
+            {
+                timeSinceAnimate += Time.DeltaTime;
+                ChunkMaterial.SetData<Vector4>("color", new Color256(1, 1, 1, WMath.Clamp(timeSinceAnimate / animationTime, 0.0, 1.0)));
+            }
+            /*if(!wasConstructedOnce && _ConstructedOnce)
+            {
+                wasConstructedOnce = true;
+            }
 
+            if(wasConstructedOnce && timeSinceAnimate <= animationTime)
+            {
+                timeSinceAnimate += Time.DeltaTime;
+                double pctAnimate = WMath.Clamp(timeSinceAnimate, 0.0D, animationTime) / animationTime;
+                ChunkMaterial.SetData<Vector4>("color", new Color256(1, 1, 1, 1));
+            }*/
+        }
         protected override void LateUpdate()
         {
             if((ForceNextConstruct || _ConstructedOnce ) && BuildEndFrame)
@@ -481,7 +501,6 @@ namespace Winecrash.Game
         }
         #endregion
 
-
 #region Generation
         public void DiffuseLight(int basex, int basey, int basez, uint baseLevel,  BlockFaces comingFrom = BlockFaces.Up)
         {
@@ -492,7 +511,7 @@ namespace Winecrash.Game
             BlockFaces to;
             BlockFaces from = BlockFaces.Up;
 
-            Chunk c;
+            //Chunk c;
 
             for (int i = 0; i < 6; i++)
             {

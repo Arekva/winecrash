@@ -14,6 +14,7 @@ namespace Winecrash.Engine
     /// </summary>
     public class WObject : BaseObject
     {
+        internal readonly static object wobjectLocker = new object();
         // all the loaded wobjects
         internal static List<WObject> _WObjects { get; set; } = new List<WObject>(1);
         // modules linked to this wobject
@@ -24,7 +25,8 @@ namespace Winecrash.Engine
         /// </summary>
         public WObject() : base()
         {
-            _WObjects.Add(this);
+            lock(wobjectLocker)
+                _WObjects.Add(this);
         }
 
         /// <summary>
@@ -33,7 +35,8 @@ namespace Winecrash.Engine
         /// <param name="name">The name of the WObject.</param>
         public WObject(string name) : base(name) 
         {
-            _WObjects.Add(this);
+            lock(wobjectLocker)
+                _WObjects.Add(this);
         }
 
         /// <summary>
@@ -201,7 +204,10 @@ namespace Winecrash.Engine
 
         public static WObject Find(string name)
         {
-            return _WObjects.FirstOrDefault(w => w.Name == name);
+            List<WObject> wobjs;
+            lock (wobjectLocker)
+                wobjs = _WObjects.ToList(); 
+            return wobjs.FirstOrDefault(w => w.Name == name);
         }
 
         public T AddModule<T>() where T : Module
@@ -291,7 +297,8 @@ namespace Winecrash.Engine
 
             _Modules.Clear();
             _Modules = null;
-            _WObjects.Remove(this);
+            lock (wobjectLocker)
+                _WObjects.Remove(this);
 
             base.Delete();
         }
@@ -319,7 +326,8 @@ namespace Winecrash.Engine
 
             _Modules.Clear();
             _Modules = null;
-            _WObjects.Remove(this);
+            lock (wobjectLocker)
+                _WObjects.Remove(this);
 
             base.Delete();
         }

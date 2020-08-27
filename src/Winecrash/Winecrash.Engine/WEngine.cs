@@ -37,9 +37,10 @@ namespace Winecrash.Engine
                 IsBackground = false,
                 Priority = ThreadPriority.Highest, Name = "OpenGL"
             };
-            winThread.Start();
 
             Load();
+
+            winThread.Start();
 
             return winThread;
         }
@@ -48,15 +49,15 @@ namespace Winecrash.Engine
         {
             Icon icon = new Icon("icon.ico");
 
-            using (Viewport vp = new Viewport(1024, 768, "Winecrash Viewport", icon))
+            using (Viewport vp = new Viewport(854, 512-31, "Winecrash Viewport", icon))
             {
                 vp.Run(0.0D, 0.0D);
             }
-
         }
 
         public static void Load()
         {
+            Debug.Log("Loading engine");
             Initializer.InitializeEngine();
         }
         internal static void Stop(object sender)

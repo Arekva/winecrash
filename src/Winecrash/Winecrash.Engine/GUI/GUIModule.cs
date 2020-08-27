@@ -13,7 +13,8 @@ namespace Winecrash.Engine.GUI
 
         public GUIModule ParentGUI { get; set; } = null;
 
-
+        public Vector3F MinSize { get; set; } = Vector3F.One * Single.NegativeInfinity;
+        public Vector3F MaxSize { get; set; } = Vector3F.One * Single.PositiveInfinity;
         internal virtual Vector3F GlobalPosition
         {
             get
@@ -113,13 +114,14 @@ namespace Winecrash.Engine.GUI
             get
             {
                 float[] anchors = new float[4];
+                float xMin, yMin, xMax, yMax;
 
-                if(this.ParentGUI == null)
+                if (this.ParentGUI == null)
                 {
-                    anchors[0] = this.MinAnchor.X;
-                    anchors[1] = this.MinAnchor.Y;
-                    anchors[2] = this.MaxAnchor.X;
-                    anchors[3] = this.MaxAnchor.Y;
+                    xMin = this.MinAnchor.X;
+                    yMin = this.MinAnchor.Y;
+                    xMax = this.MaxAnchor.X;
+                    yMax = this.MaxAnchor.Y;
                 }
 
                 else
@@ -127,44 +129,59 @@ namespace Winecrash.Engine.GUI
                     //TODO le pb est ici
                     float[] panchors = this.ParentGUI.GlobalScreenAnchors;
 
-                    float xMin = WMath.Remap(this.MinAnchor.X, 0, 1, panchors[0], panchors[2]);      
-                    float yMin = WMath.Remap(this.MinAnchor.Y, 0, 1, panchors[1], panchors[3]);                  
-                    float xMax = WMath.Remap(this.MaxAnchor.X, 0, 1, panchors[0], panchors[2]);               
-                    float yMax = WMath.Remap(this.MaxAnchor.Y, 0, 1, panchors[1], panchors[3]);
-                    
-
-                    if (this is IRatioKeeper keepr && keepr.KeepRatio)
-                    {
-                        float screenRatio = (float)Canvas.Main.Size.X / (float)Canvas.Main.Size.Y;
-                        float invScreenRatio = 1F / screenRatio;
-
-                        // X bigger than Y
-                        if (keepr.Ratio > 1.0F)
-                        {
-                            float yRatio = 1F / keepr.Ratio;
-
-                            float yCentre = yMin + (yMax - yMin);
-                            yCentre /= 2.0F;
-
-                            
-
-                            /*yMin = (yCentre - (yRatio / 2.0F)) * invScreenRatio;
-                            yMax = (yCentre + (yRatio / 2.0F)) * invScreenRatio;*/
-
-                            if (this.ParentGUI?.WObject.Name == "Singleplayer Button")
-                            {
-                                Debug.Log($"min:{yMin} / max:{yMax}");
-                            }
-                        }
-                        
-                    }
-
-
-                    anchors[0] = xMin;
-                    anchors[1] = yMin;
-                    anchors[2] = xMax;
-                    anchors[3] = yMax;
+                    xMin = WMath.Remap(this.MinAnchor.X, 0, 1, panchors[0], panchors[2]);      
+                    yMin = WMath.Remap(this.MinAnchor.Y, 0, 1, panchors[1], panchors[3]);                  
+                    xMax = WMath.Remap(this.MaxAnchor.X, 0, 1, panchors[0], panchors[2]);               
+                    yMax = WMath.Remap(this.MaxAnchor.Y, 0, 1, panchors[1], panchors[3]);
                 }
+
+                float xCentre = xMin + ((xMax - xMin) / 2.0F);
+                float yCentre = yMin + ((yMax - yMin) / 2.0F);
+
+                if (this is IRatioKeeper keepr && keepr.KeepRatio)
+                {
+                    float screenRatio = (float)Canvas.Main.Size.X / (float)Canvas.Main.Size.Y;
+                    float invScreenRatio = 1F / screenRatio;
+
+                    float xRatio = keepr.Ratio;
+                    float yRatio = 1F / keepr.Ratio;
+
+                    float xCurrentRatio = xMax / yMax;
+                    float yCurrentRatio = 1F / xCurrentRatio;
+
+                    //todo: ratio < 1.0
+                    float x = xMax - xCentre;
+                    float y = x * yRatio * screenRatio;
+
+                    yMin = yCentre - y;
+                    yMax = yCentre + y;
+                }
+
+                Vector3F halfExtents = new Vector3F(Canvas.Main.Extents, 0.5F);
+                
+                Vector3F totalExtents = halfExtents * 2.0F;
+                Vector3F sizes = new Vector3F(xMax - xMin, yMax - yMin, 0.0F);
+                Vector3F scaledSizes = totalExtents * sizes;
+
+                Vector3F min = this.MinSize;
+                Vector3F max = this.MaxSize;
+
+                scaledSizes.X = WMath.Clamp(scaledSizes.X, min.X, max.X);
+                scaledSizes.Y = WMath.Clamp(scaledSizes.Y, min.Y, max.Y);
+                scaledSizes.Z = WMath.Clamp(scaledSizes.Z, min.Z, max.Z);
+
+                sizes = scaledSizes / totalExtents;
+                Vector3F halfSizes = sizes / 2.0F;
+
+                xMin = xCentre - halfSizes.X;
+                xMax = xCentre + halfSizes.X;
+                yMin = yCentre - halfSizes.Y;
+                yMax = yCentre + halfSizes.Y;
+
+                anchors[0] = xMin;
+                anchors[1] = yMin;
+                anchors[2] = xMax;
+                anchors[3] = yMax;
 
                 return anchors;
             }
