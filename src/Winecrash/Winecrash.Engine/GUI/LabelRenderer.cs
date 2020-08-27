@@ -91,14 +91,10 @@ namespace Winecrash.Engine.GUI
                 GL.BindVertexArray(meshes[i].VertexArrayObject);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, meshes[i].VertexBufferObject);
 
-                //this.Material.Shader.SetAttribute("position", AttributeTypes.Vertice);
-                //this.Material.Shader.SetAttribute("uv", AttributeTypes.UV);
-                //this.Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
-
                 this.Material.SetData<Matrix4>("transform", transform);
                 this.Material.Use();
 
-                GL.Enable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.DepthTest);
 
                 GL.DrawElements(Wireframe ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)meshes[i].Indices, DrawElementsType.UnsignedInt, 0);
             }

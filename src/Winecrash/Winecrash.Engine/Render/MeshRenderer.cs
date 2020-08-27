@@ -29,7 +29,7 @@ namespace Winecrash.Engine
         }
         protected Mesh _Mesh = null;
 
-        public Material Material { get; set; }
+        public Material Material { get; set; } = Material.Find("Error");
 
         internal static List<MeshRenderer> ActiveMeshRenderers { get; set; } = new List<MeshRenderer>();
         internal static List<MeshRenderer> MeshRenderers { get; set; } = new List<MeshRenderer>();
@@ -41,7 +41,7 @@ namespace Winecrash.Engine
 
         protected bool CheckValidity(Camera sender)
         {
-            return (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0) || Deleted || Material == null || _Mesh == null  || _Mesh.ElementBufferObject == -1 || _Mesh.VertexArrayObject == -1 || _Mesh.VertexBufferObject == -1;
+            return (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0) || Deleted || _Mesh == null  || _Mesh.ElementBufferObject == -1 || _Mesh.VertexArrayObject == -1 || _Mesh.VertexBufferObject == -1;
         }
 
         internal virtual void Use(Camera sender)

@@ -28,6 +28,11 @@ namespace Winecrash.Engine
             }
         }
 
+        static Material()
+        {
+            new Material(Shader.ErrorShader).Name = "Error";
+        }
+
         public Material(Shader shader) : base()
         { 
             Cache.Add(this);
@@ -266,10 +271,28 @@ namespace Winecrash.Engine
                 }
             }
 
-            if (matdata != null && data.GetType() == matdata.Data.GetType())
+            object usedData = data as object;
+            if (data is Vector4F v4f)
+            {
+                usedData = new Vector4(v4f.X, v4f.Y, v4f.Z, v4f.W);
+            }
+            else if(data is Vector3F v3f)
+            {
+                usedData = new Vector3(v3f.X, v3f.Y, v3f.Z);
+            }
+            else if(data is Vector2I v2i)
+            {
+                usedData = new Vector2(v2i.X, v2i.Y);
+            }
+            else if (data is Vector2F v2f)
+            {
+                usedData = new Vector2(v2f.X, v2f.Y);
+            }
+
+            if (matdata != null && usedData.GetType() == matdata.Data.GetType())
             {
                 matdata.NeedUpdate = true;
-                matdata.Data = data;
+                matdata.Data = usedData;
             }
         }
 

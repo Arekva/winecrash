@@ -11,7 +11,7 @@ namespace Winecrash.Engine
 {
     public sealed class Shader : BaseObject
     {
-        internal struct ShaderUniformData
+        public struct ShaderUniformData
         {
             public string Name { get; }
             public int Location { get; }
@@ -27,7 +27,7 @@ namespace Winecrash.Engine
             }
         }
 
-        internal class ShaderAttributeData
+        public class ShaderAttributeData
         {
             public ShaderAttributeData(string name, int location, int size, int length, ActiveAttribType type)
             {
@@ -52,8 +52,8 @@ namespace Winecrash.Engine
 
         public int Handle { get; private set; } = -1;
 
-        internal ShaderUniformData[] Uniforms { get; private set; }
-        internal ShaderAttributeData[] Attributes { get; private set; }
+        public ShaderUniformData[] Uniforms { get; private set; }
+        public ShaderAttributeData[] Attributes { get; private set; }
 
 
         internal static List<Shader> Cache = new List<Shader>();

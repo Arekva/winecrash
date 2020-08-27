@@ -8,24 +8,25 @@ namespace Winecrash.Engine
 {
     public class WRandom : Random
     {
+        private static ulong _Count = 0ul;
         public override int Next(int maxValue)
         {
-            return (int)((Time.TimeSinceStart * 123456789D) % 2147483647D) % maxValue;
+            return (int)((Time.TimeSinceStart * 123456789D * (_Count++ * 987654321D)) % 2147483647D) % maxValue;
         }
 
         public override int Next()
         {
-            return (int)((Time.TimeSinceStart * 123456789D) % 2147483647D);
+            return (int)((Time.TimeSinceStart * 123456789D * (_Count++ * 987654321D)) % 2147483647D);
         }
 
         public override int Next(int minValue, int maxValue)
         {
-            return minValue + (int)((Time.TimeSinceStart * 123456789D) % 2147483647D) % maxValue - minValue;
+            return minValue + (int)((Time.TimeSinceStart * 123456789D * (_Count++ * 987654321D)) % 2147483647D) % maxValue - minValue;
         }
 
         public override double NextDouble()
         {
-            return ((Time.TimeSinceStart * 123456789D) % 2147483647D) / 2147483647D;
+            return ((Time.TimeSinceStart * 123456789D * (_Count++ * 987654321D)) % 2147483647D) / 2147483647D;
         }
     }
 }

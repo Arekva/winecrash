@@ -28,8 +28,8 @@ namespace Winecrash.Game
 
         static void Start()
         {
-            Input.LockMode = CursorLockModes.Free;
-            Input.CursorVisible = true;
+            Input.LockMode = CursorLockModes.Lock;
+            Input.CursorVisible = false;
 
             Input.MouseSensivity *= 5.0F;
 
@@ -40,7 +40,7 @@ namespace Winecrash.Game
             Camera.Main.RenderLayers &= ~(1L << 32);
             Camera.Main.RenderLayers &= ~(1L << 48);
 
-            MainMenu.Show();
+            //MainMenu.Show();
             //MainMenu.Hide();
 
 

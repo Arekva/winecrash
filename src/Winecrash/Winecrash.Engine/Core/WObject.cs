@@ -8,23 +8,36 @@ using OpenTK;
 
 namespace Winecrash.Engine
 {
+    /// <summary>
+    /// WObject are at the base of the game logic, they can hold multiple <see cref="Module"/> allowing scripting.
+    /// <br>To add a module, use <see cref="WObject.AddModule{T}"/>. Remove and find also have their own methods.</br>
+    /// </summary>
     public class WObject : BaseObject
     {
+        // all the loaded wobjects
         internal static List<WObject> _WObjects { get; set; } = new List<WObject>(1);
+        // modules linked to this wobject
         internal List<Module> _Modules { get; set; } = new List<Module>(1);
 
+        /// <summary>
+        /// Create an empty <see cref="WObject"/>
+        /// </summary>
         public WObject() : base()
         {
             _WObjects.Add(this);
         }
 
+        /// <summary>
+        /// Create an empty <see cref="WObject"/>
+        /// </summary>
+        /// <param name="name">The name of the WObject.</param>
         public WObject(string name) : base(name) 
         {
             _WObjects.Add(this);
         }
 
         /// <summary>
-        /// Render layer of the WObject:
+        /// Render layer of the WObject. The render layer
         /// 0 = none
         /// Int64.MaxValue = everything
         /// 

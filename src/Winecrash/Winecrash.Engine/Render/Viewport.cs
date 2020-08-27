@@ -143,12 +143,23 @@ namespace Winecrash.Engine
 
             MouseState ms = Mouse.GetState();
             Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);
-
             this._PreviousState = ms;
 
             Update?.Invoke(new UpdateEventArgs(e.Time));
 
             base.OnUpdateFrame(e);
+        }
+
+        private void InputSetRun()
+        {
+            Task.Run(() =>
+            {
+                while(true)
+                {
+
+                    Thread.Sleep(16);
+                }
+            });
         }
     }
 }

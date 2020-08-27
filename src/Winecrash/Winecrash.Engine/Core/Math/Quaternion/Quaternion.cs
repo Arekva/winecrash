@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -367,6 +368,15 @@ namespace Winecrash.Engine
         public static Vector3F operator *(Quaternion rotation, Vector3F point)
         {
             return rotation * (Vector3D)point;
+        }
+
+        public static explicit operator Vector4D(Quaternion q)
+        {
+            return new Vector4D(q.X, q.Y, q.Z, q.W);
+        }
+        public static explicit operator Vector4F(Quaternion q)
+        {
+            return new Vector4F((float)q.X, (float)q.Y, (float)q.Z, (float)q.W);
         }
     }
 }
