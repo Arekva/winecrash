@@ -46,7 +46,6 @@ namespace Winecrash.Engine
 
         protected override void OnLoad(EventArgs e)
         {
-            Debug.Log("Window started loading");
             new Texture();
             WObject camWobj = new WObject("Main Camera");
             Camera cam = camWobj.AddModule<Camera>();
@@ -59,11 +58,9 @@ namespace Winecrash.Engine
             GL.Enable(EnableCap.CullFace);
 
             GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction./*Less*/Lequal);
+            GL.DepthFunc(DepthFunction.Less);
 
             GL.Enable(EnableCap.Blend);
-
-
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             new Shader("assets/shaders/Standard/Standard.vert", "assets/shaders/Standard/Standard.frag");
@@ -71,8 +68,6 @@ namespace Winecrash.Engine
             new Shader("assets/shaders/Text/Text.vert", "assets/shaders/Text/Text.frag");
 
             OnLoaded?.Invoke();
-
-            Debug.Log("Window loaded");
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -145,10 +140,6 @@ namespace Winecrash.Engine
             Input.SetMouseScroll(Mouse.GetState().WheelPrecise);
 
             Time.DeltaTime = e.Time * Time.TimeScale;
-
-            MouseState ms = Mouse.GetState();
-            Vector2D delta = new Vector2D(this._PreviousState.X - ms.X, this._PreviousState.Y - ms.Y);
-            this._PreviousState = ms;
 
             Update?.Invoke(new UpdateEventArgs(e.Time));
 

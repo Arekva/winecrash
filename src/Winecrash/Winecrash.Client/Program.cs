@@ -28,10 +28,10 @@ namespace Winecrash.Game
 
         static void Start()
         {
-            Input.LockMode = CursorLockModes.Lock;
-            Input.CursorVisible = false;
+            Input.LockMode = CursorLockModes.Free;
+            Input.CursorVisible = true;
 
-            Input.MouseSensivity *= 5.0F;
+            Input.MouseSensivity *= 2.5F;
 
             Physics.Gravity = new Vector3D(0, -27, 0); //-27
 

@@ -10,7 +10,7 @@ namespace Winecrash.Engine
         [Initializer(Int32.MinValue)]
         private static void Initialize()
         {
-            CreateFolders();
+            //CreateFolders();
         }
 
         private static void CreateFolders()
