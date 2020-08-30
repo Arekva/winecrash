@@ -48,8 +48,8 @@ namespace Winecrash.Engine
             Layer.CreateOrGetLayer(0, "Default Layer", null);
             Group.CreateOrGetGroup(0, "Default Group", null);
 
-            Viewport.Update += new UpdateEventHandler(Update);
-            Viewport.Render += new UpdateEventHandler(Render);
+            Graphics.Window.OnUpdate += new UpdateEventHandler(Update);
+            Graphics.Window.OnRender += new UpdateEventHandler(Render);
 
             FixedThread = new Thread(() =>
             {
@@ -111,7 +111,7 @@ namespace Winecrash.Engine
                 Priority = ThreadPriority.Highest
             };
 
-            Viewport.OnLoaded += FixedThread.Start;
+            Graphics.Window.OnLoaded += FixedThread.Start;
         }
 
         private Layer(string name, int order, IEnumerable<Group> groups)

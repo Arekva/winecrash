@@ -622,12 +622,12 @@ namespace Winecrash.Game
                 this._Light[i] = uint.MaxValue;
             }
 
-            Viewport.DoOnceRender += () =>
+            Graphics.Window.InvokeRender(() =>
             {
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, lightSSBO);
                 GL.BufferData(BufferTarget.ShaderStorageBuffer, sizeof(uint) * 8192, this._Light, BufferUsageHint.DynamicDraw);
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
-            };
+            });
             //this.Renderer.Material.SetData<byte[]>("light", this._Light);
         }
 
@@ -775,7 +775,7 @@ namespace Winecrash.Game
 
             if(!_ConstructedOnce)
             {
-                Viewport.DoOnceRender += () => _ConstructedOnce = true;
+                Graphics.Window.InvokeRender(() => _ConstructedOnce = true);
             }
         }
 

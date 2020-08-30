@@ -87,7 +87,7 @@ namespace Winecrash.Engine
 
         public void Apply()
         {
-            Viewport.DoOnce += () =>
+            Graphics.Window.InvokeRender(() =>
             {
                 this.Use();
 
@@ -100,7 +100,7 @@ namespace Winecrash.Engine
                             OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
                             PixelType.UnsignedByte,
                             this.Data);
-            };
+            });
         }
 
 
@@ -279,7 +279,7 @@ namespace Winecrash.Engine
 
             else
             {
-                Viewport.DoOnceRender += () => del.Invoke();
+                Graphics.Window.InvokeRender(() => del.Invoke());
             }
         }
 

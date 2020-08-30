@@ -110,7 +110,7 @@ namespace Winecrash.Engine.GUI
         {
             this.MapPath = MapPath;
 
-            Viewport.DoOnce += () => this.Map = new Texture(MapPath);
+            Graphics.Window.InvokeUpdate(() => this.Map = new Texture(MapPath));
 
             this.Table = Table;
 
@@ -139,7 +139,7 @@ namespace Winecrash.Engine.GUI
                 CharIndices.Add(character, i);
 
                 int n = i;
-                Viewport.DoOnce += () =>
+                Graphics.Window.InvokeRender(() =>
                 {
                     float texWidth = Map.Width;
                     float texHeight = Map.Height;
@@ -179,7 +179,7 @@ namespace Winecrash.Engine.GUI
                     };
 
                     m.ApplySafe(true);
-                };
+                });
             }
         }
     }

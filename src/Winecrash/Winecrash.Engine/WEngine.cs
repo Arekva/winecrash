@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Threading;
 using System.Drawing;
+using System.IO;
 
 namespace Winecrash.Engine
 {
@@ -17,7 +18,6 @@ namespace Winecrash.Engine
         private static OSPlatform[] SupportedOS = new OSPlatform[] { OSPlatform.Windows, OSPlatform.Linux };
 
         public delegate void StopDelegate();
-        
 
         public static StopDelegate OnStop;
 
@@ -28,36 +28,47 @@ namespace Winecrash.Engine
             Debug.Log(Layer.GetTrace());
         }
 
-        public static Thread Run()
-        {
+        public async static Task Run()
+        {     
             System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            Thread winThread = Viewport.ThreadRunner = new Thread(ShowWindow)
+            await Task.Run(() =>
             {
-                IsBackground = false,
-                Priority = ThreadPriority.Highest, Name = "OpenGL"
-            };
+                Thread winThread = new Thread(ShowWindow)
+                {
+                    IsBackground = false,
+                    Priority = ThreadPriority.Highest,
+                    Name = "OpenGL"
+                };
 
-            Load();
-
-            winThread.Start();
-
-            return winThread;
+                winThread.Start();
+                windowSet.WaitOne();
+                
+                Load();
+            });
         }
+        private static ManualResetEvent windowSet = new ManualResetEvent(false);
 
         private static void ShowWindow()
         {
-            Icon icon = new Icon("icon.ico");
+            Icon icon = null;
 
-            using (Viewport vp = new Viewport(854, 512-31, "Winecrash Viewport", icon))
+            if(File.Exists("icon.ico"))
             {
-                vp.Run(0.0D, 0.0D);
+                icon = new Icon("icon.ico");
+            }
+
+            using (GameApplication app = new GameApplication("Winecrash Viewport", icon))
+            {
+                Graphics.Window = app;
+                windowSet.Set();
+                Graphics.Window.Thread = Thread.CurrentThread;
+                app.Run(0.0D, 0.0D);
             }
         }
 
         public static void Load()
         {
-            Debug.Log("Loading engine");
             Initializer.InitializeEngine();
         }
         internal static void Stop(object sender)
@@ -66,9 +77,9 @@ namespace Winecrash.Engine
             {
                 OnStop?.Invoke();
 
-                if (!(sender is Viewport))
+                if (!(sender is IWindow window))
                 {
-                    Viewport.ThreadRunner?.Abort();
+                    ((IWindow)sender).Thread?.Abort();
                 }
 
                 Layer.FixedThread?.Abort();
@@ -104,8 +115,7 @@ namespace Winecrash.Engine
 
             CreateEngineWObject();
 
-            GUI.Font pixelized = new GUI.Font("assets/fonts/pixelized.json", "Pixelized");
-
+            
            /* for (int i = 0; i < pixelized.Glyphs.Set.Length; i++)
             {
                 Debug.LogWarning(pixelized.Glyphs[pixelized.Glyphs.Set[i]].Character);

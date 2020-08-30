@@ -147,9 +147,9 @@ namespace Winecrash.Engine.GUI
             this.Renderer.Material.SetData<Texture>("albedo", _Picture);
 
             Tiling = _Tiling;
-            Viewport.Instance.Resize += Instance_Resize;
-            Viewport.Instance.WindowStateChanged += Instance_Resize;
-            Viewport.Instance.WindowBorderChanged += Instance_Resize;
+            Graphics.Window.OnResizing += Instance_Resize;
+            //Viewport.Instance.WindowStateChanged += Instance_Resize;
+            //Viewport.Instance.WindowBorderChanged += Instance_Resize;
 
             GUIModule guimod = this.WObject.Parent?.GetModule<GUIModule>();
             if(guimod != null)
@@ -160,8 +160,8 @@ namespace Winecrash.Engine.GUI
 
         private void Instance_Resize(object sender, EventArgs e)
         {
-            Viewport.DoOnceRender += () =>
-            this.Tiling = _Tiling;
+            Graphics.Window.InvokeUpdate(() =>
+            this.Tiling = _Tiling);
         }
 
         protected internal override void OnDelete()

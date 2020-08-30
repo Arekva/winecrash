@@ -1,0 +1,86 @@
+﻿using Newtonsoft.Json.Bson;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Policy;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Winecrash.Engine
+{
+    public delegate void WindowInvokeDelegate();
+
+    public interface IWindow
+    {
+        /// <summary>
+        /// The surface size of the window when <see cref="Resizable"/> is true (in pixels), when the <see cref="WindowState"/> is Normal.
+        /// </summary>
+        public Vector2I SurfaceFixedResolution { get; set; }
+        /// <summary>
+        /// The surface size in pixels. Likely to change due to user resizing the window.
+        /// </summary>
+        public Vector2I SurfaceResolution { get; }
+        /// <summary>
+        /// Get the position of the surface in screen coordinates.
+        /// </summary>
+        public Vector2I SurfacePosition { get; set; }
+        /// <summary>
+        /// The screen state of the window.
+        /// </summary>
+        public WindowState WindowState { get; set; }
+        /// <summary>
+        /// The VSync mode of the window.
+        /// </summary>
+        public VSyncMode VSync { get; set; }
+        /// <summary>
+        /// With the user is allowed to grab the window
+        /// </summary>
+        public bool Resizable { get; set; }
+        /// <summary>
+        /// The thread used by the Window
+        /// </summary>
+        public Thread Thread { get; set; }
+        /// <summary>
+        /// If the window is focused.
+        /// </summary>
+        public bool Focused { get; }
+        /// <summary>
+        /// Is the cursor visible?
+        /// </summary>
+        public bool CursorVisible { get; set; }
+
+        /// <summary>
+        /// Event triggered when the window is resizing.
+        /// </summary>
+        public event EventHandler<EventArgs> OnResizing;
+
+        /// <summary>
+        /// Event triggered when the window has loaded.
+        /// </summary>
+        public event WindowInvokeDelegate OnLoaded;
+        /// <summary>
+        /// Event triggered when the window is updating.
+        /// </summary>
+        public event UpdateEventHandler OnUpdate;
+        /// <summary>
+        /// Event triggered when the window is rendering.
+        /// </summary>
+        public event UpdateEventHandler OnRender;
+
+        /// <summary>
+        /// Invoke an action on window's thread only once at update time.
+        /// </summary>
+        /// <param name="action">The action to invoke.</param>
+        public void InvokeUpdate(Action action);
+        /// <summary>
+        /// Invoke an action on window's thread only once at render time.
+        /// </summary>
+        /// <param name="action">The action to invoke.</param>
+        public void InvokeRender(Action action);
+        /// <summary>
+        /// Close the window.
+        /// </summary>
+        public void Close();
+    }
+}

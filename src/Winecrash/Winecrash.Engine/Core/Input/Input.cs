@@ -16,51 +16,20 @@ namespace Winecrash.Engine
 
         private static int KeysAmount = Enum.GetValues(typeof(WKeys)).Length;
         private static Dictionary<WKeys, KeyStates> RegisteredKeyStates = new Dictionary<WKeys, KeyStates>(KeysAmount);
-
-
-        private static bool _UpdateCursorVisible = false;
-        private static bool _CursorVisible = true;
         public static bool CursorVisible
         {
             get
             {
-                return _CursorVisible;
+                return Graphics.Window.CursorVisible;
             }
 
             set
             {
-                _CursorVisible = value;
-                _UpdateCursorVisible = true;
+                Graphics.Window.CursorVisible = value;
             }
         }
-
-        private static bool _UpdateWindowMode = false;
-        private static WindowState _WindowMode = WindowState.Normal;
-        public static WindowState WindowMode
-        {
-            get
-            {
-                _WindowMode = (WindowState)Viewport.Instance.WindowState;
-                return _WindowMode;
-            }
-
-            set
-            {
-                _WindowMode = value;
-                _UpdateWindowMode = true;
-            }
-        }
-
 
         public static Vector2I MousePosition { get; internal set; }
-
-        internal static bool Focused
-        {
-            get
-            {
-                return Viewport.Instance != null ? Viewport.Instance.Focused : false;
-            }
-        }
 
         public static Vector2D MouseDelta { get; internal set; } = Vector2D.Zero;
 
@@ -111,23 +80,24 @@ namespace Winecrash.Engine
                 timeSinceMouseRefresh = 0.0D;
                 Vector2I pos = InputWrapper.GetMousePosition();
 
-                if (Viewport.Instance == null)
+                if (Graphics.Window == null)
                 {
                     MouseDelta = Vector2D.Zero;
                 }
 
                 else
                 {
-                    Size s = Viewport.Instance.Size;
-                    Vector2I centre = new Vector2I((int)(Viewport.Instance.X + s.Width / 2f), (int)(Viewport.Instance.Y + s.Height / 2f));
+                    Vector2I s = Graphics.Window.SurfaceResolution;
+                    Vector2I winpos = Graphics.Window.SurfacePosition;
+                    Vector2I centre = new Vector2I((int)(winpos.X + s.X / 2f), (int)(winpos.Y + s.Y / 2f));
 
                     if (!firstTime)
                     {
-                        MouseDelta = Viewport.Instance.Focused && Input.LockMode == CursorLockModes.Lock ? centre - (Vector2D)pos : Vector2D.Zero;
+                        MouseDelta = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Lock ? centre - (Vector2D)pos : Vector2D.Zero;
 
-                        MousePosition = Viewport.Instance.Focused && Input.LockMode == CursorLockModes.Free ? centre - pos : Vector2I.Zero;
+                        MousePosition = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Free ? centre - pos : Vector2I.Zero;
                     }
-                    if (Input.LockMode == CursorLockModes.Lock && Focused)
+                    if (Input.LockMode == CursorLockModes.Lock && Graphics.Window.Focused)
                     {
                         InputWrapper.SetMousePosition(centre);
                     }
@@ -142,18 +112,6 @@ namespace Winecrash.Engine
             }
             
             UpdateKeysStates();
-        }
-
-        protected internal override void LateUpdate()
-        {
-            Viewport.DoOnceRender += () => Viewport.Instance.CursorVisible = Focused ? CursorVisible : true;
-
-            if(_UpdateWindowMode)
-            {
-                _UpdateWindowMode = false;
-                Viewport.DoOnceRender += () => Viewport.Instance.WindowState = (OpenTK.WindowState)_WindowMode;
-            }
-            
         }
 
         protected internal override void OnDelete()
@@ -249,23 +207,23 @@ namespace Winecrash.Engine
 
         public static bool IsPressed(WKeys key)
         {
-            if (!Focused) return false;
+            if (!Graphics.Window.Focused) return false;
 
             return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Pressed;
         }
         public static bool IsPressing(WKeys key)
         {
-            if (!Focused) return false;
+            if (!Graphics.Window.Focused) return false;
             return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Pressing;
         }
         public static bool IsReleased(WKeys key)
         {
-            if (!Focused) return false;
+            if (!Graphics.Window.Focused) return false;
             return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Released;
         }
         public static bool IsReleasing(WKeys key)
         {
-            if (!Focused) return false;
+            if (!Graphics.Window.Focused) return false;
             return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Releasing;
         }
     }

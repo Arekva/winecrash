@@ -58,7 +58,7 @@ namespace Winecrash.Game
             btnSingle.Label.Text = "           Singleplayer";
             btnSingle.Label.Color = new Color256(0.95, 0.95, 0.95, 1.0);
             btnSingle.Label.FontSize = 35.0F;
-            btnSingle.OnClick += () => { Viewport.DoOnce += () => Program.RunGameDebug(); };
+            btnSingle.OnClick += () => { Graphics.Window.InvokeUpdate(() => Program.RunGameDebug()); };
 
 
             WObject mult = new WObject("Multiplayer Button") { Parent = btnPanel };

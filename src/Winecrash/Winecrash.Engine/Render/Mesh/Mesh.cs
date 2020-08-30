@@ -188,7 +188,7 @@ namespace Winecrash.Engine
                 Vertex = vertex;
             }
 
-            Viewport.DoOnceRender += () =>
+            Graphics.Window.InvokeRender(() =>
             {
                 if (abort)
                 {
@@ -226,7 +226,7 @@ namespace Winecrash.Engine
                     Triangles = null;
                 }
                 alreadyBuilding = false;
-            };
+            });
         }
 
         public static Mesh LoadFile(string path, MeshFormats format)
@@ -263,12 +263,12 @@ namespace Winecrash.Engine
             this.Vertex = null;
             this.Indices = 0;
 
-            Viewport.DoOnce += () =>
+            Graphics.Window.InvokeRender(() =>
             {
                 GL.DeleteBuffer(ElementBufferObject);
                 GL.DeleteBuffer(VertexBufferObject);
                 GL.DeleteVertexArray(VertexArrayObject);
-            };
+            });
 
 
             OnDelete?.Invoke();

@@ -45,9 +45,7 @@ namespace Winecrash.Engine.GUI
 
         protected internal override void PreUpdate()
         {
-            System.Drawing.Size winSize = Viewport.Instance.ClientSize;
-
-            this.Size = new Vector2I(winSize.Width, winSize.Height);
+            this.Size = Graphics.Window.SurfaceResolution;
 
             UICamera.OrthographicSize = new Vector2F(this.Size.X, this.Size.Y);
         }

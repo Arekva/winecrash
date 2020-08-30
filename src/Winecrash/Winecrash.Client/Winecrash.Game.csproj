@@ -62,7 +62,8 @@
     </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="LibNoise, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">

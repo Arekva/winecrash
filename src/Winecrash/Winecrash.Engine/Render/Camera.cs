@@ -35,7 +35,7 @@ namespace Winecrash.Engine
         {
             get
             {
-                return Viewport.Instance == null ? new Vector2I(1024, 1024) : new Vector2I(Viewport.Instance.ClientSize.Width, Viewport.Instance.ClientSize.Height);
+                return Graphics.Window.SurfaceResolution;//Viewport.Instance == null ? new Vector2I(1024, 1024) : new Vector2I(Viewport.Instance.ClientSize.Width, Viewport.Instance.ClientSize.Height);
             }
         }
 
@@ -94,7 +94,7 @@ namespace Winecrash.Engine
             set
             {
                 Color256 col = this._ClearColor = value;
-                Viewport.DoOnceRender += () => GL.ClearColor((float)col.R, (float)col.G, (float)col.B, 255);
+                Graphics.Window.InvokeRender(() => GL.ClearColor((float)col.R, (float)col.G, (float)col.B, 255));
             }
         }
 

@@ -37,14 +37,14 @@ namespace Winecrash.Engine
             // alt f4 close
             if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressed(Keys.F4))
             {
-                Viewport.Instance.Close();
+                Graphics.Window.Close();
                 return;
             }
 
             // fullscreen
             if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressed(Keys.Enter))
             {
-                Input.WindowMode = Input.WindowMode == WindowState.Fullscreen ? WindowState.Normal : WindowState.Fullscreen;
+                Graphics.Window.WindowState = Graphics.Window.WindowState == WindowState.Fullscreen ? WindowState.Normal : WindowState.Fullscreen;
             }
         }
 

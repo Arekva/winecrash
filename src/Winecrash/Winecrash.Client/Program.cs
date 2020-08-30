@@ -21,21 +21,21 @@ namespace Winecrash.Game
         {
             Task.Run(CreateDebugWindow);
 
-            WEngine.Run();
+            WEngine.Run().Wait();
 
-            Viewport.OnLoaded += Start;
+            Graphics.Window.OnLoaded += Start;
         }
 
         static void Start()
         {
-            Input.LockMode = CursorLockModes.Lock;
-            Input.CursorVisible = false;
+            //Input.LockMode = CursorLockModes.Lock;
+            //Input.CursorVisible = false;
 
             Input.MouseSensivity *= 5.0F;
 
             Physics.Gravity = new Vector3D(0, -27, 0); //-27
 
-            Viewport.Instance.VSync = OpenTK.VSyncMode.Off;
+            Graphics.Window.VSync = Engine.VSyncMode.Off;
 
             Camera.Main.RenderLayers &= ~(1L << 32);
             Camera.Main.RenderLayers &= ~(1L << 48);
