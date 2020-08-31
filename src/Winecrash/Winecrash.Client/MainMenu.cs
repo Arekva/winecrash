@@ -55,9 +55,11 @@ namespace Winecrash.Game
             btnSingle.MinAnchor = new Vector2F(0.0F, 0.9F);
             btnSingle.MaxAnchor = new Vector2F(1.0F, 1.0F);
             btnSingle.KeepRatio = true;
-            btnSingle.Label.Text = "           Singleplayer";
+            btnSingle.Label.Text = "Singleplayer";
             btnSingle.Label.Color = new Color256(0.95, 0.95, 0.95, 1.0);
-            btnSingle.Label.FontSize = 35.0F;
+            //btnSingle.Label.FontSize = 20.0F;
+            btnSingle.Label.AutoSize = true;
+            btnSingle.Label.Aligns = TextAligns.Vertical | TextAligns.Horizontal;
             btnSingle.OnClick += () => { Graphics.Window.InvokeUpdate(() => Program.RunGameDebug()); };
 
 
@@ -67,9 +69,11 @@ namespace Winecrash.Game
             btnMult.MinAnchor = new Vector2F(0.0F, 0.7F);
             btnMult.MaxAnchor = new Vector2F(1.0F, 0.8F);
             btnMult.KeepRatio = true;
-            btnMult.Label.Text = "           Multiplayer";
+            btnMult.Label.Text = "Multiplayer";
             btnMult.Label.Color = new Color256(0.65, 0.65, 0.65, 1.0);
-            btnMult.Label.FontSize = 35.0F;
+            //btnMult.Label.FontSize = 35.0F;
+            btnMult.Label.AutoSize = true;
+            btnMult.Label.Aligns = TextAligns.Vertical | TextAligns.Horizontal;
             btnMult.Locked = true;
 
             WObject mods = new WObject("Mods Button") { Parent = btnPanel };
@@ -78,10 +82,12 @@ namespace Winecrash.Game
             btnMods.MinAnchor = new Vector2F(0.0F, 0.5F);
             btnMods.MaxAnchor = new Vector2F(1.0F, 0.6F);
             btnMods.KeepRatio = true;
-            btnMods.Label.Text = "              Mods";
+            btnMods.Label.Text = "Mods";
             btnMods.Label.Color = new Color256(0.65, 0.65, 0.65, 1.0);
-            btnMods.Label.FontSize = 35.0F;
+            //btnMods.Label.FontSize = 35.0F;
+            btnMods.Label.AutoSize = true;
             btnMods.Locked = true;
+            btnMods.Label.Aligns = TextAligns.Vertical | TextAligns.Horizontal;
 
             WObject options = new WObject("Options Button") { Parent = btnPanel };
             Button btnOptions = options.AddModule<Button>();
@@ -89,10 +95,12 @@ namespace Winecrash.Game
             btnOptions.MinAnchor = new Vector2F(0.0F, 0.2F);
             btnOptions.MaxAnchor = new Vector2F(0.45F, 0.3F);
             btnOptions.KeepRatio = true;
-            btnOptions.Label.Text = "  Options";
+            btnOptions.Label.Text = "Options";
             btnOptions.Label.Color = new Color256(0.65, 0.65, 0.65, 1.0);
-            btnOptions.Label.FontSize = 35.0F;
+            //btnOptions.Label.FontSize = 35.0F;
+            btnOptions.Label.AutoSize = true;
             btnOptions.Locked = true;
+            btnOptions.Label.Aligns = TextAligns.Vertical | TextAligns.Horizontal;
 
             WObject quit = new WObject("Quit Button") { Parent = btnPanel };
             Button btnQuit = quit.AddModule<Button>();
@@ -100,10 +108,12 @@ namespace Winecrash.Game
             btnQuit.MinAnchor = new Vector2F(0.55F, 0.2F);
             btnQuit.MaxAnchor = new Vector2F(1.0F, 0.3F);
             btnQuit.KeepRatio = true;
-            btnQuit.Label.Text = "  Quit";
+            btnQuit.Label.Text = "Quit";
             btnQuit.Label.Color = new Color256(0.95, 0.95, 0.95, 1.0);
-            btnQuit.Label.FontSize = 35.0F;
+            //btnQuit.Label.FontSize = 35.0F;
+            btnQuit.Label.AutoSize = true;
             btnQuit.OnClick += () => WEngine.Stop();
+            btnQuit.Label.Aligns = TextAligns.Vertical | TextAligns.Horizontal;
 
 
             /*

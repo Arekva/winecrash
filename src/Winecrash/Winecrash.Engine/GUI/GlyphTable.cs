@@ -33,7 +33,7 @@ namespace Winecrash.Engine.GUI
 
                 for (int i = 0; i < text.Length; i++)
                 {
-                    if (text[i] == ' ' || text[i] == '\n') continue;
+                    if (text[i] == ' ' || text[i] == '\r' || text[i] == '\n') continue;
                     glyphs[i] = this[text[i]];
                 }
 
@@ -49,7 +49,7 @@ namespace Winecrash.Engine.GUI
 
             for (int i = 0; i < text.Length; i++)
             {
-                if (text[i] == ' ' || text[i] == '\n') continue;
+                if (text[i] == ' ' || text[i] == '\r' || text[i] == '\n') continue;
                 meshes[i] = CharactersMeshes[CharIndices[text[i]]];
             }
 

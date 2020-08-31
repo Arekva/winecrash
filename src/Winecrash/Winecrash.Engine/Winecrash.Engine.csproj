@@ -91,6 +91,7 @@
     <Compile Include="Core\Color\Color256.cs" />
     <Compile Include="Core\Color\Color32.cs" />
     <Compile Include="GameApplication.cs" />
+    <Compile Include="GUI\TextAlign.cs" />
     <Compile Include="Render\Graphics.cs" />
     <Compile Include="Core\WRandom.cs" />
     <Compile Include="GUI\Anchor.cs" />

@@ -16,6 +16,16 @@ namespace Winecrash.Engine
             return value.CompareTo(min) < 0 ? min : (value.CompareTo(max) > 0 ? max : value);
         }
 
+        public static T Max<T>(T a, T b) where T : IComparable
+        {
+            return a.CompareTo(b) > 0 ? a : b;
+        }
+
+        public static T Min<T>(T a, T b) where T : IComparable
+        {
+            return a.CompareTo(b) < 0 ? a : b;
+        }
+
         /// <summary>
         /// Get the index of a 1D array treated as 2D
         /// </summary>
@@ -32,7 +42,6 @@ namespace Winecrash.Engine
             x = index % width;
             y = index / width;
         }
-
 
 
         #region CopySign

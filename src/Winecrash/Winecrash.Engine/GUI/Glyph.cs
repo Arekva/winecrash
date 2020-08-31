@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Winecrash.Engine.GUI
 {
-    public struct Glyph
+    public struct Glyph : IEquatable<Glyph>
     {
         /// <summary>
         /// The character represented by the glyph
@@ -60,6 +60,42 @@ namespace Winecrash.Engine.GUI
             this.Y = y;
             this.Width = width;
             this.Height = height;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Glyph g ? Equals(g) : false;
+        }
+
+        public bool Equals(Glyph g)
+        {
+            return g.X == this.X && g.Y == this.Y && g.Character == this.Character && g.Width == this.Width && g.Height == this.Height;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 175765292;
+            hashCode = hashCode * -1521134295 + Character.GetHashCode();
+            hashCode = hashCode * -1521134295 + X.GetHashCode();
+            hashCode = hashCode * -1521134295 + Y.GetHashCode();
+            hashCode = hashCode * -1521134295 + Width.GetHashCode();
+            hashCode = hashCode * -1521134295 + Height.GetHashCode();
+            return hashCode;
+        }
+
+        public override string ToString()
+        {
+            return $"Glyph['{Character}']";
+        }
+
+        public static bool operator ==(Glyph a, Glyph b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Glyph a, Glyph b)
+        {
+            return !(b == a);
         }
     }
 }

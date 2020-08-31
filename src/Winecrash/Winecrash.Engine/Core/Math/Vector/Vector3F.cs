@@ -265,9 +265,13 @@ namespace Winecrash.Engine
         #endregion
 
         #region Methods
-        public static double Distance(Vector3F v1, Vector3F v2)
+        public static float Distance(Vector3F v1, Vector3F v2)
         {
             return Math.Abs((v1 - v2).Length);
+        }
+        public static float SquaredDistance(Vector3F v1, Vector3F v2)
+        {
+            return Math.Abs((v1 - v2).SquaredLength);
         }
         public Vector3F RotateAround(Vector3F pivot, Vector3F axis, float angle)
         {

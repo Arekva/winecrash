@@ -9,7 +9,42 @@ namespace Winecrash.Engine.GUI
 {
     public sealed class Label : GUIModule
     {
-        public string Text { get; set; } = null;
+        private string _Text = null;
+        public string Text
+        {
+            get
+            {
+                return _Text;
+            }
+
+            set
+            {
+                _Text = value;
+
+                if (value == null)
+                {
+                    Lines = null;
+                    LinesMaxWidth = 0;
+                }
+                else
+                {
+                    string[] lines = value.Split('\n');
+
+                    Lines = lines;
+
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        LinesMaxWidth = WMath.Max(LinesMaxWidth, lines[i].Length);
+                    }
+                }
+            }
+        }
+        internal string[] Lines { get; private set; } = null;
+        public TextAligns Aligns { get; set; } = TextAligns.Up | TextAligns.Left;
+        public int LinesMaxWidth { get; private set; } = 0;
+
+        public bool Shadows { get; set; } = true;
+        public float ShadowDistance { get; set; } = 1.0F;
 
         public float WordSpace { get; set; } = 0.33F; // defaults to 1.0 pixel, for each chars being 1.0 pixel
         public float LineSpace { get; set; } = 1.0F;
@@ -35,6 +70,8 @@ namespace Winecrash.Engine.GUI
         }
 
         public float FontSize { get; set; } = 16F;
+
+        public bool AutoSize { get; set; } = false;
 
         protected internal override void Creation()
         {

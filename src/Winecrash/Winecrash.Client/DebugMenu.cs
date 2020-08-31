@@ -31,15 +31,16 @@ namespace Winecrash.Game
             lbFPS.MaxAnchor = new Vector2F(1.0F, 1.0F);
             lbFPS.Left = 15;
             lbFPS.LineSpace = 1.0F;
+            lbFPS.Aligns = TextAligns.Left | TextAligns.Up;
 
 
 
             lbVersion = this.WObject.AddModule<Label>();
             lbVersion.FontSize = 40.0F;
             lbVersion.MinAnchor = new Vector2F(0.0F, 0.0F);
-            lbVersion.MaxAnchor = new Vector2F(1.0F, 0.1F);
+            lbVersion.MaxAnchor = new Vector2F(1.0F, 1.0F);
             lbVersion.Left = 15;
-
+            lbVersion.Aligns = TextAligns.Left | TextAligns.Down;
             lbVersion.Text = "Winecrash p0.2";
             lbVersion.Color = Color256.Orange;
 
