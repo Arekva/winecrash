@@ -49,6 +49,8 @@ namespace Winecrash.Game
             Input.LockMode = CursorLockModes.Lock;
             Input.CursorVisible = false;
 
+            Graphics.Window.Title = "test";
+
             new Shader("assets/shaders/cursor/Cursor.vert", "assets/shaders/cursor/Cursor.frag");
             WObject playerWobj = new WObject("Player");
             RigidBody rb = playerWobj.AddModule<RigidBody>();

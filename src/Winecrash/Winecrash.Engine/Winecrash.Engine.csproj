@@ -168,7 +168,6 @@
     <Compile Include="Render\WindowState.cs" />
     <Compile Include="WEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="Render\Viewport.cs_o" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Sound\" />

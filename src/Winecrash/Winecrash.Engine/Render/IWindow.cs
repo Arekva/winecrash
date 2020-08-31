@@ -49,6 +49,10 @@ namespace Winecrash.Engine
         /// Is the cursor visible?
         /// </summary>
         public bool CursorVisible { get; set; }
+        /// <summary>
+        /// The text displayed into the title bar
+        /// </summary>
+        public string Title { get; set; }
 
         /// <summary>
         /// Event triggered when the window is resizing.

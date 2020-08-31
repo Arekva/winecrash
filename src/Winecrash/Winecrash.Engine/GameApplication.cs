@@ -75,6 +75,24 @@ namespace Winecrash.Engine
             }
         }
 
+        public new string Title
+        {
+            get
+            {
+                return _Title;
+            }
+            set
+            {
+                if(value != _Title)
+                {
+                    _Title = value;
+                    _TitleChanged = true;
+                }
+            }
+        }
+        private string _Title = "Game Application";
+        private bool _TitleChanged = true;
+
         //          IWindow.WindowState          //
         public new WindowState WindowState
         {
@@ -238,6 +256,11 @@ namespace Winecrash.Engine
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            if(_TitleChanged)
+            {
+                _TitleChanged = false;
+                base.Title = _Title;
+            }
             if(_VSyncChanged)
             {
                 _VSyncChanged = false;
