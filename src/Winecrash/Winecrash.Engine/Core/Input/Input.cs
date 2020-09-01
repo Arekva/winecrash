@@ -95,7 +95,7 @@ namespace Winecrash.Engine
                     {
                         MouseDelta = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Lock ? centre - (Vector2D)pos : Vector2D.Zero;
 
-                        MousePosition = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Free ? centre - pos : Vector2I.Zero;
+                        MousePosition = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Free ? /*centre - pos*/Graphics.Window.ScreenToWindow(pos) : Vector2I.Zero;
                     }
                     if (Input.LockMode == CursorLockModes.Lock && Graphics.Window.Focused)
                     {

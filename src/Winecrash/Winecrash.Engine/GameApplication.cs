@@ -251,7 +251,15 @@ namespace Winecrash.Engine
 
         public Vector2I ScreenToWindow(Vector2I point)
         {
-            
+            Point p = new Point(point.X, point.Y);
+            p = base.PointToClient(p);
+
+            Vector2I uncorrect = new Vector2I(p.X, p.Y);
+
+            uncorrect.X = (int)((float)this.SurfaceResolution.X * 0.5) - uncorrect.X;
+            uncorrect.Y = (int)((float)this.SurfaceResolution.Y * 0.5) - uncorrect.Y;
+
+            return uncorrect;
         }
 
         public new void Close()

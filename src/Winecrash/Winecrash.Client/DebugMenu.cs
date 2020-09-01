@@ -29,11 +29,9 @@ namespace Winecrash.Game
             lbFPS.FontSize = 40.0F;
             lbFPS.MinAnchor = new Vector2F(0.0F, 0.0F);
             lbFPS.MaxAnchor = new Vector2F(1.0F, 1.0F);
+            lbFPS.Top = 10;
             lbFPS.Left = 15;
-            //lbFPS.LineSpace = 10.0F;
             lbFPS.Aligns = TextAligns.Up | TextAligns.Left;
-
-
 
             lbVersion = this.WObject.AddModule<Label>();
             lbVersion.FontSize = 40.0F;
@@ -41,7 +39,7 @@ namespace Winecrash.Game
             lbVersion.MaxAnchor = new Vector2F(1.0F, 1.0F);
             lbVersion.Left = 15;
             lbVersion.Aligns = TextAligns.Left | TextAligns.Down;
-            lbVersion.Text = "Winecrash p0.2";
+            lbVersion.Text = "Winecrash Alpha 0.0.1";
             lbVersion.Color = Color256.Orange;
 
         }
