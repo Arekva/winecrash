@@ -41,6 +41,9 @@ namespace Winecrash.Game
             Camera.Main.RenderLayers &= ~(1L << 48);
 
             MainMenu.Show();
+
+            WObject mdebug = new WObject();
+            mdebug.AddModule<DebugInput>();
         }
         public static void RunGameDebug()
         {

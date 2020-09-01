@@ -86,5 +86,11 @@ namespace Winecrash.Engine
         /// Close the window.
         /// </summary>
         public void Close();
+        /// <summary>
+        /// Transforms a point from screen coordinates to window coordinates
+        /// </summary>
+        /// <param name="point">The screen point coordinates</param>
+        /// <returns>The window space coordinates</returns>
+        public Vector2D ScreenToWindow(Vector2D point);
     }
 }

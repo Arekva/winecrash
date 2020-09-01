@@ -69,7 +69,7 @@ namespace Winecrash.Engine
                 Vector2I deltaSize = new Vector2I(s.Width, s.Height) - new Vector2I(cs.Width, cs.Height);
                 Point p = new Point(value.X, value.Y);
 
-                Vector2I final = value - deltaSize;
+                Vector2I final = value + deltaSize;
 
                 this.Location = new Point(final.X, final.Y);
             }
@@ -247,6 +247,11 @@ namespace Winecrash.Engine
 
             new GUI.Font("assets/fonts/pixelized.json", "Pixelized");
 
+        }
+
+        public Vector2I ScreenToWindow(Vector2I point)
+        {
+            
         }
 
         public new void Close()
