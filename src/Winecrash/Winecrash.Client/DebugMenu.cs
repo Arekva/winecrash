@@ -30,8 +30,8 @@ namespace Winecrash.Game
             lbFPS.MinAnchor = new Vector2F(0.0F, 0.0F);
             lbFPS.MaxAnchor = new Vector2F(1.0F, 1.0F);
             lbFPS.Left = 15;
-            lbFPS.LineSpace = 1.0F;
-            lbFPS.Aligns = TextAligns.Left | TextAligns.Up;
+            //lbFPS.LineSpace = 10.0F;
+            lbFPS.Aligns = TextAligns.Up | TextAligns.Left;
 
 
 

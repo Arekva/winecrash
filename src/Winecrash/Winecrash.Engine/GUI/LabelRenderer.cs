@@ -26,15 +26,16 @@ namespace Winecrash.Engine.GUI
 
             Matrix4 transform;
             Quaternion rot = this.WObject.Rotation;
-            
+
             Vector3F extents = this.Label.GlobalScale / 2.0F;
             Vector3F middle = this.Label.GlobalPosition;
 
 
             float fontSize = Label.FontSize;
+
             if (Label.AutoSize)
             {
-                fontSize = (extents.Y * 2.0F) / Label.Lines.Length;
+                fontSize = WMath.Min((extents.Y * 2.0F) / Label.Lines.Length, float.PositiveInfinity); //todo: min between max height and max width
             }
 
             float wordSpace = (Label.WordSpace * fontSize);
@@ -91,9 +92,9 @@ namespace Winecrash.Engine.GUI
                 else if (xDir == -1) lineXStartPos = -extents.X + lineXSize; //right: starts at extents x
                 else lineXStartPos = lineXSize / 2.0F; //center: starts at -half x size
 
-                if (yDir == -1) lineYPos = extents.Y - lineSpace * (i + 1); // up: starts at extents y
-                else if (yDir == 1) lineYPos = -extents.Y + lineSpace * (this.Label.Lines.Length - i) - (lineSpace * 0.5F); // down: starts at -extents y ((length - 1) - i : go top to down and not down to top.
-                else lineYPos = WMath.Remap((1.0F -(((float)i + 1) / ((float)this.Label.Lines.Length))), 0.0F, 1.0F, -totalYSize * 0.5F, totalYSize * 0.5F);
+                if (yDir == -1) lineYPos = extents.Y - fontSize * i;
+                else if (yDir == 1) lineYPos = -extents.Y + fontSize * ((this.Label.Lines.Length - 1)- i);
+                else lineYPos = WMath.Remap((1.0F - (((float)i + 1) / ((float)this.Label.Lines.Length))), 0.0F, 1.0F, -totalYSize * 0.5F, totalYSize * 0.5F);
 
                 float shiftX = 0.0F;
                 /*if (xDir == 1) shiftX = 0.0F;
