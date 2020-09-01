@@ -19,7 +19,7 @@ namespace Winecrash.Game
         public const uint TickingLevel = 32;
 
         internal static List<Ticket> _Tickets { get; private set; } = new List<Ticket>();
-
+        internal static object _TicketsLocker = new object();
         public uint Level { get; internal set; }
 
         public TicketTypes InvokeType { get; internal set; }
@@ -50,7 +50,9 @@ namespace Winecrash.Game
             else
             {
                 ticket = new Ticket(level, invokeType, lifeTime, new Vector2I(x, y));
-                _Tickets.Add(ticket);
+
+                lock(_TicketsLocker)
+                    _Tickets.Add(ticket);
             }
 
             //Debug.Log("Creating ticket " + x  + ";" + y);
@@ -186,6 +188,8 @@ namespace Winecrash.Game
         {
             this.Chunk.Delete();
             this.Chunk = null;
+
+            lock(_TicketsLocker)
             _Tickets.Remove(this);
 
             base.Delete();
@@ -275,13 +279,11 @@ namespace Winecrash.Game
             {
                 return null;
             }
-            object obj = new object();
 
-            int n = _Tickets.Count();
-            Ticket[] tickets = new Ticket[n];
-            lock (obj)
+            List<Ticket> tickets;
+            lock (_TicketsLocker)
             {
-                _Tickets.CopyTo(0, tickets, 0, n);
+                tickets = _Tickets.ToList();
             }
 
             return tickets.FirstOrDefault(t => t.Position == pos);

@@ -83,7 +83,8 @@ namespace Winecrash.Game
                 TickWaitItem[] twi;
                 lock (obj)
                 {
-                    tickets = Ticket._Tickets/*.Where(t => t.Level < Ticket.TickingLevel)*/.ToArray();
+                    lock(Ticket._TicketsLocker)
+                    tickets = Ticket._Tickets.ToArray();
                     twi = TickOnNextTick.ToArray();
                     TickOnNextTick.Clear();
                 }
@@ -106,7 +107,11 @@ namespace Winecrash.Game
 
         protected override void OnDelete()
         {
-            Ticket[] tickets = Ticket._Tickets.ToArray();
+
+            Ticket[] tickets;
+            
+            lock(Ticket._TicketsLocker)
+                tickets = Ticket._Tickets.ToArray();
 
             for (int i = 0; i < tickets.Length; i++)
             {

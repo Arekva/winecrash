@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 using LibNoise;
 
+using Winecrash.Engine;
+
 namespace Winecrash.Game
 {
     public static class Generator
@@ -36,9 +38,12 @@ namespace Winecrash.Game
 
         }
 
-        static LibNoise.Primitive.SimplexPerlin plains = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
-        static LibNoise.Primitive.SimplexPerlin mountains = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
-        static LibNoise.Primitive.ImprovedPerlin caves = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
+        static LibNoise.Primitive.SimplexPerlin details = new LibNoise.Primitive.SimplexPerlin("lel".GetHashCode(), NoiseQuality.Standard);
+        static LibNoise.Primitive.SimplexPerlin mountainMult = new LibNoise.Primitive.SimplexPerlin("lul".GetHashCode(), NoiseQuality.Standard);
+        static LibNoise.Primitive.SimplexPerlin continents = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
+
+        //static LibNoise.Primitive.SimplexPerlin mountains = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
+        //static LibNoise.Primitive.ImprovedPerlin caves = new LibNoise.Primitive.SimplexPerlin("lol".GetHashCode(), NoiseQuality.Standard);
 
         public static void Populate(ushort[] blocks, int chunkx, int chunky, bool save = false, bool erase = false)
         {
@@ -87,7 +92,9 @@ namespace Winecrash.Game
                     {
                         id = "winecrash:air";
 
-                        const float scale = 0.015F;
+                        const float scale = 0.025F;
+                        const float contScale = 0.001F;
+                        const float mountainScale = 0.005F;
                         const float shiftX = 0; //Début des farlands : 16000000 | Grosses Farlands : 200000000
                         const float shiftZ = 0;
 
@@ -97,13 +104,29 @@ namespace Winecrash.Game
                         //const float torsadeScale = 0.1F;
                         //const float torsadeThresold = 0.4F;
 
-                        int height = (int)(plains.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 15) + 64;
-                        
+                        //int height = (int)(plains.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 15) + 64;
 
 
 
-                        bool isCave = (((caves.GetValue((chunkx * Chunk.Width + shiftX + (float)x) * caveScale, y * caveScale, (chunky * Chunk.Depth + shiftZ + (float)z) * caveScale)) + 1) /2.0F) < thresold;
 
+                        //bool isCave = (((caves.GetValue((chunkx * Chunk.Width + shiftX + (float)x) * caveScale, y * caveScale, (chunky * Chunk.Depth + shiftZ + (float)z) * caveScale)) + 1) /2.0F) < thresold;
+
+                        float xsample = (chunkx * Chunk.Width + shiftX + x);
+                        float ysample = (chunky * Chunk.Depth + shiftZ + z);
+
+                        float continentValue = continents.GetValue(xsample * contScale, ysample * contScale);
+                        double continentalHeight = WMath.Remap(WMath.Clamp(Math.Exp(continentValue), 0.0, 65.0), -1.0D, 1.0D, 55.0D, 63.0D);
+
+                        float landValue = details.GetValue(xsample * scale, ysample * scale);
+                        double landHeight = WMath.Remap(landValue, -1.0D, 1.0D, 0.0D, 30.0D);
+
+                        float mountainValue = (float)WMath.Remap(mountainMult.GetValue(xsample * mountainScale, ysample * mountainScale), -1.0, 1.0, 0.0, 1.0);
+                        mountainValue = (float)WMath.Clamp(Math.Pow(mountainValue, 4.0), 0.0, 1.0);
+
+                        double final = continentalHeight + (landHeight * mountainValue);
+                        //float num = adder.GetValue(xsample, ysample, 0.0F);
+
+                        int height = (int)final;//WMath.Remap(final, 60.0D, 85.0D, 60.0D, 75.0D);
 
                         bool waterlevel = height < 64;
 
@@ -136,10 +159,10 @@ namespace Winecrash.Game
                                 id = "winecrash:stone";
                         }
 
-                        if(isCave)
+                        /*if(isCave)
                         {
                             id = "winecrash:air";
-                        }
+                        }*/
 
                         if (y == 2)
                         {

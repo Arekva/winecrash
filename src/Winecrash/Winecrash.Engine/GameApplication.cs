@@ -267,6 +267,7 @@ namespace Winecrash.Engine
             base.Close();
         }
 
+        WindowBorder _PreviousBorder;
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if(_TitleChanged)
@@ -300,6 +301,12 @@ namespace Winecrash.Engine
             {
                 _CursorVisibleChanged = false;
                 //base.CursorVisible = _CursorVisible;
+            }
+
+            if(_PreviousBorder != base.WindowBorder)
+            {
+                _PreviousBorder = base.WindowBorder;
+                OnResizing?.Invoke(this, new EventArgs());
             }
 
             // if not focused cursor always visible.

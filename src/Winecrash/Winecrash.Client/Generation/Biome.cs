@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Winecrash.Game.Generation
+using LibNoise;
+
+
+namespace Winecrash.Game
 {
     public class Biome
     {

@@ -141,10 +141,9 @@ namespace Winecrash.Engine
         {
             MeshRenderer[] mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
 
-            foreach (MeshRenderer mr in mrs.Where(mr => (mr.WObject.Layer & this.RenderLayers) != 0))
-            {
-                mr.Use(this);
-            }
+            foreach (MeshRenderer mr in mrs)
+                if(mr != null && mr.WObject != null && (mr.WObject.Layer & this.RenderLayers) != 0)
+                    mr.Use(this);
         }
     }
 }

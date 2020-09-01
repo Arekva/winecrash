@@ -28,6 +28,8 @@ namespace Winecrash.Game
 
         static void Start()
         {
+            Graphics.Window.Title = "Winecraft Alpha 0.0.1";
+
             Input.CursorVisible = true;
             Input.LockMode = CursorLockModes.Free;
 
@@ -42,8 +44,8 @@ namespace Winecrash.Game
 
             MainMenu.Show();
 
-            WObject mdebug = new WObject();
-            mdebug.AddModule<DebugInput>();
+            /*WObject mdebug = new WObject();
+            mdebug.AddModule<DebugInput>();*/
         }
         public static void RunGameDebug()
         {
@@ -53,7 +55,7 @@ namespace Winecrash.Game
             Input.LockMode = CursorLockModes.Lock;
             Input.CursorVisible = false;
 
-            Graphics.Window.Title = "test";
+            
 
             new Shader("assets/shaders/cursor/Cursor.vert", "assets/shaders/cursor/Cursor.frag");
             WObject playerWobj = new WObject("Player");

@@ -310,21 +310,19 @@ namespace Winecrash.Engine
                 return;
             }
 
-            for (int i = 0; i < _Modules.Count; i++)
-            {
-                _Modules[i].Delete();
-            } 
+            if(this._Modules != null)
+                for (int i = 0; i < _Modules.Count; i++)
+                    _Modules[i].Delete();
 
-            for (int i = 0; i < _Children.Count; i++)
-            {
-                _Children[i].Delete();
-            }
+            if(this._Children != null)
+                for (int i = 0; i < _Children.Count; i++)
+                    _Children[i].Delete();
 
             this._Parent = null;
-            _Children.Clear();
+            _Children?.Clear();
             _Children = null;
 
-            _Modules.Clear();
+            _Modules?.Clear();
             _Modules = null;
             lock (wobjectLocker)
                 _WObjects.Remove(this);

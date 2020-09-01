@@ -44,7 +44,7 @@ namespace Winecrash.Engine.GUI
         public int LinesMaxWidth { get; private set; } = 0;
 
         public bool Shadows { get; set; } = true;
-        public float ShadowDistance { get; set; } = 1.0F;
+        public float ShadowDistance { get; set; } = 0.1F;
 
         public float WordSpace { get; set; } = 0.33F; // defaults to 1.0 pixel, for each chars being 1.0 pixel
         public float LineSpace { get; set; } = 1.0F;
@@ -54,20 +54,8 @@ namespace Winecrash.Engine.GUI
 
         public bool Fill { get; set; } = false;
 
-        private Color256 _Color = new Color256(1.0, 1.0, 1.0, 1.0);
-        public Color256 Color
-        {
-            get
-            {
-                return this._Color;
-            }
-
-            set
-            {
-                this._Color = value;
-                Renderer.Material.SetData<Vector4>("color", value);
-            }
-        }
+        public Color256 Color { get; set; } = Color256.White;
+        public Color256 ShadowColor { get; set; } = new Color256(1 / 4.0D, 1/4.0D, 1/4.0D, 0.75F);
 
         public float FontSize { get; set; } = 16F;
 
