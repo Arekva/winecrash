@@ -51,6 +51,7 @@ namespace Winecrash.Engine
         }
 
         public int Handle { get; private set; } = -1;
+        private static int LastUsedHandle = -1;
 
         public ShaderUniformData[] Uniforms { get; private set; }
         public ShaderAttributeData[] Attributes { get; private set; }
@@ -311,7 +312,11 @@ namespace Winecrash.Engine
             this.SetAttribute("uv", AttributeTypes.UV);
             this.SetAttribute("normal", AttributeTypes.Normal);
 
-            GL.UseProgram(Handle);
+            if (LastUsedHandle != Handle)
+            {
+                GL.UseProgram(Handle);
+                LastUsedHandle = Handle;
+            }
         }
 
         internal int GetAttribLocation(string attribName)

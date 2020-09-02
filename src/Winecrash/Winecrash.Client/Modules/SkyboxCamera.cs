@@ -11,14 +11,23 @@ namespace Winecrash.Game
     {
         public Camera ReferenceCamera { get; set; }
         public Camera SkyCam { get; private set; }
+        public SkyboxCamera Instance { get; private set; }
 
         protected override void Creation()
         {
+            if(Instance != null)
+            {
+                this.Delete();
+                return;
+            }
+            Instance = this;
+            
             SkyCam = this.WObject.AddModule<Camera>();
             SkyCam._NearClip = 0.1F;
             SkyCam._FarClip = 1.1F;
             SkyCam.Depth = -1000;
             SkyCam.RenderLayers = 1L << 32;
+            SkyCam.Name = "Skybox Camera";
         }
 
         protected override void Update()
@@ -32,8 +41,6 @@ namespace Winecrash.Game
 
         protected override void OnRender()
         {
-
-
             base.OnRender();
         }
 

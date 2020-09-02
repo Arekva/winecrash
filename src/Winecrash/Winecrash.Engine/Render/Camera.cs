@@ -103,7 +103,7 @@ namespace Winecrash.Engine
             get
             {
                 Vector3F p = this.WObject.Position;
-                Vector3F t = this.WObject.Forward;
+                Vector3F t = this.WObject._RendersForward;
                 Vector3F u = this.WObject.Up;
 
                 return Matrix4.LookAt(new Vector3(p.X, p.Y, p.Z), new Vector3(p.X + t.X, p.Y + t.Y, p.Z + t.Z), new Vector3(u.X, u.Y, u.Z));
@@ -140,10 +140,10 @@ namespace Winecrash.Engine
         protected internal override void OnRender()
         {
             MeshRenderer[] mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
+            mrs = mrs.Where(mr => mr != null && mr.WObject != null && (mr.WObject.Layer & this.RenderLayers) != 0).ToArray();
 
-            foreach (MeshRenderer mr in mrs)
-                if(mr != null && mr.WObject != null && (mr.WObject.Layer & this.RenderLayers) != 0)
-                    mr.Use(this);
+            for (int i = 0; i < mrs.Length; i++)
+                mrs[i].Use(this);
         }
     }
 }

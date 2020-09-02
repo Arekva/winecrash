@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
+using System.Runtime;
 
 namespace Winecrash.Engine
 {
@@ -68,7 +69,8 @@ namespace Winecrash.Engine
             }
         }
 
-        private MaterialData[] _Data;
+        private MaterialData[] _Data { get; set; }
+        private MaterialData[] _DataInMaterial;
 
         internal static List<Material> Cache = new List<Material>();
 
@@ -91,56 +93,38 @@ namespace Winecrash.Engine
         {
             Shader.Use();
             GL.BlendFuncSeparate(SourceColorBlending, DestinationColorBlending, SourceAlphaBlending, DestinationAlphaBlending);
-            //GL.BlendFunc(BlendingFactor.SrcAlpha, AlphaBlending);
-            //GL.BlendFunc(BlendingFactor.SrcColor, ColorBlending);
-
-            //GL.BlendEquation(BlendEquation);
-
-            //GL.BlendFunc(BlendingFactor.SrcColor, ColorBlending);
 
             //set the lights
             DirectionalLight main = DirectionalLight.Main;
             if(main != null)
             {  
                 this.SetData<Vector4>("mainLightColor", main.Color);
-                this.SetData<Vector3>("mainLightDirection", -main.WObject.Forward);
+                this.SetData<Vector3>("mainLightDirection", -main.WObject._RendersForward);
                 this.SetData<Vector4>("mainLightAmbiant", main.Ambient);
             }
 
             int texCount = 0;
             for (int i = 0; i < _Data.Length; i++)
             {
-                MaterialData data = _Data[i];
+                if (ReferenceEquals(_DataInMaterial[i].Data, _Data[i])) continue;
 
-                /*if(data.GLType == ActiveUniformType.Sampler2D)
-                    //always update
-                {
-                    const string textureEnumText = "Texture";
-
-                    ((Texture)data.Data).Use((TextureUnit)Enum.Parse(typeof(TextureUnit), textureEnumText + texCount));
-                    this.SetInt(data.Location, texCount);
-
-                    texCount++;
-                }
-
-                else if (data.NeedUpdate)
-                {
-                    data.NeedUpdate = false;*/
-                    SetGLData(ref data, ref texCount);
-                //}
+                MaterialData data = _DataInMaterial[i] = _Data[i];
+                SetGLData(ref data, ref texCount);
             }
         }
-
-
         private void SetGLData(ref MaterialData data, ref int texCount)
         {
             switch (data.GLType) //if texture
             {
                 case ActiveUniformType.Sampler2D:
                     {
-                        const string textureEnumText = "Texture";
+                        // that shit took up to 6% of render time !!
 
-                        ((Texture)data.Data).Use((TextureUnit)Enum.Parse(typeof(TextureUnit), textureEnumText + texCount));
+                        //const string textureEnumText = "Texture";
+                        //((Texture)data.Data).Use((TextureUnit)Enum.Parse(typeof(TextureUnit), textureEnumText + texCount));
+
+                        (data.Data as Texture).Use((TextureUnit)(33984 + texCount));
+
                         this.SetInt(data.Location, texCount);
 
                         texCount++;
@@ -185,7 +169,7 @@ namespace Winecrash.Engine
         {
             Shader.ShaderUniformData[] shaderData = this._Shader.Uniforms;
             this._Data = new MaterialData[shaderData.Length];
-
+            this._DataInMaterial = new MaterialData[shaderData.Length];
             for (int i = 0; i < shaderData.Length; i++)
             {
                 Type csType = GetCsharpType(shaderData[i].Type);
@@ -199,17 +183,17 @@ namespace Winecrash.Engine
                 {
                     if (Texture.Blank != null)
                     {
-                        _Data[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Texture.Blank, shaderData[i].Type);
+                        _Data[i] = _DataInMaterial[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Texture.Blank, shaderData[i].Type);
                     }
                     else
                     {
-                        _Data[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Activator.CreateInstance(csType), shaderData[i].Type);
+                        _Data[i] = _DataInMaterial[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Activator.CreateInstance(csType), shaderData[i].Type);
                     }
                 }
 
                 else
                 {
-                    _Data[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Activator.CreateInstance(csType), shaderData[i].Type);
+                    _Data[i] = _DataInMaterial[i] = new MaterialData(shaderData[i].Name, shaderData[i].Location, Activator.CreateInstance(csType), shaderData[i].Type);
                 }
             }
         }

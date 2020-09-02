@@ -9,6 +9,9 @@ namespace Winecrash.Game
 {
     public class Hand : Module
     {
-
+        protected override void LateUpdate()
+        {
+            this.WObject.Position = Camera.Main.WObject.Position + Camera.Main.WObject.Forward * 10;
+        }
     }
 }

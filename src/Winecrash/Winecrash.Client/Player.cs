@@ -260,7 +260,7 @@ namespace Winecrash.Game
 
         private void ViewHit()
         {
-            if (RaycastChunk(new Ray(this.FPSCamera.WObject.Position, this.FPSCamera.WObject.Forward), HitRange, out RaycastChunkHit hit, 0.01))
+            if (RaycastChunk(new Ray(this.FPSCamera.WObject.Position, this.FPSCamera.WObject.Forward), HitRange, out RaycastChunkHit hit, 0.1))
             {
                 ViewRayHit = new RaycastChunkHit?(hit);
             }
@@ -454,7 +454,7 @@ namespace Winecrash.Game
                     this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
                     (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Backward * (float)_Bc.Extents.Z),
-                Vector3D.Backward), 0.05D, out RaycastChunkHit hit)
+                Vector3D.Backward), 0.05D, out RaycastChunkHit hit, 0.05D)
 
             ||
             //right down
@@ -463,7 +463,7 @@ namespace Winecrash.Game
                     this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
                     (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Backward * (float)_Bc.Extents.Z),
-                Vector3D.Backward), 0.05D, out hit)
+                Vector3D.Backward), 0.05D, out hit, 0.05D)
             ||
             //left down
             RaycastChunk(
@@ -471,7 +471,7 @@ namespace Winecrash.Game
                     this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
                     (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Backward * (float)_Bc.Extents.Z),
-                Vector3D.Backward), 0.05D, out hit)
+                Vector3D.Backward), 0.05D, out hit, 0.05D)
             ||
             //left up
             RaycastChunk(
@@ -479,7 +479,7 @@ namespace Winecrash.Game
                     this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
                     (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Backward * (float)_Bc.Extents.Z),
-                Vector3D.Backward), 0.05D, out hit))
+                Vector3D.Backward), 0.05D, out hit, 0.05D))
             {
                 this._Rb.Velocity *= new Vector3D(1, 1, 0);
 
@@ -499,7 +499,7 @@ namespace Winecrash.Game
                     this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
                     (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Forward * (float)_Bc.Extents.Z),
-                Vector3D.Forward), 0.05D, out RaycastChunkHit hit)
+                Vector3D.Forward), 0.05D, out RaycastChunkHit hit, 0.05D)
 
             ||
             //right down
@@ -508,7 +508,7 @@ namespace Winecrash.Game
                     this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
                     (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Forward * (float)_Bc.Extents.Z),
-                Vector3D.Forward), 0.05D, out hit)
+                Vector3D.Forward), 0.05D, out hit, 0.05D)
             ||
             //left down
             RaycastChunk(
@@ -516,7 +516,7 @@ namespace Winecrash.Game
                     this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
                     (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Forward * (float)_Bc.Extents.Z),
-                Vector3D.Forward), 0.05D, out hit)
+                Vector3D.Forward), 0.05D, out hit, 0.05D)
             ||
             //left up
             RaycastChunk(
@@ -524,7 +524,7 @@ namespace Winecrash.Game
                     this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
                     (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
                     (Vector3F.Forward * (float)_Bc.Extents.Z),
-                Vector3D.Forward), 0.05D, out hit))
+                Vector3D.Forward), 0.05D, out hit, 0.05D))
             {
                 
                 this._Rb.Velocity *= new Vector3D(1, 1, 0);

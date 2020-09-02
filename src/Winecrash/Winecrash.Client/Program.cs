@@ -28,7 +28,6 @@ namespace Winecrash.Game
 
         static void Start()
         {
-
             //MeshRenderer.Global_Wireframe = true;
             Graphics.Window.Title = "Winecraft Alpha 0.0.1";
 
@@ -54,12 +53,13 @@ namespace Winecrash.Game
             
             MainMenu.Hide();
 
-            WObject hand = new WObject("Hand");
+            /*WObject hand = new WObject("Hand");
             MeshRenderer handRenderer = hand.AddModule<MeshRenderer>();
             handRenderer.Mesh = Mesh.LoadFile("assets/models/hand.obj", MeshFormats.Wavefront);
             hand.Parent = Camera.Main.WObject;
+            hand.AddModule<Hand>();
 
-            hand.LocalPosition = Vector3F.Forward;
+            hand.LocalPosition = Vector3F.Forward;*/
     
             Input.LockMode = CursorLockModes.Lock;
             Input.CursorVisible = false;

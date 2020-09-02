@@ -27,6 +27,8 @@ namespace Winecrash.Engine
         {
             lock(wobjectLocker)
                 _WObjects.Add(this);
+
+            Graphics.Window.OnRender += (e) => _RendersForward = this.Forward;
         }
 
         /// <summary>
@@ -37,6 +39,8 @@ namespace Winecrash.Engine
         {
             lock(wobjectLocker)
                 _WObjects.Add(this);
+
+            Graphics.Window.OnRender += (e) => _RendersForward = this.Forward;
         }
 
         /// <summary>
@@ -85,8 +89,6 @@ namespace Winecrash.Engine
                 return _Children.ToArray();
             }
         }
-
-
 
         public Vector3F Position
         {
@@ -176,11 +178,12 @@ namespace Winecrash.Engine
                 return this.Rotation * Vector3F.Forward;
             }
         }
+        internal Vector3F _RendersForward { get; private set; }
         public Vector3F Backward
         {
             get
             {
-                return this.Rotation * Vector3F.Down;
+                return this.Rotation * Vector3F.Backward;
             }
         }
 
@@ -192,9 +195,11 @@ namespace Winecrash.Engine
                 Quaternion rot = this.Rotation;
                 Vector3F sca = this.Scale;
 
+                Matrix4 rotMat = Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W));
+
                 Matrix4 transform =
                     Matrix4.CreateScale(sca.X, sca.Y, sca.Z) *
-                    Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W)) *
+                    rotMat *
                     Matrix4.CreateTranslation(tra.X, tra.Y, tra.Z) *
                     Matrix4.Identity;
 
