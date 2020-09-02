@@ -13,6 +13,55 @@ namespace Winecrash.Engine
         public double Z { get; set; }
         public double W { get; set; }
 
+        public double this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return X;
+
+                    case 1:
+                        return Y;
+
+                    case 2:
+                        return Z;
+
+                    case 3:
+                        return W;
+
+                    default:
+                        throw new ArgumentOutOfRangeException("Vector3D indexer must be between 0 and 2 (0:X, 1:Y, 2:Z)");
+                }
+            }
+
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        X = value;
+                        break;
+
+                    case 1:
+                        Y = value;
+                        break;
+
+                    case 2:
+                        Z = value;
+                        break;
+
+                    case 3:
+                        W = value;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException("Vector3D indexer must be between 0 and 2 (0:X, 1:Y, 2:Z)");
+                }
+            }
+        }
+
         #region Multi dimensional accessors
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D XY

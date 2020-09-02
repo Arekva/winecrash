@@ -20,7 +20,7 @@ namespace Winecrash.Engine.GUI
             base.Creation();
         }
 
-        internal override void Use(Camera sender)
+        internal unsafe override void Use(Camera sender)
         {
             if (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0 || Deleted || Label == null || Material == null || Label.Text == null) return;
 
@@ -70,8 +70,21 @@ namespace Winecrash.Engine.GUI
             Color256 shadColr = Label.Color * 0.33D;
             Color256 col = new Color256(shadColr.R, shadColr.G, shadColr.B, 0.75D);
 
+            
+            int dummy = 0;
+
+            Material.MaterialData matData = this.Material._Data.Where(d => d.Name == "transform").FirstOrDefault();
+
+            //Debug.Log(matData.Name);
+
+            if (matData == null) return;
+
             void RenderLabel()
             {
+                this.Material.Use();
+
+                int count = 0;
+
                 for (int i = 0; i < this.Label.Lines.Length; i++)
                 {
                     string str = this.Label.Lines[i];
@@ -125,9 +138,12 @@ namespace Winecrash.Engine.GUI
                         GL.BindVertexArray(meshes[index].VertexArrayObject);
                         GL.BindBuffer(BufferTarget.ArrayBuffer, meshes[index].VertexBufferObject);
 
-                        this.Material.SetData<Matrix4>("transform", transform);
-                        this.Material.Use();
+                        //matData.Data = transform;
+                        //this.Material.SetData<Matrix4>("transform", transform);
 
+                        //this.Material.SetGLData(ref matData, ref dummy);
+                        this.Material.SetMatrix4(matData.Location, transform);
+                        this.Material.Shader.Use();
                         GL.Disable(EnableCap.DepthTest);
 
                         GL.DrawElements((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)meshes[index].Indices, DrawElementsType.UnsignedInt, 0);
@@ -146,9 +162,14 @@ namespace Winecrash.Engine.GUI
                         shiftX += glyphratio * fontSize;
 
                         Render(j);
+
+                        //count++;
                     }
 
                 }
+
+                //GL.MultiDrawElementsIndirect((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, DrawElementsType.UnsignedInt, , , Shader.Size);
+                //GL.DrawElementsInstanced((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, count, DrawElementsType.UnsignedInt, , 0);
             }
 
             if (Label.Shadows)

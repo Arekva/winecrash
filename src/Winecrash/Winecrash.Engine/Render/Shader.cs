@@ -197,6 +197,14 @@ namespace Winecrash.Engine
             Cache.Add(this);
         }
 
+
+        public const int VerticeSize = 3;
+        public const int UVSize = 2;
+        public const int NormalSize = 3;
+
+        public const int Size = VerticeSize + UVSize + NormalSize;
+
+
         internal bool SetAttribute(string name, AttributeTypes type)
         {
             ShaderAttributeData data = null;
@@ -220,11 +228,7 @@ namespace Winecrash.Engine
             int stride;
             int offset;
 
-            const int VerticeSize = 3;
-            const int UVSize = 2;
-            const int NormalSize = 3;
-
-            const int Size = VerticeSize + UVSize + NormalSize;
+            
 
             switch (type)
             {

@@ -33,7 +33,7 @@ namespace Winecrash.Engine.GUI
 
             cam._FarClip = 200.0F;
             cam.NearClip = 0.0F;
-            this.WObject.Position -= Vector3F.Forward * 100.0F;
+            this.WObject.Position -= Vector3D.Forward * 100.0D;
 
             //UI Layer: 48;
             cam.RenderLayers = 1L << 48;
@@ -50,12 +50,12 @@ namespace Winecrash.Engine.GUI
             UICamera.OrthographicSize = new Vector2F(this.Size.X, this.Size.Y);
         }
 
-        public static Vector2F ScreenToUISpace(Vector2F screenCoords)
+        public static Vector2D ScreenToUISpace(Vector2F screenCoords)
         {
-            Vector2F extents = Canvas.Main.Extents;
+            Vector2D extents = Canvas.Main.Extents;
 
-            Vector2F remapped = WMath.Remap(screenCoords, Vector2F.Zero, Vector2F.One, -Canvas.Main.Extents, Canvas.Main.Extents);
-            remapped.X *= -1F;
+            Vector2D remapped = WMath.Remap(screenCoords, Vector2D.Zero, Vector2D.One, -Canvas.Main.Extents, Canvas.Main.Extents);
+            remapped.X *= -1D;
             return remapped;
         }
     }

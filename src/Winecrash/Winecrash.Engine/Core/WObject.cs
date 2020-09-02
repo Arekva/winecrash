@@ -90,19 +90,19 @@ namespace Winecrash.Engine
             }
         }
 
-        public Vector3F Position
+        public Vector3D Position
         {
             get
             {   //                                      first set to scale                                     then rotate                          then add parent's position
-                return this._Parent ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3F.Zero, this._Parent.Rotation.Inverted) + this._Parent.Position : this.LocalPosition;
+                return this._Parent ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3D.Zero, this._Parent.Rotation.Inverted) + this._Parent.Position : this.LocalPosition;
             }
 
             set
             {   //                                      first get relative position                              then rotate by invert                                 then scale
-                this.LocalPosition = this._Parent ? (value - this._Parent.Position).RotateAround(Vector3F.Zero, this._Parent.Rotation) * (Vector3F.One / this._Parent.Scale) : value;
+                this.LocalPosition = this._Parent ? (value - this._Parent.Position).RotateAround(Vector3D.Zero, this._Parent.Rotation) * (Vector3D.One / this._Parent.Scale) : value;
             }
         }
-        public Vector3F LocalPosition { get; set; } = Vector3F.Zero;
+        public Vector3D LocalPosition { get; set; } = Vector3D.Zero;
 
         public Quaternion Rotation
         {
@@ -118,7 +118,7 @@ namespace Winecrash.Engine
         }
         public Quaternion LocalRotation { get; set; } = Quaternion.Identity;
 
-        public Vector3F Scale
+        public Vector3D Scale
         {
             get
             {
@@ -130,27 +130,27 @@ namespace Winecrash.Engine
                 this.LocalScale = this._Parent ? value / this._Parent.Scale : value;
             }
         }
-        public Vector3F LocalScale { get; set; } = Vector3F.One;
+        public Vector3D LocalScale { get; set; } = Vector3D.One;
 
-        public Vector3F Right
+        public Vector3D Right
         {
             get
             {
-                return this.Rotation * Vector3F.Right;
+                return this.Rotation * Vector3D.Right;
             }
         }
-        public Vector3F Left
+        public Vector3D Left
         {
             get
             {
-                return this.Rotation * Vector3F.Left;
+                return this.Rotation * Vector3D.Left;
             }
         }
-        public Vector3F Up
+        public Vector3D Up
         {
             get
             {
-                return this.Rotation * Vector3F.Up;
+                return this.Rotation * Vector3D.Up;
             }
 
             set
@@ -164,26 +164,26 @@ namespace Winecrash.Engine
                 this.Rotation *= new Quaternion(Vector3D.Forward, Vector2D.Angle(Vector2D.Up, value.XY) * WMath.RadToDeg);
             }
         }
-        public Vector3F Down
+        public Vector3D Down
         {
             get
             {
-                return this.Rotation * Vector3F.Down;
+                return this.Rotation * Vector3D.Down;
             }
         }
-        public Vector3F Forward
+        public Vector3D Forward
         {
             get
             {
-                return this.Rotation * Vector3F.Forward;
+                return this.Rotation * Vector3D.Forward;
             }
         }
-        internal Vector3F _RendersForward { get; private set; }
-        public Vector3F Backward
+        internal Vector3D _RendersForward { get; private set; }
+        public Vector3D Backward
         {
             get
             {
-                return this.Rotation * Vector3F.Backward;
+                return this.Rotation * Vector3D.Backward;
             }
         }
 
@@ -191,16 +191,16 @@ namespace Winecrash.Engine
         {
             get
             {
-                Vector3F tra = this.Position;
+                Vector3D tra = this.Position;
                 Quaternion rot = this.Rotation;
-                Vector3F sca = this.Scale;
+                Vector3D sca = this.Scale;
 
                 Matrix4 rotMat = Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W));
 
                 Matrix4 transform =
-                    Matrix4.CreateScale(sca.X, sca.Y, sca.Z) *
+                    Matrix4.CreateScale((float)sca.X, (float)sca.Y, (float)sca.Z) *
                     rotMat *
-                    Matrix4.CreateTranslation(tra.X, tra.Y, tra.Z) *
+                    Matrix4.CreateTranslation((float)tra.X, (float)tra.Y, (float)tra.Z) *
                     Matrix4.Identity;
 
                 return transform;

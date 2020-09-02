@@ -17,7 +17,7 @@ namespace Winecrash.Game
         private static Random GeneratorRandom = new Random();
         public static ushort[] GetChunk(int x, int y, out bool generated)
         {
-#if RELEASE
+#if !DEBUG
             string fileName = "save/" + $"c{x}_{y}.json";
 
 
@@ -32,7 +32,7 @@ namespace Winecrash.Game
             generated = true;
             return CreateTerrain(x, y);
 
-#if RELEASE
+#if !DEBUG
             }
 #endif
 
@@ -95,21 +95,12 @@ namespace Winecrash.Game
                         const float scale = 0.025F;
                         const float contScale = 0.001F;
                         const float mountainScale = 0.005F;
-                        const float shiftX = 0; //Début des farlands : 16000000 | Grosses Farlands : 200000000
-                        const float shiftZ = 0;
+                        const float shiftX = 0; //Début des farlands : 16000000 | Grosses Farlands : 200000000 
+                        const float shiftZ = 0; //todo: auré tu fais chier avec tes commentaires.
 
                         const float caveScale = 0.1F;
                         const float thresold = 0.3F;
 
-                        //const float torsadeScale = 0.1F;
-                        //const float torsadeThresold = 0.4F;
-
-                        //int height = (int)(plains.GetValue((chunkx * Chunk.Width + shiftX + x) * scale, (chunky * Chunk.Depth + shiftZ + z) * scale) * 15) + 64;
-
-
-
-
-                        //bool isCave = (((caves.GetValue((chunkx * Chunk.Width + shiftX + (float)x) * caveScale, y * caveScale, (chunky * Chunk.Depth + shiftZ + (float)z) * caveScale)) + 1) /2.0F) < thresold;
 
                         float xsample = (chunkx * Chunk.Width + shiftX + x);
                         float ysample = (chunky * Chunk.Depth + shiftZ + z);
@@ -124,9 +115,8 @@ namespace Winecrash.Game
                         mountainValue = (float)WMath.Clamp(Math.Pow(mountainValue, 4.0), 0.0, 1.0);
 
                         double final = continentalHeight + (landHeight * mountainValue);
-                        //float num = adder.GetValue(xsample, ysample, 0.0F);
-
-                        int height = (int)final;//WMath.Remap(final, 60.0D, 85.0D, 60.0D, 75.0D);
+   
+                        int height = (int)final;
 
                         bool waterlevel = height < 64;
 

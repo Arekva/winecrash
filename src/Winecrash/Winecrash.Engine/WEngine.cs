@@ -132,7 +132,10 @@ namespace Winecrash.Engine
             wobj.AddModule<Input>().ExecutionOrder = Int32.MinValue;
             wobj.AddModule<EngineCore>();
 
-            WObject wobjcan = new WObject("Canvas");
+            WObject wobjcan = new WObject("Canvas")
+            {
+                Undeletable = true
+            };
             wobjcan.AddModule<GUI.Canvas>();
             
 

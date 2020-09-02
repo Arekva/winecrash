@@ -44,7 +44,7 @@ namespace Winecrash.Game
             Camera.Main.RenderLayers &= ~(1L << 48);
 
             MainMenu.Show();
-
+            //Debug.LogError("test");
             /*WObject mdebug = new WObject();
             mdebug.AddModule<DebugInput>();*/
         }
@@ -59,6 +59,7 @@ namespace Winecrash.Game
             hand.Parent = Camera.Main.WObject;
             hand.AddModule<Hand>();
 
+            
             hand.LocalPosition = Vector3F.Forward;*/
     
             Input.LockMode = CursorLockModes.Lock;
@@ -118,7 +119,7 @@ namespace Winecrash.Game
             Image bar = itembar.AddModule<Image>();
             bar.Picture = new Texture("assets/textures/itembar.png");
             bar.KeepRatio = true;
-            bar.MinAnchor = new Vector2F(0.35F, 0.0F);
+            bar.MinAnchor = new Vector2F(0.35F, 0.005F);
             bar.MaxAnchor = new Vector2F(0.65F, 0.08F);
             bar.Color = new Color256(1.0, 1.0, 1.0, 0.8F);
             
@@ -208,32 +209,32 @@ namespace Winecrash.Game
 
         static void CreateDebugWindow()
         {
-            Debug.AddLogger(new Logger(LogVerbose, LogWarning, LogError, LogException));
+            Debug.AddLogger(new Logger(LogVerbose, LogWarn, LogErr, LogException));
             Debug.Log("Winecrash Predev 0.2 - (C) Arthur Carré 2020");
         }
 
-        static void LogVerbose(object msg)
+        private static void LogVerbose(object obj)
         {
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(msg.ToString());
+            Console.ResetColor();
+            Console.WriteLine("[ Verbose ] " + obj);
         }
-
-        static void LogWarning(object msg)
+        private static void LogWarn(object obj)
         {
+            Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(msg.ToString());
+            Console.WriteLine("[ Warning ] " + obj);
         }
-
-        static void LogError(object msg)
+        private static void LogErr(object obj)
         {
+            Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(msg.ToString());
+            Console.WriteLine("[  Error  ] " + obj);
         }
-
-        static void LogException(object msg)
+        private static void LogException(object obj)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(msg.ToString());
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("[Exception] " + obj);
         }
     }
 }

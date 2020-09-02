@@ -240,8 +240,8 @@ namespace Winecrash.Engine.GUI
             }
 
             Vector2I mpos = Input.MousePosition;
-            Vector2I bpos = this.Background.GlobalPosition.XY;
-            Vector2I bsca = this.Background.GlobalScale.XY / 2;
+            Vector2I bpos = (Vector2I)this.Background.GlobalPosition.XY;
+            Vector2I bsca = (Vector2I)this.Background.GlobalScale.XY / 2;
 
             //AABB with mouse point
             bool isHovered =

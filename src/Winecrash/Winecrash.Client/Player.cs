@@ -50,7 +50,7 @@ namespace Winecrash.Game
         private RigidBody _Rb;
         private BoxCollider _Bc;
 
-        public Vector3F CameraShift = new Vector3F(0, 0.7F, 0);
+        public Vector3D CameraShift = new Vector3D(0, 0.7D, 0);
 
         public RaycastChunkHit? ViewRayHit { get; set; } = null;
 
@@ -59,6 +59,33 @@ namespace Winecrash.Game
         public Chunk CurrentChunk { get; private set; }
 
         public WObject Cursor3D;
+
+        public void ForceInvokeChunkChange()
+        {
+            World.GlobalToLocal(this.WObject.Position, out Vector3I cpos, out _);
+
+            Ticket tck = Ticket.GetTicket(cpos.XY);
+
+            if (tck != null)
+            {
+                Chunk c = tck.Chunk;
+
+                if (c != null)
+                {
+                    if (previousChunk != null && (previousChunk != c))
+                    {
+                        OnChangeChunk?.Invoke(c);
+                    }
+                }
+
+                previousChunk = c;
+            }
+
+            else
+            {
+                tck = Ticket.CreateTicket(cpos.X, cpos.Y, 30, TicketTypes.Player, TicketPreviousDirection.None, true, -1);
+            }
+        }
         //public WObject HitSphere;
 
         public static string[] debug_items = new[]
@@ -73,7 +100,7 @@ namespace Winecrash.Game
             "winecrash:leaves",
             "winecrash:log"
         };
-
+        
         public static Texture[] break_textures = new Texture[]
         {
             new Texture("assets/textures/break/break_0.png"),
@@ -445,185 +472,185 @@ namespace Winecrash.Game
 #region Rays
         private void ChechBackward()
         {
-            if (this._Rb.Velocity.Z > 0) return;
+            if (this._Rb.Velocity.Z > 0.0D) return;
 
             if (
             //right up
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z),
+                    this.WObject.Position + (Vector3D.Up * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Right * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Backward * _Bc.Extents.Z),
                 Vector3D.Backward), 0.05D, out RaycastChunkHit hit, 0.05D)
 
             ||
             //right down
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z),
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Right * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Backward * _Bc.Extents.Z),
                 Vector3D.Backward), 0.05D, out hit, 0.05D)
             ||
             //left down
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z),
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Left * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Backward * _Bc.Extents.Z),
                 Vector3D.Backward), 0.05D, out hit, 0.05D)
             ||
             //left up
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z),
+                    this.WObject.Position + (Vector3D.Up * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Left * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Backward * _Bc.Extents.Z),
                 Vector3D.Backward), 0.05D, out hit, 0.05D))
             {
-                this._Rb.Velocity *= new Vector3D(1, 1, 0);
+                this._Rb.Velocity *= new Vector3D(1.0D, 1.0D, 0);
 
-                this.WObject.Position *= new Vector3F(1, 1, 0);
+                this.WObject.Position *= new Vector3D(1.0, 1.0D, 0);
 
-                this.WObject.Position -= Vector3F.Backward * ((float)hit.GlobalPosition.Z + (float)_Bc.Extents.Z);
+                this.WObject.Position -= Vector3D.Backward * (hit.GlobalPosition.Z + _Bc.Extents.Z);
             }
         }
         private void CheckForward()
         {
-            if (this._Rb.Velocity.Z < 0) return;
+            if (this._Rb.Velocity.Z < 0.0) return;
 
             if (
             //right up
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z),
+                    this.WObject.Position + (Vector3D.Up * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Right * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Forward * _Bc.Extents.Z),
                 Vector3D.Forward), 0.05D, out RaycastChunkHit hit, 0.05D)
 
             ||
             //right down
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z),
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Right * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Forward * _Bc.Extents.Z),
                 Vector3D.Forward), 0.05D, out hit, 0.05D)
             ||
             //left down
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z),
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Left * _Bc.Extents.X) * 0.8F +
+                    (Vector3D.Forward * _Bc.Extents.Z),
                 Vector3D.Forward), 0.05D, out hit, 0.05D)
             ||
             //left up
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z),
+                    this.WObject.Position + (Vector3D.Up * (float)_Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Left * _Bc.Extents.X) * 0.8F +
+                    (Vector3D.Forward * _Bc.Extents.Z),
                 Vector3D.Forward), 0.05D, out hit, 0.05D))
             {
                 
-                this._Rb.Velocity *= new Vector3D(1, 1, 0);
+                this._Rb.Velocity *= new Vector3D(1.0D, 1.0D, 0.0D);
 
-                this.WObject.Position *= new Vector3F(1, 1, 0);
+                this.WObject.Position *= new Vector3D(1.0D, 1.0D, 0.0D);
 
-                this.WObject.Position += Vector3F.Forward * ((float)hit.GlobalPosition.Z - (float)_Bc.Extents.Z);
+                this.WObject.Position += Vector3D.Forward * (hit.GlobalPosition.Z - _Bc.Extents.Z);
             }
         }
         private void CheckLeft()
         {
-            if (this._Rb.Velocity.X < 0) return;
+            if (this._Rb.Velocity.X < 0.0D) return;
 
             if (
             //front up
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Right * (float)_Bc.Extents.X) +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Up * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Right * _Bc.Extents.X) +
+                    (Vector3D.Forward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Left), 0.05D, out RaycastChunkHit hit)
 
             ||
             //front down
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Right * (float)_Bc.Extents.X) +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Right * _Bc.Extents.X) +
+                    (Vector3D.Forward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Left), 0.05D, out hit)
             ||
             //back down
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Right * (float)_Bc.Extents.X) +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Right * _Bc.Extents.X) +
+                    (Vector3D.Backward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Left), 0.05D, out hit)
             ||
             //back up
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Right * (float)_Bc.Extents.X) +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Up * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Right * _Bc.Extents.X) +
+                    (Vector3D.Backward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Left), 0.05D, out hit))
             {
 
-                this._Rb.Velocity *= new Vector3D(0, 1, 1);
+                this._Rb.Velocity *= new Vector3D(0.0D, 1.0D, 1.0D);
 
-                this.WObject.Position *= new Vector3F(0, 1, 1);
+                this.WObject.Position *= new Vector3D(0.0D, 1.0D, 1.0D);
 
-                this.WObject.Position -= Vector3F.Left * ((float)hit.GlobalPosition.X - (float)_Bc.Extents.X);
+                this.WObject.Position -= Vector3D.Left * (hit.GlobalPosition.X - _Bc.Extents.X);
             }
         }
         private void CheckRight()
         {
-            if (this._Rb.Velocity.X > 0) return;
+            if (this._Rb.Velocity.X > 0.0D) return;
 
             if (
             //front up
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Left * (float)_Bc.Extents.X) +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Up * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Left * _Bc.Extents.X) +
+                    (Vector3D.Forward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Right), 0.05D, out RaycastChunkHit hit)
 
             ||
             //front down
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Left * (float)_Bc.Extents.X) +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Left * _Bc.Extents.X) +
+                    (Vector3D.Forward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Right), 0.05D, out hit)
             ||
             //back down
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Left * (float)_Bc.Extents.X) +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Left * _Bc.Extents.X) +
+                    (Vector3D.Backward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Right), 0.05D, out hit)
             ||
             //back up
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) * 0.8F +
-                    (Vector3F.Left * (float)_Bc.Extents.X) +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Up * _Bc.Extents.Y) * 0.8D +
+                    (Vector3D.Left * _Bc.Extents.X) +
+                    (Vector3D.Backward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Right), 0.05D, out hit))
             {
 
-                this._Rb.Velocity *= new Vector3D(0, 1, 1);
+                this._Rb.Velocity *= new Vector3D(0.0D, 1.0D, 1.0D);
 
-                this.WObject.Position *= new Vector3F(0, 1, 1);
+                this.WObject.Position *= new Vector3D(0.0D, 1.0D, 1.0D);
 
-                this.WObject.Position += Vector3F.Right * ((float)hit.GlobalPosition.X + (float)_Bc.Extents.X);
+                this.WObject.Position += Vector3D.Right * (hit.GlobalPosition.X + _Bc.Extents.X);
             }
         }
         private void CheckTop()
@@ -632,41 +659,41 @@ namespace Winecrash.Game
             //front right
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) +
-                    (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Up * _Bc.Extents.Y) +
+                    (Vector3D.Right * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Forward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Up), 0.05D, out RaycastChunkHit hit)
 
             ||
             //front left
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) +
-                    (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Up * _Bc.Extents.Y) +
+                    (Vector3D.Left * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Forward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Up), 0.05D, out hit)
             ||
             //back left
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) +
-                    (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Up * _Bc.Extents.Y) +
+                    (Vector3D.Left * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Backward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Up), 0.05D, out hit)
             ||
             //back right
             RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Up * (float)_Bc.Extents.Y) +
-                    (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Up * _Bc.Extents.Y) +
+                    (Vector3D.Right * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Backward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Up), 0.05D, out hit))
             {
                 this._Rb.Velocity *= new Vector3D(1, 0, 1);
 
-                this.WObject.Position *= new Vector3F(1, 0, 1);
+                this.WObject.Position *= new Vector3D(1, 0, 1);
 
-                this.WObject.Position += Vector3F.Up * ((float)hit.LocalPosition.Y - (float)_Bc.Extents.Y - 0.05F);
+                this.WObject.Position += Vector3D.Up * (hit.LocalPosition.Y - _Bc.Extents.Y - 0.05D);
             }
         }
         private void CheckGrounded()
@@ -679,9 +706,9 @@ namespace Winecrash.Game
             //front right
             Grounded = RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) +
-                    (Vector3F.Right * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) +
+                    (Vector3D.Right * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Forward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Down), 0.05D, out RaycastChunkHit hit);
 
 
@@ -689,37 +716,37 @@ namespace Winecrash.Game
             if (!Grounded)
                 Grounded = RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) +
-                    (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Forward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) +
+                    (Vector3D.Left * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Forward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Down), 0.05D, out hit);
 
             //back left
             if (!Grounded)
                 Grounded = RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) +
-                    (Vector3F.Left * (float)_Bc.Extents.X) * 0.8F +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.8F,
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) +
+                    (Vector3D.Left * _Bc.Extents.X) * 0.8D +
+                    (Vector3D.Backward * _Bc.Extents.Z) * 0.8D,
                 Vector3D.Down), 0.05D, out hit);
 
             //back right
             if (!Grounded)
                 Grounded = RaycastChunk(
                 new Ray(
-                    this.WObject.Position + (Vector3F.Down * (float)_Bc.Extents.Y) +
-                    (Vector3F.Right * (float)_Bc.Extents.X) * 0.9F +
-                    (Vector3F.Backward * (float)_Bc.Extents.Z) * 0.9F,
+                    this.WObject.Position + (Vector3D.Down * _Bc.Extents.Y) +
+                    (Vector3D.Right * _Bc.Extents.X) * 0.9D +
+                    (Vector3D.Backward * _Bc.Extents.Z) * 0.9D,
                 Vector3D.Down), 0.05D, out hit);
 
 
             if (Grounded)
             {
-                float ypos = this.WObject.Position.Y;
+                double ypos = this.WObject.Position.Y;
 
                 this._Rb.Velocity *= new Vector3D(1, 0, 1);
-                this.WObject.Position *= new Vector3F(1, 0, 1);
-                this.WObject.Position += Vector3F.Up * ((float)hit.LocalPosition.Y + (float)_Bc.Extents.Y * 2 + 0.05F);
+                this.WObject.Position *= new Vector3D(1, 0, 1);
+                this.WObject.Position += Vector3D.Up * (hit.LocalPosition.Y + _Bc.Extents.Y * 2 + 0.05D);
 
                 
             }

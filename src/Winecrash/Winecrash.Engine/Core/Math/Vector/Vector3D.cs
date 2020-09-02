@@ -12,9 +12,53 @@ namespace Winecrash.Engine
         public int Dimensions { get; }
 
         #region Properties
+
         public double X { get; set; }
         public double Y { get; set; }
         public double Z { get; set; }
+
+        public double this[int index]
+        {
+            get
+            {
+                switch(index)
+                {
+                    case 0:
+                        return X;
+
+                    case 1:
+                        return Y;
+
+                    case 2:
+                        return Z;
+
+                    default:
+                        throw new ArgumentOutOfRangeException("Vector3D indexer must be between 0 and 2 (0:X, 1:Y, 2:Z)");
+                }
+            }
+
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        X = value;
+                        break;
+
+                    case 1:
+                        Y = value;
+                        break;
+
+                    case 2:
+                        Z = value;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException("Vector3D indexer must be between 0 and 2 (0:X, 1:Y, 2:Z)");
+                }
+            }
+        }
+
 
         #region Multi Dimensional Accessors
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -73,7 +117,6 @@ namespace Winecrash.Engine
                 this.Y = value.Y;
             }
         }
-
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2D XZ
         {
@@ -102,7 +145,6 @@ namespace Winecrash.Engine
                 this.X = value.Y;
             }
         }
-
         #endregion
 
         #region Directions

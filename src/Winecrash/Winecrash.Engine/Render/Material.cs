@@ -51,7 +51,7 @@ namespace Winecrash.Engine
             }
         }
 
-        private class MaterialData
+        internal class MaterialData
         {
             public string Name { get; }
             public int Location { get; }
@@ -69,7 +69,7 @@ namespace Winecrash.Engine
             }
         }
 
-        private MaterialData[] _Data { get; set; }
+        internal MaterialData[] _Data { get; set; }
         private MaterialData[] _DataInMaterial;
 
         internal static List<Material> Cache = new List<Material>();
@@ -112,7 +112,7 @@ namespace Winecrash.Engine
                 SetGLData(ref data, ref texCount);
             }
         }
-        private void SetGLData(ref MaterialData data, ref int texCount)
+        internal void SetGLData(ref MaterialData data, ref int texCount)
         {
             switch (data.GLType) //if texture
             {
@@ -307,42 +307,42 @@ namespace Winecrash.Engine
             return (T)GetData(name);
         }
 
-        private void SetInt(int location, int data)
+        internal void SetInt(int location, int data)
         {
             GL.Uniform1(location, data);
         }
 
-        private void SetFloat(int location, float data)
+        internal void SetFloat(int location, float data)
         {
             GL.Uniform1(location, data);
         }
 
-        private void SetDouble(int location, double data)
+        internal void SetDouble(int location, double data)
         {
             GL.Uniform1(location, data);
         }
 
-        private void SetMatrix4(int location, Matrix4 data)
+        internal void SetMatrix4(int location, Matrix4 data)
         {
             GL.UniformMatrix4(location, true, ref data);
         }
 
-        private void SetVector2(int location, Vector2 data)
+        internal void SetVector2(int location, Vector2 data)
         {
             GL.Uniform2(location, ref data);
         }
 
-        private void SetVector3(int location, Vector3 data)
+        internal void SetVector3(int location, Vector3 data)
         {
             GL.Uniform3(location, ref data);
         }
 
-        private void SetVector4(int location, Vector4 data)
+        internal void SetVector4(int location, Vector4 data)
         {
             GL.Uniform4(location, ref data);
         }
 
-        private void SetIntArray(int location, int[] data)
+        internal void SetIntArray(int location, int[] data)
         {
             GL.Uniform3(location, data.Length, data);
         }

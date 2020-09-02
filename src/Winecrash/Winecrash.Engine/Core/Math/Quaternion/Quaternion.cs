@@ -199,11 +199,52 @@ namespace Winecrash.Engine
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Get the Axis / Angle of this vector. (Angle defaults to degree)
+        /// </summary>
+        /// <param name="radian">If the angle should be in radian</param>
+        /// <returns>(XYZ) and Angle (W, degrees) of the vector.</returns>
+        public Vector4D AxisAngle(bool radian = false)
+        {
+            Vector4D q = (Vector4D)this;
+            if (Math.Abs(q.W) > 1.0f)
+            {
+                q.Normalize();
+            }
+
+            Vector4D result = new Vector4D
+            {
+                W = 2.0D * Math.Acos(q.W) * (radian ? 1.0D : WMath.RadToDeg) // angle
+            };
+
+            double den = Math.Sqrt(1.0D - (q.W * q.W));
+            if (den > 0.0001D)
+            {
+                result.XYZ = q.XYZ / den;
+            }
+            else
+            {
+                // This occurs when the angle is zero.
+                // Not a problem: just set an arbitrary normalized axis.
+                result.XYZ = Vector3D.Up;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Normalize this Quaternion.
+        /// </summary>
+        /// <returns></returns>
         public Quaternion Normalize()
         {
             return this = NormalizeQuaternion(this);
         }
 
+        /// <summary>
+        /// Conjugate the quaternion.
+        /// </summary>
+        /// <returns></returns>
         public Quaternion Conjugate()
         {
             return this = ConjugateQuaternion(this);

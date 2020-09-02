@@ -43,12 +43,24 @@ namespace Winecrash.Game
             mainPanelImg.MinSize = new Vector3F(400.0F, 400.0F, Single.PositiveInfinity);
             mainPanelImg.MaxSize = new Vector3F(800.0F, 800.0F, Single.PositiveInfinity);
 
+            
+
             WObject logo = new WObject("Game Text Logo") { Parent = mainPanel };
             Image logoImage = logo.AddModule<Image>();
             logoImage.Picture = new Texture("assets/textures/logo.png");
             logoImage.MinAnchor = new Vector2F(0.0F, 0.8F);
             logoImage.MaxAnchor = new Vector2F(1.0F, 1.0F);
             logoImage.KeepRatio = true;
+
+            Label lbTip = mainPanel.AddModule<Label>();
+            lbTip.ParentGUI = logoImage;
+            lbTip.Text = "No rotation yet :(";
+            lbTip.Color = new Color256(1.0, 1.0, 0.0, 1.0);
+            lbTip.Aligns = TextAligns.Middle;
+            lbTip.AutoSize = true;
+            lbTip.MinAnchor = new Vector2F(0.8F, -0.2F);
+            lbTip.MaxAnchor = new Vector2F(1.2F, 0.2F);
+
 
             WObject btnPanel = new WObject("Main UI Button Panel") { Parent = mainPanel };
             Image btnPanelImg = btnPanel.AddModule<Image>();

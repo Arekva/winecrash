@@ -8,14 +8,14 @@ namespace Winecrash.Engine.GUI
 {
     public abstract class GUIModule : Module
     {
-        public Vector2F MinAnchor { get; set; } = Vector2F.Zero;
-        public Vector2F MaxAnchor { get; set; } = Vector2F.One;
+        public Vector2D MinAnchor { get; set; } = Vector2D.Zero;
+        public Vector2D MaxAnchor { get; set; } = Vector2D.One;
 
         public GUIModule ParentGUI { get; set; } = null;
 
-        public Vector3F MinSize { get; set; } = Vector3F.One * Single.NegativeInfinity;
-        public Vector3F MaxSize { get; set; } = Vector3F.One * Single.PositiveInfinity;
-        internal virtual Vector3F GlobalPosition
+        public Vector3D MinSize { get; set; } = Vector3D.One * Single.NegativeInfinity;
+        public Vector3D MaxSize { get; set; } = Vector3D.One * Single.PositiveInfinity;
+        internal virtual Vector3D GlobalPosition
         {
             get
             {
@@ -24,31 +24,25 @@ namespace Winecrash.Engine.GUI
                     return this.WObject.Position;
                 }*/
 
-                float[] ganchors = GlobalScreenAnchors;
+                double[] ganchors = GlobalScreenAnchors;
 
-                Vector2F gMinAnchors = new Vector2F(ganchors[0], ganchors[1]);
-                Vector2F gMaxAnchors = new Vector2F(ganchors[2], ganchors[3]);
+                Vector2D gMinAnchors = new Vector2D(ganchors[0], ganchors[1]);
+                Vector2D gMaxAnchors = new Vector2D(ganchors[2], ganchors[3]);
 
-                Vector2F half = (gMaxAnchors - gMinAnchors) / 2.0F;
+                Vector2D half = (gMaxAnchors - gMinAnchors) / 2.0D;
 
-                Vector2F screenSpacePosition = gMinAnchors + half;
+                Vector2D screenSpacePosition = gMinAnchors + half;
 
-                float horizontalShift = (GlobalRight / 4.0F) - (GlobalLeft / 4.0F);
-                float verticalShift = (GlobalBottom / 4.0F) - (GlobalTop / 4.0F);
+                double horizontalShift = (GlobalRight / 4.0D) - (GlobalLeft / 4.0D);
+                double verticalShift = (GlobalBottom / 4.0D) - (GlobalTop / 4.0D);
 
-                Vector2F shift = new Vector2F(horizontalShift, verticalShift);
+                Vector2D shift = new Vector2D(horizontalShift, verticalShift);
 
-                //Vector3F sca = new Vector3F(Canvas.ScreenToUISpace(screenSpacePosition) + shift;
-
-                //sca.X = WMath.Clamp(sca.X, Image.MinScale.X, Image.MaxScale.X);
-                //sca.Y = WMath.Clamp(sca.Y, Image.MinScale.Y, Image.MaxScale.Y);
-                //sca.Z = WMath.Clamp(sca.Z, Image.MinScale.Z, Image.MaxScale.Z);
-
-                return new Vector3F(Canvas.ScreenToUISpace(screenSpacePosition) + shift, Depth);
+                return new Vector3D(Canvas.ScreenToUISpace(screenSpacePosition) + shift, Depth);
             }
         }
 
-        internal float GlobalRight
+        internal double GlobalRight
         {
             get
             {
@@ -56,7 +50,7 @@ namespace Winecrash.Engine.GUI
             }
         }
 
-        internal float GlobalLeft
+        internal double GlobalLeft
         {
             get
             {
@@ -64,7 +58,7 @@ namespace Winecrash.Engine.GUI
             }
         }
 
-        internal float GlobalTop
+        internal double GlobalTop
         {
             get
             {
@@ -72,7 +66,7 @@ namespace Winecrash.Engine.GUI
             }
         }
 
-        internal float GlobalBottom
+        internal double GlobalBottom
         {
             get
             {
@@ -80,27 +74,27 @@ namespace Winecrash.Engine.GUI
             }
         }
 
-        internal virtual Vector3F GlobalScale
+        internal virtual Vector3D GlobalScale
         {
             get//GlobalScreenAnchors
             {
-                Vector3F totalExtentsScaled = new Vector3F(((Vector2F)Canvas.Main.Extents) * 2.0F, 1.0F) * this.WObject.Scale;
+                Vector3D totalExtentsScaled = new Vector3D(((Vector2D)Canvas.Main.Extents) * 2.0D, 1.0D) * this.WObject.Scale;
 
 
-                float[] anchors = this.GlobalScreenAnchors;
+                double[] anchors = this.GlobalScreenAnchors;
 
 
-                Vector2F minanchors = new Vector2F(anchors[0], anchors[1]);
-                Vector2F maxanchors = new Vector2F(anchors[2], anchors[3]);
+                Vector2D minanchors = new Vector2D(anchors[0], anchors[1]);
+                Vector2D maxanchors = new Vector2D(anchors[2], anchors[3]);
 
-                Vector2F deltas = maxanchors - minanchors;
+                Vector2D deltas = maxanchors - minanchors;
 
                 totalExtentsScaled.XY *= deltas;
 
-                float horizontalScale = -(GlobalRight / 2.0F) - (GlobalLeft / 2.0F);
-                float verticalScale = -(GlobalBottom / 2.0F) - (GlobalTop / 2.0F);
+                double horizontalScale = -(GlobalRight / 2.0D) - (GlobalLeft / 2.0D);
+                double verticalScale = -(GlobalBottom / 2.0D) - (GlobalTop / 2.0D);
 
-                Vector3F sca = totalExtentsScaled * this.WObject.Scale + new Vector3F(horizontalScale, verticalScale, 1.0F);
+                Vector3D sca = totalExtentsScaled * this.WObject.Scale + new Vector3D(horizontalScale, verticalScale, 1.0D);
 
                 return sca;
             }
@@ -109,12 +103,12 @@ namespace Winecrash.Engine.GUI
         /// <summary>
         /// Get the global anchor position of the object, depending of the parents. Indices of the arary => xmin[0], ymin[1], xmax[2], ymax[3]
         /// </summary>
-        internal virtual float[] GlobalScreenAnchors
+        internal virtual double[] GlobalScreenAnchors
         {
             get
             {
-                float[] anchors = new float[4];
-                float xMin, yMin, xMax, yMax;
+                double[] anchors = new double[4];
+                double xMin, yMin, xMax, yMax;
 
                 if (this.ParentGUI == null)
                 {
@@ -126,52 +120,51 @@ namespace Winecrash.Engine.GUI
 
                 else
                 {
-                    //TODO le pb est ici
-                    float[] panchors = this.ParentGUI.GlobalScreenAnchors;
+                    double[] panchors = this.ParentGUI.GlobalScreenAnchors;
 
-                    xMin = WMath.Remap(this.MinAnchor.X, 0, 1, panchors[0], panchors[2]);      
-                    yMin = WMath.Remap(this.MinAnchor.Y, 0, 1, panchors[1], panchors[3]);                  
-                    xMax = WMath.Remap(this.MaxAnchor.X, 0, 1, panchors[0], panchors[2]);               
-                    yMax = WMath.Remap(this.MaxAnchor.Y, 0, 1, panchors[1], panchors[3]);
+                    xMin = WMath.Remap(this.MinAnchor.X, 0.0D, 1.0D, panchors[0], panchors[2]);      
+                    yMin = WMath.Remap(this.MinAnchor.Y, 0.0D, 1.0D, panchors[1], panchors[3]);                  
+                    xMax = WMath.Remap(this.MaxAnchor.X, 0.0D, 1.0D, panchors[0], panchors[2]);               
+                    yMax = WMath.Remap(this.MaxAnchor.Y, 0.0D, 1.0D, panchors[1], panchors[3]);
                 }
 
-                float xCentre = xMin + ((xMax - xMin) / 2.0F);
-                float yCentre = yMin + ((yMax - yMin) / 2.0F);
+                double xCentre = xMin + ((xMax - xMin) / 2.0D);
+                double yCentre = yMin + ((yMax - yMin) / 2.0D);
 
                 if (this is IRatioKeeper keepr && keepr.KeepRatio)
                 {
-                    float screenRatio = (float)Canvas.Main.Size.X / (float)Canvas.Main.Size.Y;
-                    float invScreenRatio = 1F / screenRatio;
+                    double screenRatio = (double)Canvas.Main.Size.X / (double)Canvas.Main.Size.Y;
+                    double invScreenRatio = 1F / screenRatio;
 
-                    float xRatio = keepr.Ratio;
-                    float yRatio = 1F / keepr.Ratio;
+                    double xRatio = keepr.Ratio;
+                    double yRatio = 1D / keepr.Ratio;
 
-                    float xCurrentRatio = xMax / yMax;
-                    float yCurrentRatio = 1F / xCurrentRatio;
+                    double xCurrentRatio = xMax / yMax;
+                    double yCurrentRatio = 1D / xCurrentRatio;
 
                     //todo: ratio < 1.0
-                    float x = xMax - xCentre;
-                    float y = x * yRatio * screenRatio;
+                    double x = xMax - xCentre;
+                    double y = x * yRatio * screenRatio;
 
                     yMin = yCentre - y;
                     yMax = yCentre + y;
                 }
 
-                Vector3F halfExtents = new Vector3F(Canvas.Main.Extents, 0.5F);
-                
-                Vector3F totalExtents = halfExtents * 2.0F;
-                Vector3F sizes = new Vector3F(xMax - xMin, yMax - yMin, 0.0F);
-                Vector3F scaledSizes = totalExtents * sizes;
-
-                Vector3F min = this.MinSize;
-                Vector3F max = this.MaxSize;
+                Vector3D halfExtents = new Vector3D(Canvas.Main.Extents, 0.5D);
+                       
+                Vector3D totalExtents = halfExtents * 2.0D;
+                Vector3D sizes = new Vector3D(xMax - xMin, yMax - yMin, 0.0D);
+                Vector3D scaledSizes = totalExtents * sizes;
+                       
+                Vector3D min = this.MinSize;
+                Vector3D max = this.MaxSize;
 
                 scaledSizes.X = WMath.Clamp(scaledSizes.X, min.X, max.X);
                 scaledSizes.Y = WMath.Clamp(scaledSizes.Y, min.Y, max.Y);
                 scaledSizes.Z = WMath.Clamp(scaledSizes.Z, min.Z, max.Z);
 
                 sizes = scaledSizes / totalExtents;
-                Vector3F halfSizes = sizes / 2.0F;
+                Vector3D halfSizes = sizes / 2.0D;
 
                 xMin = xCentre - halfSizes.X;
                 xMax = xCentre + halfSizes.X;

@@ -90,6 +90,8 @@
     <Compile Include="Core\Color\Color.cs" />
     <Compile Include="Core\Color\Color256.cs" />
     <Compile Include="Core\Color\Color32.cs" />
+    <Compile Include="Core\Math\Matrix\Matrix3D.cs" />
+    <Compile Include="Core\Math\Matrix\Matrix4D.cs" />
     <Compile Include="GameApplication.cs" />
     <Compile Include="GUI\TextAlign.cs" />
     <Compile Include="Render\Graphics.cs" />

@@ -19,7 +19,7 @@ namespace Winecrash.Engine
 
         internal override void LateFixedUpdate()
         {
-            this.WObject.Position += (Vector3F)Velocity * (float)Time.FixedDeltaTime;
+            this.WObject.Position += Velocity * Time.FixedDeltaTime;
         }
     }
 }

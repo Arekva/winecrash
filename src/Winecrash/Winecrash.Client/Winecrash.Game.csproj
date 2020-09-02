@@ -104,6 +104,7 @@
     <Compile Include="Item\Grass.cs" />
     <Compile Include="Item\TexturePaths.cs" />
     <Compile Include="MainMenu.cs" />
+    <Compile Include="MenuTip.cs" />
     <Compile Include="Modules\DayNightCycle.cs" />
     <Compile Include="Modules\FreeCam.cs" />
     <Compile Include="Player.cs" />

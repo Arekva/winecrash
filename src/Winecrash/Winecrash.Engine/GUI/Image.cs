@@ -14,17 +14,17 @@ namespace Winecrash.Engine.GUI
 
         public bool KeepRatio { get; set; } = false;
 
-        public float SizeX => (float)_Picture.Size.X;
-        public float SizeY => (float)_Picture.Size.Y;
+        public double SizeX => (float)_Picture.Size.X;
+        public double SizeY => (float)_Picture.Size.Y;
 
-        public float Ratio
+        public double Ratio
         {
             get
             {
-                return (float)_Picture.Size.X / (float)_Picture.Size.Y;
+                return (double)_Picture.Size.X / (double)_Picture.Size.Y;
             }
         }
-        public float GlobalRatio
+        public double GlobalRatio
         {
             get
             {

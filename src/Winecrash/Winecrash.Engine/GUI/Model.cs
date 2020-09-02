@@ -11,33 +11,33 @@ namespace Winecrash.Engine.GUI
         public ModelRenderer Renderer;
 
         public bool KeepRatio { get; set; } = false;
-        public float Ratio { get; set; } = 1.0F;
+        public double Ratio { get; set; } = 1.0D;
 
-        public float SizeX => 1.0F;
-        public float SizeY => 1.0F;
+        public double SizeX => 1.0D;
+        public double SizeY => 1.0D;
 
 
-        internal override Vector3F GlobalScale
+        internal override Vector3D GlobalScale
         {
             get//GlobalScreenAnchors
             {
-                Vector3F totalExtentsScaled = new Vector3F(((Vector2F)Canvas.Main.Extents) * 2.0F, 1.0F) * (this.WObject.Scale / 2.0F);
+                Vector3D totalExtentsScaled = new Vector3D((Vector2D)Canvas.Main.Extents * 2.0D, 1.0D) * (this.WObject.Scale / 2.0D);
 
 
-                float[] anchors = this.GlobalScreenAnchors;
+                double[] anchors = this.GlobalScreenAnchors;
 
 
-                Vector2F minanchors = new Vector2F(anchors[0], anchors[1]);
-                Vector2F maxanchors = new Vector2F(anchors[2], anchors[3]);
+                Vector2D minanchors = new Vector2D(anchors[0], anchors[1]);
+                Vector2D maxanchors = new Vector2D(anchors[2], anchors[3]);
 
-                Vector2F deltas = maxanchors - minanchors;
+                Vector2D deltas = maxanchors - minanchors;
 
                 totalExtentsScaled.XY *= deltas;
 
-                float horizontalScale = -(GlobalRight / 2.0F) - (GlobalLeft / 2.0F);
-                float verticalScale = -(GlobalBottom / 2.0F) - (GlobalTop / 2.0F);
+                double horizontalScale = -(GlobalRight / 2.0D) - (GlobalLeft / 2.0D);
+                double verticalScale = -(GlobalBottom / 2.0D) - (GlobalTop / 2.0D);
 
-                Vector3F sca = totalExtentsScaled * this.WObject.Scale + new Vector3F(horizontalScale, verticalScale, 1.0F);
+                Vector3D sca = totalExtentsScaled * this.WObject.Scale + new Vector3D(horizontalScale, verticalScale, 1.0D);
 
                 sca.X = WMath.Clamp(sca.X, MinScale.X, MaxScale.X);
                 sca.Y = WMath.Clamp(sca.Y, MinScale.Y, MaxScale.Y);
@@ -45,21 +45,21 @@ namespace Winecrash.Engine.GUI
 
                 if (KeepRatio)
                 {
-                    float smallest = sca.X;
+                    double smallest = sca.X;
 
                     if (sca.Y < sca.X)
                     {
                         smallest = sca.Y;
                     }
 
-                    sca = new Vector3F(smallest, smallest, smallest);
+                    sca = new Vector3D(smallest, smallest, smallest);
                 }
 
                 return sca;
             }
         }
 
-        public float GlobalRatio
+        public double GlobalRatio
         {
             get
             {

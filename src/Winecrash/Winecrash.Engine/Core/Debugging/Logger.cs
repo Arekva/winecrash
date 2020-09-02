@@ -112,7 +112,7 @@ namespace Winecrash.Engine
         {
             if (ErrorCallbackSet)
             {
-                LogWarningCallback.Invoke(message);
+                LogErrorCallback.Invoke(message);
             }
 
             else

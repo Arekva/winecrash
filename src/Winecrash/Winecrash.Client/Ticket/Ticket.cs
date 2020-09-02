@@ -225,13 +225,13 @@ namespace Winecrash.Game
 
                     chunk._Blocks = Generator.GetChunk(this.Position.X, this.Position.Y, out bool generated);
 
-#if RELEASE
+#if !DEBUG
                 if(generated)
                 {
                     Save();
                 }
 #endif
-                    chunk.BuiltOnce = true;
+                chunk.BuiltOnce = true;
 
                 //Task.Run(chunk.GenerateLights);
 
