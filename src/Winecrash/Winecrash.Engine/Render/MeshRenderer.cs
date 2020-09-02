@@ -39,6 +39,8 @@ namespace Winecrash.Engine
         public bool UseMask { get; set; } = true;
         public bool Wireframe { get; set; } = false;
 
+        public static bool Global_Wireframe { get; set; } = false;
+
         protected bool CheckValidity(Camera sender)
         {
             return (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0) || Deleted || _Mesh == null  || _Mesh.ElementBufferObject == -1 || _Mesh.VertexArrayObject == -1 || _Mesh.VertexBufferObject == -1;
@@ -63,7 +65,7 @@ namespace Winecrash.Engine
 
             //OnRender?.Invoke();
 
-            GL.DrawElements(Wireframe ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)_Mesh.Indices, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)_Mesh.Indices, DrawElementsType.UnsignedInt, 0);
         }
 
         protected internal override void Creation()

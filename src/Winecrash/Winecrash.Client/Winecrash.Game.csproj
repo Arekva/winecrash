@@ -95,6 +95,7 @@
     <Compile Include="GameInput.cs" />
     <Compile Include="GameLoad.cs" />
     <Compile Include="Generation\Biome.cs" />
+    <Compile Include="Hand.cs" />
     <Compile Include="Item\Block.cs" />
     <Compile Include="Item\BlockFaces.cs" />
     <Compile Include="Item\Database\Database.cs" />

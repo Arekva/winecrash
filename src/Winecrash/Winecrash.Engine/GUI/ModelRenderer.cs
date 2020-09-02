@@ -46,7 +46,7 @@ namespace Winecrash.Engine.GUI
 
 			GL.Disable(EnableCap.DepthTest);
 
-			GL.DrawElements(Wireframe ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)_Mesh.Indices, DrawElementsType.UnsignedInt, 0);
+			GL.DrawElements((Wireframe | Global_Wireframe ) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)_Mesh.Indices, DrawElementsType.UnsignedInt, 0);
 		}
 
 		protected internal override void OnDelete()
