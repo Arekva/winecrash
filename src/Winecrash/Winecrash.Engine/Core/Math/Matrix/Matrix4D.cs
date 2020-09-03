@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 using OpenCL.Net;
+using OpenTK;
 
 namespace Winecrash.Engine
 {
@@ -48,12 +49,193 @@ namespace Winecrash.Engine
             Row3 = new Vector4D(m30, m31, m32, m33);
         }
 
+
+
+        /// <summary>
+        /// Create perspective matrix
+        /// </summary>
+        /// <param name="fovy"></param>
+        /// <param name="aspect"></param>
+        /// <param name="depthNear"></param>
+        /// <param name="depthFar"></param>
+        public Matrix4D(double fovy, double aspect, double depthNear, double depthFar)
+        {
+            if (fovy <= 0.0D || fovy > Math.PI)
+            {
+                throw new ArgumentOutOfRangeException(nameof(fovy));
+            }
+
+            if (aspect <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(aspect));
+            }
+
+            if (depthNear <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(depthNear));
+            }
+
+            if (depthFar <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(depthFar));
+            }
+
+            double maxY = depthNear * Math.Tan(0.5D * fovy);
+            double minY = -maxY;
+            double minX = minY * aspect;
+            double maxX = maxY * aspect;
+
+            this = new Matrix4D(minX, maxX, minY, maxY, depthNear, depthFar);
+
+        }
+
+        /// <summary>
+        /// Create off-center perspetive matrix
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="bottom"></param>
+        /// <param name="top"></param>
+        /// <param name="depthNear"></param>
+        /// <param name="depthFar"></param>
+        public Matrix4D(double left, double right, double bottom, double top, double depthNear, double depthFar)
+        {
+            if (depthNear <= 0.0D)
+            {
+                throw new ArgumentOutOfRangeException(nameof(depthNear));
+            }
+
+            if (depthFar <= 0.0D)
+            {
+                throw new ArgumentOutOfRangeException(nameof(depthFar));
+            }
+
+            if (depthNear >= depthFar)
+            {
+                throw new ArgumentOutOfRangeException(nameof(depthNear));
+            }
+
+            double x = 2.0D * depthNear / (right - left);
+            double y = 2.0D * depthNear / (top - bottom);
+            double a = (right + left) / (right - left);
+            double b = (top + bottom) / (top - bottom);
+            double c = -(depthFar + depthNear) / (depthFar - depthNear);
+            double d = -(2.0D * depthFar * depthNear) / (depthFar - depthNear);
+
+            this.Row0 = new Vector4D(x, 0.0D, 0.0D, 0.0D);
+            this.Row1 = new Vector4D(0.0D, y, 0.0D, 0.0D);
+            this.Row2 = new Vector4D(a, b, c, -1.0D);
+            this.Row3 = new Vector4D(0.0D, 0.0D, d, 0.0D);
+        }
+
+        /// <summary>
+        /// Create a matrix when top left is existing Matrix3D
+        /// </summary>
+        /// <param name="topLeft"></param>
         public Matrix4D(Matrix3D topLeft)
         {
             Row0 = new Vector4D(topLeft.Row0, 0.0D);
             Row1 = new Vector4D(topLeft.Row1, 0.0D);
             Row2 = new Vector4D(topLeft.Row2, 0.0D);
             Row3 = new Vector4D(Vector3D.Zero, 1.0D);
+        }
+
+        /// <summary>
+        /// Create transalation / scale
+        /// Set scale to true to make a scale matrix.
+        /// If false, it's a translation matrix
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="scale"></param>
+        public Matrix4D(Vector3D vec, bool scale = false)
+        {
+            if (scale)
+            {
+                this = Matrix4D.Identity;
+
+                this.Row0.X = vec.X;
+                this.Row1.Y = vec.Y;
+                this.Row2.Z = vec.Z;
+            }
+
+            else
+            {
+                this = Matrix4D.Identity;
+
+                this.Row3.X = vec.X;
+                this.Row3.Y = vec.Y;
+                this.Row3.Z = vec.Z;
+            }
+        }
+        /// <summary>
+        /// Create a rotation matrix
+        /// </summary>
+        /// <param name="rot"></param>
+        public Matrix4D(Quaternion rot)
+        {
+            Vector4D axisAngle = rot.AxisAngle(true);
+
+            Vector3D axis = axisAngle.XYZ;
+            double angle = axisAngle.W;
+
+            // normalize and create a local copy of the vector.
+            axis.Normalize();
+            double axisX = axis.X, axisY = axis.Y, axisZ = axis.Z;
+
+            // calculate angles
+            double cos = Math.Cos(-angle);
+            double sin = Math.Sin(-angle);
+            double t = 1.0D - cos;
+
+            // do the conversion math once
+            double tXX = t * axisX * axisX;
+            double tXY = t * axisX * axisY;
+            double tXZ = t * axisX * axisZ;
+            double tYY = t * axisY * axisY;
+            double tYZ = t * axisY * axisZ;
+            double tZZ = t * axisZ * axisZ;
+
+            double sinX = sin * axisX;
+            double sinY = sin * axisY;
+            double sinZ = sin * axisZ;
+
+            this.Row0 = new Vector4D(tXX + cos, tXY - sinZ, tXZ + sinY, 0.0D);
+            this.Row1 = new Vector4D(tXY + sinZ, tYY + cos, tYZ - sinX, 0.0D);
+            this.Row2 = new Vector4D(tXZ - sinY, tYZ + sinX, tZZ + cos, 0.0D);
+            this.Row3 = Vector4D.Ana;
+        }
+        /// <summary>
+        /// Create LookAt matrix
+        /// </summary>
+        /// <param name="eye"></param>
+        /// <param name="target"></param>
+        /// <param name="up"></param>
+        public Matrix4D(Vector3D eye, Vector3D target, Vector3D up)
+        {
+            Vector3D z = (eye - target).Normalize();
+            Vector3D x = Vector3D.Cross(up, z).Normalize();
+            Vector3D y = Vector3D.Cross(z, x).Normalize();
+
+            this.Row0 = new Vector4D(x.X, y.Y, z.Z, 0.0D);
+            this.Row1 = new Vector4D(x.Y, y.Y, z.Y, 0.0D);
+            this.Row2 = new Vector4D(x.X, y.Y, z.Z, 0.0D);
+            this.Row3 = new Vector4D(
+                -((x.X * eye.X) + (x.Y * eye.Y) + (x.Z * eye.Z)),
+                -((y.X * eye.X) + (y.Y * eye.Y) + (y.Z * eye.Z)),
+                -((z.X * eye.X) + (z.Y * eye.Y) + (z.Z * eye.Z)),
+                1.0D);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="depthNear"></param>
+        /// <param name="depthFar"></param>
+        public static Matrix4D Orthographic(double width, double height, double depthNear, double depthFar)
+        {
+
         }
 
         public double Determinant
@@ -451,6 +633,68 @@ namespace Winecrash.Engine
             Row1 /= determinant;
             Row2 /= determinant;
             Row3 /= determinant;
+        }
+
+        public static explicit operator Matrix4(Matrix4D m)
+        {
+            return new Matrix4((Vector4F)m.Row0, (Vector4F)m.Row1, (Vector4F)m.Row2, (Vector4F)m.Row3);
+        }
+
+        public static Matrix4D operator * (Matrix4D left, Matrix4D right)
+        {
+            Matrix4D result = new Matrix4D();
+
+            double leftM11 = left.Row0.X;
+            double leftM12 = left.Row0.Y;
+            double leftM13 = left.Row0.Z;
+            double leftM14 = left.Row0.W;
+            double leftM21 = left.Row1.X;
+            double leftM22 = left.Row1.Y;
+            double leftM23 = left.Row1.Z;
+            double leftM24 = left.Row1.W;
+            double leftM31 = left.Row2.X;
+            double leftM32 = left.Row2.Y;
+            double leftM33 = left.Row2.Z;
+            double leftM34 = left.Row2.W;
+            double leftM41 = left.Row3.X;
+            double leftM42 = left.Row3.Y;
+            double leftM43 = left.Row3.Z;
+            double leftM44 = left.Row3.W;
+            double rightM11 = right.Row0.X;
+            double rightM12 = right.Row0.Y;
+            double rightM13 = right.Row0.Z;
+            double rightM14 = right.Row0.W;
+            double rightM21 = right.Row1.X;
+            double rightM22 = right.Row1.Y;
+            double rightM23 = right.Row1.Z;
+            double rightM24 = right.Row1.W;
+            double rightM31 = right.Row2.X;
+            double rightM32 = right.Row2.Y;
+            double rightM33 = right.Row2.Z;
+            double rightM34 = right.Row2.W;
+            double rightM41 = right.Row3.X;
+            double rightM42 = right.Row3.Y;
+            double rightM43 = right.Row3.Z;
+            double rightM44 = right.Row3.W;
+
+            result.Row0.X = (leftM11 * rightM11) + (leftM12 * rightM21) + (leftM13 * rightM31) + (leftM14 * rightM41);
+            result.Row0.Y = (leftM11 * rightM12) + (leftM12 * rightM22) + (leftM13 * rightM32) + (leftM14 * rightM42);
+            result.Row0.Z = (leftM11 * rightM13) + (leftM12 * rightM23) + (leftM13 * rightM33) + (leftM14 * rightM43);
+            result.Row0.W = (leftM11 * rightM14) + (leftM12 * rightM24) + (leftM13 * rightM34) + (leftM14 * rightM44);
+            result.Row1.X = (leftM21 * rightM11) + (leftM22 * rightM21) + (leftM23 * rightM31) + (leftM24 * rightM41);
+            result.Row1.Y = (leftM21 * rightM12) + (leftM22 * rightM22) + (leftM23 * rightM32) + (leftM24 * rightM42);
+            result.Row1.Z = (leftM21 * rightM13) + (leftM22 * rightM23) + (leftM23 * rightM33) + (leftM24 * rightM43);
+            result.Row1.W = (leftM21 * rightM14) + (leftM22 * rightM24) + (leftM23 * rightM34) + (leftM24 * rightM44);
+            result.Row2.X = (leftM31 * rightM11) + (leftM32 * rightM21) + (leftM33 * rightM31) + (leftM34 * rightM41);
+            result.Row2.Y = (leftM31 * rightM12) + (leftM32 * rightM22) + (leftM33 * rightM32) + (leftM34 * rightM42);
+            result.Row2.Z = (leftM31 * rightM13) + (leftM32 * rightM23) + (leftM33 * rightM33) + (leftM34 * rightM43);
+            result.Row2.W = (leftM31 * rightM14) + (leftM32 * rightM24) + (leftM33 * rightM34) + (leftM34 * rightM44);
+            result.Row3.X = (leftM41 * rightM11) + (leftM42 * rightM21) + (leftM43 * rightM31) + (leftM44 * rightM41);
+            result.Row3.Y = (leftM41 * rightM12) + (leftM42 * rightM22) + (leftM43 * rightM32) + (leftM44 * rightM42);
+            result.Row3.Z = (leftM41 * rightM13) + (leftM42 * rightM23) + (leftM43 * rightM33) + (leftM44 * rightM43);
+            result.Row3.W = (leftM41 * rightM14) + (leftM42 * rightM24) + (leftM43 * rightM34) + (leftM44 * rightM44);
+
+            return result;
         }
     }
 }

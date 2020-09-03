@@ -155,8 +155,8 @@ namespace Winecrash.Game
         {
             Vector2D deltas = Input.MouseDelta;
 
-            double ax = (Angles.X + (deltas.X * Input.MouseSensivity * (float)Time.DeltaTime)) % 360.0F;
-            double ay = WMath.Clamp((Angles.Y + (deltas.Y * Input.MouseSensivity * (float)Time.DeltaTime)), -89.9F, 89.9F);
+            double ax = (Angles.X + (deltas.X * Input.MouseSensivity * Time.DeltaTime)) % 360.0D;
+            double ay = WMath.Clamp((Angles.Y + (deltas.Y * Input.MouseSensivity * Time.DeltaTime)), -89.9D, 89.9D);
 
             Angles = new Vector2D(ax, ay);
 

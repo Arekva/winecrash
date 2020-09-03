@@ -28,7 +28,7 @@ namespace Winecrash.Engine
         /// <summary>
         /// -Vertical- Field of View
         /// </summary>
-        public float FOV { get; set; } = 45.0F;
+        public double FOV { get; set; } = 45.0D;
 
 
         public Vector2I Resolution
@@ -39,25 +39,25 @@ namespace Winecrash.Engine
             }
         }
 
-        public float AspectRatio
+        public double AspectRatio
         {
             get
             {
                 Vector2I res = this.Resolution;
-                return (float)res.X / (float)res.Y;
+                return (double)res.X / (double)res.Y;
             }
         }
 
-        public Vector2F ClipPlanes
+        public Vector2D ClipPlanes
         {
             get
             {
-                return new Vector2F(this._NearClip, this._FarClip);
+                return new Vector2D(this._NearClip, this._FarClip);
             }
         }
 
-        public float _NearClip = 0.1F;
-        public float NearClip
+        public double _NearClip = 0.1D;
+        public double NearClip
         {
             get
             {
@@ -66,11 +66,11 @@ namespace Winecrash.Engine
 
             set
             {
-                this._NearClip = WMath.Clamp(value, 0.01F, this._FarClip - 0.01F);
+                this._NearClip = WMath.Clamp(value, 0.01D, this._FarClip - 0.01D);
             }
         }
-        public float _FarClip = 100.0F;
-        public float FarClip
+        public double _FarClip = 100.0D;
+        public double FarClip
         {
             get
             {
@@ -79,7 +79,7 @@ namespace Winecrash.Engine
 
             set
             {
-                this._FarClip = WMath.Clamp(value, this._NearClip + 0.01F, 10000.0F);
+                this._FarClip = WMath.Clamp(value, this._NearClip + 0.01D, 10000.0D);
             }
         }
 
@@ -98,15 +98,15 @@ namespace Winecrash.Engine
             }
         }
 
-        internal Matrix4 ViewMatrix
+        internal Matrix4D ViewMatrix
         {
             get
             {
-                Vector3F p = this.WObject.Position;
-                Vector3F t = this.WObject._RendersForward;
-                Vector3F u = this.WObject.Up;
+                Vector3D p = this.WObject.Position;
+                Vector3D t = this.WObject._RendersForward;
+                Vector3D u = this.WObject.Up;
 
-                return Matrix4.LookAt(new Vector3(p.X, p.Y, p.Z), new Vector3(p.X + t.X, p.Y + t.Y, p.Z + t.Z), new Vector3(u.X, u.Y, u.Z));
+                return new Matrix4D(new Vector3D(p.X, p.Y, p.Z), new Vector3D(p.X + t.X, p.Y + t.Y, p.Z + t.Z), new Vector3D(u.X, u.Y, u.Z));
             }
         }
 
@@ -115,7 +115,7 @@ namespace Winecrash.Engine
             get
             {
                 return this.ProjectionType == CameraProjectionType.Perspective ? 
-                    Matrix4.CreatePerspectiveFieldOfView(this.FOV * (float)WMath.DegToRad, this.AspectRatio, this._NearClip, this._FarClip):
+                    new Matrix4D(this.FOV * WMath.DegToRad, this.AspectRatio, this._NearClip, this._FarClip):
                     Matrix4.CreateOrthographic(OrthographicSize.X, OrthographicSize.Y, this._NearClip, this._FarClip);
             }
         }

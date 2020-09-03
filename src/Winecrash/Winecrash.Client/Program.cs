@@ -38,7 +38,7 @@ namespace Winecrash.Game
 
             Physics.Gravity = new Vector3D(0, -27, 0); //-27
 
-            Graphics.Window.VSync = Engine.VSyncMode.Off;
+            Graphics.Window.VSync = Engine.VSyncMode.Adaptive;
 
             Camera.Main.RenderLayers &= ~(1L << 32);
             Camera.Main.RenderLayers &= ~(1L << 48);

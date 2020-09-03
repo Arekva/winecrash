@@ -187,10 +187,11 @@ namespace Winecrash.Engine
             }
         }
 
-        internal protected virtual Matrix4 TransformMatrix
+        internal protected virtual Matrix4D TransformMatrix
         {
             get
             {
+                /*
                 Vector3D tra = this.Position;
                 Quaternion rot = this.Rotation;
                 Vector3D sca = this.Scale;
@@ -202,8 +203,18 @@ namespace Winecrash.Engine
                     rotMat *
                     Matrix4.CreateTranslation((float)tra.X, (float)tra.Y, (float)tra.Z) *
                     Matrix4.Identity;
+                */
+                Matrix4D posD =
+                    new Matrix4D(this.Position, false);
 
-                return transform;
+                Matrix4D rotD =
+                    new Matrix4D(this.Rotation);
+
+                Matrix4D scaD =
+                    new Matrix4D(this.Scale, true);
+
+
+                return scaD * rotD * posD * Matrix4D.Identity;
             }
         }
 
