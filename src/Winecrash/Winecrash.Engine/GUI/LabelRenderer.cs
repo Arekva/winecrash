@@ -24,23 +24,23 @@ namespace Winecrash.Engine.GUI
         {
             if (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0 || Deleted || Label == null || Material == null || Label.Text == null) return;
 
-            Matrix4 transform;
+            Matrix4D transform;
             Quaternion rot = this.WObject.Rotation;
 
-            Vector3F extents = this.Label.GlobalScale / 2.0F;
-            Vector3F middle = this.Label.GlobalPosition;
+            Vector3D extents = this.Label.GlobalScale / 2.0D;
+            Vector3D middle = this.Label.GlobalPosition;
 
 
-            float fontSize = Label.FontSize;
+            double fontSize = Label.FontSize;
 
             if (Label.AutoSize)
             {
-                fontSize = WMath.Min((extents.Y * 2.0F) / Label.Lines.Length, float.PositiveInfinity); //todo: min between max height and max width
+                fontSize = WMath.Min((extents.Y * 2.0D) / Label.Lines.Length, double.PositiveInfinity); //todo: min between max height and max width
             }
 
-            float wordSpace = (Label.WordSpace * fontSize);
-            float lineSpace = (Label.LineSpace * fontSize) / (Label.Lines.Length * 0.5F);
-            float totalYSize = Label.LineSpace * fontSize * Label.Lines.Length;
+            double wordSpace = (Label.WordSpace * fontSize);
+            double lineSpace = (Label.LineSpace * fontSize) / (Label.Lines.Length * 0.5D);
+            double totalYSize = Label.LineSpace * fontSize * Label.Lines.Length;
 
             int xDir = 0, yDir = 0;
 
@@ -63,10 +63,10 @@ namespace Winecrash.Engine.GUI
                 yDir += 1;
             }
 
-            float dst = Label.ShadowDistance;
+            double dst = Label.ShadowDistance;
             dst *= fontSize;
 
-            Vector3F globalShift = new Vector3F(-dst, -dst, 0.0F);
+            Vector3D globalShift = new Vector3D(-dst, -dst, 0.0F);
             Color256 shadColr = Label.Color * 0.33D;
             Color256 col = new Color256(shadColr.R, shadColr.G, shadColr.B, 0.75D);
 
@@ -94,7 +94,7 @@ namespace Winecrash.Engine.GUI
                     Mesh[] meshes = Label.FontFamilly.Glyphs.GetMeshes(str);
 
 
-                    float lineXSize = 0.0F;
+                    double lineXSize = 0.0D;
 
                     for (int j = 0; j < glyphs.Length; j++)
                     {
@@ -104,11 +104,11 @@ namespace Winecrash.Engine.GUI
                             continue;
                         }
 
-                        float glyphratio = (float)glyphs[j].Width / (float)glyphs[j].Height;
+                        double glyphratio = (double)glyphs[j].Width / (double)glyphs[j].Height;
                         lineXSize += glyphratio * fontSize;
                     }
 
-                    float lineXStartPos, lineYPos;
+                    double lineXStartPos, lineYPos;
 
                     if (xDir == 1) lineXStartPos = extents.X; // left: -extents x
                     else if (xDir == -1) lineXStartPos = -extents.X + lineXSize; //right: starts at extents x
@@ -116,9 +116,9 @@ namespace Winecrash.Engine.GUI
 
                     if (yDir == -1) lineYPos = extents.Y - fontSize * (i + 1);
                     else if (yDir == 1) lineYPos = -extents.Y + fontSize * ((this.Label.Lines.Length - 1) - i);
-                    else lineYPos = WMath.Remap((1.0F - (((float)i + 1) / ((float)this.Label.Lines.Length))), 0.0F, 1.0F, -totalYSize * 0.5F, totalYSize * 0.5F);
+                    else lineYPos = WMath.Remap((1.0D - (((double)i + 1) / ((double)this.Label.Lines.Length))), 0.0D, 1.0D, -totalYSize * 0.5D, totalYSize * 0.5D);
 
-                    float shiftX = 0.0F;
+                    double shiftX = 0.0D;
                     /*if (xDir == 1) shiftX = 0.0F;
                     else if (xDir == -1) shiftX = (extents.X * 2.0F) - */
 
@@ -126,13 +126,19 @@ namespace Winecrash.Engine.GUI
 
                     void Render(int index)
                     {
-                        trans = new Vector3F(middle.X + lineXStartPos - shiftX, middle.Y + lineYPos, middle.Z) + globalShift;
+                        trans = new Vector3D(middle.X + lineXStartPos - shiftX, middle.Y + lineYPos, middle.Z) + globalShift;
 
                         transform =
-                        (Matrix4.CreateScale(fontSize, fontSize, fontSize) *
+                            new Matrix4D(new Vector3D(fontSize), true) *
+                            new Matrix4D(rot) *
+                            new Matrix4D(trans, false) *
+                            Matrix4D.Identity *
+
+
+                        /*(Matrix4.CreateScale(fontSize, fontSize, fontSize) *
                         Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W)) *
                         Matrix4.CreateTranslation(trans.X, trans.Y, trans.Z) *
-                        Matrix4.Identity) *
+                        Matrix4.Identity) **/
                         sender.ViewMatrix * sender.ProjectionMatrix;
 
                         GL.BindVertexArray(meshes[index].VertexArrayObject);
@@ -142,7 +148,7 @@ namespace Winecrash.Engine.GUI
                         //this.Material.SetData<Matrix4>("transform", transform);
 
                         //this.Material.SetGLData(ref matData, ref dummy);
-                        this.Material.SetMatrix4(matData.Location, transform);
+                        this.Material.SetMatrix4(matData.Location, (Matrix4)transform);
                         this.Material.Shader.Use();
                         GL.Disable(EnableCap.DepthTest);
 

@@ -23,7 +23,7 @@ namespace Winecrash.Engine
 
         public CameraProjectionType ProjectionType { get; set; } = CameraProjectionType.Perspective;
 
-        public Vector2F OrthographicSize { get; set; } = Vector2F.One;
+        public Vector2D OrthographicSize { get; set; } = Vector2D.One;
 
         /// <summary>
         /// -Vertical- Field of View
@@ -98,6 +98,7 @@ namespace Winecrash.Engine
             }
         }
 
+        internal Matrix4D _RenderViewMatrix;
         internal Matrix4D ViewMatrix
         {
             get
@@ -106,19 +107,32 @@ namespace Winecrash.Engine
                 Vector3D t = this.WObject._RendersForward;
                 Vector3D u = this.WObject.Up;
 
+                //ok
                 return new Matrix4D(new Vector3D(p.X, p.Y, p.Z), new Vector3D(p.X + t.X, p.Y + t.Y, p.Z + t.Z), new Vector3D(u.X, u.Y, u.Z));
             }
         }
 
-        internal Matrix4 ProjectionMatrix
+        internal void ViewMatrixRef(out Matrix4D result)
+        {
+            Vector3D p = this.WObject.Position;
+            Vector3D t = this.WObject._RendersForward;
+            Vector3D u = this.WObject.Up;
+
+            Matrix4D.LookAtRef(new Vector3D(p.X, p.Y, p.Z), new Vector3D(p.X + t.X, p.Y + t.Y, p.Z + t.Z), new Vector3D(u.X, u.Y, u.Z), out result);
+        }
+        internal Matrix4D _RenderProjectionMatrix;
+        internal Matrix4D ProjectionMatrix
         {
             get
             {
+                // ok
                 return this.ProjectionType == CameraProjectionType.Perspective ? 
                     new Matrix4D(this.FOV * WMath.DegToRad, this.AspectRatio, this._NearClip, this._FarClip):
-                    Matrix4.CreateOrthographic(OrthographicSize.X, OrthographicSize.Y, this._NearClip, this._FarClip);
+                    Matrix4D.Orthographic(OrthographicSize.X, OrthographicSize.Y, this._NearClip, this._FarClip);
             }
         }
+
+
 
         protected internal override void Creation()
         {
@@ -139,6 +153,9 @@ namespace Winecrash.Engine
 
         protected internal override void OnRender()
         {
+            _RenderProjectionMatrix = this.ProjectionMatrix;
+             this.ViewMatrixRef(out _RenderViewMatrix);
+
             MeshRenderer[] mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
             mrs = mrs.Where(mr => mr != null && mr.WObject != null && (mr.WObject.Layer & this.RenderLayers) != 0).ToArray();
 

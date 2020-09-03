@@ -17,7 +17,7 @@ namespace Winecrash.Game
         private static Random GeneratorRandom = new Random();
         public static ushort[] GetChunk(int x, int y, out bool generated)
         {
-#if !DEBUG
+/*#if !DEBUG
             string fileName = "save/" + $"c{x}_{y}.json";
 
 
@@ -28,13 +28,13 @@ namespace Winecrash.Game
             }
             else
             {
-#endif
+#endif*/
             generated = true;
             return CreateTerrain(x, y);
 
-#if !DEBUG
+/*#if !DEBUG
             }
-#endif
+#endif*/
 
         }
 

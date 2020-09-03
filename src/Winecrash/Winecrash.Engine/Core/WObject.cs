@@ -178,7 +178,7 @@ namespace Winecrash.Engine
                 return this.Rotation * Vector3D.Forward;
             }
         }
-        internal Vector3D _RendersForward { get; private set; }
+        internal Vector3D _RendersForward;
         public Vector3D Backward
         {
             get
@@ -187,35 +187,41 @@ namespace Winecrash.Engine
             }
         }
 
+        internal Matrix4D _RendersTransformMatrix;
         internal protected virtual Matrix4D TransformMatrix
         {
             get
             {
-                /*
-                Vector3D tra = this.Position;
-                Quaternion rot = this.Rotation;
-                Vector3D sca = this.Scale;
-
-                Matrix4 rotMat = Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W));
-
-                Matrix4 transform =
-                    Matrix4.CreateScale((float)sca.X, (float)sca.Y, (float)sca.Z) *
-                    rotMat *
-                    Matrix4.CreateTranslation((float)tra.X, (float)tra.Y, (float)tra.Z) *
-                    Matrix4.Identity;
-                */
-                Matrix4D posD =
-                    new Matrix4D(this.Position, false);
+                Matrix4D scaD =
+                    new Matrix4D(this.Scale, true);
 
                 Matrix4D rotD =
                     new Matrix4D(this.Rotation);
 
-                Matrix4D scaD =
-                    new Matrix4D(this.Scale, true);
+                Matrix4D posD =
+                    new Matrix4D(this.Position, false);
 
 
                 return scaD * rotD * posD * Matrix4D.Identity;
             }
+        }
+
+        internal protected virtual void TransformMatrixRef(out Matrix4D result)
+        {
+            Matrix4D scaD =
+                     new Matrix4D(this.Scale, true);
+
+            Matrix4D rotD =
+                new Matrix4D(this.Rotation);
+
+            Matrix4D posD =
+                new Matrix4D(this.Position, false);
+
+            Matrix4D.Mult(in scaD, in rotD, out result);
+            Matrix4D.Mult(in result, in posD, out result);
+            Matrix4D.Mult(in result, Matrix4D.Identity, out result);
+
+
         }
 
         public static WObject Find(string name)

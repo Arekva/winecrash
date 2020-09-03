@@ -23,15 +23,11 @@ namespace Winecrash.Engine.GUI
         {
 			if (CheckValidity(sender)) return;
 
-			Vector3F tra = this.Model.GlobalPosition;
-			Quaternion rot = this.Model.WObject.Rotation;
-			Vector3F sca = this.Model.GlobalScale;
-
-			Matrix4 transform =
-				(Matrix4.CreateScale(sca.X, sca.Y, sca.Z) *
-				Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W)) *
-				Matrix4.CreateTranslation(tra.X, tra.Y, tra.Z) *
-				Matrix4.Identity)
+			Matrix4D transform =
+				new Matrix4D(this.Model.GlobalScale, true) *
+							new Matrix4D(this.Model.WObject.Rotation) *
+							new Matrix4D(this.Model.GlobalPosition, false) *
+							Matrix4D.Identity
 				* sender.ViewMatrix * sender.ProjectionMatrix;
 
 			GL.BindVertexArray(_Mesh.VertexArrayObject);
@@ -41,7 +37,7 @@ namespace Winecrash.Engine.GUI
 			this.Material.Shader.SetAttribute("uv", AttributeTypes.UV);
 			this.Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
 
-			this.Material.SetData<Matrix4>("transform", transform);
+			this.Material.SetData<Matrix4>("transform", (Matrix4)transform);
 			this.Material.Use();
 
 			GL.Disable(EnableCap.DepthTest);

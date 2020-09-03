@@ -635,9 +635,9 @@ namespace Winecrash.Game
         {
             PrivateEdit(x,y,z,b);
 
-#if RELEASE
+/*#if !DEBUG
             this.Ticket.Save();
-#endif
+#endif*/
 
         }
 

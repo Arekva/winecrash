@@ -30,15 +30,14 @@ namespace Winecrash.Game
             SkyCam.Name = "Skybox Camera";
         }
 
-        protected override void Update()
+        protected override void LateUpdate()
         {
-            if(ReferenceCamera != null)
+            if (ReferenceCamera != null)
             {
                 SkyCam.FOV = ReferenceCamera.FOV;
-                SkyCam.WObject.Rotation = ReferenceCamera.WObject.Rotation;
+                SkyCam.WObject.LocalRotation = ReferenceCamera.WObject.LocalRotation;
             }
         }
-
         protected override void OnRender()
         {
             base.OnRender();

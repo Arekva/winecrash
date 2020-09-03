@@ -66,21 +66,16 @@ namespace Winecrash.Engine.GUI
 			//if (!CheckValidity(sender)) return;
 			if (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0 || Deleted || Image == null || Material == null) return;
 
-			Vector3D p = this.WObject.Position;
-			Vector3D t = this.WObject._RendersForward;
-			Vector3D u = this.WObject.Up;
-
-			Matrix4D transform = new Matrix4D(new Vector3D(p.X, p.Y, p.Z), new Vector3D(p.X + t.X, p.Y + t.Y, p.Z + t.Z), new Vector3D(u.X, u.Y, u.Z));
-
-			/*Vector3F tra = this.Image.GlobalPosition;
+			Vector3F tra = this.Image.GlobalPosition;
 			Quaternion rot = this.Image.WObject.Rotation;
 			Vector3F sca = this.Image.GlobalScale;
 
-			Matrix4 transform =
-				(Matrix4.CreateScale(sca.X, sca.Y, sca.Z) *
-				Matrix4.CreateFromQuaternion(new OpenTK.Quaternion((float)rot.X, (float)rot.Y, (float)rot.Z, (float)rot.W)) *
-				Matrix4.CreateTranslation(tra.X, tra.Y, tra.Z) *
-				Matrix4.Identity)*/
+			Matrix4D transform =
+				new Matrix4D(sca, true) *
+				new Matrix4D(rot) *
+				new Matrix4D(tra, false) *
+				Matrix4D.Identity;
+
 			transform *= sender.ViewMatrix * sender.ProjectionMatrix;
 
 			GL.BindVertexArray(_Panel.VertexArrayObject);
@@ -90,7 +85,7 @@ namespace Winecrash.Engine.GUI
 			//this.Material.Shader.SetAttribute("uv", AttributeTypes.UV);
 			//this.Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
 
-			this.Material.SetData<Matrix4>("transform", transform);
+			this.Material.SetData<Matrix4>("transform", (Matrix4)transform);
 			this.Material.Use();
 
 			GL.Disable(EnableCap.DepthTest);

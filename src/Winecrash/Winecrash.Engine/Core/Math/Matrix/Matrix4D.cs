@@ -216,9 +216,9 @@ namespace Winecrash.Engine
             Vector3D x = Vector3D.Cross(up, z).Normalize();
             Vector3D y = Vector3D.Cross(z, x).Normalize();
 
-            this.Row0 = new Vector4D(x.X, y.Y, z.Z, 0.0D);
+            this.Row0 = new Vector4D(x.X, y.X, z.X, 0.0D);
             this.Row1 = new Vector4D(x.Y, y.Y, z.Y, 0.0D);
-            this.Row2 = new Vector4D(x.X, y.Y, z.Z, 0.0D);
+            this.Row2 = new Vector4D(x.Z, y.Z, z.Z, 0.0D);
             this.Row3 = new Vector4D(
                 -((x.X * eye.X) + (x.Y * eye.Y) + (x.Z * eye.Z)),
                 -((y.X * eye.X) + (y.Y * eye.Y) + (y.Z * eye.Z)),
@@ -235,8 +235,29 @@ namespace Winecrash.Engine
         /// <param name="depthFar"></param>
         public static Matrix4D Orthographic(double width, double height, double depthNear, double depthFar)
         {
-
+            return CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, depthNear, depthFar);
         }
+
+        public static Matrix4D CreateOrthographicOffCenter(double left, double right, double bottom, double top, double depthNear, double depthFar)
+        {
+            // ok
+            Matrix4D result = Identity;
+
+            double invRL = 1.0D / (right - left);
+            double invTB = 1.0D / (top - bottom);
+            double invFN = 1.0D / (depthFar - depthNear);
+
+            result.Row0.X = 2.0D * invRL;
+            result.Row1.Y = 2.0D * invTB;
+            result.Row2.Z = -2.0D * invFN;
+
+            result.Row3.X = -(right + left) * invRL;
+            result.Row3.Y = -(top + bottom) * invTB;
+            result.Row3.Z = -(depthFar + depthNear) * invFN;
+
+            return result;
+        }
+
 
         public double Determinant
         {
@@ -479,6 +500,22 @@ namespace Winecrash.Engine
             }
         }
 
+        public static void LookAtRef(Vector3D eye, Vector3D target, Vector3D up, out Matrix4D result)
+        {
+            Vector3D z = (eye - target).Normalize();
+            Vector3D x = Vector3D.Cross(up, z).Normalize();
+            Vector3D y = Vector3D.Cross(z, x).Normalize();
+
+            result.Row0 = new Vector4D(x.X, y.X, z.X, 0.0D);
+            result.Row1 = new Vector4D(x.Y, y.Y, z.Y, 0.0D);
+            result.Row2 = new Vector4D(x.Z, y.Z, z.Z, 0.0D);
+            result.Row3 = new Vector4D(
+                -((x.X * eye.X) + (x.Y * eye.Y) + (x.Z * eye.Z)),
+                -((y.X * eye.X) + (y.Y * eye.Y) + (y.Z * eye.Z)),
+                -((z.X * eye.X) + (z.Y * eye.Y) + (z.Z * eye.Z)),
+                1.0D);
+        }
+
         public Matrix4D Inverted
         {
             get
@@ -640,10 +677,15 @@ namespace Winecrash.Engine
             return new Matrix4((Vector4F)m.Row0, (Vector4F)m.Row1, (Vector4F)m.Row2, (Vector4F)m.Row3);
         }
 
-        public static Matrix4D operator * (Matrix4D left, Matrix4D right)
+        public static Matrix4D operator *(Matrix4D left, Matrix4D right)
         {
-            Matrix4D result = new Matrix4D();
+            Mult(in left, in right, out Matrix4D res);
+            return res;
+        }
 
+        public static void Mult(in Matrix4D left, in Matrix4D right, out Matrix4D result)
+        //public static Matrix4D operator * (Matrix4D left, Matrix4D right)
+        {
             double leftM11 = left.Row0.X;
             double leftM12 = left.Row0.Y;
             double leftM13 = left.Row0.Z;
@@ -677,24 +719,26 @@ namespace Winecrash.Engine
             double rightM43 = right.Row3.Z;
             double rightM44 = right.Row3.W;
 
-            result.Row0.X = (leftM11 * rightM11) + (leftM12 * rightM21) + (leftM13 * rightM31) + (leftM14 * rightM41);
-            result.Row0.Y = (leftM11 * rightM12) + (leftM12 * rightM22) + (leftM13 * rightM32) + (leftM14 * rightM42);
-            result.Row0.Z = (leftM11 * rightM13) + (leftM12 * rightM23) + (leftM13 * rightM33) + (leftM14 * rightM43);
-            result.Row0.W = (leftM11 * rightM14) + (leftM12 * rightM24) + (leftM13 * rightM34) + (leftM14 * rightM44);
-            result.Row1.X = (leftM21 * rightM11) + (leftM22 * rightM21) + (leftM23 * rightM31) + (leftM24 * rightM41);
-            result.Row1.Y = (leftM21 * rightM12) + (leftM22 * rightM22) + (leftM23 * rightM32) + (leftM24 * rightM42);
-            result.Row1.Z = (leftM21 * rightM13) + (leftM22 * rightM23) + (leftM23 * rightM33) + (leftM24 * rightM43);
-            result.Row1.W = (leftM21 * rightM14) + (leftM22 * rightM24) + (leftM23 * rightM34) + (leftM24 * rightM44);
-            result.Row2.X = (leftM31 * rightM11) + (leftM32 * rightM21) + (leftM33 * rightM31) + (leftM34 * rightM41);
-            result.Row2.Y = (leftM31 * rightM12) + (leftM32 * rightM22) + (leftM33 * rightM32) + (leftM34 * rightM42);
-            result.Row2.Z = (leftM31 * rightM13) + (leftM32 * rightM23) + (leftM33 * rightM33) + (leftM34 * rightM43);
-            result.Row2.W = (leftM31 * rightM14) + (leftM32 * rightM24) + (leftM33 * rightM34) + (leftM34 * rightM44);
-            result.Row3.X = (leftM41 * rightM11) + (leftM42 * rightM21) + (leftM43 * rightM31) + (leftM44 * rightM41);
-            result.Row3.Y = (leftM41 * rightM12) + (leftM42 * rightM22) + (leftM43 * rightM32) + (leftM44 * rightM42);
-            result.Row3.Z = (leftM41 * rightM13) + (leftM42 * rightM23) + (leftM43 * rightM33) + (leftM44 * rightM43);
-            result.Row3.W = (leftM41 * rightM14) + (leftM42 * rightM24) + (leftM43 * rightM34) + (leftM44 * rightM44);
+            result.Row0 = new Vector4D( (leftM11 * rightM11) + (leftM12 * rightM21) + (leftM13 * rightM31) + (leftM14 * rightM41),
+                                        (leftM11 * rightM12) + (leftM12 * rightM22) + (leftM13 * rightM32) + (leftM14 * rightM42),
+                                        (leftM11 * rightM13) + (leftM12 * rightM23) + (leftM13 * rightM33) + (leftM14 * rightM43),
+                                        (leftM11 * rightM14) + (leftM12 * rightM24) + (leftM13 * rightM34) + (leftM14 * rightM44));
 
-            return result;
+            result.Row1 = new Vector4D( (leftM21 * rightM11) + (leftM22 * rightM21) + (leftM23 * rightM31) + (leftM24 * rightM41),
+                                        (leftM21 * rightM12) + (leftM22 * rightM22) + (leftM23 * rightM32) + (leftM24 * rightM42),
+                                        (leftM21 * rightM13) + (leftM22 * rightM23) + (leftM23 * rightM33) + (leftM24 * rightM43),
+                                        (leftM21 * rightM14) + (leftM22 * rightM24) + (leftM23 * rightM34) + (leftM24 * rightM44));
+
+
+            result.Row2 = new Vector4D( (leftM31 * rightM11) + (leftM32 * rightM21) + (leftM33 * rightM31) + (leftM34 * rightM41),
+                                        (leftM31 * rightM12) + (leftM32 * rightM22) + (leftM33 * rightM32) + (leftM34 * rightM42),
+                                        (leftM31 * rightM13) + (leftM32 * rightM23) + (leftM33 * rightM33) + (leftM34 * rightM43),
+                                        (leftM31 * rightM14) + (leftM32 * rightM24) + (leftM33 * rightM34) + (leftM34 * rightM44));
+
+            result.Row3 = new Vector4D( (leftM41 * rightM11) + (leftM42 * rightM21) + (leftM43 * rightM31) + (leftM44 * rightM41),
+                                        (leftM41 * rightM12) + (leftM42 * rightM22) + (leftM43 * rightM32) + (leftM44 * rightM42),
+                                        (leftM41 * rightM13) + (leftM42 * rightM23) + (leftM43 * rightM33) + (leftM44 * rightM43),
+                                        (leftM41 * rightM14) + (leftM42 * rightM24) + (leftM43 * rightM34) + (leftM44 * rightM44));
         }
     }
 }

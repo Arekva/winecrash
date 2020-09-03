@@ -49,13 +49,17 @@ namespace Winecrash.Engine
         internal virtual void Use(Camera sender)
         {
             if (CheckValidity(sender)) return;
-            
-            Matrix4 transform = this.WObject.TransformMatrix * sender.ViewMatrix * sender.ProjectionMatrix;
+
+            Matrix4D transform;
+            //sender.ViewMatrixRef(out Matrix4D view);
+            this.WObject.TransformMatrixRef(out Matrix4D trans);
+            Matrix4D.Mult(in trans, in sender._RenderViewMatrix, out transform);
+            Matrix4D.Mult(in transform, sender._RenderProjectionMatrix, out transform);
 
             GL.BindVertexArray(_Mesh.VertexArrayObject);
             GL.BindBuffer(BufferTarget.ArrayBuffer, _Mesh.VertexBufferObject);
 
-            this.Material.SetData<Matrix4>("transform", transform);
+            this.Material.SetData<Matrix4>("transform", (Matrix4)transform);
 
             this.Material.Use();
 

@@ -44,10 +44,10 @@ namespace Winecrash.Engine.GUI
         public int LinesMaxWidth { get; private set; } = 0;
 
         public bool Shadows { get; set; } = true;
-        public float ShadowDistance { get; set; } = 0.1F;
+        public double ShadowDistance { get; set; } = 0.1D;
 
-        public float WordSpace { get; set; } = 0.33F; // defaults to 1.0 pixel, for each chars being 1.0 pixel
-        public float LineSpace { get; set; } = 1.0F;
+        public double WordSpace { get; set; } = 0.33D; // defaults to 1.0 pixel, for each chars being 1.0 pixel
+        public double LineSpace { get; set; } = 1.00D;
 
         public LabelRenderer Renderer { get; set; } = null;
         public Font FontFamilly { get; set; } = Font.Find("Pixelized");
@@ -57,7 +57,7 @@ namespace Winecrash.Engine.GUI
         public Color256 Color { get; set; } = Color256.White;
         public Color256 ShadowColor { get; set; } = new Color256(1 / 4.0D, 1/4.0D, 1/4.0D, 0.75F);
 
-        public float FontSize { get; set; } = 16F;
+        public double FontSize { get; set; } = 16.0D;
 
         public bool AutoSize { get; set; } = false;
 
