@@ -73,29 +73,28 @@ namespace Winecrash.Engine
         }
         internal static void Stop(object sender)
         {
-            try
+            OnStop?.Invoke();
+
+            if (!(sender is IWindow window))
             {
-                OnStop?.Invoke();
+                Graphics.Window.Thread?.Abort();
+            }
 
-                if (!(sender is IWindow window))
+            Layer.FixedThread?.Abort();
+
+            foreach (Layer layer in Layer._Layers)
+            {
+                foreach (Group group in layer._Groups)
                 {
-                    ((IWindow)sender).Thread?.Abort();
-                }
-
-                Layer.FixedThread?.Abort();
-
-                foreach (Layer layer in Layer._Layers)
-                {
-                    foreach (Group group in layer._Groups)
+                    try
                     {
                         group.Thread.Abort();
                     }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("Thread error when stopping engine: " + e);
+                    }
                 }
-            }
-
-            catch(Exception e)
-            {
-                Debug.LogError("Error when stopping engine: " + e);
             }
         }
         public static void Stop()

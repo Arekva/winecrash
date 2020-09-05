@@ -28,8 +28,7 @@ namespace Winecrash.Game
 
         static void Start()
         {
-            //MeshRenderer.Global_Wireframe = true;
-            Graphics.Window.Title = "Winecraft Alpha 0.0.1";
+            Graphics.Window.Title = "Winecrash Alpha 0.0.1";
 
             Input.CursorVisible = true;
             Input.LockMode = CursorLockModes.Free;
@@ -38,30 +37,17 @@ namespace Winecrash.Game
 
             Physics.Gravity = new Vector3D(0, -27, 0); //-27
 
-            Graphics.Window.VSync = Engine.VSyncMode.Adaptive;
+            Graphics.Window.VSync = Engine.VSyncMode.Off;
 
             Camera.Main.RenderLayers &= ~(1L << 32);
             Camera.Main.RenderLayers &= ~(1L << 48);
 
             MainMenu.Show();
-            //Debug.LogError("test");
-            /*WObject mdebug = new WObject();
-            mdebug.AddModule<DebugInput>();*/
         }
         public static void RunGameDebug()
-        {
-            
+        {        
             MainMenu.Hide();
 
-            /*WObject hand = new WObject("Hand");
-            MeshRenderer handRenderer = hand.AddModule<MeshRenderer>();
-            handRenderer.Mesh = Mesh.LoadFile("assets/models/hand.obj", MeshFormats.Wavefront);
-            hand.Parent = Camera.Main.WObject;
-            hand.AddModule<Hand>();
-
-            
-            hand.LocalPosition = Vector3F.Forward;*/
-    
             Input.LockMode = CursorLockModes.Lock;
             Input.CursorVisible = false;
 
