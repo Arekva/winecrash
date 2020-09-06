@@ -289,6 +289,14 @@ namespace Winecrash.Engine
             {
                 usedData = new Vector2(v2f.X, v2f.Y);
             }
+            else if (data is Color256 col256)
+            {
+                usedData = new Vector4((float)col256.R, (float)col256.B, (float)col256.B, (float)col256.A);
+            }
+            else if (data is Vector2D vec2d)
+            {
+                usedData = new Vector2((float)vec2d.X, (float)vec2d.Y);
+            }
 
             if (matdata != null && usedData.GetType() == matdata.Data.GetType())
             {

@@ -208,7 +208,7 @@ namespace Winecrash.Engine
             return tex;
         }
 
-        public Texture(string path, string name = null) : base(name)
+        public Texture(string path, string name = null, bool clearOnApply = false) : base(name)
         {
             if(!File.Exists(path))
             {
@@ -219,6 +219,8 @@ namespace Winecrash.Engine
 
             Func<bool> del = new Func<bool>(() =>
             {
+                bool clearApply = clearOnApply;
+
                 if (name == null)
                     this.Name = path.Split('/', '\\').Last().Split('.')[0];
 
@@ -261,6 +263,11 @@ namespace Winecrash.Engine
                             OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
                             PixelType.UnsignedByte,
                             this.Data);
+
+                        if(clearApply)
+                        {
+                            this.Data = null;
+                        }
 
                         this.Size = new Vector2I(img.Width, img.Height);
                     }

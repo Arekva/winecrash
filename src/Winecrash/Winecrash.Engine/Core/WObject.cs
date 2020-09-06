@@ -94,7 +94,7 @@ namespace Winecrash.Engine
         {
             get
             {   //                                      first set to scale                                     then rotate                          then add parent's position
-                return this._Parent ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3D.Zero, this._Parent.Rotation.Inverted) + this._Parent.Position : this.LocalPosition;
+                return this._Parent ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3D.Zero, this._Parent.Rotation) + this._Parent.Position : this.LocalPosition;
             }
 
             set

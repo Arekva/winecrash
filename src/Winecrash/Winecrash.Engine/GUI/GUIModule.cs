@@ -183,22 +183,22 @@ namespace Winecrash.Engine.GUI
         /// <summary>
         /// Distance from the top of the anchor
         /// </summary>
-        public float Top { get; set; } = 0.0F;
+        public double Top { get; set; } = 0.0D;
         /// <summary>
         /// Distance from the bottom of the anchor
         /// </summary>
-        public float Bottom { get; set; } = 0.0F;
+        public double Bottom { get; set; } = 0.0D;
         /// <summary>
         /// Distance from the right of the anchor
         /// </summary>
-        public float Right { get; set; } = 0.0F;
+        public double Right { get; set; } = 0.0D;
         /// <summary>
         /// Distance from the Left of the anchor
         /// </summary>
-        public float Left { get; set; } = 0.0F;
+        public double Left { get; set; } = 0.0D;
         /// <summary>
         /// Depth
         /// </summary>
-        public float Depth { get; set; } = 0.0F;
+        public double Depth { get; set; } = 0.0D;
     }
 }

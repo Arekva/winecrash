@@ -53,9 +53,9 @@ namespace Winecrash.Engine
         {
             Icon icon = null;
 
-            if(File.Exists("icon.ico"))
+            if(File.Exists("assets/icon.ico"))
             {
-                icon = new Icon("icon.ico");
+                icon = new Icon("assets/icon.ico");
             }
 
             using (GameApplication app = new GameApplication("Winecrash Viewport", icon))

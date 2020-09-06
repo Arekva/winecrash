@@ -12,28 +12,43 @@ namespace Winecrash.Game
     public static class MainMenu
     {
         private static WObject MenuWobject = null;
+        private static WObject MenuBGWObject = null;
         private static void CreateMenu()
         {
             MenuWobject = new WObject("Main Menu");
+            MenuBGWObject = new WObject("Main Menu Background Object");
+            MenuBGWObject.Parent = MenuWobject;
+            MenuBGWObject.AddModule<MenuBackgroundControler>();
+
 
             //Panel
             WObject bgPanel = new WObject("Background Panel") { Parent = MenuWobject };
             bgPanel.Parent = MenuWobject;
 
             //BG Image
-            Image bgImage = bgPanel.AddModule<Image>();
+            /*Image bgImage = bgPanel.AddModule<Image>();
             bgImage.Picture = new Texture("assets/textures/menu_bg.png");
             bgImage.AutoTile = true;
-            bgImage.AutoTileScale = 1/2.0F;
+            bgImage.AutoTileScale = 1/2.0F;*/
 
-            Label lb = bgPanel.AddModule<Label>();
-            lb.Text = "Winecrash Alpha 0.0.1";
-            lb.Aligns = TextAligns.Up | TextAligns.Left;
-            lb.AutoSize = true;
-            lb.MinAnchor = new Vector2F(0.0F, 0.95F);
-            lb.MaxAnchor = new Vector2F(1.0F, 1.0F);
-            lb.Color = Color256.DarkGray * 1.25F;
-            
+            Label lbVersion = bgPanel.AddModule<Label>();
+            lbVersion.Text = "Winecrash Alpha 0.0.1";
+            lbVersion.Aligns = TextAligns.Down | TextAligns.Left;
+            lbVersion.AutoSize = true;
+            lbVersion.MinAnchor = new Vector2F(0.0F, 0.0F);
+            lbVersion.MaxAnchor = new Vector2F(1.0F, 0.05F);
+            lbVersion.Color = Color256.White;
+            lbVersion.Left = 20.0D;
+
+            Label lbCopyright = bgPanel.AddModule<Label>();
+            lbCopyright.Text = "Copyright Arekva 2020\nAll Rights Reserved";
+            lbCopyright.Aligns = TextAligns.Down | TextAligns.Right;
+            lbCopyright.AutoSize = true;
+            lbCopyright.MinAnchor = new Vector2F(0.0F, 0.0F);
+            lbCopyright.MaxAnchor = new Vector2F(1.0F, 0.1F);
+            lbCopyright.Color = Color256.White;
+            lbCopyright.Right = 20.0D;
+
 
             WObject mainPanel = new WObject("Main UI Panel") { Parent = MenuWobject };
             Image mainPanelImg = mainPanel.AddModule<Image>();
@@ -157,60 +172,6 @@ namespace Winecrash.Game
 
             btnQuit.OnHover += () => btnQuit.Label.Color = new Color256(249 / 255.0D, 255 / 255.0D, 191 / 255.0D, 1.0D);
             btnQuit.OnUnhover += () => btnQuit.Label.Color = new Color256(0.95, 0.95, 0.95, 1.0);
-
-
-            /*
-            WObject mult = new WObject("Multiplayer Button") { Parent = btnPanel };
-            Button btnMult = mult.AddModule<Button>();
-            btnMult.Background.Picture = largeButtonTex;
-            btnMult.MinAnchor = new Vector2F(0.0F, 0.5F);
-            btnMult.MaxAnchor = new Vector2F(1.0F, 1.0F);
-            btnMult.KeepRatio = true;
-            btnMult.HoverColor = new Color256(1.0, 1.0, 1.25, 1.0);
-            btnMult.Label.Text = "           Multiplayer";
-            btnMult.Label.Color = new Color256(0.5, 0.5, 0.5, 1.0);
-            btnMult.Label.FontSize = 40.0F;
-            //btnMult.OnHover += () => btnMult.Label.Color = new Color256(1.0, 0.98, 0.6, 1.0);
-            //btnMult.OnUnhover += () => btnMult.Label.Color = new Color256(0.95, 0.95, 0.95, 1.0);
-
-            btnMult.Locked = true;*/
-
-
-
-            /*WObject mods = new WObject("Mods Button") { Parent = btnPanel };
-            Button btnMods = mods.AddModule<Button>();
-            btnMods.Background.Picture = largeButtonTex;
-            btnMods.MinAnchor = new Vector2F(0.0F, 0.35F);
-            btnMods.MaxAnchor = new Vector2F(1.0F, 0.425F);
-            //btnMods.KeepRatio = true;
-            btnMods.HoverColor = new Color256(1.0, 1.0, 1.25, 1.0);
-            btnMods.Label.Text = "           Mods";
-            btnMods.Label.Color = new Color256(0.5, 0.5, 0.5, 1.0);
-            btnMods.Label.FontSize = 40.0F;
-            //btnMult.OnHover += () => btnMult.Label.Color = new Color256(1.0, 0.98, 0.6, 1.0);
-            //btnMult.OnUnhover += () => btnMult.Label.Color = new Color256(0.95, 0.95, 0.95, 1.0);
-
-            btnMods.Locked = true;*/
-
-
-
-
-
-            /* WObject options = new WObject("Mods Button") { Parent = btnPanel };
-             Button btnOptions = options.AddModule<Button>();
-             btnOptions.Background.Picture = largeButtonTex;
-             btnOptions.MinAnchor = new Vector2F(0.0F, 0.2F);
-             btnOptions.MaxAnchor = new Vector2F(1.0F, 0.275F);
-             //btnOptions.KeepRatio = true;
-             btnOptions.HoverColor = new Color256(1.0, 1.0, 1.25, 1.0);
-             btnOptions.Label.Text = "           Options";
-             btnOptions.Label.Color = new Color256(0.5, 0.5, 0.5, 1.0);
-             btnOptions.Label.FontSize = 40.0F;
-             //btnMult.OnHover += () => btnMult.Label.Color = new Color256(1.0, 0.98, 0.6, 1.0);
-             //btnMult.OnUnhover += () => btnMult.Label.Color = new Color256(0.95, 0.95, 0.95, 1.0);
-
-             btnOptions.Locked = true;*/
-
         }
 
         private static void Btn_OnClick()
@@ -222,12 +183,14 @@ namespace Winecrash.Game
         {
             if (!MenuWobject) CreateMenu();
 
+            Camera.Main.FOV = 80.0D;
 
             MenuWobject.Enabled = true;
         }
 
         public static void Hide()
         {
+            Camera.Main.FOV = 45.0D;
             MenuWobject.Enabled = false;
         }
     }

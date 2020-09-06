@@ -283,7 +283,7 @@ namespace Winecrash.Engine
             if(_SurfaceFixedResolutionChanged)
             {
                 _SurfaceFixedResolutionChanged = false;
-                if(!_Resizable) base.ClientSize = new Size(_SurfaceFixedResolution.X, _SurfaceFixedResolution.Y);
+                if(_Resizable) base.ClientSize = new Size(_SurfaceFixedResolution.X, _SurfaceFixedResolution.Y);
             }
             if(_WindowStateChanged)
             {

@@ -58,8 +58,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
@@ -106,6 +105,7 @@
     <Compile Include="Item\Grass.cs" />
     <Compile Include="Item\TexturePaths.cs" />
     <Compile Include="MainMenu.cs" />
+    <Compile Include="MenuBackgroundControler.cs" />
     <Compile Include="MenuTip.cs" />
     <Compile Include="Modules\DayNightCycle.cs" />
     <Compile Include="Modules\FreeCam.cs" />
@@ -130,16 +130,6 @@
     <Compile Include="World\TickType.cs" />
     <Compile Include="World\TickWaitItem.cs" />
     <Compile Include="World\World.cs" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="LibNoiseDiag.cd" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />

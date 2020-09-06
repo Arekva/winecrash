@@ -45,7 +45,7 @@ namespace Winecrash.Game
 
         public bool Grounded { get; private set; } = false;
 
-        private Vector2D Angles = new Vector2D();
+        public Vector2D Angles = new Vector2D();
 
         private RigidBody _Rb;
         private BoxCollider _Bc;
