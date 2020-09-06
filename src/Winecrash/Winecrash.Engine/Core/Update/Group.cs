@@ -109,7 +109,14 @@ namespace Winecrash.Engine
             {
                 for (int i = 0; i < modules.Length; i++)
                 {
-                    modules[i]?.FixedUpdate();
+                    try
+                    {
+                        modules[i]?.FixedUpdate();
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
                 }
             }
         }
@@ -125,7 +132,14 @@ namespace Winecrash.Engine
 
                 foreach (Module mod in modules)
                 {
-                    mod?.LateFixedUpdate();
+                    try
+                    {
+                        mod?.LateFixedUpdate();
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
                 }
             }
         }
@@ -147,39 +161,46 @@ namespace Winecrash.Engine
                     foreach (Module mod in modules)
                     {
                         if (mod == null || mod.Deleted) continue;
-
-                        switch (ut)
+                        
+                        try
                         {
-                            case UpdateTypes.PreUpdate:
-                                {
-                                    if (mod.StartDone == false)
+                            switch (ut)
+                            {
+                                case UpdateTypes.PreUpdate:
                                     {
-                                        mod.StartDone = true;
-                                        if (mod.RunAsync)
+                                        if (mod.StartDone == false)
                                         {
-                                            Task.Run(mod.Start);
+                                            mod.StartDone = true;
+                                            if (mod.RunAsync)
+                                            {
+                                                Task.Run(mod.Start);
+                                            }
+                                            else
+                                            {
+                                                mod.Start();
+                                            }
                                         }
-                                        else
-                                        {
-                                            mod.Start();
-                                        }
+            
+                                        mod.PreUpdate();
                                     }
+                                    break;
 
-                                    mod.PreUpdate();
-                                }
-                                break;
+                                case UpdateTypes.Update:
+                                    {
+                                        mod.Update();
+                                    }
+                                    break;
 
-                            case UpdateTypes.Update:
-                                {
-                                    mod.Update();
-                                }
-                                break;
-
-                            case UpdateTypes.LateUpdate:
-                                {
-                                    mod.LateUpdate();
-                                }
-                                break;
+                                case UpdateTypes.LateUpdate:
+                                    {
+                                        mod.LateUpdate();
+                                    }
+                                    break;
+                            }
+                        }
+                        catch(Exception e)
+                        {
+                            Debug.LogException(e);
                         }
                     }
                 }

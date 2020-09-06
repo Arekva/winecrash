@@ -278,9 +278,6 @@ namespace Winecrash.Game
                     this._Rb.Velocity.RotateAround(Vector3D.Zero, Vector3D.Up, (float)angleVelFwd * TurnFactor * (float)Time.DeltaTime);
                 }
             }
-
-
-            
         }
 
         private Chunk previousChunk = null;
