@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Drawing;
 
-using FKeys = System.Windows.Forms.Keys;
 using WKeys = Winecrash.Engine.Keys;
 
 namespace Winecrash.Engine

@@ -7,8 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winecrash.Engine", "Winecra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winecrash.Game", "Winecrash.Client\Winecrash.Game.csproj", "{923EE1A4-151E-42DF-9534-D55C50CE52F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winecrash.Launcher", "Winecrash.Launcher\Winecrash.Launcher.csproj", "{0160EB27-0A14-4DF4-A8F5-F0EB2A7D2F22}"
-EndProject
+# Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winecrash.Launcher", "Winecrash.Launcher\Winecrash.Launcher.csproj", # "{0160EB27-0A14-4DF4-A8F5-F0EB2A7D2F22}"
+# EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

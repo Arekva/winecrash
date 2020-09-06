@@ -155,7 +155,7 @@ namespace Winecrash.Engine
         {
             get
             {
-                return base.Focused;
+                return base.IsDisposed ? false : base.Focused;
             }
         }
         

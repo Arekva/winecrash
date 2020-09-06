@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using OpenTK.Input;
 
 
@@ -14,7 +13,45 @@ namespace Winecrash.Engine
         {
             Key tkKey = key.ToOpenTK(out bool isActualKey);
 
-            return isActualKey ? Keyboard.GetState().IsKeyDown(tkKey) : false;
+            if(isActualKey)
+            {
+                return Keyboard.GetState().IsKeyDown(tkKey);
+            }
+            else
+            {
+                MouseButton button = MouseButton.Left;
+                bool found = true;
+
+                switch(key)
+                {
+                    case Keys.MouseLeftButton:
+                        button = MouseButton.Left;
+                        break;
+
+                    case Keys.MouseRightButton:
+                        button = MouseButton.Right;
+                        break;
+                    
+                    case Keys.MouseMiddleButton:
+                        button = MouseButton.Middle;
+                        break;
+                    
+                    case Keys.MouseFourthButton:
+                        button = MouseButton.Button4;
+                        break;
+
+                    case Keys.MouseFifthButton:
+                        button = MouseButton.Button5;
+                        break;
+
+                    default:
+                        found = false;
+                        break;
+                }
+
+                
+                return found && OpenTK.Input.Mouse.GetState()[button];
+            }
         }
 
         public Vector2I GetMousePosition()

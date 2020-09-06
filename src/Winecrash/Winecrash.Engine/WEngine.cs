@@ -52,8 +52,10 @@ namespace Winecrash.Engine
         private static void ShowWindow()
         {
             Icon icon = null;
-
-            if(File.Exists("assets/icon.ico"))
+            
+            // mono dislikes the icon constructor...
+            // TODO: change that under NET 5.0
+            if(WEngine.OS == OSPlatform.Windows && File.Exists("assets/icon.ico"))
             {
                 icon = new Icon("assets/icon.ico");
             }

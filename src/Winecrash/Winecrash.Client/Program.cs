@@ -28,7 +28,19 @@ namespace Winecrash.Game
 
         static void Start()
         {
-            Graphics.Window.Title = "Winecrash Alpha 0.0.1";
+            string title = "Winecrash Alpha 0.0.1";
+
+#IF X64
+            title += " 64 bits";
+#ELSE
+            title += " 32 bits";
+#ENDIF
+
+#IF DEBUG
+            title += " <DEBUG>";
+#ENDIF
+
+            Graphics.Window.Title = title;
 
             Input.CursorVisible = true;
             Input.LockMode = CursorLockModes.Free;
@@ -196,7 +208,7 @@ namespace Winecrash.Game
         static void CreateDebugWindow()
         {
             Debug.AddLogger(new Logger(LogVerbose, LogWarn, LogErr, LogException));
-            Debug.Log("Winecrash Predev 0.2 - (C) Arthur Carré 2020");
+            Debug.Log("Winecrash Alpha 0.0.1 - © Arekva 2020, All Rights Reserved");
         }
 
         private static void LogVerbose(object obj)

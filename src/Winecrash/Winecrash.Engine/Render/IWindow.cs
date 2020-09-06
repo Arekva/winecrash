@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using OpenTK.Input;
+
 namespace Winecrash.Engine
 {
     public delegate void WindowInvokeDelegate();

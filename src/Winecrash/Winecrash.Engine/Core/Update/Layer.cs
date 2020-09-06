@@ -28,6 +28,8 @@ namespace Winecrash.Engine
         public string Name { get; set; } = "Layer";
 
         internal static List<Layer> _Layers = new List<Layer>(1);
+        internal static object LayerLocker = new object();
+
         public static int LayerCount
         {
             get
@@ -224,7 +226,13 @@ namespace Winecrash.Engine
         /// </summary>
         private static void SortByOrder()
         {
-            _Layers = _Layers.OrderBy(l => l.Order).ToList();
+            if(_Layers != null)
+            {
+                lock(LayerLocker)
+                {
+                    _Layers = _Layers.OrderBy(l => l.Order).ToList();
+                }
+            }
         }
 
         /// <summary>
