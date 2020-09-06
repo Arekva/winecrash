@@ -230,7 +230,7 @@ namespace Winecrash.Engine
             {
                 lock(LayerLocker)
                 {
-                    _Layers = _Layers.OrderBy(l => l.Order).ToList();
+                    _Layers = _Layers.Where(l => l != null).OrderBy(l => l.Order).ToList();
                 }
             }
         }

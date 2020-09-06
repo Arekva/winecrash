@@ -31,6 +31,7 @@ namespace Winecrash.Engine
 
         public Material Material { get; set; } = Material.Find("Error");
 
+        internal static object ActiveMeshRenderersLocker = new object();
         internal static List<MeshRenderer> ActiveMeshRenderers { get; set; } = new List<MeshRenderer>();
         internal static List<MeshRenderer> MeshRenderers { get; set; } = new List<MeshRenderer>();
 
@@ -74,7 +75,7 @@ namespace Winecrash.Engine
 
         protected internal override void Creation()
         {
-            lock(ActiveMeshRenderers)
+            lock(ActiveMeshRenderersLocker)
             {
                 MeshRenderers.Add(this);
             }
@@ -83,8 +84,7 @@ namespace Winecrash.Engine
 
         protected internal override void OnEnable()
         {
-            object obj = new object();
-            lock(obj)
+            lock(ActiveMeshRenderersLocker)
             {
                 ActiveMeshRenderers.Add(this);
             }
@@ -92,8 +92,7 @@ namespace Winecrash.Engine
 
         protected internal override void OnDisable()
         {
-            object obj = new object();
-            lock (obj)
+            lock (ActiveMeshRenderersLocker)
             {
                 ActiveMeshRenderers.Remove(this);
             }
@@ -101,8 +100,7 @@ namespace Winecrash.Engine
 
         protected internal override void OnDelete()
         {
-            object obj = new object();
-            lock(obj)
+            lock(ActiveMeshRenderersLocker)
             {
                 Material = null;
                 MeshRenderers.Remove(this);

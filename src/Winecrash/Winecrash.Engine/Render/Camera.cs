@@ -156,7 +156,12 @@ namespace Winecrash.Engine
             _RenderProjectionMatrix = this.ProjectionMatrix;
              this.ViewMatrixRef(out _RenderViewMatrix);
 
-            MeshRenderer[] mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
+
+            MeshRenderer[] mrs = null;
+            lock(MeshRenderer.ActiveMeshRenderersLocker)
+            {
+                mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
+            }
             mrs = mrs.Where(mr => mr != null && mr.WObject != null && (mr.WObject.Layer & this.RenderLayers) != 0).ToArray();
 
             for (int i = 0; i < mrs.Length; i++)

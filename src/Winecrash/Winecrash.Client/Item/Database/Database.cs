@@ -28,8 +28,6 @@ namespace Winecrash.Game
                 parsedItems[i] = JsonConvert.DeserializeObject(File.ReadAllText(Items[i].Path), Items[i].RuntimeType) as Item;
                 parsedItems[i].Identifier = Items[i].Identifier;
                 parsedItems[i].OnDeserialize();
-
-                Debug.Log("Parsed " + parsedItems[i].Identifier);
             }
 
             if (addToCache)

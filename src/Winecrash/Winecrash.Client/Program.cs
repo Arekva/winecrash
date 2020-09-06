@@ -30,7 +30,7 @@ namespace Winecrash.Game
         {
             string title = "Winecrash Alpha 0.0.1";
 
-#IF X64
+/*#IF X64
             title += " 64 bits";
 #ELSE
             title += " 32 bits";
@@ -38,7 +38,7 @@ namespace Winecrash.Game
 
 #IF DEBUG
             title += " <DEBUG>";
-#ENDIF
+#ENDIF*/
 
             Graphics.Window.Title = title;
 
@@ -213,26 +213,26 @@ namespace Winecrash.Game
 
         private static void LogVerbose(object obj)
         {
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("[ Verbose ] " + obj);
         }
         private static void LogWarn(object obj)
         {
-            Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("[ Warning ] " + obj);
+            Console.ResetColor();
         }
         private static void LogErr(object obj)
         {
-            Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("[  Error  ] " + obj);
+            Console.ResetColor();
         }
         private static void LogException(object obj)
         {
-            Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine("[Exception] " + obj);
+            Console.ResetColor();
         }
     }
 }

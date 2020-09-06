@@ -94,7 +94,9 @@ namespace Winecrash.Engine
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError("Thread error when stopping engine: " + e);
+/*#IF DEBUG
+                        Debug.LogException(e);
+#ENDIF*/
                     }
                 }
             }
