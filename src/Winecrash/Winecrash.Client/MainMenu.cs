@@ -42,6 +42,7 @@ namespace Winecrash.Game
             mainPanelImg.MaxAnchor = new Vector2F(0.775F, 0.95F);
             mainPanelImg.MinSize = new Vector3F(400.0F, 400.0F, Single.PositiveInfinity);
             mainPanelImg.MaxSize = new Vector3F(800.0F, 800.0F, Single.PositiveInfinity);
+            mainPanelImg.KeepRatio = true;
 
             
 
@@ -54,12 +55,18 @@ namespace Winecrash.Game
 
             Label lbTip = mainPanel.AddModule<Label>();
             lbTip.ParentGUI = logoImage;
-            lbTip.Text = "No rotation yet :(";
+            lbTip.Text = "Minecraft";
             lbTip.Color = new Color256(1.0, 1.0, 0.0, 1.0);
             lbTip.Aligns = TextAligns.Middle;
             lbTip.AutoSize = true;
-            lbTip.MinAnchor = new Vector2F(0.8F, -0.2F);
-            lbTip.MaxAnchor = new Vector2F(1.2F, 0.2F);
+            lbTip.MinAnchor = new Vector2F(0.7F, 0.0F);
+            lbTip.MaxAnchor = new Vector2F(1.1F, 0.4F);
+            lbTip.Rotation = -20.0D;
+
+
+            MenuTip tip = MenuWobject.AddModule<MenuTip>();
+            tip.ReferenceLabel = lbTip;
+            lbTip.Text = tip.SelectRandom();
 
 
             WObject btnPanel = new WObject("Main UI Button Panel") { Parent = mainPanel };

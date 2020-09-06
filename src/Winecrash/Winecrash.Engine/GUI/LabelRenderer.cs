@@ -75,9 +75,11 @@ namespace Winecrash.Engine.GUI
 
             Material.MaterialData matData = this.Material._Data.Where(d => d.Name == "transform").FirstOrDefault();
 
-            //Debug.Log(matData.Name);
-
             if (matData == null) return;
+
+            bool doRotate = Label.Rotation != 0.0D;
+
+            Quaternion labelRotation = new Quaternion(Vector3D.Forward, Label.Rotation);
 
             void RenderLabel()
             {
@@ -128,9 +130,19 @@ namespace Winecrash.Engine.GUI
                     {
                         trans = new Vector3D(middle.X + lineXStartPos - shiftX, middle.Y + lineYPos, middle.Z) + globalShift;
 
+
+                        Quaternion rotation = rot;
+
+                        if(doRotate)
+                        {
+                            rotation *= labelRotation;
+                            trans = trans.RotateAround(middle, labelRotation);
+                        }
+
+
                         transform =
                             new Matrix4D(new Vector3D(fontSize), true) *
-                            new Matrix4D(rot) *
+                            new Matrix4D(rotation) *
                             new Matrix4D(trans, false) *
                             Matrix4D.Identity *
 

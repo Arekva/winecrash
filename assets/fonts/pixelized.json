@@ -586,6 +586,23 @@
 
 
         {
+            "Character": "%",
+            "X" : 468,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
+
+        {
+            "Character": "'",
+            "X" : 625,
+            "Y" : 861,
+            "Width" : 18,
+            "Height" : 123
+        },
+
+
+        {
             "Character": "(",
             "X" : 864,
             "Y" : 861,
@@ -622,6 +639,22 @@
             "Character": ":",
             "X" : 1006,
             "Y" : 861,
+            "Width" : 18,
+            "Height" : 123
+        },
+
+        {
+            "Character": "?",
+            "X" : 52,
+            "Y" : 984,
+            "Width" : 54,
+            "Height" : 123
+        },
+
+        {
+            "Character": "!",
+            "X" : 124,
+            "Y" : 984,
             "Width" : 18,
             "Height" : 123
         }

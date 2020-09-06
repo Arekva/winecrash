@@ -25,6 +25,11 @@ namespace Winecrash.Engine.ModelLoaders
         // Use this for initialization
         public static Mesh ImportFile(String filePath)
         {
+            if(!File.Exists(filePath))
+            {
+                Debug.LogWarning($"Unable to load mesh from \"{filePath}\": no file existing there.");
+                return null;
+            }
             MeshStruct newMesh = CreateMeshStruct(filePath);
             PopulateMeshStruct(ref newMesh);
 

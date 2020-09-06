@@ -17,7 +17,18 @@ namespace Winecrash.Engine.GUI
         {
             get
             {
-                return Table[CharIndices[character]];
+                if(CharIndices.TryGetValue(character, out int indice))
+                {
+                    return Table[indice];
+                }
+                else if(CharIndices.TryGetValue('?', out indice))
+                {
+                    return Table[indice];
+                }
+                else
+                {
+                    throw new ArgumentException($"Unable to find character '{character}'. Neither the '?' character is available.", nameof(character));
+                }
             }
         }
         public Glyph[] this[string text]

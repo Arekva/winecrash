@@ -101,6 +101,7 @@
     <Compile Include="Item\Database\Database.cs" />
     <Compile Include="Item\Database\ItemDB.cs" />
     <Compile Include="Item\Dirt.cs" />
+    <Compile Include="Item\DroppedItem.cs" />
     <Compile Include="Item\Plant.cs" />
     <Compile Include="Item\Grass.cs" />
     <Compile Include="Item\TexturePaths.cs" />

@@ -45,7 +45,7 @@ namespace Winecrash.Game
             MainMenu.Show();
         }
         public static void RunGameDebug()
-        {        
+        {   
             MainMenu.Hide();
 
             Input.LockMode = CursorLockModes.Lock;

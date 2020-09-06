@@ -210,6 +210,13 @@ namespace Winecrash.Engine
 
         public Texture(string path, string name = null) : base(name)
         {
+            if(!File.Exists(path))
+            {
+                Debug.LogWarning($"Unable to load mesh from \"{path}\": no file existing there.");
+                this.Delete();
+                return;
+            }
+
             Func<bool> del = new Func<bool>(() =>
             {
                 if (name == null)

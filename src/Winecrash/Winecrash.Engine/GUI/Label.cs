@@ -61,6 +61,8 @@ namespace Winecrash.Engine.GUI
 
         public bool AutoSize { get; set; } = false;
 
+        public double Rotation { get; set; } = 0.0D;
+
         protected internal override void Creation()
         {
             this.WObject.Layer = 1L << 48;

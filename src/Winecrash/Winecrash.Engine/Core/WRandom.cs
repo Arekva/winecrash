@@ -10,6 +10,14 @@ namespace Winecrash.Engine
     {
         private static int _Count = 0;
         private static double _CountDouble = 0.0D;
+
+        public WRandom() { }
+        public WRandom(int seed)
+        {
+            _Count = seed;
+            _CountDouble = seed;
+        }
+
         public override int Next(int maxValue)
         {
             int v = (int)(Time.TimeSinceStart * 123456789.0D * (_CountDouble + 1.0D)) % maxValue;
