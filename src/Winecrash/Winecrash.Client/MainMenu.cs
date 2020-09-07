@@ -113,7 +113,8 @@ namespace Winecrash.Game
             UI.SmallButton btnOptions = options.AddModule<UI.SmallButton>();
             btnOptions.Button.MinAnchor = new Vector2F(0.0F, 0.2F);
             btnOptions.Button.MaxAnchor = new Vector2F(0.45F, 0.3F);
-            btnOptions.Button.Label.Text = "Options...";
+            btnOptions.Button.Label.Text = "Options";
+            btnOptions.Button.OnClick += () => ShowOptions();
 
             WObject quit = new WObject("Quit Button") { Parent = btnPanel };
             UI.SmallButton btnQuit = quit.AddModule<UI.SmallButton>();
@@ -131,19 +132,22 @@ namespace Winecrash.Game
 
         private static void ShowOptions()
         {
-            MainMenuPanel.Enabled = false;
             OptionPanel.Enabled = true;
+            HideMain();
         }
 
+        private static void HideOptions()
+        {
+            OptionPanel.Enabled = false;
+        }
         private static void ShowMain()
         {
             MainMenuPanel.Enabled = true;
-            OptionPanel.Enabled = false;
+            HideOptions();
         }
         private static void HideMain()
         {
             MainMenuPanel.Enabled = false;
-            OptionPanel.Enabled = true;
         }
 
         public static void Show()
@@ -158,15 +162,14 @@ namespace Winecrash.Game
             Camera.Main.FOV = 80.0D;
             Camera.Main.WObject.LocalRotation = new Quaternion(25, 0, 0);
 
-            MenuWobject.Enabled = true;
-            MainMenuPanel.Enabled = true;
+            ShowMain();
         }
 
         public static void Hide()
         {
             Camera.Main.FOV = 45.0D;
             Camera.Main.WObject.LocalRotation = new Quaternion(0, 0, 0);
-            MenuWobject.Enabled = false;
+            MainMenuPanel.Enabled = false;
         }
     }
 }
