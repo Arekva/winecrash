@@ -31,4 +31,13 @@ If you want to edit or build the last version of the project, you first may down
 * Run **Winecrash.exe** and have fun!
 
 ###### Linux
-* todo
+* Install [Mono](https://www.mono-project.com/).
+* From your package manager, install the `msbuild` package.
+* You may need to install [.NET Core](https://dotnet.microsoft.com/download/dotnet-core) to install NuGet packages.
+* Clone the repository
+* Navigate to src/Winecrash
+* `nuget restore`
+* `msbuild Winecrash.sln`
+* Navigate to Winecrash.Client/bin/Debug
+* Copy the assets folder into it
+* `mono Winecrash.exe`
