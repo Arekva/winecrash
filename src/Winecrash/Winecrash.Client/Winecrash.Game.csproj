@@ -121,6 +121,9 @@
     <Compile Include="Ticket\TicketPreviousDirections.cs" />
     <Compile Include="Ticket\TicketTypes.cs" />
     <Compile Include="Generation\Generator.cs" />
+    <Compile Include="UI\GameButton.cs" />
+    <Compile Include="UI\LargeButton.cs" />
+    <Compile Include="UI\SmallButton.cs" />
     <Compile Include="World\ISaveable.cs" />
     <Compile Include="Item\Item.cs" />
     <Compile Include="Item\Database\ItemCache.cs" />

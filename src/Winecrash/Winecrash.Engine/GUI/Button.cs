@@ -239,6 +239,8 @@ namespace Winecrash.Engine.GUI
                 Hovered = false;
             }
 
+            if (Locked) return;
+
             Vector2I mpos = Input.MousePosition;
             Vector2I bpos = (Vector2I)this.Background.GlobalPosition.XY;
             Vector2I bsca = (Vector2I)this.Background.GlobalScale.XY / 2;
