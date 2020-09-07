@@ -64,20 +64,25 @@ namespace Winecrash.Engine
 
             set
             {
-                //Debug.Log("setting " + this.Name + "'s parent as " + value.Name);
+                if(_Parent != null)
+                {
+                    _Parent._Children.Remove(this);
+                    _Parent = null;
+                }
 
-                Vector3F oldGlobalPosition = this.Position;
-                Quaternion oldGlobalRotation = this.Rotation;
-                Vector3F oldGlobalScale = this.Scale;
+                if(value != null)
+                {
+                    Vector3F oldGlobalPosition = this.Position;
+                    Quaternion oldGlobalRotation = this.Rotation;
+                    Vector3F oldGlobalScale = this.Scale;
 
-                this._Parent = value;
-                this._Parent._Children.Add(this);
+                    this._Parent = value;
+                    value._Children.Add(this);
 
-                this.Position = oldGlobalPosition;
-                this.Rotation = oldGlobalRotation;
-                this.Scale = oldGlobalScale;
-
-                //Debug.Log(this.Name + "'s parent is now " + value.Name);
+                    this.Position = oldGlobalPosition;
+                    this.Rotation = oldGlobalRotation;
+                    this.Scale = oldGlobalScale;
+                }  
             }
         }
 
@@ -286,6 +291,9 @@ namespace Winecrash.Engine
 
         internal sealed override void SetEnable(bool status)
         {
+            //TODO: STACK OVERFLOW HERE 
+
+
             for (int i = 0; i < _Children.Count; i++)
                 _Children[i].Enabled = status;
 
