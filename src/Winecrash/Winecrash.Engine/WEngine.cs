@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Drawing;
 using System.IO;
+using OpenTK.Graphics;
 
 namespace Winecrash.Engine
 {

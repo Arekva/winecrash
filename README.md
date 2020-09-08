@@ -2,7 +2,7 @@
 
 Hey, welcome to the repos of Winecrash!
 
-## DISCLAMER ⚠️
+## ⚠️ DISCLAMER
 __Winecrash__ and __breaks-and-continues__ are both **unaffiliated** to __Minecraft__ nor __Mojang Studios__.
 This is a fan project I enjoy making in my free time to train my C#. However feel free to contribute! 😉
 

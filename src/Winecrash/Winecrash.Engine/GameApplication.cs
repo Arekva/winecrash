@@ -237,10 +237,11 @@ namespace Winecrash.Engine
             GL.Enable(EnableCap.DepthTest); // enable depth test
             GL.DepthFunc(DepthFunction.Lequal); // set anything less or equal to current depth being drawn onto screen
 
+            
             GL.Enable(EnableCap.Blend); // transparency. further modes are available into shaders. or material, I don't remember
 
             // create basic shaders. if visual studio yells at you while underlining in green,
-            // don't listen to it it's dumb, everything is stocked into the shader cache.
+            // don't listen to it it's dumb, everything is stored into the shader cache.
             new Shader("assets/shaders/Standard/Standard.vert", "assets/shaders/Standard/Standard.frag");
             new Shader("assets/shaders/Unlit/Unlit.vert", "assets/shaders/Unlit/Unlit.frag");
             new Shader("assets/shaders/Text/Text.vert", "assets/shaders/Text/Text.frag");
