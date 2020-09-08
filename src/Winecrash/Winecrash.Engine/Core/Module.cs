@@ -80,6 +80,18 @@ namespace Winecrash.Engine
         internal protected virtual void OnDisable() { }
         internal protected virtual void OnRender() { }
 
+        public override bool Enabled
+        {
+            get
+            {
+                return _Enabled && this.WObject && this.WObject.Enabled;
+            }
+            set
+            {
+                SetEnable(value);
+            }
+        }
+
         internal sealed override void SetEnable(bool status)
         {
             if (this.Enabled)

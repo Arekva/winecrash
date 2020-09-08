@@ -115,7 +115,7 @@ namespace Winecrash.Game
             btnOptions.Button.MaxAnchor = new Vector2F(0.45F, 0.3F);
             btnOptions.Button.Label.Text = "Options";
             btnOptions.Button.OnClick += () => ShowOptions();
-            btnOptions.Button.Locked = true;
+            btnOptions.Button.Locked = false;
 
 
             WObject quit = new WObject("Quit Button") { Parent = btnPanel };
@@ -130,15 +130,59 @@ namespace Winecrash.Game
         {
 
             WObject panel = OptionPanel = new WObject("Main Menu Options") { Parent = MenuWobject };
+            /*Image bgFullScreen = OptionPanel.AddModule<Image>();
+            bgFullScreen.Color = Color256.DarkGray * new Color256(1.0, 1.0, 1.0, 0.75);*/
+
             Image mainPanel = panel.AddModule<Image>();
-            mainPanel.Color = new Color256(1.0, 0.0, 1.0, .5);
+            mainPanel.Color = Color256.White * 0.0;//new Color256(1.0, 1.0, 1.0, 0.4);
             mainPanel.MinAnchor = new Vector2D(0.2, 0.05D);
             mainPanel.MaxAnchor = new Vector2D(0.8, 0.95D);
             mainPanel.MinSize = new Vector3D(800.0D, 400.0D, double.NegativeInfinity);
 
+            WObject tabsPanelWobj = new WObject("Options tab panel") { Parent = panel };
+            Image tabsPanel = tabsPanelWobj.AddModule<Image>();
+            tabsPanel.MinAnchor = new Vector2D(0.0, 0.85);
+            tabsPanel.MaxAnchor = new Vector2D(1.0, 1.0);
+            tabsPanel.Color = new Color256(1.0, 1.0, 1.0, .0);
+
+            WObject backOptions = new WObject("Back Options Button") { Parent = tabsPanelWobj };
+            UI.TinyButton btnBack = backOptions.AddModule<UI.TinyButton>();
+            btnBack.Button.MinAnchor = new Vector2D(0.0, 0.0);
+            btnBack.Button.MaxAnchor = new Vector2D(0.06, 1.0);
+            btnBack.Button.Label.Text = "<";
+            btnBack.Button.OnClick += () => ShowMain();
+
             WObject gameOptions = new WObject("Game Options Panel") { Parent = panel };
-            //UI.SmallButton btnGame = gameOptions.AddModule<UI.SmallButton>();
-            //btnGame.Button.Label.Text = "Game";
+            Image gameOptionsPanel = gameOptions.AddModule<Image>();
+            gameOptionsPanel.MinAnchor = new Vector2D(0.0, 0.0);
+            gameOptionsPanel.MaxAnchor = new Vector2D(1.0, 0.85);
+            gameOptionsPanel.Color = Color256.White;
+
+            WObject gameOptionsTab = new WObject("Game Options Button") { Parent = tabsPanelWobj };
+            UI.SmallButton btnGame = gameOptionsTab.AddModule<UI.SmallButton>();
+            btnGame.Button.MinAnchor = new Vector2D(WMath.Remap(0.00, 0.0, 1.0, 0.1, 1.0), 0.0);
+            btnGame.Button.MaxAnchor = new Vector2D(WMath.Remap(0.30, 0.0, 1.0, 0.1, 1.0), 1.0);
+            btnGame.Button.Label.Text = "Game";
+            btnGame.Button.OnClick += () =>
+            {
+                gameOptions.Enabled = true;
+            };
+
+            
+
+            WObject controlsOptionsTab = new WObject("Controls Options Button") { Parent = tabsPanelWobj };
+            UI.SmallButton btnCtrls = controlsOptionsTab.AddModule<UI.SmallButton>();
+            btnCtrls.Button.MinAnchor = new Vector2D(WMath.Remap(0.35, 0.0, 1.0, 0.1, 1.0), 0.0);
+            btnCtrls.Button.MaxAnchor = new Vector2D(WMath.Remap(0.65, 0.0, 1.0, 0.1, 1.0), 1.0);
+            btnCtrls.Button.Label.Text = "Controls";
+
+            WObject videoOptionsTab = new WObject("Controls Options Button") { Parent = tabsPanelWobj };
+            UI.SmallButton btnVideo = videoOptionsTab.AddModule<UI.SmallButton>();
+            btnVideo.Button.MinAnchor = new Vector2D(WMath.Remap(0.70, 0.0, 1.0, 0.1, 1.0), 0.0);
+            btnVideo.Button.MaxAnchor = new Vector2D(WMath.Remap(1.00, 0.0, 1.0, 0.1, 1.0), 1.0);
+            btnVideo.Button.Label.Text = "Video";
+
+
 
         }
 

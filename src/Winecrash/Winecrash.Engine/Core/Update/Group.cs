@@ -63,7 +63,7 @@ namespace Winecrash.Engine
         {
             get
             {
-                return _Groups.Count;
+                return _Groups == null ? 0 : _Groups.Count;
             }
         }
 
@@ -80,7 +80,9 @@ namespace Winecrash.Engine
                 _Modules = modules?.ToList();
 
             this._Order = order;
-            _Groups.Add(this);
+
+            lock(groupLocker)
+                _Groups.Add(this);
 
             Engine.Layer.CreateOrGetLayer(layer, null, new[] { this });
 
@@ -160,7 +162,7 @@ namespace Winecrash.Engine
                 {
                     foreach (Module mod in modules)
                     {
-                        if (mod == null || mod.Deleted) continue;
+                        if (mod == null || !mod.Enabled || mod.Deleted) continue;
                         
                         try
                         {
@@ -242,7 +244,8 @@ namespace Winecrash.Engine
                 lock (moduleLocker)
                     this._Modules = null;
 
-                _Groups.Remove(this);
+                lock (groupLocker)
+                    _Groups.Remove(this);
 
                 foreach(Layer layer in Engine.Layer._Layers)
                 {
@@ -284,7 +287,8 @@ namespace Winecrash.Engine
 
                 group.Thread.Abort();
 
-                _Groups.Remove(group);
+                lock (groupLocker)
+                    _Groups.Remove(group);
 
                 CreateOrGetGroup(0, null, group._Modules);
             }
@@ -327,7 +331,8 @@ namespace Winecrash.Engine
             second.Thread.Abort();
             second.Thread = null;
 
-            _Groups.Remove(second);
+            lock(groupLocker)
+                _Groups.Remove(second);
 
             return first;
         }
@@ -336,6 +341,7 @@ namespace Winecrash.Engine
         {
             List<Group> groups = null;
             //lock(moduleLocker)
+            lock (groupLocker)
                 groups = _Groups.ToList();
 
 
@@ -346,16 +352,15 @@ namespace Winecrash.Engine
         {
             List<Group> groups = null;
             lock (groupLocker)
-            {
                 groups = _Groups.ToList();
-            }
 
             return groups.FirstOrDefault(g => g.Name == name);
         }
 
         private static void SortByOrder()
         {
-            _Groups = _Groups.OrderBy(g => g.Order).ToList();
+            lock(groupLocker)
+                _Groups = _Groups.OrderBy(g => g.Order).ToList();
         }
 
         internal void SortModules()

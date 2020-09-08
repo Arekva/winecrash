@@ -30,6 +30,9 @@ namespace Winecrash.Game
         {
             string title = "Winecrash Alpha 0.0.1";
 
+            Graphics.Window.SurfaceFixedResolution = new Vector2I(512+256, 512);
+            Graphics.Window.VSync = Engine.VSyncMode.Adaptive;
+
 /*#IF X64
             title += " 64 bits";
 #ELSE

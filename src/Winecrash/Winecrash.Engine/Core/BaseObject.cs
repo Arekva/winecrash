@@ -11,9 +11,9 @@ namespace Winecrash.Engine
 
         public virtual bool Undeletable { get; internal set; } = false;
 
-        private bool _Enabled = true;
+        protected bool _Enabled = true;
 
-        public bool Enabled
+        public virtual bool Enabled
         {
             get
             {

@@ -86,6 +86,8 @@ namespace Winecrash.Engine
             }
         }
 
+
+
         private List<WObject> _Children { get; set; } = new List<WObject>();
         public WObject[] Children
         {
@@ -225,8 +227,6 @@ namespace Winecrash.Engine
             Matrix4D.Mult(in scaD, in rotD, out result);
             Matrix4D.Mult(in result, in posD, out result);
             Matrix4D.Mult(in result, Matrix4D.Identity, out result);
-
-
         }
 
         public static WObject Find(string name)
@@ -289,24 +289,22 @@ namespace Winecrash.Engine
             return this.GetModule<T>() ?? this.AddModule<T>();
         }
 
-        internal sealed override void SetEnable(bool status)
-        {
-            //TODO: STACK OVERFLOW HERE 
 
-
-            for (int i = 0; i < _Children.Count; i++)
-                _Children[i].Enabled = status;
-
-            Module[] modules = this._Modules.ToArray();
-            for (int i = 0; i < modules.Length; i++)
+        public override bool Enabled 
+        { 
+            get
             {
-                modules[i].Enabled = status;
+                return ThisAndParentEnabled();
             }
+            set
+            {
+                this._Enabled = value;
+            }
+        }
 
-            if (status == true && this._Parent && !this._Parent.Enabled)
-                this._Parent.Enabled = true;
-
-            base.SetEnable(status);
+        private bool ThisAndParentEnabled()
+        {
+            return this._Enabled && (this.Parent ? this.Parent.Enabled : true);
         }
 
         internal sealed override void ForcedDelete()
