@@ -1,0 +1,16 @@
+{
+    "Name": "English (United Kingdom)",
+
+    "Icon" : "assets/textures/flags/united_kingdom.png",
+
+    "Localizations":
+    {
+        "#menu_singleplayer": "Singleplayer",
+        "#menu_multiplayer": "Multiplayer",
+        "#menu_mods": "Mods and Texture Packs",
+        "#menu_settings": "Settings",
+        "#menu_quit_game": "Quit",
+        "#menu_game_version": "Winecrash {0}",
+        "#error_undefined_text": "No text defined"
+    }
+}

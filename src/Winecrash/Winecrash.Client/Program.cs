@@ -28,20 +28,21 @@ namespace Winecrash.Game
 
         static void Start()
         {
-            string title = "Winecrash Alpha 0.0.1";
+            string title = "Winecrash " + Game.Version;
 
             Graphics.Window.SurfaceFixedResolution = new Vector2I(512+256, 512);
             Graphics.Window.VSync = Engine.VSyncMode.Adaptive;
 
-/*#IF X64
-            title += " 64 bits";
-#ELSE
-            title += " 32 bits";
-#ENDIF
-
-#IF DEBUG
+            title += $" {IntPtr.Size * 8} bits";
+#if DEBUG
             title += " <DEBUG>";
-#ENDIF*/
+#endif
+            /*if(Game.GameConfiguration.UsedLanguage == null)
+            {
+                Game.GameConfiguration.UsedLanguage = new Language("assets/languages/fr-fr.json");
+            }*/
+            
+
 
             Graphics.Window.Title = title;
 
@@ -211,7 +212,6 @@ namespace Winecrash.Game
         static void CreateDebugWindow()
         {
             Debug.AddLogger(new Logger(LogVerbose, LogWarn, LogErr, LogException));
-            Debug.Log("Winecrash Alpha 0.0.1 - © Arekva 2020, All Rights Reserved");
         }
 
         private static void LogVerbose(object obj)

@@ -1,0 +1,16 @@
+{
+    "Name": "Français (France)",
+
+    "Icon" : "assets/textures/flags/france.png",
+
+    "Localizations":
+    {
+        "#menu_singleplayer": "Solo",
+        "#menu_multiplayer": "Multijoueur",
+        "#menu_mods": "Mods et packs de Textures",
+        "#menu_settings": "Paramètres",
+        "#menu_quit_game": "Quitter",
+        "#menu_game_version": "Winecrash {0}",
+        "#error_undefined_text": "Aucun texte défini"
+    }
+}

@@ -12,6 +12,7 @@ namespace Winecrash.Game.UI
     public class GameButton : Module
     {
         public Button Button { get; private set; }
+        public LocalizedLabel Label { get; private set; } 
         public static Color256 LabelColor { get; } = new Color256(0.95, 0.95, 0.95, 1.0);
         public static Color256 LabelHoverColor { get; } = new Color256(249 / 255.0D, 255 / 255.0D, 191 / 255.0D, 1.0D);
         public static Color256 ButtonColor { get; } = new Color256(1.0D, 1.0D, 1.0D, 1.0D);
@@ -23,6 +24,13 @@ namespace Winecrash.Game.UI
         {
             Button = this.WObject.AddModule<Button>();
 
+            LocalizedLabel label = Button.Label.WObject.AddModule<LocalizedLabel>();
+
+            Button.Label.Delete();
+
+            Button.Label = Label = label;
+
+
             Button.Label.Color = LabelColor;
             Button.HoverColor = ButtonHoverColor;
             Button.IdleColor = ButtonColor;
@@ -32,10 +40,10 @@ namespace Winecrash.Game.UI
             Button.OnUnlock += () => Button.Label.Color = LabelColor;
 
             Button.KeepRatio = true;
-            Button.Label.AutoSize = true;
-            Button.Label.Aligns = TextAligns.Middle;
-            Button.Label.MinAnchor = new Vector2F(0.0F, 0.12F);
-            Button.Label.MaxAnchor = new Vector2F(1.0F, 0.88F);
+            Label.AutoSize = true;
+            Label.Aligns = TextAligns.Middle;
+            Label.MinAnchor = new Vector2F(0.0F, 0.12F);
+            Label.MaxAnchor = new Vector2F(1.0F, 0.88F);
         }
     }
 }

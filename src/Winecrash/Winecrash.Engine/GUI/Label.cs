@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Winecrash.Engine.GUI
 {
-    public sealed class Label : GUIModule
+    public class Label : GUIModule
     {
         private string _Text = null;
         public string Text

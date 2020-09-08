@@ -112,7 +112,7 @@ namespace Winecrash.Engine.GUI
         /// <summary>
         /// The label used to display button's text
         /// </summary>
-        public Label Label { get; private set; } = null;
+        public Label Label { get; set; } = null;
         /// <summary>
         /// The button's background image.
         /// </summary>
@@ -185,7 +185,6 @@ namespace Winecrash.Engine.GUI
 
             this.Label = lbWobj.AddModule<Label>();
             this.Label.Text = "Button";
-
             this.Label.Color = Color256.Black;
             this.Background.Color = IdleColor;
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Winecrash.Engine;
 using Winecrash.Engine.GUI;
+using Winecrash.Game.UI;
 
 namespace Winecrash.Game
 {
@@ -25,8 +26,9 @@ namespace Winecrash.Game
             WObject bgPanel = new WObject("Background Panel") { Parent = MenuWobject };
             bgPanel.Parent = MenuWobject;
 
-            Label lbVersion = bgPanel.AddModule<Label>();
-            lbVersion.Text = "Winecrash Alpha 0.0.1";
+            LocalizedLabel lbVersion = bgPanel.AddModule<LocalizedLabel>();
+            lbVersion.LocalizationArgs = new object[] { Game.Version };
+            lbVersion.Localization = "#menu_game_version";          
             lbVersion.Aligns = TextAligns.Down | TextAligns.Left;
             lbVersion.AutoSize = true;
             lbVersion.MinAnchor = new Vector2F(0.0F, 0.0F);
@@ -92,28 +94,28 @@ namespace Winecrash.Game
             UI.LargeButton btnSingle = single.AddModule<UI.LargeButton>();
             btnSingle.Button.MinAnchor = new Vector2F(0.0F, 0.9F);
             btnSingle.Button.MaxAnchor = new Vector2F(1.0F, 1.0F);
-            btnSingle.Button.Label.Text = "Singleplayer";
+            btnSingle.Label.Localization = "#menu_singleplayer";
             btnSingle.Button.OnClick += () => { Graphics.Window.InvokeUpdate(() => Program.RunGameDebug()); };
 
             WObject mult = new WObject("Multiplayer Button") { Parent = btnPanel };
             UI.LargeButton btnMult = mult.AddModule<UI.LargeButton>();
             btnMult.Button.MinAnchor = new Vector2F(0.0F, 0.7F);
             btnMult.Button.MaxAnchor = new Vector2F(1.0F, 0.8F);
-            btnMult.Button.Label.Text = "Multiplayer";
+            btnMult.Label.Localization = "#menu_multiplayer";
             btnMult.Button.Locked = true;
 
             WObject mods = new WObject("Mods Button") { Parent = btnPanel };
             UI.LargeButton btnMods = mods.AddModule<UI.LargeButton>();
             btnMods.Button.MinAnchor = new Vector2F(0.0F, 0.5F);
             btnMods.Button.MaxAnchor = new Vector2F(1.0F, 0.6F);
-            btnMods.Button.Label.Text = "Mods and Texture Packs";
+            btnMods.Label.Localization = "#menu_mods";
             btnMods.Button.Locked = true;
 
             WObject options = new WObject("Options Button") { Parent = btnPanel };
             UI.SmallButton btnOptions = options.AddModule<UI.SmallButton>();
             btnOptions.Button.MinAnchor = new Vector2F(0.0F, 0.2F);
             btnOptions.Button.MaxAnchor = new Vector2F(0.45F, 0.3F);
-            btnOptions.Button.Label.Text = "Options";
+            btnOptions.Label.Localization = "#menu_settings";
             btnOptions.Button.OnClick += () => ShowOptions();
             btnOptions.Button.Locked = false;
 
@@ -122,7 +124,7 @@ namespace Winecrash.Game
             UI.SmallButton btnQuit = quit.AddModule<UI.SmallButton>();
             btnQuit.Button.MinAnchor = new Vector2F(0.55F, 0.2F);
             btnQuit.Button.MaxAnchor = new Vector2F(1.0F, 0.3F);
-            btnQuit.Button.Label.Text = "Quit Game";
+            btnQuit.Label.Localization = "#menu_quit_game";
             btnQuit.Button.OnClick += () => WEngine.Stop();
         }
 

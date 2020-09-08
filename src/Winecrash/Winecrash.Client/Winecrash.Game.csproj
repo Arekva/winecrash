@@ -91,6 +91,8 @@
     <Compile Include="DebugMenu.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="EscapeMenu.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="GameConfig.cs" />
     <Compile Include="GameInput.cs" />
     <Compile Include="GameLoad.cs" />
     <Compile Include="Generation\Biome.cs" />
@@ -104,6 +106,10 @@
     <Compile Include="Item\Plant.cs" />
     <Compile Include="Item\Grass.cs" />
     <Compile Include="Item\TexturePaths.cs" />
+    <Compile Include="JSON\Config.cs" />
+    <Compile Include="JSON\SynchronizeAttribute.cs" />
+    <Compile Include="JSON\SyncMode.cs" />
+    <Compile Include="Localization\Language.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="MenuBackgroundControler.cs" />
     <Compile Include="MenuTip.cs" />
@@ -122,9 +128,11 @@
     <Compile Include="Ticket\TicketTypes.cs" />
     <Compile Include="Generation\Generator.cs" />
     <Compile Include="UI\GameButton.cs" />
+    <Compile Include="UI\LocalizedLabel.cs" />
     <Compile Include="UI\LargeButton.cs" />
     <Compile Include="UI\TinyButton.cs" />
     <Compile Include="UI\SmallButton.cs" />
+    <Compile Include="Version.cs" />
     <Compile Include="World\ISaveable.cs" />
     <Compile Include="Item\Item.cs" />
     <Compile Include="Item\Database\ItemCache.cs" />
