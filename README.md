@@ -12,19 +12,19 @@ If any legal issue would come up, please contact me on [arekva@protonmail.com](m
 
 ![alt text](https://github.com/breaks-and-continues/winecrash/raw/master/src/previews/preview_menu.png "In-Game main menu")
 
-#### Play the game as a non developper
+#### 🎮 Play the game as a non developper
 If you simply want to play the game, get the last available version from the [release tab of the project](https://github.com/breaks-and-continues/winecrash/releases "Releases of the game"). 
 
 For now (07/09/2020) the last release is the Predev 0.1 which is **very old** compared to the current project version, however I will try to frequently (**__during my free time__**) update the game as soon the first alpha will be released (not ETA yet). 
 
 ###### For now I would advise to make a build of the last commited version (see below).
 
-#### Build and play the game by your own
+#### 🛠️ Build and play the game by your own
 If you want to edit or build the last version of the project, you first may download or [clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository "How to clone a repository").
 
 ###### Windows
 * Download the last version of [Visual Studio 2019](https://visualstudio.microsoft.com/fr/vs/ "Visual Studio Homepage") (Community is free for everyone).
-* Into the installer, select **.NET Desktop Development** then go into __Individual Componants__ and check **.NET Framework 4.8 Target Pack" and finally install Visual Studio 2019.
+* Into the installer, select **.NET Desktop Development** then go into __Individual Componants__ and check **.NET Framework 4.8 Target Pack** and finally install Visual Studio 2019.
 * Once installed (this can take some time), open __Winecrash.sln__ (situated at src/Winecrash/Winecrash.sln). If you did follow the steps until now, the project should load with no error.
 * Then go into the **Solution Explorer** window (default at the __right__ side of Visual Studio) and do right click onto **'Winecrash' Solution** and then press **Build Solution**.
 * It should either have created a folder into __src/Winecrash/Winecrash.Client/bin/x64/(Debug **OR** Release)__ **OR** __src/Winecrash/Winecrash.Client/bin/(Debug **OR** Release)__. Search the folder where the **Winecrash.exe** and copy the **asset/** folder next to the **Winecrash.exe**.
