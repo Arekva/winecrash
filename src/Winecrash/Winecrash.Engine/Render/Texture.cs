@@ -10,6 +10,7 @@ using System.IO;
 using OpenTK.Graphics.OpenGL4;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Winecrash.Engine
 {
@@ -129,69 +130,57 @@ namespace Winecrash.Engine
         }
 
         public static Texture Blank { get; set; }
-        /// <summary>
-        /// DO NOT USE ! USED BY ACTIVATOR.
-        /// </summary>
-        [Obsolete("Use Texture(string, string) instead.\nThis .ctor is meant to be used by Material's Activator")]
-        public Texture()
+
+        static Texture()
         {
             if(Blank != null)
             {
-                this.Delete();
                 return;
             }
 
-            Blank = this;
+            Blank = new Texture(1, 1)
+            {
+                Name = "Blank",
+                Size = new Vector2I(1, 1)
+            };
 
-            this.Name = "Blank";
-            this.Size = new Vector2I(1, 1);
             byte[] blank = new byte[4];
             for (int i = 0; i < 4; i++)
             {
                 blank[i] = 255;
             }
 
-            this.Data = blank;
+            Blank.Data = blank;
 
-            this.Handle = GL.GenTexture();
-
-            this.Use();
-
-            GL.TexImage2D(TextureTarget.Texture2D,
-                        0,
-                        PixelInternalFormat.Rgba,
-                        this.Width,
-                        this.Height,
-                        0,
-                        OpenTK.Graphics.OpenGL4.PixelFormat.Bgra,
-                        PixelType.UnsignedByte,
-                        blank);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-            Blank = this;
-            Cache.Add(this);
+            Blank.Apply();
         }
 
         public Texture(int width, int height)
         {
             this.Name = "Texture";
-            this.Handle = GL.GenTexture();
-
-            this.Use();
-
             this.Size = new Vector2I(width, height);
             this.Data = new byte[4 * width * height];
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            void genGL()
+            {
+                this.Handle = GL.GenTexture();
+                this.Use();
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            }
+
+            if (Thread.CurrentThread == Graphics.Window.Thread)
+            {
+                genGL();
+            }
+            else
+            {
+                Graphics.Window.InvokeRender(genGL);
+            }
 
             Cache.Add(this);
         }
@@ -208,92 +197,102 @@ namespace Winecrash.Engine
             return tex;
         }
 
-        public Texture(string path, string name = null, bool clearOnApply = false) : base(name)
+        public unsafe Texture(string path, string name = null, bool clearOnApply = false) : base(name)
         {
             if(!File.Exists(path))
             {
-                Debug.LogWarning($"Unable to load mesh from \"{path}\": no file existing there.");
+                Debug.LogWarning($"Unable to load texture from \"{path}\": no file existing there.");
                 this.Delete();
                 return;
             }
 
-            Func<bool> del = new Func<bool>(() =>
+            if (name == null)
+                this.Name = path.Split('/', '\\').Last().Split('.')[0];
+
+            using (Bitmap img = new Bitmap(path))
+            {
+                BitmapData data = img.LockBits(
+                    new Rectangle(0, 0, img.Width, img.Height),
+                    ImageLockMode.ReadOnly,
+                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                uint* byteData = (uint*)data.Scan0;
+                this.Data = new byte[4 * img.Width * img.Height];
+
+                
+
+                //must end by ABGR in order to reverse
+
+                /*for (int i = 0; i < img.Width * img.Height; i++)
+                {
+                    //reverse red and blue: bgra to rgba
+                    byteData[i] = (byteData[i] & 0x000000FF) << 16 | (byteData[i] & 0x0000FF00) | (byteData[i] & 0x00FF0000) >> 16 | (byteData[i] & 0xFF000000);
+
+                    //in order to reverse to array (flip upside down)
+                    byteData[i] = (byteData[i] & 0x000000FF) << 24 | (byteData[i] & 0x0000FF00) << 8 | (byteData[i] & 0x00FF0000) >> 8 | (byteData[i] & 0xFF000000) >> 24;
+                }*/
+
+                //Stopwatch sw = new Stopwatch();
+                //sw.Start();
+                for (int i = 0; i < img.Width * img.Height; i++)
+                {
+                    //base: bgra
+                    //end : abgr
+                    byteData[i] = /*A*/ (byteData[i] & 0xFF000000) >> 24 | /*BGR*/ (byteData[i] & 0x00FFFFFF) << 8;
+                }
+                //sw.Stop();
+                //Debug.Log(sw.Elapsed.TotalMilliseconds.ToString("F4") + " ms " + img.Size);
+
+
+                Marshal.Copy(data.Scan0, this.Data, 0, this.Data.Length);
+                this.Data = this.Data.Reverse().ToArray();
+
+                this.Size = new Vector2I(img.Width, img.Height);
+            }
+
+
+            Cache.Add(this);
+
+            void glApply()
             {
                 bool clearApply = clearOnApply;
-
-                if (name == null)
-                    this.Name = path.Split('/', '\\').Last().Split('.')[0];
 
                 this.Handle = GL.GenTexture();
 
                 this.Use();
 
-                unsafe
+                GL.TexImage2D(TextureTarget.Texture2D,
+                    0,
+                    PixelInternalFormat.Rgba,
+                    this.Width,
+                    this.Height,
+                    0,
+                    OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
+                    PixelType.UnsignedByte,
+                    this.Data);
+
+                if (clearApply)
                 {
-                    using (Bitmap img = new Bitmap(path))
-                    {
-                        BitmapData data = img.LockBits(
-                            new Rectangle(0, 0, img.Width, img.Height),
-                            ImageLockMode.ReadOnly,
-                            System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-
-                        uint* byteData = (uint*)data.Scan0;
-                        this.Data = new byte[4 * img.Width * img.Height];
-
-                        for (int i = 0; i < img.Width * img.Height; i++)
-                        {
-                            //reverse red and blue: bgra to rgba
-                            byteData[i] = (byteData[i] & 0x000000FF) << 16 | (byteData[i] & 0x0000FF00) | (byteData[i] & 0x00FF0000) >> 16 | (byteData[i] & 0xFF000000);
-
-                            //in order to reverse to array (flip upside down)
-                            byteData[i] = (byteData[i] & 0x000000FF) << 24 | (byteData[i] & 0x0000FF00) << 8 | (byteData[i] & 0x00FF0000) >> 8 | (byteData[i] & 0xFF000000) >> 24;
-                        }
-
-                        Marshal.Copy(data.Scan0, this.Data, 0, this.Data.Length);
-
-                        this.Data = this.Data.Reverse().ToArray();
-
-                        GL.TexImage2D(TextureTarget.Texture2D,
-                            0,
-                            PixelInternalFormat.Rgba,
-                            img.Width,
-                            img.Height,
-                            0,
-                            OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
-                            PixelType.UnsignedByte,
-                            this.Data);
-
-                        if(clearApply)
-                        {
-                            this.Data = null;
-                        }
-
-                        this.Size = new Vector2I(img.Width, img.Height);
-                    }
-
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-                    Cache.Add(this);
+                    this.Data = null;
                 }
 
-                return true;
-            });
-            
-            if(Thread.CurrentThread.Name == "OpenGL")
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            }
+
+            if (Thread.CurrentThread == Graphics.Window.Thread)
             {
-                del.Invoke();
+                glApply();
             }
 
             else
             {
-                Graphics.Window.InvokeRender(() => del.Invoke());
+                Graphics.Window.InvokeRender(glApply);
             }
         }
 
