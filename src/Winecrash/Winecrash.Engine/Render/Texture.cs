@@ -11,6 +11,7 @@ using OpenTK.Graphics.OpenGL4;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Diagnostics;
+using DotImaging;
 
 namespace Winecrash.Engine
 {
@@ -46,23 +47,23 @@ namespace Winecrash.Engine
 
         public void SetPixels(int x, int y, int width, int height, Color32[] colors)
         {
-                if (colors == null) return;
+            if (colors == null) return;
 
-                int iColor = 0;
-                for (int texy = 0; texy < height; texy++)
+            int iColor = 0;
+            for (int texy = 0; texy < height; texy++)
+            {
+                for (int texx = 0; texx < width; texx++)
                 {
-                    for (int texx = 0; texx < width; texx++)
-                    {
-                        int i = ((x + texx) + Size.X * (y + texy)) * 4;
+                    int i = ((x + texx) + Size.X * (y + texy)) * 4;
 
-                        this.Data[i] = colors[iColor].R;
-                        this.Data[i + 1] = colors[iColor].G;
-                        this.Data[i + 2] = colors[iColor].B;
-                        this.Data[i + 3] = colors[iColor].A;
+                    this.Data[i] = colors[iColor].R;
+                    this.Data[i + 1] = colors[iColor].G;
+                    this.Data[i + 2] = colors[iColor].B;
+                    this.Data[i + 3] = colors[iColor].A;
 
-                        iColor++;
-                    }
+                    iColor++;
                 }
+            }
         }
 
         public Color32[] GetPixels(int x, int y, int width, int height)
@@ -217,37 +218,17 @@ namespace Winecrash.Engine
                     System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
                 uint* byteData = (uint*)data.Scan0;
-                this.Data = new byte[4 * img.Width * img.Height];
+                this.Size = new Vector2I(img.Width, img.Height);
+                this.Data = new byte[4 * this.Size.X * this.Size.Y];
 
-                
-
-                //must end by ABGR in order to reverse
-
-                /*for (int i = 0; i < img.Width * img.Height; i++)
+                Parallel.For(0, this.Size.X * this.Size.Y, (i) =>
                 {
-                    //reverse red and blue: bgra to rgba
-                    byteData[i] = (byteData[i] & 0x000000FF) << 16 | (byteData[i] & 0x0000FF00) | (byteData[i] & 0x00FF0000) >> 16 | (byteData[i] & 0xFF000000);
-
-                    //in order to reverse to array (flip upside down)
-                    byteData[i] = (byteData[i] & 0x000000FF) << 24 | (byteData[i] & 0x0000FF00) << 8 | (byteData[i] & 0x00FF0000) >> 8 | (byteData[i] & 0xFF000000) >> 24;
-                }*/
-
-                //Stopwatch sw = new Stopwatch();
-                //sw.Start();
-                for (int i = 0; i < img.Width * img.Height; i++)
-                {
-                    //base: bgra
-                    //end : abgr
-                    byteData[i] = /*A*/ (byteData[i] & 0xFF000000) >> 24 | /*BGR*/ (byteData[i] & 0x00FFFFFF) << 8;
-                }
-                //sw.Stop();
-                //Debug.Log(sw.Elapsed.TotalMilliseconds.ToString("F4") + " ms " + img.Size);
-
+                    byteData[i] = (byteData[i] & 0xFF000000) >> 24 | (byteData[i] & 0x00FFFFFF) << 8;
+                });
 
                 Marshal.Copy(data.Scan0, this.Data, 0, this.Data.Length);
-                this.Data = this.Data.Reverse().ToArray();
 
-                this.Size = new Vector2I(img.Width, img.Height);
+                this.Data = this.Data.Reverse().ToArray();
             }
 
 
