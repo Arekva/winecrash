@@ -94,6 +94,9 @@
     <Compile Include="Core\Math\Matrix\Matrix4D.cs" />
     <Compile Include="GameApplication.cs" />
     <Compile Include="GUI\TextAlign.cs" />
+    <Compile Include="Networking\ISendable.cs" />
+    <Compile Include="Networking\NetData.cs" />
+    <Compile Include="Networking\NetObject.cs" />
     <Compile Include="Render\Graphics.cs" />
     <Compile Include="Core\WRandom.cs" />
     <Compile Include="GUI\Anchor.cs" />
