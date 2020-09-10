@@ -44,6 +44,9 @@ namespace Winecrash.Engine
             this._Enabled = status;
         }
 
+        /// <summary>
+        /// Clears object's data. Don't forget to remove all references to it so the GC properly removes it.
+        /// </summary>
         public virtual void Delete()
         {
             this.Deleted = true;

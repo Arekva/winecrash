@@ -9,38 +9,23 @@ namespace Winecrash.Game
 {
     public class GameConfig : Config
     {
+        private string _Language = "English (United Kingdom)";
         [Synchronize]
-        public string Language { get; set; } = "English (United Kingdom)";
-
-        [JsonIgnore]
-        public Language UsedLanguage
+        public string Language
         {
             get
             {
-                return Winecrash.Game.Language.Languages.FirstOrDefault(l => l.Name == Language);
+                return this._Language;
             }
 
             set
             {
-                if (value == null)
-                {
-                    Language = null;
-                }
-
-                else
-                {
-                    Language = value.Name;
-                }
-
-                try
-                {
-                    Game.InvokeLanguageChanged(value);
-                }
-                catch(Exception e) { }
-
+                this._Language = value;
                 FireConfigChanged();
             }
         }
+
+        
 
         public GameConfig(string path) : base(path) { }
     }

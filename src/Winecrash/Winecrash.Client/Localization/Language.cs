@@ -33,7 +33,7 @@ namespace Winecrash.Game
         /// The name of the language into its own language, optinally with a region.
         /// <br>i.e. Français (France) for Metropolitan French and Français (Canada) for Canadian French</br>
         /// </summary>
-        public string Name { get; private set; } = "Français (France)";
+        public string Name { get; private set; } = Game.DefaultLanguage;
 
         /// <summary>
         /// All the localizations of the language

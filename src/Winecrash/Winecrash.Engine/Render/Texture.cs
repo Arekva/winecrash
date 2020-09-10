@@ -11,7 +11,6 @@ using OpenTK.Graphics.OpenGL4;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Diagnostics;
-using DotImaging;
 
 namespace Winecrash.Engine
 {
@@ -221,10 +220,7 @@ namespace Winecrash.Engine
                 this.Size = new Vector2I(img.Width, img.Height);
                 this.Data = new byte[4 * this.Size.X * this.Size.Y];
 
-                Parallel.For(0, this.Size.X * this.Size.Y, (i) =>
-                {
-                    byteData[i] = (byteData[i] & 0xFF000000) >> 24 | (byteData[i] & 0x00FFFFFF) << 8;
-                });
+                Parallel.For(0, this.Size.X * this.Size.Y, (i) => byteData[i] = (byteData[i] & 0xFF000000) >> 24 | (byteData[i] & 0x00FFFFFF) << 8);
 
                 Marshal.Copy(data.Scan0, this.Data, 0, this.Data.Length);
 

@@ -22,7 +22,7 @@ namespace Winecrash.Game.UI
             set
             {
                 this._Localization = value;
-                this.Text = Game.Configuration.UsedLanguage.GetText(value, LocalizationArgs);
+                this.Text = Game.Language.GetText(value, LocalizationArgs);
             }
         }
 
