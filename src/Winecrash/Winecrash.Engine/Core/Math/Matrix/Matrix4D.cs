@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
-using OpenCL.Net;
 using OpenTK;
 
 namespace Winecrash.Engine

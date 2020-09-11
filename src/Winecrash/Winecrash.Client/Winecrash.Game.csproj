@@ -95,6 +95,7 @@
     <Compile Include="GameConfig.cs" />
     <Compile Include="GameInput.cs" />
     <Compile Include="GameLoad.cs" />
+    <Compile Include="GameServer.cs" />
     <Compile Include="Generation\Biome.cs" />
     <Compile Include="Hand.cs" />
     <Compile Include="Item\Block.cs" />

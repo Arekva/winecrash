@@ -13,7 +13,7 @@ namespace Winecrash.Engine.Networking
     /// </summary>
     /// <typeparam name="T">NetObject type to exchange</typeparam>
     [Serializable]
-    internal struct NetData<T> : ISendable where T : NetObject
+    internal struct NetData<T> : ISendible where T : NetObject
     {
         private Type _Type;
         /// <summary>

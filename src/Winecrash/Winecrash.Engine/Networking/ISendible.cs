@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Winecrash.Server
+namespace Winecrash.Engine.Networking
 {
-    public class Class1
+    interface ISendible
     {
+        public void Send(Socket socket);
     }
 }

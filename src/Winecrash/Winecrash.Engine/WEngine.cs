@@ -101,6 +101,15 @@ namespace Winecrash.Engine
                     }
                 }
             }
+
+            Networking.BaseServer[] servers = Networking.BaseServer.Servers.ToArray();
+
+            for (int i = 0; i < servers.Length; i++)
+            {
+                servers[i].Delete();
+            }
+
+            servers = null;
         }
         public static void Stop()
         {

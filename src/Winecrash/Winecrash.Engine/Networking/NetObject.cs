@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace Winecrash.Engine.Networking
 {
-    public delegate void NetObjectCallback(NetObject data);
+    public delegate void NetObjectCallback(NetObject data, Type dataType, Socket connection);
 
     /// <summary>
     /// Basic definition of a network object able to send himself over a socket.
@@ -34,15 +34,18 @@ namespace Winecrash.Engine.Networking
         private static Dictionary<Type, ConstructorInfo> _GenericConstructors = new Dictionary<Type, ConstructorInfo>(16);
 
         /// <summary>
-        /// Deserialize an object from its raw net data.
+        /// Deserialize an object from its raw net data and make received.
         /// </summary>
         /// <param name="rawJson">The just-recieved data from the socket.</param>
         /// <returns>The NetObject gaven by the json.</returns>
-        internal static NetObject Deserialize(string rawJson)
+        internal static NetObject Receive(string rawDataJson, Socket socket)
         {
-            NetData<NetObject> obj = JsonConvert.DeserializeObject<NetData<NetObject>>(rawJson);
+            NetData<NetObject> data = JsonConvert.DeserializeObject<NetData<NetObject>>(rawDataJson);
 
-            return JsonConvert.DeserializeObject(obj.Data, obj.Type) as NetObject;
+            NetObject obj = JsonConvert.DeserializeObject(data.Data, data.Type) as NetObject;
+
+            OnReceive?.BeginInvoke(obj, data.Type, socket, null, null);
+            return obj;
         }
 
         internal static void Send(NetObject netobj, Socket socket)
@@ -57,7 +60,8 @@ namespace Winecrash.Engine.Networking
                 _GenericConstructors.Add(type,ctor);
             }
 
-            ((ISendable)ctor.Invoke(new object[] { netobj })).Send(socket);
+            OnSend?.BeginInvoke(netobj, type, socket, null, null);
+            ((ISendible)ctor.Invoke(new object[] { netobj })).Send(socket);
         }
     }
 }

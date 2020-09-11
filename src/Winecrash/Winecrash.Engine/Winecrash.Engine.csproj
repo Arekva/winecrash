@@ -67,10 +67,6 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="OpenCL.Net, Version=2.2.9.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\OpenCL.Net.2.2.9.0\lib\net40\OpenCL.Net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="OpenTK, Version=3.2.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.3.2\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -94,9 +90,11 @@
     <Compile Include="Core\Math\Matrix\Matrix4D.cs" />
     <Compile Include="GameApplication.cs" />
     <Compile Include="GUI\TextAlign.cs" />
-    <Compile Include="Networking\ISendable.cs" />
+    <Compile Include="Networking\BaseServer.cs" />
+    <Compile Include="Networking\ISendible.cs" />
     <Compile Include="Networking\NetData.cs" />
     <Compile Include="Networking\NetObject.cs" />
+    <Compile Include="Networking\NetObjects\Ping.cs" />
     <Compile Include="Render\Graphics.cs" />
     <Compile Include="Core\WRandom.cs" />
     <Compile Include="GUI\Anchor.cs" />
