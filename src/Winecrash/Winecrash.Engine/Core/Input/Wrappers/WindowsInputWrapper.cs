@@ -16,18 +16,13 @@ namespace WEngine
         {
             public int X;
             public int Y;
-
-            public static implicit operator Point(POINT point)
-            {
-                return new Point(point.X, point.Y);
-            }
         }
 
         public OSPlatform CorrespondingOS { get; } = OSPlatform.Windows;
 
         public bool GetKey(Keys key)
         {
-            return GetAsyncKeyState((System.Windows.Forms.Keys)key) != 0;
+            return GetAsyncKeyState(/*(System.Windows.Forms.Keys)*/key) != 0;
         }
 
         public Vector2I GetMousePosition()
@@ -42,7 +37,7 @@ namespace WEngine
         }
 
         [DllImport("user32.dll")]
-        public static extern short GetAsyncKeyState(System.Windows.Forms.Keys vKey);
+        public static extern short GetAsyncKeyState(/*System.Windows.Forms.*/Keys vKey);
 
         [DllImport("user32.dll")]
         public static extern bool GetCursorPos(out POINT lpPoint);
