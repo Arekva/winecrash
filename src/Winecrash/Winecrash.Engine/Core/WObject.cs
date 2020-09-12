@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using OpenTK;
-
-namespace Winecrash.Engine
+namespace WEngine
 {
     /// <summary>
     /// WObject are at the base of the game logic, they can hold multiple <see cref="Module"/> allowing scripting.

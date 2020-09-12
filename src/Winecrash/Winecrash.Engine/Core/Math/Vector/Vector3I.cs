@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel;
 using Newtonsoft.Json;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
     [Serializable]
     public struct Vector3I : IComparable, IComparable<Vector3I>, IEquatable<Vector3I>, IFormattable
@@ -15,9 +11,27 @@ namespace Winecrash.Engine
         public int Dimensions { get; }
 
         #region Properties
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Z { get; set; }
+        [JsonIgnore]
+        private int _X;
+        public int X
+        {
+            get => _X;
+            set => _X = value;
+        }
+        [JsonIgnore]
+        private int _Y;
+        public int Y
+        {
+            get => _Y;
+            set => _Y = value;
+        }
+        [JsonIgnore]
+        private int _Z;
+        public int Z
+        {
+            get => _Z;
+            set => _Z = value;
+        }
 
         #region Multi Dimensional Accessors
         [JsonIgnore]
@@ -223,42 +237,42 @@ namespace Winecrash.Engine
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3I(Vector2I xy, int z)
         {
-            this.X = xy.X;
-            this.Y = xy.Y;
-            this.Z = z;
+            this._X = xy.X;
+            this._Y = xy.Y;
+            this._Z = z;
 
             this.Dimensions = 3;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3I(int x, Vector3I yz)
         {
-            this.X = x;
-            this.Y = yz.X;
-            this.Z = yz.Y;
+            this._X = x;
+            this._Y = yz.X;
+            this._Z = yz.Y;
 
             this.Dimensions = 3;
         }
         public Vector3I(int values)
         {
-            this.X = values;
-            this.Y = values;
-            this.Z = values;
+            this._X = values;
+            this._Y = values;
+            this._Z = values;
 
             this.Dimensions = 3;
         }
         public Vector3I(int x, int y)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = 0;
+            this._X = x;
+            this._Y = y;
+            this._Z = 0;
 
             this.Dimensions = 3;
         }
         public Vector3I(int x, int y, int z)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
+            this._X = x;
+            this._Y = y;
+            this._Z = z;
 
             this.Dimensions = 3;
         }

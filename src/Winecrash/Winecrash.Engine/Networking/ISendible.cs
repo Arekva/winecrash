@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Winecrash.Engine.Networking
+﻿namespace WEngine.Networking
 {
-    interface ISendible
+    /// <summary>
+    /// Interface describing a sendable object. Used into <see cref="NetData{T}"/> in order to cast it into <see cref="NetObject.Send(NetObject, System.Net.Sockets.Socket)"/>.
+    /// </summary>
+    internal interface ISendible
     {
-        public void Send(Socket socket);
+        /// <summary>
+        /// Send this object into the interwebs.
+        /// </summary>
+        /// <param name="socket">The socket to send the data to.</param>
+        public void Send(System.Net.Sockets.Socket socket);
     }
 }

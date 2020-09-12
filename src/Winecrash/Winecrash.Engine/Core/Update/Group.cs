@@ -1,15 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// A group is an ensemble of scripts executing one by one. Groups within the same <see cref="Layer"/> run in parallel. <see cref="Layer"/>s run one by one.
+    /// </summary>
     public class Group
     {
+        /// <summary>
+        /// The update loop done event.
+        /// </summary>
         internal ManualResetEvent DoneEvent { get; set; } = new ManualResetEvent(false);
+        /// <summary>
+        /// The update loop reset event.
+        /// </summary>
         internal ManualResetEvent ResetEvent { get; set; } = new ManualResetEvent(false);
 
         private int _Order;
@@ -84,7 +92,7 @@ namespace Winecrash.Engine
             lock(groupLocker)
                 _Groups.Add(this);
 
-            Engine.Layer.CreateOrGetLayer(layer, null, new[] { this });
+            WEngine.Layer.CreateOrGetLayer(layer, null, new[] { this });
 
             SortByOrder();
 
@@ -247,7 +255,7 @@ namespace Winecrash.Engine
                 lock (groupLocker)
                     _Groups.Remove(this);
 
-                foreach(Layer layer in Engine.Layer._Layers)
+                foreach(Layer layer in WEngine.Layer._Layers)
                 {
                     if(layer._Groups.Contains(this))
                     {
@@ -255,7 +263,7 @@ namespace Winecrash.Engine
 
                         if(layer._Groups.Count == 0) //remove layer
                         {
-                            Engine.Layer.RemoveLayer(layer.Order);
+                            WEngine.Layer.RemoveLayer(layer.Order);
 
                         }
 
@@ -377,7 +385,7 @@ namespace Winecrash.Engine
 
             if(correspondingGroup != null)
             {
-                Layer[] layers = Engine.Layer._Layers.ToArray();
+                Layer[] layers = WEngine.Layer._Layers.ToArray();
 
                 for (int i = 0; i < layers.Length; i++)
                 {
@@ -385,11 +393,11 @@ namespace Winecrash.Engine
                     if (layers[i]._Groups.Contains(correspondingGroup))
                     {
                         layers[i]._Groups.Remove(correspondingGroup);
-                        Engine.Layer.CreateOrGetLayer(newLayer, null, new[] { correspondingGroup });
+                        WEngine.Layer.CreateOrGetLayer(newLayer, null, new[] { correspondingGroup });
 
                         if (layers[i]._Groups.Count == 0) //remove layer
                         {
-                            Engine.Layer.RemoveLayer(layers[i].Order);
+                            WEngine.Layer.RemoveLayer(layers[i].Order);
                         }
 
 

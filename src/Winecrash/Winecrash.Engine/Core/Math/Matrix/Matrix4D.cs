@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 using OpenTK;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
     /// <summary>
-    /// todo: finish Matrix4D
+    /// A 4x4 <see cref="double"/> Matrix.
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]

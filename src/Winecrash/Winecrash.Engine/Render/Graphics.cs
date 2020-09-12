@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Winecrash.Engine
+﻿namespace WEngine
 {
+    /// <summary>
+    /// The graphics global class.
+    /// </summary>
     public static class Graphics
     {
+        /// <summary>
+        /// The main window of the application.
+        /// </summary>
         public static IWindow Window { get; internal set; }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using System.Windows;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// The <see cref="OSPlatform.Windows"/> input wrapper.
+    /// </summary>
     internal class WindowsInputWrapper : IInputWrapper
     {
         /// <summary>

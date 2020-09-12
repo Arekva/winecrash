@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
-using System.Drawing;
 
-using WKeys = Winecrash.Engine.Keys;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
-    public sealed class Input : Module
+    public sealed class Input : WEngine.Module
     {
         internal static Input Instance { get; private set; }
         private static IInputWrapper InputWrapper { get; set; }
 
-        private static int KeysAmount = Enum.GetValues(typeof(WKeys)).Length;
-        private static Dictionary<WKeys, KeyStates> RegisteredKeyStates = new Dictionary<WKeys, KeyStates>(KeysAmount);
+        private static int KeysAmount = Enum.GetValues(typeof(Keys)).Length;
+        private static Dictionary<Keys, KeyStates> RegisteredKeyStates = new Dictionary<Keys, KeyStates>(KeysAmount);
         public static bool CursorVisible
         {
             get
@@ -132,7 +129,7 @@ namespace Winecrash.Engine
                     if (!type.IsInterface && typeof(IInputWrapper).IsAssignableFrom(type))
                     {
                         IInputWrapper wrapper = Activator.CreateInstance(type) as IInputWrapper;
-                        if(wrapper.CorrespondingOS == WEngine.OS)
+                        if(wrapper.CorrespondingOS == Engine.OS)
                         {
                             InputWrapper = wrapper;
                             return true;
@@ -145,7 +142,7 @@ namespace Winecrash.Engine
         }
         private static void CreateKeys()
         {
-            foreach(WKeys key in (WKeys[])Enum.GetValues(typeof(WKeys)))
+            foreach(Keys key in (Keys[])Enum.GetValues(typeof(Keys)))
             {
                 RegisteredKeyStates.Add(key, KeyStates.Released);
             }
@@ -153,7 +150,7 @@ namespace Winecrash.Engine
 
         private static void UpdateKeysStates()
         {
-            foreach (WKeys key in (WKeys[])Enum.GetValues(typeof(WKeys)))
+            foreach (Keys key in (Keys[])Enum.GetValues(typeof(Keys)))
             {
                 KeyStates previousState = GetKeyState(key, RegisteredKeyStates);
                 KeyStates newState;
@@ -192,7 +189,7 @@ namespace Winecrash.Engine
             }
         }
 
-        private static KeyStates GetKeyState(WKeys key, Dictionary<WKeys, KeyStates> dictionary)
+        private static KeyStates GetKeyState(Keys key, Dictionary<Keys, KeyStates> dictionary)
         {
             if (dictionary == null) return KeyStates.None;
 
@@ -204,26 +201,26 @@ namespace Winecrash.Engine
             throw new Exception("Key not existing in keys dictionary !");
         }
 
-        public static bool IsPressed(WKeys key)
+        public static bool IsPressed(Keys key)
         {
             if (!Graphics.Window.Focused) return false;
 
-            return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Pressed;
+            return GetKeyState((Keys)key, RegisteredKeyStates) == KeyStates.Pressed;
         }
-        public static bool IsPressing(WKeys key)
+        public static bool IsPressing(Keys key)
         {
             if (!Graphics.Window.Focused) return false;
-            return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Pressing;
+            return GetKeyState((Keys)key, RegisteredKeyStates) == KeyStates.Pressing;
         }
-        public static bool IsReleased(WKeys key)
+        public static bool IsReleased(Keys key)
         {
             if (!Graphics.Window.Focused) return false;
-            return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Released;
+            return GetKeyState((Keys)key, RegisteredKeyStates) == KeyStates.Released;
         }
-        public static bool IsReleasing(WKeys key)
+        public static bool IsReleasing(Keys key)
         {
             if (!Graphics.Window.Focused) return false;
-            return GetKeyState((WKeys)key, RegisteredKeyStates) == KeyStates.Releasing;
+            return GetKeyState((Keys)key, RegisteredKeyStates) == KeyStates.Releasing;
         }
     }
 }

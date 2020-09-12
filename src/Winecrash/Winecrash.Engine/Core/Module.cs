@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
     public class Module : BaseObject
     {
@@ -41,24 +41,24 @@ namespace Winecrash.Engine
         {
             this._ExecutionOrder = newOrder;
 
-            Engine.Group.GetGroup(this.Group).SortModules();
+            WEngine.Group.GetGroup(this.Group).SortModules();
         }
         private void SetGroup(int newGroup)
         {
             if (newGroup == _Group) return;
 
-            Group previousGroup = Engine.Group.GetGroup(this._Group);
+            Group previousGroup = WEngine.Group.GetGroup(this._Group);
             
             previousGroup.RemoveModule(this);
 
-            Engine.Group.CreateOrGetGroup(newGroup, null, new[] { this });
+            WEngine.Group.CreateOrGetGroup(newGroup, null, new[] { this });
 
             this._Group = newGroup;
         }
 
         public Module() : base()
         {
-            Engine.Group.CreateOrGetGroup(0, "Default Group", new[] { this });
+            WEngine.Group.CreateOrGetGroup(0, "Default Group", new[] { this });
         }
 
         public WObject WObject { get; internal set; }
@@ -133,7 +133,7 @@ namespace Winecrash.Engine
 
             this.WObject._Modules.Remove(this);
             this.WObject = null;
-            Engine.Group.GetGroup(this.Group).RemoveModule(this);
+            WEngine.Group.GetGroup(this.Group).RemoveModule(this);
 
             base.Delete();
         }

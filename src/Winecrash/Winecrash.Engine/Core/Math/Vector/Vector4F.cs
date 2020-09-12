@@ -2,17 +2,41 @@
 using System;
 using System.ComponentModel;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// Four dimentional <see cref="float"/> vector.
+    /// </summary>
+    [Serializable]
     public struct Vector4F : IComparable, IComparable<Vector4F>, IEquatable<Vector4F>, IFormattable
     {
         public int Dimensions { get; }
 
         #region Properties
-        public float X { get; set; }
-        public float Y { get; set; }
-        public float Z { get; set; }
-        public float W { get; set; }
+        private float _X;
+        public float X
+        {
+            get => _X;
+            set => _X = value;
+        }
+        private float _Y;
+        public float Y
+        {
+            get => _Y;
+            set => _Y = value;
+        }
+        private float _Z;
+        public float Z
+        {
+            get => _Z;
+            set => _Z = value;
+        }
+        private float _W;
+        public float W
+        {
+            get => _W;
+            set => _W = value;
+        }
 
         #region Multi dimensional accessors
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -466,96 +490,96 @@ namespace Winecrash.Engine
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4F(Vector2F xy, float z, float w)
         {
-            this.X = xy.X;
-            this.Y = xy.Y;
-            this.Z = z;
-            this.W = w;
+            this._X = xy.X;
+            this._Y = xy.Y;
+            this._Z = z;
+            this._W = w;
 
             this.Dimensions = 4;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4F(float x, Vector2F yz, float w)
         {
-            this.X = x;
-            this.Y = yz.X;
-            this.Z = yz.Y;
-            this.W = w;
+            this._X = x;
+            this._Y = yz.X;
+            this._Z = yz.Y;
+            this._W = w;
 
             this.Dimensions = 4;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4F(float x, float y, Vector2F zw)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = zw.X;
-            this.W = zw.Y;
+            this._X = x;
+            this._Y = y;
+            this._Z = zw.X;
+            this._W = zw.Y;
 
             this.Dimensions = 4;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4F(Vector2F xy, Vector2F zw)
         {
-            this.X = xy.X;
-            this.Y = xy.Y;
-            this.Z = zw.X;
-            this.W = zw.Y;
+            this._X = xy.X;
+            this._Y = xy.Y;
+            this._Z = zw.X;
+            this._W = zw.Y;
 
             this.Dimensions = 4;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4F(Vector3F xyz, float w)
         {
-            this.X = xyz.X;
-            this.Y = xyz.Y;
-            this.Z = xyz.Z;
-            this.W = w;
+            this._X = xyz.X;
+            this._Y = xyz.Y;
+            this._Z = xyz.Z;
+            this._W = w;
 
             this.Dimensions = 4;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector4F(float x, Vector3F yzw)
         {
-            this.X = x;
-            this.Y = yzw.X;
-            this.Z = yzw.Y;
-            this.W = yzw.Z;
+            this._X = x;
+            this._Y = yzw.X;
+            this._Z = yzw.Y;
+            this._W = yzw.Z;
 
             this.Dimensions = 4;
         }
         public Vector4F(float values)
         {
-            this.X = values;
-            this.Y = values;
-            this.Z = values;
-            this.W = values;
+            this._X = values;
+            this._Y = values;
+            this._Z = values;
+            this._W = values;
 
             this.Dimensions = 4;
         }
         public Vector4F(float x, float y)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = 0.0F;
-            this.W = 0.0F;
+            this._X = x;
+            this._Y = y;
+            this._Z = 0.0F;
+            this._W = 0.0F;
 
             this.Dimensions = 4;
         }
         public Vector4F(float x, float y, float z)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
-            this.W = 0.0F;
+            this._X = x;
+            this._Y = y;
+            this._Z = z;
+            this._W = 0.0F;
 
             this.Dimensions = 4;
         }
         public Vector4F(float x, float y, float z, float w)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
-            this.W = w;
+            this._X = x;
+            this._Y = y;
+            this._Z = z;
+            this._W = w;
 
             this.Dimensions = 4;
         }

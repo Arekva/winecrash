@@ -1,75 +1,118 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// A 32 bits RGBA Color (4 x <see cref="byte"/>) 
+    /// </summary>
+    [Serializable]
     public struct Color32
     {
+        /// <summary>
+        /// Minimal value of each of the components. Corresponds to <see cref="byte.MinValue"/>
+        /// </summary>
         public const byte MinValue = Byte.MinValue;
+        /// <summary>
+        /// Maximal value of each of the components. Corresponds to <see cref="byte.MaxValue"/>
+        /// </summary>
         public const byte MaxValue = Byte.MaxValue;
 
-        public byte R { get; set; }
-        public byte G { get; set; }
-        public byte B { get; set; }
-        public byte A { get; set; }
 
-        public byte this[int i]
+        /// <summary>
+        /// Serializable red component.
+        /// </summary>
+        private byte _R;
+        /// <summary>
+        /// Red component.
+        /// </summary>
+        public byte R
         {
-            get
-            {
-                switch (i)
-                {
-                    case 0: return R;
-                    case 1: return G;
-                    case 2: return B;
-                    case 3: return A;
-                    default: throw new IndexOutOfRangeException();
-                }
-            }
+            get => _R;
+            set => _R = value;
+        }
+        /// <summary>
+        /// Serializable green component.
+        /// </summary>
+        private byte _G;
+        /// <summary>
+        /// Green component.
+        /// </summary>
+        public byte G
+        {
+            get => _G;
+            set => _G = value;
+        }
+        /// <summary>
+        /// Serializable blue component.
+        /// </summary>
+        private byte _B;
+        /// <summary>
+        /// Blue component.
+        /// </summary>
+        public byte B
+        {
+            get => _B;
+            set => _B = value;
         }
 
+        /// <summary>
+        /// Serializable alpha (transparency) component.
+        /// </summary>
+        private byte _A;
+        /// <summary>
+        /// Alpha (transparency) component.
+        /// </summary>
+        public byte A
+        {
+            get => _A;
+            set => _A = value;
+        }
+
+        /// <summary>
+        /// Create a 32 bits color by <see cref="byte"/>s.
+        /// </summary>
+        /// <param name="r">The red component of the color.</param>
+        /// <param name="g">The green component of the color.</param>
+        /// <param name="b">The blue component of the color.</param>
+        /// <param name="a">The alpha (transparency) component of the color.</param>
         public Color32(byte r, byte g, byte b, byte a)
         {
-            this.R = r;
-            this.G = g;
-            this.B = b;
-            this.A = a;
+            this._R = r;
+            this._G = g;
+            this._B = b;
+            this._A = a;
         }
+
+        /// <summary>
+        /// Create a 32 bits color by <see cref="int"/>s. Automatically clamps the values between <see cref="MinValue"/> and <see cref="MaxValue"/>.
+        /// </summary>
+        /// <param name="r">The red component of the color.</param>
+        /// <param name="g">The green component of the color.</param>
+        /// <param name="b">The blue component of the color.</param>
+        /// <param name="a">The alpha (transparency) component of the color.</param>
         public Color32(int r, int g, int b, int a)
         {
-            this.R = (byte)WMath.Clamp(r, MinValue, MaxValue);
-            this.G = (byte)WMath.Clamp(g, MinValue, MaxValue);
-            this.B = (byte)WMath.Clamp(b, MinValue, MaxValue);
-            this.A = (byte)WMath.Clamp(a, MinValue, MaxValue);
-        }
-        public Color32(Color256 colour)
-        {
-            this.R = (byte)(colour.R * MaxValue);
-            this.G = (byte)(colour.G * MaxValue);
-            this.B = (byte)(colour.B * MaxValue);
-            this.A = (byte)(colour.A * MaxValue);
+            this._R = WMath.Clamp((byte)r, MinValue, MaxValue);
+            this._G = WMath.Clamp((byte)g, MinValue, MaxValue);
+            this._B = WMath.Clamp((byte)b, MinValue, MaxValue);
+            this._A = WMath.Clamp((byte)a, MinValue, MaxValue);
         }
 
-        public Color32(System.Drawing.Color colour)
+        /// <summary>
+        /// Create a 32 bits color from a 256 bits color.
+        /// </summary>
+        /// <param name="color">The 256 bits color.</param>
+        public static implicit operator Color32(Color256 color)
         {
-            this.R = colour.R;
-            this.G = colour.G;
-            this.B = colour.B;
-            this.A = colour.A;
+            return new Color32((byte)(color.R * MaxValue), (byte)(color.G * MaxValue), (byte)(color.B * MaxValue), (byte)(color.A * MaxValue));
         }
-
-        public static implicit operator Color32(Color256 colour)
+        /// <summary>
+        /// Create a 32 bits color from a 32 bits .NET color.
+        /// </summary>
+        /// <param name="color">The 32 bits .NET color.</param>
+        public static implicit operator Color32(System.Drawing.Color color)
         {
-            return new Color32(colour);
-        }
-
-        public static implicit operator Color32(System.Drawing.Color colour)
-        {
-            return new Color32(colour);
+            return new Color32(color.R, color.G, color.B, color.A);
         }
 
         public override string ToString()

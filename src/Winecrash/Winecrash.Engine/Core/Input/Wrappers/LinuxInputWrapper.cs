@@ -1,14 +1,16 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using OpenTK.Input;
 
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// The <see cref="OSPlatform.Linux"/> input wrapper.
+    /// </summary>
     internal class LinuxInputWrapper : IInputWrapper
     {
         public OSPlatform CorrespondingOS { get; } = OSPlatform.Linux;
-        bool[] debugged = new bool[3];
+
         public bool GetKey(Keys key)
         {
             Key tkKey = key.ToOpenTK(out bool isActualKey);

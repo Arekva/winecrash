@@ -1,16 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime;
-
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// A generic <see cref="double"/> undefined dimension vector.
+    /// <br>For 2D, 3D and 4D, use <see cref="Vector2D"/>/<see cref="Vector3D"/>/<see cref="Vector4D"/></br>
+    /// </summary>
     public struct VectorND : IVectorable, IComparable, IComparable<VectorND>, IEquatable<VectorND>, IFormattable
     {
         public int Dimensions { get; }
 
+        /// <summary>
+        /// Get a component 
+        /// </summary>
+        /// <param name="dimension"></param>
+        /// <returns></returns>
         public double this[int dimension]
         {
             get
@@ -30,6 +33,9 @@ namespace Winecrash.Engine
             }
         }
 
+        /// <summary>
+        /// All the components of this <see cref="double"/> N dimensional vector.
+        /// </summary>
         private double[] Componants;
 
         public double SquaredLength
@@ -56,6 +62,9 @@ namespace Winecrash.Engine
             }
         }
 
+        /// <summary>
+        /// Get the direction version of this vector (Length 1.0)
+        /// </summary>
         public VectorND Normalized
         {
             get
@@ -65,7 +74,10 @@ namespace Winecrash.Engine
         }
 
         
-
+        /// <summary>
+        /// Creates a <see cref="double"/> N dimensional vector.
+        /// </summary>
+        /// <param name="dimensions">The number of dimensions of the vector.</param>
         public VectorND(int dimensions)
         {
             if (dimensions < 1) 
@@ -75,6 +87,11 @@ namespace Winecrash.Engine
 
             this.Componants = new double[dimensions];
         }
+        /// <summary>
+        /// Creates a <see cref="double"/> N dimensional vector with default values.
+        /// </summary>
+        /// <param name="dimensions">The number of dimensions of the vector.</param>
+        /// <param name="values">The values to fill the components with.</param>
         public VectorND(int dimensions, double values)
         {
             if (dimensions < 1)
@@ -90,21 +107,39 @@ namespace Winecrash.Engine
             }
         }
 
+        /// <summary>
+        /// The distance between two N dimensional vectors of the same dimension.
+        /// </summary>
+        /// <param name="v1">First vector.</param>
+        /// <param name="v2">Second vector.</param>
+        /// <returns>The distance between both vectors.</returns>
         public static double Distance(VectorND v1, VectorND v2)
         {
             return Math.Abs((v1 - v2).Length);
         }
-
+        /// <summary>
+        /// The angle between two N dimensional vectors of the same dimension.
+        /// </summary>
+        /// <param name="v1">First vector.</param>
+        /// <param name="v2">Second vector.</param>
+        /// <returns>The Angle between both vectors.</returns>
         public static double Angle(VectorND v1, VectorND v2)
         {
             return Math.Acos((v1.Normalized * v2.Normalized).Length);
         }
-
+        /// <summary>
+        /// Normalize this vector.
+        /// </summary>
+        /// <returns>This vector normalized.</returns>
         public VectorND Normalize()
         {
             return this = NormalizeVectorND(this);
         }
-
+        /// <summary>
+        /// Normalizes an ND vector.
+        /// </summary>
+        /// <param name="vector">The vector.</param>
+        /// <returns>The normalized vector.</returns>
         private static VectorND NormalizeVectorND(VectorND vector)
         {
             return vector / vector.Length;

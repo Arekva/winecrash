@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Winecrash.Engine.ModelLoaders
+namespace WEngine.ModelLoaders
 {
     /// <summary>
     /// Based on https://github.com/Kopernicus/Kopernicus/blob/master/src/Kopernicus/Configuration/Parsing/ObjImporter.cs

@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net.Sockets;
+using System.Reflection;
 using Newtonsoft.Json;
 
-using Winecrash.Engine;
-using System.Reflection;
-
-namespace Winecrash.Engine.Networking
+namespace WEngine.Networking
 {
+    /// <summary>
+    /// The callback delegate used when a NetObject is sent or received.
+    /// </summary>
+    /// <param name="data">The actual data send / received.</param>
+    /// <param name="dataType">The data type.</param>
+    /// <param name="connection">The socket where the data comes / has been sent.</param>
     public delegate void NetObjectCallback(NetObject data, Type dataType, Socket connection);
 
     /// <summary>
@@ -36,7 +37,8 @@ namespace Winecrash.Engine.Networking
         /// <summary>
         /// Deserialize an object from its raw net data and make received.
         /// </summary>
-        /// <param name="rawJson">The just-recieved data from the socket.</param>
+        /// <param name="rawDataJson">The just-recieved data.</param>
+        /// <param name="socket">The socket where the data comes from.</param>
         /// <returns>The NetObject gaven by the json.</returns>
         internal static NetObject Receive(string rawDataJson, Socket socket)
         {
@@ -48,9 +50,15 @@ namespace Winecrash.Engine.Networking
             return obj;
         }
 
+        /// <summary>
+        /// Send a <see cref="NetObject"/>.
+        /// </summary>
+        /// <param name="netobj">The NetObject to send. Cannot be null.</param>
+        /// <param name="socket">The client to send the data to.</param>
+        /// <exception cref="NullReferenceException"></exception>
         internal static void Send(NetObject netobj, Socket socket)
         {
-            if (!netobj) return;
+            if (!netobj) throw new NullReferenceException("<NetObject.cs:58> " + nameof(netobj) + " cannot be null.");
 
             Type type = netobj.GetType();
 

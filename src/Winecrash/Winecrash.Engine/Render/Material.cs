@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
-using System.Runtime;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
     public delegate void MaterialUseDelegate(Camera camera);
     public sealed class Material : BaseObject

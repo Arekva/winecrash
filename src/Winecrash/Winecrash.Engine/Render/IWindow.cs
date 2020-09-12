@@ -1,18 +1,16 @@
-﻿using Newtonsoft.Json.Bson;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
+﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 
-using OpenTK.Input;
-
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// The delagate used for windows to invoke methods.
+    /// </summary>
     public delegate void WindowInvokeDelegate();
-
+    
+    /// <summary>
+    /// Implements a window.
+    /// </summary>
     public interface IWindow
     {
         /// <summary>

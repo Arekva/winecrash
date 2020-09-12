@@ -1,17 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using System.Runtime.InteropServices;
-using System.Diagnostics;
 
 using OpenTK.Graphics.OpenGL4;
-using System.Windows.Forms;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
     public sealed class Mesh : BaseObject
     {

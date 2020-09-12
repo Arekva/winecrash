@@ -1,20 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// A two dimensional <see cref="float"/> vector.
+    /// </summary>
+    [Serializable]
     public struct Vector2F : IComparable, IComparable<Vector2F>, IEquatable<Vector2F>, IFormattable
     {
         public int Dimensions { get; }
 
 
         #region Properties
-        public float X { get; set; }
-        public float Y { get; set; }
+        private float _X;
+        public float X
+        {
+            get => _X;
+            set => _X = value;
+        }
+        private float _Y;
+        public float Y
+        {
+            get => _Y;
+            set => _Y = value;
+        }
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2F XY
@@ -115,15 +125,15 @@ namespace Winecrash.Engine
         #region Constructors
         public Vector2F(float values)
         {
-            this.X = values;
-            this.Y = values;
+            this._X = values;
+            this._Y = values;
 
             this.Dimensions = 2;
         }
         public Vector2F(float x, float y)
         {
-            this.X = x;
-            this.Y = y;
+            this._X = x;
+            this._Y = y;
 
             this.Dimensions = 2;
         }

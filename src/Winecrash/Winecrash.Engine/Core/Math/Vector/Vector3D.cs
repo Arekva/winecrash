@@ -1,21 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// A three dimensional <see cref="double"/> vector.
+    /// </summary>
+    [Serializable]
     public struct Vector3D : IVectorable, IComparable, IComparable<Vector3D>, IEquatable<Vector3D>, IFormattable
     {
         public int Dimensions { get; }
 
         #region Properties
-
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
+        private double _X;
+        public double X
+        {
+            get => _X;
+            set => _X = value;
+        }
+        private double _Y;
+        public double Y
+        {
+            get => _Y;
+            set => _Y = value;
+        }
+        private double _Z;
+        public double Z
+        {
+            get => _Z;
+            set => _Z = value;
+        }
 
         public double this[int index]
         {
@@ -265,42 +279,42 @@ namespace Winecrash.Engine
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D(Vector2D xy, double z)
         {
-            this.X = xy.X;
-            this.Y = xy.Y;
-            this.Z = z;
+            this._X = xy.X;
+            this._Y = xy.Y;
+            this._Z = z;
 
             this.Dimensions = 3;
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector3D(double x, Vector2D yz)
         {
-            this.X = x;
-            this.Y = yz.X;
-            this.Z = yz.Y;
+            this._X = x;
+            this._Y = yz.X;
+            this._Z = yz.Y;
 
             this.Dimensions = 3;
         }
         public Vector3D(double values)
         {
-            this.X = values;
-            this.Y = values;
-            this.Z = values;
+            this._X = values;
+            this._Y = values;
+            this._Z = values;
 
             this.Dimensions = 3;
         }
         public Vector3D(double x, double y)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = 0.0D;
+            this._X = x;
+            this._Y = y;
+            this._Z = 0.0D;
 
             this.Dimensions = 3;
         }
         public Vector3D(double x, double y, double z)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
+            this._X = x;
+            this._Y = y;
+            this._Z = z;
 
             this.Dimensions = 3;
         }

@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" />
+  <Import Project="..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props" Condition="Exists('..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props')" />
+  <Import Project="..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props" Condition="Exists('..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props')" />
+  <Import Project="..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props" Condition="Exists('..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props')" />
+  <Import Project="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{054FD1E0-5B69-4F51-B31C-053E3803C6E1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WEngine</RootNamespace>
+    <AssemblyName>WEngine</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>8.0</LangVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>8.0</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <DocumentationFile>bin\x64\Debug\WEngine.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>8.0</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=3.2.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.2\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\Color\Color256.cs" />
+    <Compile Include="Core\Color\Color32.cs" />
+    <Compile Include="Core\Input\KeysMethods.cs" />
+    <Compile Include="Core\Math\Matrix\Matrix3D.cs" />
+    <Compile Include="Core\Math\Matrix\Matrix4D.cs" />
+    <Compile Include="GameApplication.cs" />
+    <Compile Include="GUI\TextAlign.cs" />
+    <Compile Include="Networking\BaseServer.cs" />
+    <Compile Include="Networking\ISendible.cs" />
+    <Compile Include="Networking\NetData.cs" />
+    <Compile Include="Networking\NetObject.cs" />
+    <Compile Include="Networking\NetObjects\Ping.cs" />
+    <Compile Include="Render\Graphics.cs" />
+    <Compile Include="Core\WRandom.cs" />
+    <Compile Include="GUI\Anchor.cs" />
+    <Compile Include="GUI\Button.cs" />
+    <Compile Include="GUI\Font.cs" />
+    <Compile Include="Core\Input\CursorLockModes.cs" />
+    <Compile Include="Core\Input\Keys.cs" />
+    <Compile Include="Core\Math\Vector\Vector2I.cs" />
+    <Compile Include="Core\Math\Vector\Vector2F.cs" />
+    <Compile Include="Core\Math\Vector\Vector3I.cs" />
+    <Compile Include="Core\Math\Vector\Vector3F.cs" />
+    <Compile Include="Core\Math\Vector\Vector4F.cs" />
+    <Compile Include="Core\Math\Vector\VectorNF.cs" />
+    <Compile Include="Core\Update\Layer.cs" />
+    <Compile Include="Core\Module.cs" />
+    <Compile Include="Core\Debugging\Debug.cs" />
+    <Compile Include="Core\Debugging\LogCallbackTypes.cs" />
+    <Compile Include="Core\Debugging\Logger.cs" />
+    <Compile Include="Core\Initializer.cs" />
+    <Compile Include="Core\Input\IInputWrapper.cs" />
+    <Compile Include="Core\Input\KeyStates.cs" />
+    <Compile Include="Core\Input\Wrappers\LinuxInputWrapper.cs" />
+    <Compile Include="Core\Input\Wrappers\WindowsInputWrapper.cs" />
+    <Compile Include="Core\IO\FileManager.cs" />
+    <Compile Include="Core\IO\Folders\LogFolder.cs" />
+    <Compile Include="Core\IO\IFolder.cs" />
+    <Compile Include="Core\Math\Quaternion\Quaternion.cs" />
+    <Compile Include="Core\Math\Vector\IVectorable.cs" />
+    <Compile Include="Core\Math\Vector\Vector2D.cs" />
+    <Compile Include="Core\Math\Vector\Vector3D.cs" />
+    <Compile Include="Core\Math\Vector\Vector4D.cs" />
+    <Compile Include="Core\Math\Vector\VectorND.cs" />
+    <Compile Include="Core\Math\WMath.cs" />
+    <Compile Include="Core\Time.cs" />
+    <Compile Include="Core\Update\UpdateTypes.cs" />
+    <Compile Include="GUI\Glyph.cs" />
+    <Compile Include="GUI\GlyphTable.cs" />
+    <Compile Include="GUI\Image.cs" />
+    <Compile Include="GUI\IRatioKeeper.cs" />
+    <Compile Include="GUI\Model.cs" />
+    <Compile Include="Render\IWindow.cs" />
+    <Compile Include="Render\Camera.cs" />
+    <Compile Include="GUI\Canvas.cs" />
+    <Compile Include="Core\EngineCore.cs" />
+    <Compile Include="GUI\GUIModule.cs" />
+    <Compile Include="GUI\GUIRenderer.cs" />
+    <Compile Include="GUI\ImageRenderer.cs" />
+    <Compile Include="Core\Input\Input.cs" />
+    <Compile Include="Core\Update\Group.cs" />
+    <Compile Include="Core\Update\UpdateEvent.cs" />
+    <Compile Include="Core\BaseObject.cs" />
+    <Compile Include="Core\WObject.cs" />
+    <Compile Include="GUI\LabelRenderer.cs" />
+    <Compile Include="Render\MeshRenderer.cs" />
+    <Compile Include="Physics\BoxCollider.cs" />
+    <Compile Include="Physics\Collider.cs" />
+    <Compile Include="GUI\ModelRenderer.cs" />
+    <Compile Include="Physics\HitInfo.cs" />
+    <Compile Include="Physics\Physics.cs" />
+    <Compile Include="Physics\Ray.cs" />
+    <Compile Include="Physics\RigidBody.cs" />
+    <Compile Include="Render\AttributeTypes.cs" />
+    <Compile Include="Render\DirectionalLight.cs" />
+    <Compile Include="Render\Light.cs" />
+    <Compile Include="Render\PointLight.cs" />
+    <Compile Include="Render\CameraProjectionType.cs" />
+    <Compile Include="Render\Material.cs" />
+    <Compile Include="Render\Mesh\Loaders\Wavefront.cs" />
+    <Compile Include="Render\Mesh\Mesh.cs" />
+    <Compile Include="Render\Mesh\MeshFormats.cs" />
+    <Compile Include="Render\Shader.cs" />
+    <Compile Include="GUI\Label.cs" />
+    <Compile Include="Render\Texture.cs" />
+    <Compile Include="Render\VSyncMode.cs" />
+    <Compile Include="Render\WindowState.cs" />
+    <Compile Include="Engine.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Sound\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Physics\AABB.cs" />
+    <None Include="WObjectDiagram.cd" />
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.VersionCheckAnalyzer.resources.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\analyzers\dotnet\cs\Humanizer.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.CodeQuality.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.CodeQuality.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetCore.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.NetCore.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetCore.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.NetCore.CSharp.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props'))" />
+  </Target>
+</Project>

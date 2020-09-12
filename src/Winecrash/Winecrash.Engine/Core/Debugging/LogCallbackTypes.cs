@@ -1,9 +1,12 @@
 ﻿using System;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// All the log callbacks possible. Used by <see cref="Logger"/>.
+    /// </summary>
     [Flags]
-    public enum LogCallbackTypes : byte
+    public enum LogCallbackTypes
     {
         Info = 1,
         Warning = 2,

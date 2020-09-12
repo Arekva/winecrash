@@ -1,32 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// The callback delegate used into the <see cref="Initializer"/>.
+    /// </summary>
+    internal delegate void InitializerCallback();
+
+    /// <summary>
+    /// <see cref="Engine"/> initalizer: add this attribute to any static non public method and the engine will execute it at start.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     internal sealed class Initializer : Attribute, IComparable, IComparable<Initializer>, IEquatable<Initializer>
     {
+        /// <summary>
+        /// The execution order of the script (higher > later it will be executed).
+        /// </summary>
         public int Order { get; }
+
+        /// <summary>
+        /// The actual method linked to the initializer.
+        /// </summary>
         private InitializerCallback Method;
 
-        public delegate void InitializerCallback();
-
-
+        /// <summary>
+        /// Is the engine initialized.
+        /// </summary>
         private static bool Initialized = false;
 
+        /// <summary>
+        /// Create an initializer method for the <see cref="WEngine"/> to execute at start. Must be private and static.
+        /// </summary>
         public Initializer()
         {
             this.Order = 0;
         }
+        /// <summary>
+        /// Create an initializer method for the <see cref="WEngine"/> to execute at start. Must be private and static.
+        /// </summary>
+        /// <param name="order">At what order does the script execute? (Higher -> later)</param>
         public Initializer(int order)
         {
             this.Order = order;
         }
 
+        /// <summary>
+        /// Trigger all initializer scripts. Only can be done once.
+        /// </summary>
         public static void InitializeEngine()
         {
             if (Initialized) return;

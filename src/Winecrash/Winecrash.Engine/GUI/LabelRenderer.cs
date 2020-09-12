@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
-namespace Winecrash.Engine.GUI
+namespace WEngine.GUI
 {
     public sealed class LabelRenderer : GUIRenderer
     {

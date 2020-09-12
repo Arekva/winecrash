@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 
-
-
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// A 3x3 <see cref="double"/> Matrix.
+    /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct Matrix3D : IEquatable<Matrix3D>

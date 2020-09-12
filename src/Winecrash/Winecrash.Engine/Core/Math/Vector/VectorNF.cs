@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// N dimensional <see cref="float"/> vectors.
+    /// </summary>
     public struct VectorNF : IVectorable, IComparable, IComparable<VectorNF>, IEquatable<VectorNF>, IFormattable
     {
         public int Dimensions { get; }

@@ -1,32 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Winecrash.Engine;
-
-namespace Winecrash.Engine.Networking
+namespace WEngine.Networking
 {
+    /// <summary>
+    /// Delegate used when a client connects to a server.
+    /// </summary>
+    /// <param name="client">The TCP client.</param>
     public delegate void ClientConnectDelegate(TcpClient client);
+    /// <summary>
+    /// Delegate used when data is recieved from a client. Similar to <see cref="NetObject.OnReceive"/>
+    /// </summary>
+    /// <param name="client">The TCP client the data comes from.</param>
+    /// <param name="data">Any NetObject data received.</param>
     public delegate void ClientDataDelegate(TcpClient client, NetObject data);
+    /// <summary>
+    /// The base class for all servers.
+    /// </summary>
     public abstract class BaseServer : BaseObject
     {
+        /// <summary>
+        /// Triggered when a client connects to the server.
+        /// </summary>
         public event ClientConnectDelegate OnClientConnect;
+        /// <summary>
+        /// Triggered when data from a client is received.
+        /// </summary>
         public event ClientDataDelegate OnClientDataReceived;
 
+        /// <summary>
+        /// All the servers running. Mostly used for the engine to shutdown.
+        /// </summary>
         public static List<BaseServer> Servers { get; private set; } = new List<BaseServer>();
 
+        /// <summary>
+        /// The list containing all the connected clients.
+        /// </summary>
         protected List<TcpClient> Clients { get; set; } = new List<TcpClient>();
+        /// <summary>
+        /// The thread locker object for the <see cref="Clients"/> list.
+        /// </summary>
         protected object ClientsLocker = new object();
+        /// <summary>
+        /// This server's listener
+        /// </summary>
         public TcpListener Server { get; private set; } = null;
+        /// <summary>
+        /// The main server thread that performs <see cref="Tick"/>.
+        /// </summary>
         protected Thread TickThread { get; private set; } = null;
 
+        /// <summary>
+        /// All the received untreated data of the server.
+        /// </summary>
         protected List<NetObject> PendingData { get; private set; } = new List<NetObject>();
+        /// <summary>
+        /// The thread locker object for the <see cref="PendingData"/> list.
+        /// </summary>
         protected object PendingDataLocker = new object();
 
         /// <summary>
@@ -54,14 +90,24 @@ namespace Winecrash.Engine.Networking
         /// </summary>
         public static IPEndPoint DefaultListenAddress { get; } = new IPEndPoint(0L, 27716);
 
+        /// <summary>
+        /// Create a basic server able to listen to incoming NetObjects from multiple clients.
+        /// </summary>
+        /// <param name="listenIp">The listening IP. Defaults to 0.0.0.0 (all).</param>
+        /// <param name="port">The listening port. Defaults to 27716.</param>
         public BaseServer(string listenIp = "0.0.0.0", int port = 27716)
         {
             Servers.Add(this);
-            OnClientConnect += BaseServer_OnClientConnect;
+            OnClientConnect += LoopListening;
             ListenAddress = new IPEndPoint(IPAddress.Parse(listenIp), port);
         }
 
-        private void BaseServer_OnClientConnect(TcpClient client)
+        /// <summary>
+        /// Reads all incoming data from a client while <see cref="Running"/> is set to true.
+        /// <br>Adds received data to <see cref="PendingData"/></br>
+        /// </summary>
+        /// <param name="client">The connected client to listen to.</param>
+        protected void LoopListening(TcpClient client)
         {
             Task.Run(async () =>
             {
@@ -80,7 +126,10 @@ namespace Winecrash.Engine.Networking
             });
         }
 
-        public async virtual Task Run()
+        /// <summary>
+        /// Runs the server onto the <see cref="TickThread"/> Thread.
+        /// </summary>
+        public virtual void Run()
         {
             if(this.Running)
             {
@@ -105,20 +154,32 @@ namespace Winecrash.Engine.Networking
             TickThread.Start();
         }
 
+        /// <summary>
+        /// Running once tick time. Set the tickrate with <see cref="TPS"/>.
+        /// </summary>
         public abstract void Tick();
-
+        /// <summary>
+        /// Disconnects all clients and stops the server.
+        /// </summary>
         public void Stop()
         {
             DisconnectAllClients();
             Running = false;
         }
 
+        /// <summary>
+        /// The tick time watcher. Used to compute the wait time between two ticks.
+        /// </summary>
         private Stopwatch TickLoopTimer = new Stopwatch();
+
+        /// <summary>
+        /// The main tick loop while <see cref="Running"/> is set to true. Set the refresh rate with <see cref="TPS"/>.
+        /// </summary>
         protected void TickLoop()
         {
             Running = true;
 
-            Task.Run(AcceptClientAsync);
+            Task.Run(AcceptClientsLoopAsync);
 
             while (Running)
             {
@@ -135,6 +196,11 @@ namespace Winecrash.Engine.Networking
             }
         }
 
+        /// <summary>
+        /// Wait for received data asynchronously. Used by <see cref="LoopListening(TcpClient)"/>.
+        /// </summary>
+        /// <param name="client">The socket to listen to.</param>
+        /// <returns>The received <see cref="NetObject"/></returns>
         protected async Task<NetObject> ReceiveDataAsync(Socket client)
         {
             NetObject netobj = null;
@@ -190,7 +256,10 @@ namespace Winecrash.Engine.Networking
             return netobj;
         }
 
-        protected async Task AcceptClientAsync()
+        /// <summary>
+        /// Loops clients acceptation while <see cref="Running"/> is set to true.
+        /// </summary>
+        protected async Task AcceptClientsLoopAsync()
         {
             while (Running)
             {
@@ -213,6 +282,9 @@ namespace Winecrash.Engine.Networking
             }
         }
 
+        /// <summary>
+        /// Disconnects all TCP Clients within <see cref="Clients"/>.
+        /// </summary>
         public void DisconnectAllClients()
         {
             lock (ClientsLocker)

@@ -1,58 +1,108 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// All the utilies for debugging.
+    /// </summary>
     public static class Debug
     {
+        /// <summary>
+        /// The list of all loggers loaded.
+        /// </summary>
+        private static List<Logger> _Loggers = new List<Logger>(1);
+        /// <summary>
+        /// The thread locker for <see cref="Loggers"/>.
+        /// </summary>
+        private static object _LoggersLockers = new object();
 
-        private static List<Logger> Loggers = new List<Logger>(1);
-
+        /// <summary>
+        /// Add a debug logger.
+        /// </summary>
+        /// <param name="logger">The logger object</param>
         public static void AddLogger(Logger logger)
         {
-            if (logger == null) return;
+            if (logger == null)
+            {
+                Debug.LogWarning("<Debug.cs:33> Cannot add a null logger to Debug !");
+            }
 
-            Loggers.Add(logger);
+            lock (_LoggersLockers)
+            {
+                _Loggers.Add(logger);
+            }
         }
 
+        /// <summary>
+        /// Remove a debug logger.
+        /// </summary>
+        /// <param name="logger">The logger to remove.</param>
         public static void RemoveLogger(Logger logger)
         {
-            if (logger == null) return;
-
-            Loggers.Remove(logger);
+            lock (_LoggersLockers)
+            {
+                _Loggers.Remove(logger);
+            }
         }
 
+        /// <summary>
+        /// Log an Info/Verbose object.
+        /// </summary>
+        /// <param name="message">The object to log.</param>
         public static void Log(object message)
         {
-            foreach (Logger logger in Loggers)
+            lock (_LoggersLockers)
             {
-                logger.Log(message ?? "Null");
+                foreach (Logger logger in _Loggers)
+                {
+                    logger.Log(message ?? "Null");
+                }
             }
         }
+
+        /// <summary>
+        /// Log a Warning object.
+        /// </summary>
+        /// <param name="message">The object to log.</param>
         public static void LogWarning(object message)
         {
-            foreach (Logger logger in Loggers)
+            lock (_LoggersLockers)
             {
-                logger.LogWarning(message ?? "Null");
+                foreach (Logger logger in _Loggers)
+                {
+                    logger.LogWarning(message ?? "Null");
+                }
             }
         }
+
+        /// <summary>
+        /// Log an Error object.
+        /// </summary>
+        /// <param name="message">The object to log.</param>
         public static void LogError(object message)
         {
-            foreach (Logger logger in Loggers)
+            lock (_LoggersLockers)
             {
-                logger.LogError(message ?? "Null");
+                foreach (Logger logger in _Loggers)
+                {
+                    logger.LogError(message ?? "Null");
+                }
             }
         }
-        public static void LogException(Exception e)
+
+        /// <summary>
+        /// Log an Exception object.
+        /// </summary>
+        /// <param name="exception">The Exception to log.</param>
+        public static void LogException(Exception exception)
         {
-            foreach (Logger logger in Loggers)
+            lock (_LoggersLockers)
             {
-                logger.LogException(e);
+                foreach (Logger logger in _Loggers)
+                {
+                    logger.LogException(exception);
+                }
             }
         }
     }

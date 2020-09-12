@@ -5,16 +5,56 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
+    /// <summary>
+    /// Quaternions represent a rotation with an axis.
+    /// </summary>
+    [Serializable]
     public struct Quaternion
     {
         #region Properties
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
-        public double W { get; set; }
 
+        private double _X;
+        /// <summary>
+        /// X component of the quaternion. Avoid direct edition.
+        /// </summary>
+        public double X
+        {
+            get => _X;
+            set => _X = value;
+        }
+        private double _Y;
+        /// <summary>
+        /// Y component of the quaternion. Avoid direct edition.
+        /// </summary>
+        public double Y
+        {
+            get => _Y;
+            set => _Y = value;
+        }
+        private double _Z;
+        /// <summary>
+        /// Z component of the quaternion. Avoid direct edition.
+        /// </summary>
+        public double Z
+        {
+            get => _Z;
+            set => _Z = value;
+        }
+        private double _W;
+        /// <summary>
+        /// W component of the quaternion. Avoid direct edition.
+        /// </summary>
+        public double W
+        {
+            get => _W;
+            set => _W = value;
+        }
+
+        /// <summary>
+        /// A no-rotation quaternion (0.0, 0.0, 0.0, 1.0)
+        /// </summary>
         public static Quaternion Identity
         {
             get
@@ -23,6 +63,9 @@ namespace Winecrash.Engine
             }
         }
 
+        /// <summary>
+        /// The length of that quaternion.
+        /// </summary>
         public double Length
         {
             get
@@ -31,6 +74,9 @@ namespace Winecrash.Engine
             }
         }
 
+        /// <summary>
+        /// The squared length of that quaternion. Faster than <see cref="Length"/> but has to be squared rooted.
+        /// </summary>
         public double LengthSquared
         {
             get
@@ -39,6 +85,9 @@ namespace Winecrash.Engine
             }
         }
 
+        /// <summary>
+        /// Get or set the euler rotation (degree) of this quaternion.
+        /// </summary>
         public Vector3D Euler
         {
             get
@@ -98,6 +147,9 @@ namespace Winecrash.Engine
             }
         }*/
 
+        /// <summary>
+        /// The direction version of this quaternion.
+        /// </summary>
         public Quaternion Normalized
         {
             get
@@ -105,7 +157,9 @@ namespace Winecrash.Engine
                 return NormalizeQuaternion(this);
             }
         }
-
+        /// <summary>
+        /// The conjugated version of this quaternion.
+        /// </summary>
         public Quaternion Conjugated
         {
             get
@@ -114,6 +168,9 @@ namespace Winecrash.Engine
             }
         }
 
+        /// <summary>
+        /// The inverted version of this quaternion.
+        /// </summary>
         public Quaternion Inverted
         {
             get
@@ -124,13 +181,25 @@ namespace Winecrash.Engine
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Create a quaternion from its basic components. It is better to use <see cref="Quaternion.Quaternion(Vector3D, double)"/>.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <param name="w"></param>
         public Quaternion(double x, double y, double z, double w)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
-            this.W = w;
+            this._X = x;
+            this._Y = y;
+            this._Z = z;
+            this._W = w;
         }
+        /// <summary>
+        /// Create a quaternion given an angle and a rotation axis.
+        /// </summary>
+        /// <param name="axis">The rotation axis of this quaternion. The axis will be normalized.</param>
+        /// <param name="angle">The angle (degree) of the rotation of the quaternion.</param>
         public Quaternion(Vector3D axis, double angle)
         {
             angle *= WMath.DegToRad;
@@ -139,36 +208,26 @@ namespace Winecrash.Engine
             double s = Math.Sin(halfAngle);
             double c = Math.Cos(halfAngle);
 
-            this.X = axis.X * s;
-            this.Y = axis.Y * s;
-            this.Z = axis.Z * s;
-            this.W = c;
+            axis.Normalize();
+
+            this._X = axis.X * s;
+            this._Y = axis.Y * s;
+            this._Z = axis.Z * s;
+            this._W = c;
         }
 
-        public Quaternion(Vector3D angles)
-        {
-            angles *= WMath.DegToRad;
+        /// <summary>
+        /// Create a quaternion given euler angles.
+        /// </summary>
+        /// <param name="angles">The euler angles (degree) of this quaternion.</param>
+        public Quaternion(Vector3D angles) : this(angles.X, angles.Y, angles.Z) { }
 
-            double sr, cr, sp, cp, sy, cy;
-
-            double halfRoll = angles.Z * 0.5D;
-            sr = Math.Sin(halfRoll);
-            cr = Math.Cos(halfRoll);
-
-            double halfPitch = angles.X * 0.5D;
-            sp = Math.Sin(halfPitch);
-            cp = Math.Cos(halfPitch);
-
-            double halfYaw = angles.Y * 0.5D;
-            sy = Math.Sin(halfYaw);
-            cy = Math.Cos(halfYaw);
-
-            this.X = cy * sp * cr + sy * cp * sr;
-            this.Y = sy * cp * cr - cy * sp * sr;
-            this.Z = cy * cp * sr - sy * sp * cr;
-            this.W = cy * cp * cr + sy * sp * sr;
-        }
-
+        /// <summary>
+        /// Create a quaternion given euler angles.
+        /// </summary>
+        /// <param name="xAngle">The X euler angle (degree).</param>
+        /// <param name="yAngle">The Y euler angle (degree).</param>
+        /// <param name="zAngle">The Z euler angle (degree).</param>
         public Quaternion(double xAngle, double yAngle, double zAngle)
         {
             xAngle *= WMath.DegToRad;
@@ -191,10 +250,10 @@ namespace Winecrash.Engine
             sy = Math.Sin(halfYaw);
             cy = Math.Cos(halfYaw);
 
-            this.X = cy * sp * cr + sy * cp * sr;
-            this.Y = sy * cp * cr - cy * sp * sr;
-            this.Z = cy * cp * sr - sy * sp * cr;
-            this.W = cy * cp * cr + sy * sp * sr;
+            this._X = cy * sp * cr + sy * cp * sr;
+            this._Y = sy * cp * cr - cy * sp * sr;
+            this._Z = cy * cp * sr - sy * sp * cr;
+            this._W = cy * cp * cr + sy * sp * sr;
         }
         #endregion
 
@@ -233,28 +292,37 @@ namespace Winecrash.Engine
         }
 
         /// <summary>
-        /// Normalize this Quaternion.
+        /// Normalize this quaternion.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>This normalized quaternion.</returns>
         public Quaternion Normalize()
         {
             return this = NormalizeQuaternion(this);
         }
 
         /// <summary>
-        /// Conjugate the quaternion.
+        /// Conjugate this quaternion.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>This conjugated quaternion.</returns>
         public Quaternion Conjugate()
         {
             return this = ConjugateQuaternion(this);
         }
-
+         
+        /// <summary>
+        /// Inverse this quaternion.
+        /// </summary>
+        /// <returns>This inverted quaternion.</returns>
         public Quaternion Inverse()
         {
             return this = InverseQuaternion(this);
         }
         
+        /// <summary>
+        /// Normalize a quaterion.
+        /// </summary>
+        /// <param name="q">The quaternion to normalize.</param>
+        /// <returns>The normalize quaternion.</returns>
         private static Quaternion NormalizeQuaternion(Quaternion q)
         {
             double inv = 1.0D / q.Length;
@@ -266,7 +334,11 @@ namespace Winecrash.Engine
 
             return q;
         }
-
+        /// <summary>
+        /// Conjugate a quaterion.
+        /// </summary>
+        /// <param name="q">The quaternion to conjugate.</param>
+        /// <returns>The conjugated quaternion.</returns>
         private static Quaternion ConjugateQuaternion(Quaternion q)
         {
             q.X = -q.X;
@@ -276,6 +348,11 @@ namespace Winecrash.Engine
             return q;
         }
 
+        /// <summary>
+        /// Invert a quaterion.
+        /// </summary>
+        /// <param name="q">The quaternion to inverse.</param>
+        /// <returns>The inverted quaternion.</returns>
         public static Quaternion InverseQuaternion(Quaternion q)
         {
             double inv = 1.0D / q.Length;
@@ -288,6 +365,13 @@ namespace Winecrash.Engine
             return q;
         }
 
+        /// <summary>
+        /// Slerps two quaternion given a time (0..1) to smooth rotations.
+        /// </summary>
+        /// <param name="q1">The T+0 quaternion.</param>
+        /// <param name="q2">The T+1 quaternion.</param>
+        /// <param name="t">The time, between 0 and 1.</param>
+        /// <returns>The slerped quaternion.</returns>
         public static Quaternion Slerp(Quaternion q1, Quaternion q2, double t)
         {
             double cosOmega = q1.X * q2.X + q1.Y * q2.Y +
@@ -331,6 +415,13 @@ namespace Winecrash.Engine
             return ans;
         }
 
+        /// <summary>
+        /// Lerps two quaternion given a time (0..1) to smooth rotations.
+        /// </summary>
+        /// <param name="q1">The T+0 quaternion.</param>
+        /// <param name="q2">The T+1 quaternion.</param>
+        /// <param name="t">The time, between 0 and 1.</param>
+        /// <returns>The lerped quaternion.</returns>
         public static Quaternion Lerp(Quaternion q1, Quaternion q2, double t)
         {
             double t1 = 1.0D - t;
@@ -383,7 +474,12 @@ namespace Winecrash.Engine
 
 
         #endregion
-
+        /// <summary>
+        /// Multiply a point by a rotation.
+        /// </summary>
+        /// <param name="rotation">The rotation.</param>
+        /// <param name="point">The point to multiply.</param>
+        /// <returns>The multiplied point.</returns>
         public static Vector3D operator *(Quaternion rotation, Vector3D point)
         {
             double X = rotation.X * 2.0D;

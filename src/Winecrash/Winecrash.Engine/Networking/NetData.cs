@@ -1,12 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Winecrash.Engine.Networking
+using Newtonsoft.Json;
+
+namespace WEngine.Networking
 {
     /// <summary>
     /// Network data exchange structure.
@@ -15,6 +13,9 @@ namespace Winecrash.Engine.Networking
     [Serializable]
     internal struct NetData<T> : ISendible where T : NetObject
     {
+        /// <summary>
+        /// Serialization type variable.
+        /// </summary>
         private Type _Type;
         /// <summary>
         /// What type does the data represent.
@@ -27,6 +28,9 @@ namespace Winecrash.Engine.Networking
             }
         }
 
+        /// <summary>
+        /// Serialization data variable.
+        /// </summary>
         private string _Data;
         /// <summary>
         /// The stored JSON data.

@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Graphics;
 using OpenTK.Input;
-using System.Diagnostics;
 using System.Drawing;
-using System.Windows.Forms;
-using Microsoft.Win32;
 
-namespace Winecrash.Engine
+
+namespace WEngine
 {
     /// <summary>
     /// The game application is a all-in-one window displaying the current scenes.
@@ -109,7 +103,7 @@ namespace Winecrash.Engine
                 }
             }
         }
-        private WindowState _WindowState = Engine.WindowState.Normal;
+        private WindowState _WindowState = WEngine.WindowState.Normal;
         private bool _WindowStateChanged = true;
 
         //             IWindow.VSync             //
@@ -393,7 +387,7 @@ namespace Winecrash.Engine
         {
             base.OnClosed(e);
 
-            WEngine.Stop(this);
+            Engine.Stop(this);
         }
 
         protected override void OnResize(EventArgs e)

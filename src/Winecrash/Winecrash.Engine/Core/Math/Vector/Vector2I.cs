@@ -5,15 +5,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Winecrash.Engine
+namespace WEngine
 {
-    public struct Vector2I : IComparable, IComparable<Vector2I>, IEquatable<Vector2I>, IFormattable
+    /// <summary>
+    /// A 2D <see cref="int"/> Vector
+    /// </summary>
+    [Serializable]
+    public struct Vector2I : IVectorable, IComparable, IComparable<Vector2I>, IEquatable<Vector2I>, IFormattable
     {
         public int Dimensions { get; }
 
         #region Properties
-        public int X { get; set; }
-        public int Y { get; set; }
+        /// <summary>
+        /// Serialized X component of the vector.
+        /// </summary>
+        private int _X;
+        /// <summary>
+        /// X component of the vector.
+        /// </summary>
+        public int X
+        {
+            get => _X;
+            set => _X = value;
+        }
+        /// <summary>
+        /// Serialized Y component of the vector.
+        /// </summary>
+        public int _Y;
+        /// <summary>
+        /// Y component of the vector.
+        /// </summary>
+        public int Y
+        {
+            get => _Y;
+            set => _Y = value;
+        }
 
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2I XY
@@ -43,6 +69,9 @@ namespace Winecrash.Engine
             }
         }
 
+        /// <summary>
+        /// 2D Right (1,0)
+        /// </summary>
         public static Vector2I Right
         {
             get
@@ -50,6 +79,9 @@ namespace Winecrash.Engine
                 return new Vector2I(1, 0);
             }
         }
+        /// <summary>
+        /// 2D Left (-1,0)
+        /// </summary>
         public static Vector2I Left
         {
             get
@@ -57,6 +89,9 @@ namespace Winecrash.Engine
                 return new Vector2I(-1, 0);
             }
         }
+        /// <summary>
+        /// 2D Up (1,0)
+        /// </summary>
         public static Vector2I Up
         {
             get
@@ -64,6 +99,9 @@ namespace Winecrash.Engine
                 return new Vector2I(0, 1);
             }
         }
+        /// <summary>
+        /// 2D Down (-1,0)
+        /// </summary>
         public static Vector2I Down
         {
             get
@@ -72,6 +110,9 @@ namespace Winecrash.Engine
             }
         }
 
+        /// <summary>
+        /// Null (mathematically) vector (0,0)
+        /// </summary>
         public static Vector2I Zero
         {
             get
@@ -79,6 +120,10 @@ namespace Winecrash.Engine
                 return new Vector2I(0);
             }
         }
+
+        /// <summary>
+        /// Unit vector (1,1)
+        /// </summary>
         public static Vector2I One
         {
             get
@@ -87,7 +132,7 @@ namespace Winecrash.Engine
             }
         }
 
-        public int SquaredLength
+        public double SquaredLength
         {
             get
             {
@@ -102,6 +147,9 @@ namespace Winecrash.Engine
             }
         }
 
+        /// <summary>
+        /// The directional version of this vector (length 1)
+        /// </summary>
         public Vector2I Normalized
         {
             get
@@ -112,36 +160,65 @@ namespace Winecrash.Engine
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Create an <see cref="int"/> 2D vector where all the values are the parameter one.
+        /// </summary>
+        /// <param name="values">The components values.</param>
         public Vector2I(int values)
         {
-            this.X = values;
-            this.Y = values;
+            this._X = values;
+            this._Y = values;
 
             this.Dimensions = 2;
         }
+        /// <summary>
+        /// Create an <see cref="int"/> 2D vector.
+        /// </summary>
+        /// <param name="x">The X component.</param>
+        /// <param name="y">The Y component.</param>
         public Vector2I(int x, int y)
         {
-            this.X = x;
-            this.Y = y;
+            this._X = x;
+            this._Y = y;
 
             this.Dimensions = 2;
         }
         #endregion
 
         #region Methods
+        /// <summary>
+        /// The distance between two <see cref="int"/> 2D vectors.
+        /// </summary>
+        /// <param name="v1">The first vector.</param>
+        /// <param name="v2">The second vector.</param>
+        /// <returns>The distance between both vector. Always positive.</returns>
         public static double Distance(Vector2I v1, Vector2I v2)
         {
             return Math.Abs((v1 - v2).Length);
         }
+        /// <summary>
+        /// The dot product (multiplication) of two <see cref="int"/> 2D vectors.
+        /// </summary>
+        /// <param name="v1">The first vector.</param>
+        /// <param name="v2">The second vector.</param>
+        /// <returns></returns>
         public static Vector2I Dot(Vector2I v1, Vector2I v2)
         {
             return v1 * v2;
         }
+        /// <summary>
+        /// Normalize this <see cref="int"/> 2D vector.
+        /// </summary>
+        /// <returns>This vector after normalization.</returns>
         public Vector2I Normalize()
         {
             return this = NormalizeVector2I(this);
         }
-
+        /// <summary>
+        /// Normalize a <see cref="int"/> 2D vector.
+        /// </summary>
+        /// <param name="vector">The vector to normalize.</param>
+        /// <returns>The normalized <see cref="int"/> vector. </returns>
         private static Vector2I NormalizeVector2I(Vector2I vector)
         {
             if (vector == Vector2I.Zero)
