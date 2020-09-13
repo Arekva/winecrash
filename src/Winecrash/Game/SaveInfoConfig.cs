@@ -10,6 +10,8 @@ namespace Winecrash
 {
     public class SaveInfoConfig : Config
     {
+        public const string RelativePath = "info.json";
+
         private string _Name = Winecrash.Save.DefaultName;
         /// <summary>
         /// The name of the save.

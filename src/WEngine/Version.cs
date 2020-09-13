@@ -11,7 +11,7 @@ namespace WEngine
     /// <summary>
     /// Structure defining a MAJOR.MINOR.PATCH version.
     /// </summary>
-    public struct Version : IEquatable<Version>
+    public struct Version : IEquatable<Version>, IComparable<Version>
     {
         [JsonIgnore]
         private uint _Major;
@@ -110,6 +110,31 @@ namespace WEngine
             hashCode = hashCode * -1521134295 + Minor.GetHashCode();
             hashCode = hashCode * -1521134295 + Patch.GetHashCode();
             return hashCode;
+        }
+
+
+        public int CompareTo(Version o)
+        {
+            if (this.Equals(o)) return 0;
+
+            else
+            {
+                if (o.Major > this.Major) return -1;
+                if (o.Minor > this.Minor) return -1;
+                if (o.Patch > this.Patch) return -1;
+
+                return 1;
+            }
+        }
+
+        public static bool operator >(Version a, Version b)
+        {
+            return a.CompareTo(b) > 0;
+        }
+
+        public static bool operator <(Version a, Version b)
+        {
+            return a.CompareTo(b) < 0;
         }
     }
 }

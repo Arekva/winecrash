@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using WEngine;
+using System.Configuration;
 
 namespace Winecrash
 {
@@ -23,7 +24,7 @@ namespace Winecrash
         {
             get
             {
-                return Folders.UserData + "/Saves/";
+                return Folders.UserData + "Saves/";
             }
         }
 
@@ -52,31 +53,31 @@ namespace Winecrash
             {
                 this.Name = name;
 
-                this.Path = FolderPath + fileName + "/";
+                this.Path = System.IO.Path.Combine(FolderPath, fileName);
 
                 if (Directory.Exists(Path))
                 {
-                    this.Informations = new SaveInfoConfig(Path + "/header.json");
+                    this.Informations = new SaveInfoConfig(System.IO.Path.Combine(Path, SaveInfoConfig.RelativePath));
                 }
 
                 else
                 {
-                    throw new SaveException($"The save \"{name}\" does not exist ! ");
+                    throw new SaveException($"The save \"{name}\" does not exist.");
                 }
             }
             else
             {
-                this.Path = FolderPath + fileName + "/";
+                this.Path = System.IO.Path.Combine(FolderPath, fileName);
 
                 int count = 0;
                 while (Directory.Exists(this.Path))
                 {
-                    this.Path = FolderPath + fileName + $" ({++count})/";
+                    this.Path += $" ({++count})";
                 }
 
                 Directory.CreateDirectory(this.Path);
 
-                Informations = new SaveInfoConfig(this.Path + "header.json")
+                Informations = new SaveInfoConfig(System.IO.Path.Combine(this.Path, SaveInfoConfig.RelativePath))
                 {
                     Name = name
                 };
@@ -92,6 +93,61 @@ namespace Winecrash
         public static string ToValidFileName(string name, string replacement = "-")
         {
             return name.Replace(System.IO.Path.GetInvalidFileNameChars(), replacement);
+        }
+
+        /// <summary>
+        /// Get all the saves in <see cref="FolderPath"/> with their status
+        /// </summary>
+        /// <returns>All the saves within the folder by the format: [ <see cref="string"/> folder , [ <see cref="Save"/> save, <see cref="SaveStatus"/> status ] ].
+        /// <br>If unknown or corrupted, the <see cref="Save"/> might be null.</br></returns>
+        public static KeyValuePair<string, KeyValuePair<Save, SaveStatus>>[] GetAllSaves()
+        {
+            string[] directories = Directory.GetDirectories(FolderPath);
+
+            KeyValuePair<string, KeyValuePair<Save, SaveStatus>>[] saves = new KeyValuePair<string, KeyValuePair<Save, SaveStatus>>[directories.Length];
+
+            string fileName;
+            SaveStatus status;
+            Save save;
+            for (int i = 0; i < directories.Length; i++)
+            {
+                fileName = directories[i].Split('/', '\\').Last();
+                status = CheckIntegrity(directories[i], out save);
+                saves[i] = new KeyValuePair<string, KeyValuePair<Save, SaveStatus>>(fileName, new KeyValuePair<Save, SaveStatus>(save, status));
+            }
+
+            return saves;
+        }
+
+        public static SaveStatus CheckIntegrity(string path, out Save save)
+        {
+            SaveStatus status = File.Exists(System.IO.Path.Combine(path, SaveInfoConfig.RelativePath)) ? SaveStatus.Created : SaveStatus.Unknown;
+
+            if (File.Exists(System.IO.Path.Combine(path, SaveInfoConfig.RelativePath)))
+            {
+                try
+                {
+                    save = new Save(path.Split('\\', '/').Last(), true);
+                    status |= SaveStatus.Sane;
+
+                    if(save.Informations.Version < Game.Version)
+                    {
+                        status |= SaveStatus.OutOfDate;
+                    }
+                }
+                catch (Exception e)
+                {
+                    save = null;
+                    status |= SaveStatus.Corrupted;
+                }
+            }
+
+            else
+            {
+                save = null;
+                status |= SaveStatus.Corrupted;
+            }
+            return status;
         }
     }
 }
