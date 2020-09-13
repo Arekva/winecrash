@@ -82,6 +82,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JSON\Config.cs" />
     <Compile Include="Core\Color\Color256.cs" />
     <Compile Include="Core\Color\Color32.cs" />
     <Compile Include="Core\Input\KeysMethods.cs" />
@@ -171,6 +172,9 @@
     <Compile Include="Render\WindowState.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="JSON\SynchronizeAttribute.cs" />
+    <Compile Include="JSON\SyncMode.cs" />
+    <Compile Include="Version.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Sound\" />

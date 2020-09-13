@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Winecrash.Engine;
+using WEngine;
 using System.Threading;
 using OpenTK;
 using System.IO;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices;
 
-using Winecrash.Engine.GUI;
+using WEngine.GUI;
 
 using True = System.Boolean;
 
@@ -21,7 +21,7 @@ namespace Winecrash.Game
         {
             Task.Run(CreateDebugWindow);
 
-            WEngine.Run().Wait();
+            Engine.Run().Wait();
 
             Graphics.Window.OnLoaded += Start;
         }
