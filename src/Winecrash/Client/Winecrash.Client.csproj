@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{923EE1A4-151E-42DF-9534-D55C50CE52F1}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Winecrash.Game</RootNamespace>
+    <AssemblyName>Winecrash</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>none</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="LibNoise, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibNoise.0.2\lib\NET45\LibNoise.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=3.2.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.2\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DebugInput.cs" />
+    <Compile Include="DebugMenu.cs" />
+    <Compile Include="Entities\Entity.cs" />
+    <Compile Include="EscapeMenu.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="GameConfig.cs" />
+    <Compile Include="GameInput.cs" />
+    <Compile Include="GameLoad.cs" />
+    <Compile Include="GameServer.cs" />
+    <Compile Include="Generation\Biome.cs" />
+    <Compile Include="Hand.cs" />
+    <Compile Include="Item\Block.cs" />
+    <Compile Include="Item\BlockFaces.cs" />
+    <Compile Include="Item\Database\Database.cs" />
+    <Compile Include="Item\Database\ItemDB.cs" />
+    <Compile Include="Item\Dirt.cs" />
+    <Compile Include="Item\DroppedItem.cs" />
+    <Compile Include="Item\Plant.cs" />
+    <Compile Include="Item\Grass.cs" />
+    <Compile Include="Item\TexturePaths.cs" />
+    <Compile Include="JSON\Config.cs" />
+    <Compile Include="JSON\SynchronizeAttribute.cs" />
+    <Compile Include="JSON\SyncMode.cs" />
+    <Compile Include="Localization\Language.cs" />
+    <Compile Include="MainMenu.cs" />
+    <Compile Include="MenuBackgroundControler.cs" />
+    <Compile Include="MenuTip.cs" />
+    <Compile Include="Modules\DayNightCycle.cs" />
+    <Compile Include="Modules\FreeCam.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Modules\SkyboxCamera.cs" />
+    <Compile Include="Item\Cube.cs" />
+    <Compile Include="Structures\Structure.cs" />
+    <Compile Include="Ticket\Ticket.cs" />
+    <Compile Include="Ticket\TicketEditTypes.cs" />
+    <Compile Include="Ticket\TicketLoadTypes.cs" />
+    <Compile Include="Ticket\TicketPreviousDirections.cs" />
+    <Compile Include="Ticket\TicketTypes.cs" />
+    <Compile Include="Generation\Generator.cs" />
+    <Compile Include="UI\GameButton.cs" />
+    <Compile Include="UI\LocalizedLabel.cs" />
+    <Compile Include="UI\LargeButton.cs" />
+    <Compile Include="UI\TinyButton.cs" />
+    <Compile Include="UI\SmallButton.cs" />
+    <Compile Include="Version.cs" />
+    <Compile Include="World\ISaveable.cs" />
+    <Compile Include="Item\Item.cs" />
+    <Compile Include="Item\Database\ItemCache.cs" />
+    <Compile Include="World\JSONChunk.cs" />
+    <Compile Include="World\Chunk.cs" />
+    <Compile Include="World\RaycastChunkHit.cs" />
+    <Compile Include="World\TickType.cs" />
+    <Compile Include="World\TickWaitItem.cs" />
+    <Compile Include="World\World.cs" />
+    <None Include="LibNoiseDiag.cd" />
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\WEngine\WEngine.csproj">
+      <Project>{054fd1e0-5b69-4f51-b31c-053e3803c6e1}</Project>
+      <Name>WEngine</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
