@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winecrash.Launcher", "Winec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winecrash.Game", "Winecrash\Game\Winecrash.Game.csproj", "{99F21FC3-4D3F-4306-940E-6B727866FDB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winecrash.Client", "Client\Winecrash.Client.csproj", "{3D9EF50D-6FC5-40A2-BEBA-0DBDA0099293}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Winecrash.Client", "Winecrash\Client\Winecrash.Client.csproj", "{3D9EF50D-6FC5-40A2-BEBA-0DBDA0099293}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

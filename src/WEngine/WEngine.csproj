@@ -90,7 +90,9 @@
     <Compile Include="Core\Math\Matrix\Matrix4D.cs" />
     <Compile Include="GameApplication.cs" />
     <Compile Include="GUI\TextAlign.cs" />
+    <Compile Include="Networking\BaseClient.cs" />
     <Compile Include="Networking\BaseServer.cs" />
+    <Compile Include="Networking\DisconnectReason.cs" />
     <Compile Include="Networking\ISendible.cs" />
     <Compile Include="Networking\NetData.cs" />
     <Compile Include="Networking\NetObject.cs" />

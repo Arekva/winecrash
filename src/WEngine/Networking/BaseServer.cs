@@ -15,6 +15,12 @@ namespace WEngine.Networking
     /// <param name="client">The TCP client.</param>
     public delegate void ClientConnectDelegate(TcpClient client);
     /// <summary>
+    /// Delegate used when a client disconnects from a server.
+    /// </summary>
+    /// <param name="client">The TCP client.</param>
+    /// <param name="reason">The reason why the client got disconnected.</param>
+    public delegate void ClientDisconnectDelegate(TcpClient client, DisconnectReason reason);
+    /// <summary>
     /// Delegate used when data is recieved from a client. Similar to <see cref="NetObject.OnReceive"/>
     /// </summary>
     /// <param name="client">The TCP client the data comes from.</param>
@@ -26,9 +32,13 @@ namespace WEngine.Networking
     public abstract class BaseServer : BaseObject
     {
         /// <summary>
-        /// Triggered when a client connects to the server.
+        /// Triggered when a client disconnects from the server.
         /// </summary>
         public event ClientConnectDelegate OnClientConnect;
+        /// <summary>
+        /// Triggered when a client connects to the server.
+        /// </summary>
+        public event ClientDisconnectDelegate OnClientDisconnect;
         /// <summary>
         /// Triggered when data from a client is received.
         /// </summary>
@@ -95,11 +105,11 @@ namespace WEngine.Networking
         /// </summary>
         /// <param name="listenIp">The listening IP. Defaults to 0.0.0.0 (all).</param>
         /// <param name="port">The listening port. Defaults to 27716.</param>
-        public BaseServer(string listenIp = "0.0.0.0", int port = 27716)
+        public BaseServer(IPAddress listenIp, int port = 27716)
         {
             Servers.Add(this);
             OnClientConnect += LoopListening;
-            ListenAddress = new IPEndPoint(IPAddress.Parse(listenIp), port);
+            ListenAddress = new IPEndPoint(listenIp, port);
         }
 
         /// <summary>
@@ -138,6 +148,7 @@ namespace WEngine.Networking
             try
             {
                 Server = new TcpListener(this.ListenAddress);
+                Server.Start();
             }
             catch(Exception e)
             {
@@ -180,6 +191,7 @@ namespace WEngine.Networking
             Running = true;
 
             Task.Run(AcceptClientsLoopAsync);
+            Task.Run(DisconnectionCheckLoopAsync);
 
             while (Running)
             {
@@ -269,7 +281,7 @@ namespace WEngine.Networking
                 {
                     lock (ClientsLocker)
                     {
-                        OnClientConnect?.BeginInvoke(client, null, null);
+                        OnClientConnect?.Invoke(client);
                         Clients.Add(client);
                     }
                 }
@@ -281,6 +293,38 @@ namespace WEngine.Networking
                 }
             }
         }
+
+        protected async Task DisconnectionCheckLoopAsync()
+        {
+            while (Running)
+            {
+                TcpClient[] clients;
+                lock(ClientsLocker)
+                    clients = this.Clients.ToArray();
+
+                if (clients != null)
+                {
+                    for (int i = 0; i < clients.Length; i++)
+                    {
+                        if (!clients[i].Client.Connected)
+                        {
+                            OnClientDisconnect?.Invoke(clients[i], DisconnectReason.Timeout);
+
+                            clients[i].Close();
+                            clients[i].Dispose();
+
+                            lock (ClientsLocker)
+                                Clients.Remove(clients[i]);
+                        }
+                    }
+                }
+
+                int waitTime = (int)((1.0D / PingRate) * 1000.0D);
+
+                await Task.Delay(waitTime);
+            }
+        }
+
 
         /// <summary>
         /// Disconnects all TCP Clients within <see cref="Clients"/>.

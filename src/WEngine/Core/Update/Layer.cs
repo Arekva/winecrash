@@ -357,15 +357,15 @@ namespace WEngine
 
             foreach(Layer layer in _Layers)
             {
-                txt += layer?.Name + "\n";
+                txt += layer.Name + "\n";
 
                 foreach(Group group in layer._Groups)
                 {
-                    txt += "--" + group?.Name + "\n";
+                    txt += "--" + group.Name + "\n";
 
                     foreach(Module module in group._Modules)
                     {
-                        txt += "----" + module?.Name + "[" + module?.ExecutionOrder + "]\n";
+                        txt += "----" + module.Name + "[" + module.ExecutionOrder + "]\n";
                     }
                 }
             }

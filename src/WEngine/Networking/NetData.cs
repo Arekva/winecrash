@@ -16,6 +16,7 @@ namespace WEngine.Networking
         /// <summary>
         /// Serialization type variable.
         /// </summary>
+        [JsonIgnore]
         private Type _Type;
         /// <summary>
         /// What type does the data represent.
@@ -31,6 +32,7 @@ namespace WEngine.Networking
         /// <summary>
         /// Serialization data variable.
         /// </summary>
+        [JsonIgnore]
         private string _Data;
         /// <summary>
         /// The stored JSON data.
@@ -43,6 +45,7 @@ namespace WEngine.Networking
             }
         }
 
+        [JsonIgnore]
         /// <summary>
         /// Return the size in byte of the data.
         /// </summary>
@@ -54,6 +57,7 @@ namespace WEngine.Networking
             }
         }
 
+        [JsonIgnore]
         /// <summary>
         /// The raw data of this structure, ready to be sent.
         /// </summary>

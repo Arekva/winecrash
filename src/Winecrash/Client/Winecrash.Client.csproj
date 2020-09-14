@@ -52,6 +52,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -77,17 +78,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WEngine\WEngine.csproj">
+    <ProjectReference Include="..\..\WEngine\WEngine.csproj">
       <Project>{054fd1e0-5b69-4f51-b31c-053e3803c6e1}</Project>
       <Name>WEngine</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Winecrash\Game\Winecrash.Game.csproj">
+    <ProjectReference Include="..\Game\Winecrash.Game.csproj">
       <Project>{99f21fc3-4d3f-4306-940e-6b727866fdb9}</Project>
       <Name>Winecrash.Game</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Winecrash\Server\Winecrash.Server\Winecrash.Server.csproj">
-      <Project>{0e2532cb-85a6-4efe-a71f-42ebdac43703}</Project>
-      <Name>Winecrash.Server</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
