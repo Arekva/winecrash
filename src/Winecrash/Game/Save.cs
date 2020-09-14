@@ -102,6 +102,10 @@ namespace Winecrash
         /// <br>If unknown or corrupted, the <see cref="Save"/> might be null.</br></returns>
         public static KeyValuePair<string, KeyValuePair<Save, SaveStatus>>[] GetAllSaves()
         {
+            if(!Directory.Exists(FolderPath))
+            {
+                return Array.Empty<KeyValuePair<string, KeyValuePair<Save, SaveStatus>>>();
+            }
             string[] directories = Directory.GetDirectories(FolderPath);
 
             KeyValuePair<string, KeyValuePair<Save, SaveStatus>>[] saves = new KeyValuePair<string, KeyValuePair<Save, SaveStatus>>[directories.Length];

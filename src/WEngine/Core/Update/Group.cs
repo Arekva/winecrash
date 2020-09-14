@@ -95,7 +95,7 @@ namespace WEngine
             WEngine.Layer.CreateOrGetLayer(layer, null, new[] { this });
 
             SortByOrder();
-
+            Debug.Log("Blah blah");
             Thread = new Thread(Update)
             {
                 Priority = ThreadPriority.Highest,
@@ -121,6 +121,7 @@ namespace WEngine
                 {
                     try
                     {
+                        Debug.Log(modules[i].Name);
                         modules[i]?.FixedUpdate();
                     }
                     catch(Exception e)
@@ -222,9 +223,9 @@ namespace WEngine
         internal static Group CreateOrGetGroup(int order, string name = null, IEnumerable<Module> modules = null)
         {
             Group group = GetGroup(order);
-
             if (group == null) // no layer, can add one.
             {
+                
                 group = new Group(name, order, 0, modules);
             }
 

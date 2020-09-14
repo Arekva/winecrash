@@ -34,29 +34,40 @@ namespace WEngine
         /// </summary>
         public static WObject EngineObject { get; private set; } = null;
 
+        public static bool DoGUI { get; private set; }
+
         public static void TraceLayers()
         {
             Debug.Log(Layer.GetTrace());
         }
 
-        public async static Task Run()
-        {     
+        public async static Task Run(bool gui)
+        {
+            DoGUI = gui;
+
             System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            await Task.Run(() =>
+            if (DoGUI)
             {
-                Thread winThread = new Thread(ShowWindow)
+                await Task.Run(() =>
                 {
-                    IsBackground = false,
-                    Priority = ThreadPriority.Highest,
-                    Name = "OpenGL"
-                };
+                    Thread winThread = new Thread(ShowWindow)
+                    {
+                        IsBackground = false,
+                        Priority = ThreadPriority.Highest,
+                        Name = "OpenGL"
+                    };
 
-                winThread.Start();
-                windowSet.WaitOne();
-                
+                    winThread.Start();
+                    windowSet.WaitOne();
+
+                    Load();
+                });
+            }
+            else
+            {
                 Load();
-            });
+            }
         }
         private static ManualResetEvent windowSet = new ManualResetEvent(false);
 
@@ -136,13 +147,16 @@ namespace WEngine
                 Debug.LogError("Sorry, but Winecrash is not compatible with system " + OS.ToString());
             }
 
-            CreateEngineWObject();
-
-            
-           /* for (int i = 0; i < pixelized.Glyphs.Set.Length; i++)
+            if (DoGUI)
             {
-                Debug.LogWarning(pixelized.Glyphs[pixelized.Glyphs.Set[i]].Character);
-            }*/
+                CreateEngineWObject();
+            }
+            else
+            {
+                Layer.CreateOrGetLayer(0).Name = "Default Layer";
+                //Group.CreateOrGetGroup(0, "Default Group");
+
+            }
         }
 
         private static WObject CreateEngineWObject()
@@ -155,11 +169,14 @@ namespace WEngine
             wobj.AddModule<Input>().ExecutionOrder = Int32.MinValue;
             wobj.AddModule<EngineCore>();
 
-            WObject wobjcan = new WObject("Canvas")
+            if (DoGUI)
             {
-                Undeletable = true
-            };
-            wobjcan.AddModule<GUI.Canvas>();
+                WObject wobjcan = new WObject("Canvas")
+                {
+                    Undeletable = true
+                };
+                wobjcan.AddModule<GUI.Canvas>();
+            }
             
 
             Layer.CreateOrGetLayer(0).Name = "Default Layer";
@@ -183,6 +200,21 @@ namespace WEngine
             {
                 OS = OSPlatform.OSX;
             }
+        }
+
+        private static double _TimeSinceLastUpdate = 0.0D;
+        private static bool _FirstRun = false;
+
+
+        public static void ForceUpdate()
+        {
+            if(_FirstRun)
+            {
+                _TimeSinceLastUpdate = Time.TimeSinceStart;
+            }
+
+            double delta = Time.TimeSinceStart - _TimeSinceLastUpdate;
+            Layer.Update(new UpdateEventArgs(delta));
         }
     }
 }

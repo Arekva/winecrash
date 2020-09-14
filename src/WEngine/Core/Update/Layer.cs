@@ -45,9 +45,12 @@ namespace WEngine
         {
             Layer.CreateOrGetLayer(0, "Default Layer", null);
             Group.CreateOrGetGroup(0, "Default Group", null);
-
-            Graphics.Window.OnUpdate += new UpdateEventHandler(Update);
-            Graphics.Window.OnRender += new UpdateEventHandler(Render);
+            
+            if (Engine.DoGUI)
+            {
+                Graphics.Window.OnUpdate += new UpdateEventHandler(Update);
+                Graphics.Window.OnRender += new UpdateEventHandler(Render);
+            }
 
             FixedThread = new Thread(() =>
             {
@@ -95,7 +98,7 @@ namespace WEngine
                     }
 
 
-                    Time.FixedDeltaTime = Physics.FixedRate * Time.FixedTimeScale;
+                    Time.FixedDeltaTime = waitTime;//Physics.FixedRate * Time.FixedTimeScale;
 
                    /* else
                     {
@@ -109,7 +112,10 @@ namespace WEngine
                 Priority = ThreadPriority.Highest
             };
 
-            Graphics.Window.OnLoaded += FixedThread.Start;
+            if (Engine.DoGUI)
+                Graphics.Window.OnLoaded += FixedThread.Start;
+            else 
+                FixedThread.Start();
         }
 
         private Layer(string name, int order, IEnumerable<Group> groups)
@@ -351,15 +357,15 @@ namespace WEngine
 
             foreach(Layer layer in _Layers)
             {
-                txt += layer.Name + "\n";
+                txt += layer?.Name + "\n";
 
                 foreach(Group group in layer._Groups)
                 {
-                    txt += "--" + group.Name + "\n";
+                    txt += "--" + group?.Name + "\n";
 
                     foreach(Module module in group._Modules)
                     {
-                        txt += "----" + module.Name + "[" + module.ExecutionOrder + "]\n";
+                        txt += "----" + module?.Name + "[" + module?.ExecutionOrder + "]\n";
                     }
                 }
             }

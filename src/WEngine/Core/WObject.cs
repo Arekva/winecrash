@@ -24,7 +24,8 @@ namespace WEngine
             lock(wobjectLocker)
                 _WObjects.Add(this);
 
-            Graphics.Window.OnRender += (e) => _RendersForward = this.Forward;
+            if (Engine.DoGUI)
+                Graphics.Window.OnRender += (e) => _RendersForward = this.Forward;
         }
 
         /// <summary>
@@ -36,7 +37,8 @@ namespace WEngine
             lock(wobjectLocker)
                 _WObjects.Add(this);
 
-            Graphics.Window.OnRender += (e) => _RendersForward = this.Forward;
+            if(Engine.DoGUI)
+                Graphics.Window.OnRender += (e) => _RendersForward = this.Forward;
         }
 
         /// <summary>

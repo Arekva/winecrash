@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleUtils.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Folders.cs" />
     <Compile Include="Save.cs" />
