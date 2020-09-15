@@ -95,6 +95,8 @@ namespace WEngine.Networking
         /// </summary>
         public IPEndPoint ListenAddress { get; private set; }
 
+        public int ListenPort { get; }
+
         /// <summary>
         /// Default listening address: 0.0.0.0:27716
         /// </summary>
@@ -110,6 +112,7 @@ namespace WEngine.Networking
             Servers.Add(this);
             OnClientConnect += LoopListening;
             ListenAddress = new IPEndPoint(listenIp, port);
+            ListenPort = port;
         }
 
         /// <summary>
@@ -129,6 +132,7 @@ namespace WEngine.Networking
                     {
                         lock (PendingDataLocker)
                         {
+                            OnClientDataReceived?.Invoke(client, obj);
                             PendingData.Add(obj);
                         }
                     }
@@ -150,10 +154,25 @@ namespace WEngine.Networking
                 Server = new TcpListener(this.ListenAddress);
                 Server.Start();
             }
+            catch(SocketException e)
+            {
+                switch(e.SocketErrorCode)
+                {
+                    case SocketError.AddressAlreadyInUse:
+                        Debug.LogError("Unable to start server: another server is already running on this port (" + ListenPort + ") !");
+                        break;
+                    default:
+                        Debug.LogError("Unable to start server: \n"+e);
+                        break;
+                }
+
+                this.Running = false;
+                return;
+            }
             catch(Exception e)
             {
-                Debug.LogException(e);
-                return;
+                Debug.LogError("An Unknown error occured when starting server: \n"+e);
+                this.Running = false;
             }
             TickThread = new Thread(TickLoop)
             {
@@ -250,6 +269,7 @@ namespace WEngine.Networking
                     totalread, //offset into the buffer
                     data.Length - totalread, //max amount to read
                     SocketFlags.None);
+
                 //if we didn't get the entire message, read some more until we do
                 while (totalread < messageSize && currentread > 0)
                 {
@@ -263,6 +283,7 @@ namespace WEngine.Networking
                 string rawdata = Encoding.Unicode.GetString(data);
 
                 netobj = NetObject.Receive(rawdata, client);
+
             }).ConfigureAwait(false);
 
             return netobj;

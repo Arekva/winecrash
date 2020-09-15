@@ -30,11 +30,11 @@ namespace Winecrash.Server
 
             OnClientDataReceived += (client, data) =>
             {
-                Debug.Log("something received");
-                /*if (data is NetMessage msg)
+                //Debug.Log("something received");
+                if (data is NetMessage msg)
                 {
-                    Debug.Log(client + " sent: " + msg);
-                }*/
+                    Debug.Log(client.Client.RemoteEndPoint.ToString() + " sent: " + msg.Message);
+                }
             };
 
             Debug.Log("Winecrash " + Game.Version + " - Server online.");
@@ -42,6 +42,18 @@ namespace Winecrash.Server
 
         public override void Tick()
         {
+            NetObject[] objects;
+            lock (this.PendingDataLocker)
+            {
+                objects = this.PendingData.ToArray();
+                this.PendingData.Clear();
+            }
+
+            for (int i = 0; i < objects.Length; i++)
+            {
+                
+            }
+
             Engine.ForceUpdate();
         }
     }

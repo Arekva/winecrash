@@ -18,12 +18,16 @@ namespace Winecrash.Server
         {
             CreateDebugWindow();
 
+            Folders.UserData = "Data/";
+
+            //new Save(Save.DefaultName, false);
+
             ConsoleUtils.PrintSaves();
 
             Engine.Run(false);
 
             server = new GameServer(IPAddress.Any, 27716);
-            server.TPS = uint.MaxValue;
+            server.TPS = 60;
             server.Run();
 
             Engine.OnStop += () => Debug.Log("Engine stopped.");

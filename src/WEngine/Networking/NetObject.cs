@@ -17,7 +17,7 @@ namespace WEngine.Networking
     /// <summary>
     /// Basic definition of a network object able to send himself over a socket.
     /// </summary>
-    public abstract class NetObject : BaseObject
+    public abstract class NetObject
     {
         /// <summary>
         /// Triggered when data is received.
@@ -34,6 +34,9 @@ namespace WEngine.Networking
         /// </summary>
         private static Dictionary<Type, ConstructorInfo> _GenericConstructors = new Dictionary<Type, ConstructorInfo>(16);
 
+        [JsonIgnore]
+        public bool Deleted { get; private set; } = false;
+
         /// <summary>
         /// Deserialize an object from its raw net data and make received.
         /// </summary>
@@ -43,10 +46,9 @@ namespace WEngine.Networking
         internal static NetObject Receive(string rawDataJson, Socket socket)
         {
             NetData<NetObject> data = JsonConvert.DeserializeObject<NetData<NetObject>>(rawDataJson);
-
             NetObject obj = JsonConvert.DeserializeObject(data.Data, data.Type) as NetObject;
 
-            OnReceive?.BeginInvoke(obj, data.Type, socket, null, null);
+            OnReceive?.Invoke(obj, data.Type, socket);
             return obj;
         }
 
@@ -70,6 +72,20 @@ namespace WEngine.Networking
 
             OnSend?.BeginInvoke(netobj, type, socket, null, null);
             ((ISendible)ctor.Invoke(new object[] { netobj })).Send(socket);
+        }
+
+        public virtual void Delete()
+        {
+            this.Deleted = true;
+        }
+
+        /// <summary>
+        /// Get if an object is null.
+        /// </summary>
+        /// <param name="bobj">The object to check out.</param>
+        public static implicit operator bool(NetObject bobj)
+        {
+            return !(bobj is null);
         }
     }
 }

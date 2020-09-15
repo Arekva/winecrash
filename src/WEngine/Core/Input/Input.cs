@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 
 namespace WEngine
 {
@@ -12,6 +13,7 @@ namespace WEngine
 
         private static int KeysAmount = Enum.GetValues(typeof(Keys)).Length;
         private static Dictionary<Keys, KeyStates> RegisteredKeyStates = new Dictionary<Keys, KeyStates>(KeysAmount);
+
         public static bool CursorVisible
         {
             get
@@ -187,6 +189,21 @@ namespace WEngine
 
                 RegisteredKeyStates[key] = newState;
             }
+        }
+
+        private static Keys[] GetAllKeys(KeyStates states)
+        {
+            List<Keys> keys = new List<Keys>(RegisteredKeyStates.Count);
+
+            foreach(KeyValuePair<Keys, KeyStates> keystate in RegisteredKeyStates)
+            {
+                if((keystate.Value & states) != 0)
+                {
+                    keys.Add(keystate.Key);
+                }
+            }
+
+            return keys.ToArray();
         }
 
         private static KeyStates GetKeyState(Keys key, Dictionary<Keys, KeyStates> dictionary)

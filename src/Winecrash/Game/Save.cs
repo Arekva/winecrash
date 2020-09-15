@@ -72,7 +72,7 @@ namespace Winecrash
                 int count = 0;
                 while (Directory.Exists(this.Path))
                 {
-                    this.Path += $" ({++count})";
+                    this.Path = System.IO.Path.Combine(FolderPath, fileName) + $" ({++count})";
                 }
 
                 Directory.CreateDirectory(this.Path);

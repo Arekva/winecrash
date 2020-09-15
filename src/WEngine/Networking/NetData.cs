@@ -69,6 +69,13 @@ namespace WEngine.Networking
             }
         }
 
+        [JsonConstructor]
+        public NetData(Type type, string data)
+        {
+            this._Type = type;
+            this._Data = data;
+        }
+
         /// <summary>
         /// Create a new NetData from a NetObject
         /// </summary>
@@ -86,7 +93,6 @@ namespace WEngine.Networking
         public void Send(Socket socket)
         {
             byte[] data = this.Raw;
-
             socket.Send(BitConverter.GetBytes(data.Length));
             socket.Send(data);
         }
