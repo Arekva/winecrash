@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WEngine;
 using WEngine.GUI;
+using WEngine.Networking;
 using Winecrash.Net;
 using Label = WEngine.GUI.Label;
 
@@ -31,18 +32,20 @@ namespace Client
             GameApplication app = (GameApplication)Graphics.Window;
             app.OnLoaded += () =>
             {
-                WObject buttonConnect = new WObject("Debug Text") { Parent = Canvas.Main.WObject };
-                LbDebug = buttonConnect.AddModule<Label>();
+                WObject debugLabel = new WObject("Debug Text") { Parent = Canvas.Main.WObject };
+                LbDebug = debugLabel.AddModule<Label>();
                 LbDebug.Aligns = TextAligns.Up | TextAligns.Left;
                 LbDebug.FontSize = 42;
                 LbDebug.Text = "DEBUG:\n";
-
-                GameClient client = new GameClient("127.0.0.1", 27716);
-
-                Debug.Log("test");
             };
+            GameClient client = new GameClient("127.0.0.1", 27716);
 
-
+            Task.Run(() =>
+            {
+                for (int i = 0; i < 1000; i++)
+                    NetObject.Send(new NetPing(DateTime.UtcNow.Ticks, 0L), client.Client.Client);
+            });
+            
             Task.Run(() =>
             {
                 End.WaitOne();

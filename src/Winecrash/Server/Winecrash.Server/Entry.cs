@@ -27,7 +27,6 @@ namespace Winecrash.Server
             Engine.Run(false);
 
             server = new GameServer(IPAddress.Any, 27716);
-            server.TPS = 60;
             server.Run();
 
             Engine.OnStop += () => Debug.Log("Engine stopped.");

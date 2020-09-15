@@ -35,6 +35,24 @@ namespace Winecrash.Server
                 {
                     Debug.Log(client.Client.RemoteEndPoint.ToString() + " sent: " + msg.Message);
                 }
+
+                else if (data is NetPing ping)
+                {
+                    ping.ReceiveTick = DateTime.UtcNow.Ticks;
+
+                    long ticks = ping.ReceiveTick - ping.SendTick;
+                    Debug.Log(ticks);
+
+                    //double delta = ping.ReceiveDate.Subtract(ping.SendDate).TotalMilliseconds;
+
+                    //Debug.Log((delta * 2.0D).ToString("F2"));
+                    NetObject.Send(ping, client.Client);
+                }
+
+                else
+                {
+                    Debug.Log("wtf has been received? " + data.GetType());
+                }
             };
 
             Debug.Log("Winecrash " + Game.Version + " - Server online.");

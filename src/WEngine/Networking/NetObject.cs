@@ -58,7 +58,7 @@ namespace WEngine.Networking
         /// <param name="netobj">The NetObject to send. Cannot be null.</param>
         /// <param name="socket">The client to send the data to.</param>
         /// <exception cref="NullReferenceException"></exception>
-        internal static void Send(NetObject netobj, Socket socket)
+        public static void Send(NetObject netobj, Socket socket)
         {
             if (!netobj) throw new NullReferenceException("<NetObject.cs:58> " + nameof(netobj) + " cannot be null.");
 
