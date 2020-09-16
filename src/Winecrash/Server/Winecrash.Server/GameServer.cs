@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using WEngine;
 using WEngine.Networking;
-using Winecrash.Net;
 
 namespace Winecrash.Server
 {
@@ -30,6 +29,7 @@ namespace Winecrash.Server
 
             OnClientDataReceived += (client, data) =>
             {
+                Task.Run(() => {
                 //Debug.Log("something received");
                 if (data is NetMessage msg)
                 {
@@ -38,14 +38,10 @@ namespace Winecrash.Server
 
                 else if (data is NetPing ping)
                 {
-                    ping.ReceiveTick = DateTime.UtcNow.Ticks;
+                    TimeSpan delta = ping.ReceiveTime - ping.SendTime;
 
-                    long ticks = ping.ReceiveTick - ping.SendTick;
-                    Debug.Log(ticks);
+                    Debug.Log("client -> server time: " + delta.Milliseconds + " ms");
 
-                    //double delta = ping.ReceiveDate.Subtract(ping.SendDate).TotalMilliseconds;
-
-                    //Debug.Log((delta * 2.0D).ToString("F2"));
                     NetObject.Send(ping, client.Client);
                 }
 
@@ -53,6 +49,7 @@ namespace Winecrash.Server
                 {
                     Debug.Log("wtf has been received? " + data.GetType());
                 }
+                });
             };
 
             Debug.Log("Winecrash " + Game.Version + " - Server online.");
@@ -69,9 +66,10 @@ namespace Winecrash.Server
 
             for (int i = 0; i < objects.Length; i++)
             {
-                
+                objects[i].Delete();
             }
 
+            //Debug.Log("NetObjects received within this tick: " + objects.Length);
             Engine.ForceUpdate();
         }
     }

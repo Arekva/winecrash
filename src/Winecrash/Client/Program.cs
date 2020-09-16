@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using WEngine;
 using WEngine.GUI;
 using WEngine.Networking;
-using Winecrash.Net;
 using Label = WEngine.GUI.Label;
 
 namespace Client
@@ -22,7 +21,7 @@ namespace Client
 
         static void Main(string[] args)
         {
-            
+
             Engine.Run(true).Wait();
 
             Engine.OnStop += () => End.Set();
@@ -37,18 +36,46 @@ namespace Client
                 LbDebug.Aligns = TextAligns.Up | TextAligns.Left;
                 LbDebug.FontSize = 42;
                 LbDebug.Text = "DEBUG:\n";
+
+                GameClient client = new GameClient("127.0.0.1", 27716);
+                client.OnConnect += (tpcclient) =>
+                Task.Run(async () =>
+                {
+                    for (int i = 0; i < 100; i++)
+                    {
+                        NetObject.Send(new NetPing(DateTime.UtcNow, default), tpcclient.Client);
+                        await Task.Delay(1000);
+                    }
+                    
+                });
             };
-            GameClient client = new GameClient("127.0.0.1", 27716);
+            
+
+            //Thread thread = new Thread(async () =>
+            //{
+            //Debug.Log("yes");
+            /*for (int i = 0; i < 1; i++)
+            {*/
+            /*Task.Run(async () =>
+            {
+                await Task.Delay(10)
+                NetObject.Send(new NetPing(DateTime.UtcNow, default), client.Client.Client);
+            };*/
+                    //await Task.Delay(100);
+                //}
+            /*})
+            {
+                Priority = ThreadPriority.Highest
+            };*/
+
+            //thread.Start();
+
+
 
             Task.Run(() =>
             {
-                for (int i = 0; i < 1000; i++)
-                    NetObject.Send(new NetPing(DateTime.UtcNow.Ticks, 0L), client.Client.Client);
-            });
-            
-            Task.Run(() =>
-            {
                 End.WaitOne();
+                //thread.Abort();
                 return;
             }).Wait();
         }

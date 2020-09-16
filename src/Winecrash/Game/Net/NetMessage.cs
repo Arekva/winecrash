@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WEngine.Networking;
 
-namespace Winecrash.Net
+namespace Winecrash
 {
     public class NetMessage : NetObject
     {

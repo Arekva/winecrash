@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Reflection;
 using Newtonsoft.Json;
@@ -47,7 +48,6 @@ namespace WEngine.Networking
         {
             NetData<NetObject> data = JsonConvert.DeserializeObject<NetData<NetObject>>(rawDataJson);
             NetObject obj = JsonConvert.DeserializeObject(data.Data, data.Type) as NetObject;
-
             OnReceive?.Invoke(obj, data.Type, socket);
             return obj;
         }

@@ -12,19 +12,19 @@ namespace WEngine.Networking
         /// <summary>
         /// The send date. Automatically set on creation.
         /// </summary>
-        public long SendTick { get; set; }
+        public DateTime SendTime { get; set; }
 
         /// <summary>
         /// The receive date. Automatically set on receiver <see cref="NetObject.OnReceive"/>.
         /// </summary>
-        public long ReceiveTick { get; set; } = 0L;
+        public DateTime ReceiveTime { get; set; }
 
         /// <summary>
         /// Adds the <see cref="ReceivePing"/> method to the <see cref="NetObject.OnReceive"/>.
         /// </summary>
         static NetPing()
         {
-            //NetObject.OnReceive += ReceivePing;
+            NetObject.OnReceive += ReceivePing;
         }
 
         /// <summary>
@@ -33,10 +33,10 @@ namespace WEngine.Networking
         /// <param name="sendDate">The sender send date.</param>
         /// <param name="receiveDate">The receiver receive date.</param>
         [JsonConstructor]
-        public NetPing(long sendTick, long receiveTick)
+        public NetPing(DateTime sendTime, DateTime receiveTime)
         {
-            this.SendTick = sendTick;
-            this.ReceiveTick = receiveTick;
+            this.SendTime = sendTime;
+            this.ReceiveTime = receiveTime;
         }
 
         /// <summary>
@@ -45,10 +45,13 @@ namespace WEngine.Networking
         /// <param name="data">The generic data. Might not be a ping.</param>
         /// <param name="dataType">The data type.</param>
         /// <param name="connection">The socket the data comes from.</param>
-        /*private static void ReceivePing(NetObject data, Type dataType, Socket connection)
+        private static void ReceivePing(NetObject data, Type dataType, Socket connection)
         {
             //if no receive date, it means we are the receiver. Set the receive date to now.
-            if (data is NetPing ping && ping.ReceiveDate == default) ping.ReceiveDate = DateTime.UtcNow;
-        }*/
+            if (data is NetPing ping && ping.ReceiveTime == default)
+            {
+                ping.ReceiveTime = DateTime.UtcNow;
+            }
+        }
     }
 }
