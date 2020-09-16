@@ -37,19 +37,37 @@ namespace Client
                 LbDebug.FontSize = 42;
                 LbDebug.Text = "DEBUG:\n";
 
-                GameClient client = new GameClient("127.0.0.1", 27716);
+                WObject addressInputWobj = new WObject("Server Address Input") { Parent = Canvas.Main.WObject };
+                TextInputField addressField = addressInputWobj.AddModule<TextInputField>();
+                addressField.KeepRatio = true;
+                addressField.Background.Picture = new Texture("assets/textures/text_field.png");
+                addressField.MinAnchor = new Vector2D(0.3, 0.25);
+                addressField.MaxAnchor = new Vector2D(0.7, 0.75);
+
+                addressField.Label.MinAnchor = new Vector2D(0.01, 0.1);
+                addressField.Label.MaxAnchor = new Vector2D(0.99, 0.9);
+                addressField.Label.Color = new Color256(1.0, 1.0, 1.0, 1.0);
+                addressField.Label.AutoSize = true;
+
+
+                /*GameClient client = new GameClient("localhost", 27716);
                 client.OnConnect += (tpcclient) =>
                 Task.Run(async () =>
                 {
                     for (int i = 0; i < 100; i++)
                     {
-                        NetObject.Send(new NetPing(DateTime.UtcNow, default), tpcclient.Client);
+                        NetObject.Send(new NetPing(), tpcclient.Client);
                         await Task.Delay(1000);
                     }
-                    
-                });
+                });*/
             };
+
+            NetPing.OnPingBack += (span) => {
+                Debug.Log($"Ping to the server: {span.TotalMilliseconds:F0} ms");
+            };
+
             
+
 
             //Thread thread = new Thread(async () =>
             //{

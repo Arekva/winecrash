@@ -29,26 +29,12 @@ namespace Winecrash.Server
 
             OnClientDataReceived += (client, data) =>
             {
-                Task.Run(() => {
-                //Debug.Log("something received");
-                if (data is NetMessage msg)
+                Task.Run(() =>
                 {
-                    Debug.Log(client.Client.RemoteEndPoint.ToString() + " sent: " + msg.Message);
-                }
-
-                else if (data is NetPing ping)
-                {
-                    TimeSpan delta = ping.ReceiveTime - ping.SendTime;
-
-                    Debug.Log("client -> server time: " + delta.Milliseconds + " ms");
-
-                    NetObject.Send(ping, client.Client);
-                }
-
-                else
-                {
-                    Debug.Log("wtf has been received? " + data.GetType());
-                }
+                    if (data is NetMessage msg)
+                    {
+                        Debug.Log(client.Client.RemoteEndPoint.ToString() + " sent: " + msg.Message);
+                    }
                 });
             };
 

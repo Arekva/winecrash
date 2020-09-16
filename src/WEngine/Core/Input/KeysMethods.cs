@@ -1,4 +1,8 @@
 ﻿using OpenTK.Input;
+using System;
+using System.Runtime.InteropServices;
+using System.Text;
+using WEngine.Core.Input;
 
 namespace WEngine
 {
@@ -149,5 +153,40 @@ namespace WEngine
         {
             return !k.IsMouse();
         }
+
+        public static bool IsModifier(this Keys k)
+        {
+            return
+                k == Keys.LeftShift || k == Keys.RightShift ||
+                k == Keys.LeftAlt || k == Keys.RightAlt ||
+                k == Keys.LeftControl || k == Keys.RightControl;
+        }
+
+        public static string ToString(this Keys key, KeysModifiers modifiers = KeysModifiers.None)
+        {
+            return GetCharsFromKeys(key, modifiers.HasFlag(KeysModifiers.Shift), modifiers.HasFlag(KeysModifiers.Control) && modifiers.HasFlag(KeysModifiers.Alt));
+        }
+
+        private static string GetCharsFromKeys(Keys keys, bool shift, bool altGr)
+        {
+            var buf = new StringBuilder(256);
+            var keyboardState = new byte[256];
+            if (shift)
+                keyboardState[(int)Keys.Shift] = 0xff;
+            if (altGr)
+            {
+                keyboardState[(int)Keys.Control] = 0xff;
+                keyboardState[(int)Keys.Menu] = 0xff;
+            }
+            ToUnicode((uint)keys, 0, keyboardState, buf, 256, 0);
+            return buf.ToString();
+        }
+
+        [DllImport("user32.dll")]
+        private static extern int ToUnicode(uint virtualKeyCode, uint scanCode,
+            byte[] keyboardState,
+            [Out, MarshalAs(UnmanagedType.LPWStr, SizeConst = 64)]
+            StringBuilder receivingBuffer,
+            int bufferSize, uint flags);
     }
 }

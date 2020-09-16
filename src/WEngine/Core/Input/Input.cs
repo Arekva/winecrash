@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using WEngine.Core.Input;
 
 namespace WEngine
 {
@@ -191,7 +192,7 @@ namespace WEngine
             }
         }
 
-        private static Keys[] GetAllKeys(KeyStates states)
+        public static Keys[] GetAllKeys(KeyStates states)
         {
             List<Keys> keys = new List<Keys>(RegisteredKeyStates.Count);
 
@@ -204,6 +205,32 @@ namespace WEngine
             }
 
             return keys.ToArray();
+        }
+
+        public static KeysModifiers GetModifiers()
+        {
+            KeysModifiers m = KeysModifiers.None;
+
+            KeyStates shiftState = GetKeyState(Keys.LeftShift, RegisteredKeyStates);
+            if(shiftState == KeyStates.Released | shiftState == KeyStates.Releasing)
+                shiftState = GetKeyState(Keys.RightShift, RegisteredKeyStates);
+            if (shiftState == KeyStates.Pressed | shiftState == KeyStates.Pressing)
+                m |= KeysModifiers.Shift;
+
+
+            KeyStates altState = GetKeyState(Keys.LeftAlt, RegisteredKeyStates);
+            if (altState == KeyStates.Released | altState == KeyStates.Releasing)
+                altState = GetKeyState(Keys.RightAlt, RegisteredKeyStates);
+            if (altState == KeyStates.Pressed | altState == KeyStates.Pressing)
+                m |= KeysModifiers.Alt;
+
+            KeyStates ctrlState = GetKeyState(Keys.LeftControl, RegisteredKeyStates);
+            if (ctrlState == KeyStates.Released | ctrlState == KeyStates.Releasing)
+                ctrlState = GetKeyState(Keys.RightControl, RegisteredKeyStates);
+            if (ctrlState == KeyStates.Pressed | ctrlState == KeyStates.Pressing)
+                m |= KeysModifiers.Control;
+
+            return m;
         }
 
         private static KeyStates GetKeyState(Keys key, Dictionary<Keys, KeyStates> dictionary)

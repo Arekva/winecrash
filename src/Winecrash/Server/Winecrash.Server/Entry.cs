@@ -18,26 +18,22 @@ namespace Winecrash.Server
         {
             CreateDebugWindow();
 
-            Folders.UserData = "Data/";
+            //Folders.UserData = "Data/";
 
             //new Save(Save.DefaultName, false);
 
-            ConsoleUtils.PrintSaves();
+            //ConsoleUtils.PrintSaves();
 
-            Engine.Run(false);
+            //Engine.Run(false);
 
             server = new GameServer(IPAddress.Any, 27716);
             server.Run();
 
-            Engine.OnStop += () => Debug.Log("Engine stopped.");
+            //Engine.OnStop += () => Debug.Log("Engine stopped.");
 
 
-            while (true)
-            {
-                Console.ReadKey();
-            }
-
-            Engine.Stop();
+            Console.ReadKey();
+            //Engine.Stop();
         }
 
         private static void CreateDebugWindow()

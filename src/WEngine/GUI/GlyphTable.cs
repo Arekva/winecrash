@@ -58,7 +58,16 @@ namespace WEngine.GUI
             for (int i = 0; i < text.Length; i++)
             {
                 if (text[i] == ' ' || text[i] == '\r' || text[i] == '\n') continue;
-                meshes[i] = CharactersMeshes[CharIndices[text[i]]];
+
+                int idx = CharIndices['?'];
+
+                if(CharIndices.TryGetValue(text[i], out int found))
+                {
+                    idx = found;
+                }
+
+                meshes[i] = CharactersMeshes[idx];
+
             }
 
             return meshes;

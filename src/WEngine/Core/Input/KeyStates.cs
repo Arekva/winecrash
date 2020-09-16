@@ -4,7 +4,7 @@
     /// All the possible states of a key.
     /// </summary>
     [System.Flags]
-    internal enum KeyStates : byte
+    public enum KeyStates : byte
     {
         /// <summary>
         /// If no state registered. Only should happen on <see cref="Input.RegisteredKeyStates"/> instatiation.
