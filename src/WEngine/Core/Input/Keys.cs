@@ -151,9 +151,10 @@
         Question = 191, //Oem2 = 191,
         Tilde = 192, //Oem3 = 192,
         OpenBrackets = 219, //Oem4 = 219,
-        //Pipe = 220, //Oem5 = 220,
+        Pipe = 220, //Oem5 = 220,
         CloseBrackets = 221, //Oem6 = 221,
         Quotes = 222, //Oem7 = 222,
+        Slash = 223,
         //Oem8 = 223,
         Backslash = 226, //Oem102 = 226,
 

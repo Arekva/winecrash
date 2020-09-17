@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using System.Windows.Forms;
 using WEngine.Core.Input;
 
 namespace WEngine
@@ -216,6 +217,18 @@ namespace WEngine
                 shiftState = GetKeyState(Keys.RightShift, RegisteredKeyStates);
             if (shiftState == KeyStates.Pressed | shiftState == KeyStates.Pressing)
                 m |= KeysModifiers.Shift;
+
+            if (KeysMethods.CapsLocked())
+            {
+                if(m.HasFlag(KeysModifiers.Shift))
+                {
+                    m &= ~KeysModifiers.Shift;
+                }
+                else
+                {
+                    m |= KeysModifiers.Shift;
+                }
+            }
 
 
             KeyStates altState = GetKeyState(Keys.LeftAlt, RegisteredKeyStates);

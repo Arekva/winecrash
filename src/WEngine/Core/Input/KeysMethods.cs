@@ -182,6 +182,15 @@ namespace WEngine
             return buf.ToString();
         }
 
+        public static bool CapsLocked()
+        {
+            return (0X1 & GetKeyState((int)Keys.CapsLock)) == 1;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern short GetKeyState(int nVirtKey);
+
+
         [DllImport("user32.dll")]
         private static extern int ToUnicode(uint virtualKeyCode, uint scanCode,
             byte[] keyboardState,

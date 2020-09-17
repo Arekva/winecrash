@@ -27,6 +27,8 @@ namespace WEngine.GUI
         public string EmptyText { get; set; } = "Enter text...";
         public string Text { get; set; } = "";
 
+        public bool AllowNewLine { get; set; } = true;
+
         public int MaxChars { get; set; } = int.MaxValue;
 
         public Color256 TextColor { get; set; } = Color256.White;
@@ -85,9 +87,22 @@ namespace WEngine.GUI
                     {
                         if (keys[i] == Keys.Escape || keys[i] == Keys.Enter)
                         {
-                            this.Editing = false;
-                            this.OnLeaveEdit?.Invoke();
-                            break;
+                            bool stop = true;
+                            if (AllowNewLine)
+                            {
+                                if(modifiers.HasFlag(KeysModifiers.Shift))
+                                {
+                                    stop = false;
+                                    Text += "\n";
+                                    textEdited = true;
+                                }
+                            }
+                            if (stop)
+                            {
+                                this.Editing = false;
+                                this.OnLeaveEdit?.Invoke();
+                                break;
+                            }
                         }
                         else if (keys[i] == Keys.Back)
                         {
@@ -99,11 +114,14 @@ namespace WEngine.GUI
                             Text += " ";
                             textEdited = true;
                         }
+                        else if (keys[i] == Keys.Tab)
+                        {
+                            Text += "    ";
+                            textEdited = true;
+                        }
                         else
                         {
                             textEdited = true;
-                            //char c = keys[i].ToChar(modifiers);
-                            //MessageBox.Show(c.ToString().ToLower() + " | " + keys[i].ToChar().ToString().ToUpper());
                             Text += keys[i].ToString(modifiers);
                         }
                     }
