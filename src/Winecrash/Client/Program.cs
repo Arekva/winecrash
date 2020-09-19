@@ -35,7 +35,7 @@ namespace Client
                 LbDebug = debugLabel.AddModule<Label>();
                 LbDebug.Aligns = TextAligns.Up | TextAligns.Left;
                 LbDebug.FontSize = 42;
-                LbDebug.Text = "DEBUG:\n";
+                LbDebug.Text = "\\/ DEBUG \\/";
 
                 WObject addressInputWobj = new WObject("Server Address Input") { Parent = Canvas.Main.WObject };
                 TextInputField addressField = addressInputWobj.AddModule<TextInputField>();

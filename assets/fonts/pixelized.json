@@ -480,30 +480,237 @@
             "Width" : 53,
             "Height" : 123
         },
-
-
-
+        {
+            "Character": "É",
+            "X" : 547,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
         {
             "Character": "é",
-            "X" : 477,
-            "Y" : 123,
+            "X" : 600,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "È",
+            "X" : 653,
+            "Y" : 492,
             "Width" : 53,
             "Height" : 123
         },
         {
             "Character": "è",
-            "X" : 477,
-            "Y" : 123,
+            "X" : 706,
+            "Y" : 492,
             "Width" : 53,
             "Height" : 123
         },
-
-
-
-
-
-
-        
+        {
+            "Character": "Ê",
+            "X" : 759,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ê",
+            "X" : 812,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ë",
+            "X" : 865,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ë",
+            "X" : 918,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ñ",
+            "X" : 971,
+            "Y" : 492,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ñ",
+            "X" : 0,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ó",
+            "X" : 53,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ó",
+            "X" : 106,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ò",
+            "X" : 159,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ò",
+            "X" : 212,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ô",
+            "X" : 265,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ô",
+            "X" : 318,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ö",
+            "X" : 371,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ö",
+            "X" : 424,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Õ",
+            "X" : 477,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "õ",
+            "X" : 530,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ø",
+            "X" : 583,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ø",
+            "X" : 636,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Œ",
+            "X" : 689,
+            "Y" : 615,
+            "Width" : 88,
+            "Height" : 123
+        },
+        {
+            "Character": "œ",
+            "X" : 777,
+            "Y" : 615,
+            "Width" : 88,
+            "Height" : 123
+        },
+        {
+            "Character": "ß",
+            "X" : 865,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ú",
+            "X" : 918,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ú",
+            "X" : 971,
+            "Y" : 615,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ù",
+            "X" : 0,
+            "Y" : 738,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ù",
+            "X" : 53,
+            "Y" : 738,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Û",
+            "X" : 106,
+            "Y" : 738,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "û",
+            "X" : 159,
+            "Y" : 738,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ü",
+            "X" : 212,
+            "Y" : 738,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ü",
+            "X" : 265,
+            "Y" : 738,
+            "Width" : 53,
+            "Height" : 123
+        },  
         {
             "Character": "0",
             "X" : 319,
@@ -574,11 +781,55 @@
             "Width" : 53,
             "Height" : 123
         },
-
-
-
-
-
+        {
+            "Character": "$",
+            "X" : 848,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "¢",
+            "X" : 901,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "€",
+            "X" : 945,
+            "Y" : 737,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "£",
+            "X" : 0,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "¥",
+            "X" : 53,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "¤",
+            "X" : 53,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "+",
+            "X" : 159,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
         {
             "Character": "-",
             "X" : 212,
@@ -586,9 +837,13 @@
             "Width" : 53,
             "Height" : 123
         },
-
-
-
+        {
+            "Character": "*",
+            "X" : 265,
+            "Y" : 861,
+            "Width" : 44,
+            "Height" : 123
+        },
         {
             "Character": "/",
             "X" : 309,
@@ -596,8 +851,20 @@
             "Width" : 53,
             "Height" : 123
         },
-
-
+        {
+            "Character": "÷",
+            "X" : 362,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "=",
+            "X" : 415,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
         {
             "Character": "%",
             "X" : 468,
@@ -605,7 +872,20 @@
             "Width" : 53,
             "Height" : 123
         },
-
+        {
+            "Character": "‰",
+            "X" : 521,
+            "Y" : 861,
+            "Width" : 68,
+            "Height" : 123
+        },
+        {
+            "Character": "\"",
+            "X" : 589,
+            "Y" : 861,
+            "Width" : 36,
+            "Height" : 123
+        },
         {
             "Character": "'",
             "X" : 625,
@@ -613,8 +893,34 @@
             "Width" : 18,
             "Height" : 123
         },
-
-
+        {
+            "Character": "#",
+            "X" : 643,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "@",
+            "X" : 696,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "&",
+            "X" : 758,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "_",
+            "X" : 811,
+            "Y" : 861,
+            "Width" : 53,
+            "Height" : 123
+        },
         {
             "Character": "(",
             "X" : 864,
@@ -629,8 +935,13 @@
             "Width" : 44,
             "Height" : 123
         },
-
-
+        {
+            "Character": ",",
+            "X" : 952,
+            "Y" : 861,
+            "Width" : 18,
+            "Height" : 123
+        },
         {
             "Character": ".",
             "X" : 970,
@@ -638,7 +949,6 @@
             "Width" : 18,
             "Height" : 123
         },
-
         {
             "Character": ";",
             "X" : 988,
@@ -646,8 +956,6 @@
             "Width" : 18,
             "Height" : 123
         },
-
-
         {
             "Character": ":",
             "X" : 1006,
@@ -655,31 +963,27 @@
             "Width" : 18,
             "Height" : 123
         },
-
         {
-            "Character": "?",
-            "X" : 52,
+            "Character": "¿",
+            "X" : 0,
             "Y" : 984,
             "Width" : 53,
             "Height" : 123
         },
-
         {
-            "Character": "<",
-            "X" : 248,
+            "Character": "?",
+            "X" : 53,
             "Y" : 984,
-            "Width" : 44,
+            "Width" : 53,
             "Height" : 123
         },
-
         {
-            "Character": ">",
-            "X" : 292,
+            "Character": "¡",
+            "X" : 106,
             "Y" : 984,
-            "Width" : 44,
+            "Width" : 18,
             "Height" : 123
         },
-
         {
             "Character": "!",
             "X" : 124,
@@ -687,16 +991,124 @@
             "Width" : 18,
             "Height" : 123
         },
-
-
-
+        {
+            "Character": "|",
+            "X" : 142,
+            "Y" : 984,
+            "Width" : 18,
+            "Height" : 123
+        },
+        {
+            "Character": "{",
+            "X" : 160,
+            "Y" : 984,
+            "Width" : 44,
+            "Height" : 123
+        },
+        {
+            "Character": "}",
+            "X" : 204,
+            "Y" : 984,
+            "Width" : 44,
+            "Height" : 123
+        },
+        {
+            "Character": "<",
+            "X" : 248,
+            "Y" : 984,
+            "Width" : 44,
+            "Height" : 123
+        },
+        {
+            "Character": ">",
+            "X" : 292,
+            "Y" : 984,
+            "Width" : 44,
+            "Height" : 123
+        },
+        {
+            "Character": "[",
+            "X" : 336,
+            "Y" : 984,
+            "Width" : 35,
+            "Height" : 123
+        },
+        {
+            "Character": "]",
+            "X" : 371,
+            "Y" : 984,
+            "Width" : 36,
+            "Height" : 123
+        },
+        {
+            "Character": "§",
+            "X" : 407,
+            "Y" : 984,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "¶",
+            "X" : 460,
+            "Y" : 984,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "µ",
+            "X" : 513,
+            "Y" : 984,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "`",
+            "X" : 566,
+            "Y" : 984,
+            "Width" : 27,
+            "Height" : 123
+        },
+        {
+            "Character": "^",
+            "X" : 593,
+            "Y" : 984,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "~",
+            "X" : 646,
+            "Y" : 984,
+            "Width" : 62,
+            "Height" : 123
+        },
         {
             "Character": "©",
             "X" : 708,
             "Y" : 984,
             "Width" : 70,
             "Height" : 123
+        },
+        {
+            "Character": "®",
+            "X" : 778,
+            "Y" : 984,
+            "Width" : 70,
+            "Height" : 123
+        },
+        {
+            "Character": "™",
+            "X" : 848,
+            "Y" : 984,
+            "Width" : 70,
+            "Height" : 123
+        },
+        {
+            "Character": "\\",
+            "X" : 918,
+            "Y" : 984,
+            "Width" : 53,
+            "Height" : 123
         }
-
     ]
 }

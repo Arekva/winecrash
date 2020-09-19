@@ -98,7 +98,7 @@ namespace WEngine.GUI
 
         private Dictionary<char, int> CharIndices = null;
 
-        public string Set { get; private set; } =
+        public static string Set { get; private set; } =
             "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz" + // Standard Letters
             "ÁáÀàÂâÄäÃãÅåÆæ" +      //Accents A
             "Çç" +                  //Accents C
@@ -112,7 +112,7 @@ namespace WEngine.GUI
             "+-*/÷=%‰" +            //Math
             "\"\'#@&_()" +          //Signes
             ",.;:¿?¡!" +            //Ponctuation
-            "\\|{}<>[]§¶µ`^~©®™";   //Autres
+            "|{}<>[]§¶µ`^~©®™\\";   //Autres
         public GlyphTable(Texture map, Glyph[] table) 
         {
             this.Map = map;
