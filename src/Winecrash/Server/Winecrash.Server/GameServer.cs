@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WEngine;
 using WEngine.Networking;
+using Winecrash.Net;
 
 namespace Winecrash.Server
 {
@@ -19,7 +22,32 @@ namespace Winecrash.Server
 
             OnClientConnect += (client) =>
             {
-                Debug.LogWarning("Client connected from " + client.Client.RemoteEndPoint.ToString());
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        Timer timer = new Timer((state) =>
+                        {
+                            throw new Exception();
+                        }, null, 0, 500);
+
+                        NetObject netobj = GetFirstObjectAsync(client);
+                        if (netobj is NetPlayer player)
+                        {
+                            Debug.Log($"{player.Nickname} connected ({client.Client.RemoteEndPoint})");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"{client.Client.RemoteEndPoint} tried to connect but sent wrong infos (Execepted {typeof(NetPlayer)})");
+                            DisconnectClient(client, $"Wrong connexion info provided (Execepted {typeof(NetPlayer)}).");
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.LogWarning($"{client.Client.RemoteEndPoint} tried to connect but sent no infos (Execepted {typeof(NetPlayer)})");
+                        DisconnectClient(client, $"Wrong connexion info provided (Execepted {typeof(NetPlayer)}).");
+                    }
+                });
             };
 
             OnClientDisconnect += (client, reason) =>
@@ -40,7 +68,10 @@ namespace Winecrash.Server
 
             Debug.Log("Winecrash " + Game.Version + " - Server online.");
         }
-
+        private async Task<NetObject> GetFirstObjectAsync(TcpClient client)
+        {
+            return await base.ReceiveDataAsync(client.Client);
+        }
         public override void Tick()
         {
             NetObject[] objects;

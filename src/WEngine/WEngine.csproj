@@ -101,6 +101,7 @@
     <Compile Include="Networking\ISendible.cs" />
     <Compile Include="Networking\NetData.cs" />
     <Compile Include="Networking\NetObject.cs" />
+    <Compile Include="Networking\NetObjects\NetKick.cs" />
     <Compile Include="Networking\NetObjects\NetPing.cs" />
     <Compile Include="Render\Graphics.cs" />
     <Compile Include="Core\WRandom.cs" />

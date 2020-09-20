@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+
 using WEngine;
 using WEngine.GUI;
 using WEngine.Networking;
@@ -18,6 +18,8 @@ namespace Client
         private static ManualResetEvent End = new ManualResetEvent(false);
 
         private static Label LbDebug;
+
+        private static GameClient client;
 
         static void Main(string[] args)
         {
@@ -37,18 +39,11 @@ namespace Client
                 LbDebug.FontSize = 42;
                 LbDebug.Text = "\\/ DEBUG \\/";
 
-                WObject addressInputWobj = new WObject("Server Address Input") { Parent = Canvas.Main.WObject };
-                TextInputField addressField = addressInputWobj.AddModule<TextInputField>();
-                addressField.KeepRatio = true;
-                addressField.Background.Picture = new Texture("assets/textures/text_field.png");
-                addressField.MinAnchor = new Vector2D(0.3, 0.25);
-                addressField.MaxAnchor = new Vector2D(0.7, 0.75);
-
-                addressField.Label.MinAnchor = new Vector2D(0.01, 0.1);
-                addressField.Label.MaxAnchor = new Vector2D(0.99, 0.9);
-                addressField.Label.Color = new Color256(1.0, 1.0, 1.0, 1.0);
-                addressField.Label.AutoSize = true;
-
+                WObject connectorWrapper = new WObject("Connector") { Parent = Canvas.Main.WObject };
+                Image wrapperPanel = connectorWrapper.AddModule<Image>();
+                wrapperPanel.MinAnchor = new Vector2D(0.6, 0.6);
+                wrapperPanel.Color = new Color256();
+                CreateDebugConnector(connectorWrapper);
 
                 /*GameClient client = new GameClient("localhost", 27716);
                 client.OnConnect += (tpcclient) =>
@@ -96,6 +91,79 @@ namespace Client
                 //thread.Abort();
                 return;
             }).Wait();
+        }
+
+        
+
+        private static void CreateDebugConnector(WObject parent)
+        {
+            WObject connectorPanelWobj = new WObject("Server Connector") { Parent = parent };
+            Image connectorPanel = connectorPanelWobj.AddModule<Image>();
+            connectorPanel.Color = Color256.Gray;
+
+            WObject header = new WObject("header") { Parent = connectorPanelWobj };
+            Label lbHeader = header.AddModule<Label>();
+            lbHeader.Text = "(Debug) Connect to server";
+            lbHeader.Aligns = TextAligns.Up | TextAligns.Vertical;
+            lbHeader.AutoSize = true;
+            lbHeader.MinAnchor = new Vector2D(0, 0.9);
+
+            WObject addressInputWobj = new WObject("Server Address Input") { Parent = connectorPanelWobj };
+            TextInputField addressField = addressInputWobj.AddModule<TextInputField>();
+            addressField.KeepRatio = true;
+            addressField.Background.Picture = Texture.GetOrCreate("assets/textures/text_field.png");
+            addressField.MinAnchor = new Vector2D(0.025, 0.5);
+            addressField.MaxAnchor = new Vector2D(0.675, 0.75);
+            addressField.EmptyText = "localhost";
+            addressField.Label.MinAnchor = new Vector2D(0.02, 0.1);
+            addressField.Label.MaxAnchor = new Vector2D(0.98, 0.9);
+            addressField.Label.Color = new Color256(1.0, 1.0, 1.0, 1.0);
+            addressField.Label.AutoSize = true;
+
+            WObject addressPortWobj = new WObject("Server Port Input") { Parent = connectorPanelWobj };
+            TextInputField portField = addressPortWobj.AddModule<TextInputField>();
+            portField.KeepRatio = true;
+            portField.Background.Picture = Texture.GetOrCreate("assets/textures/short_text_field.png");
+            portField.MinAnchor = new Vector2D(0.685, 0.5);
+            portField.MaxAnchor = new Vector2D(0.975, 0.75);
+            portField.EmptyText = "27716";
+            portField.Label.MinAnchor = new Vector2D(0.02, 0.1);
+            portField.Label.MaxAnchor = new Vector2D(0.98, 0.9);
+            portField.Label.Color = new Color256(1.0, 1.0, 1.0, 1.0);
+            portField.Label.AutoSize = true;
+
+            WObject connectButtonWobj = new WObject("connect button") { Parent = connectorPanelWobj };
+            Button btConnect = connectButtonWobj.AddModule<Button>();
+            btConnect.KeepRatio = false;
+            btConnect.MinAnchor = new Vector2D(0.0, 0.0);
+            btConnect.MaxAnchor = new Vector2D(1.0, 0.45);
+            btConnect.Label.Text = "Connect";
+            btConnect.Label.Aligns = TextAligns.Middle;
+            btConnect.Label.AutoSize = true;
+            btConnect.Label.Color = Color256.White;
+            btConnect.IdleColor = Color256.LightGray;
+            btConnect.Label.MinAnchor = new Vector2D(0.25, 0.25);
+            btConnect.Label.MaxAnchor = new Vector2D(0.75, 0.75);
+
+            btConnect.OnClick += () => 
+            {
+                Debug.Log("Connecting..");
+
+                try
+                {
+                    client = new GameClient(addressField.Text ?? addressField.EmptyText, int.Parse(string.IsNullOrEmpty(portField.Text) ? portField.EmptyText : portField.Text));
+                    client.OnConnected += (server) =>
+                    {
+                        Debug.Log("Connected !");
+                    };
+                }
+                catch(Exception e)
+                {
+                    Debug.LogError(e.Message);
+
+                    TimeSpan span = new TimeSpan();
+                }
+            };
         }
 
         private static void CreateDebugWindow()

@@ -18,6 +18,8 @@ namespace WEngine.Networking
 
     public delegate void ServerConnectDelegate(TcpClient client);
 
+    public delegate void ServerDisconnectDelegate(string reason);
+
 
     public abstract class BaseClient : BaseObject
     {
@@ -25,7 +27,8 @@ namespace WEngine.Networking
         /// Triggered when data from a client is received.
         /// </summary>
         public event ServerDataDelegate OnServerDataReceived;
-        public event ServerConnectDelegate OnConnect;
+        public event ServerConnectDelegate OnConnected;
+        public event ServerDisconnectDelegate OnDisconnected;
         /// <summary>
         /// All the received untreated data of the server.
         /// </summary>
@@ -39,7 +42,13 @@ namespace WEngine.Networking
 
         public const int DefaultPort = 27716;
 
-        public bool Connected { get; private set; } = false;
+        public bool Connected
+        {
+            get
+            {
+                return Client != null && Client.Connected;
+            }
+        }
 
         public Thread ClientThread { get; private set; } = null;
 
@@ -49,8 +58,7 @@ namespace WEngine.Networking
             {
                 Client = new TcpClient(host, port);
                 LoopListeningAsync();
-                Connected = true;
-                OnConnect?.Invoke(Client);
+                OnConnected?.Invoke(Client);
             });
             ClientThread.Start();
             Engine.OnStop += () => ClientThread.Abort();
@@ -71,14 +79,32 @@ namespace WEngine.Networking
 
                     if (this.Connected)
                     {
-                        lock (PendingDataLocker)
+                        if (obj is NetKick kick)
                         {
-                            OnServerDataReceived?.Invoke(obj);
-                            PendingData.Add(obj);
+                            this.OnDisconnected(kick.Reason);
+                            Disconnect();
+                            return;
+                        }
+                        else
+                        {
+                            lock (PendingDataLocker)
+                            {
+                                OnServerDataReceived?.Invoke(obj);
+                                PendingData.Add(obj);
+                            }
                         }
                     }
                 }
+
+                Disconnect();
             });
+        }
+
+        public virtual void Disconnect()
+        {
+            Debug.Log("Disconnected");
+            this.Client.Close();
+            this.Client.Dispose();
         }
 
         /// <summary>

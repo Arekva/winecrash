@@ -346,6 +346,12 @@ namespace WEngine.Networking
             }
         }
 
+        protected virtual void DisconnectClient(TcpClient client, string reason)
+        {
+            NetObject.Send(new NetKick(reason), client.Client);
+            //client.Close();
+            client.Dispose();
+        }
 
         /// <summary>
         /// Disconnects all TCP Clients within <see cref="Clients"/>.
@@ -358,8 +364,7 @@ namespace WEngine.Networking
                 {
                     foreach (TcpClient client in this.Clients)
                     {
-                        client.Close();
-                        client.Dispose();
+                        DisconnectClient(client, "Server stopped");
                     }
 
                     Clients = null;
