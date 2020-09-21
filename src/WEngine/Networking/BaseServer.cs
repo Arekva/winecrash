@@ -69,7 +69,7 @@ namespace WEngine.Networking
         /// <summary>
         /// All the received untreated data of the server.
         /// </summary>
-        protected List<NetObject> PendingData { get; private set; } = new List<NetObject>();
+        protected List<PendingData> PendingData { get; private set; } = new List<PendingData>();
         /// <summary>
         /// The thread locker object for the <see cref="PendingData"/> list.
         /// </summary>
@@ -133,7 +133,7 @@ namespace WEngine.Networking
                         lock (PendingDataLocker)
                         {
                             OnClientDataReceived?.Invoke(client, obj);
-                            PendingData.Add(obj);
+                            PendingData.Add(new PendingData(client, obj));
                         }
                     }
                 }
@@ -222,9 +222,20 @@ namespace WEngine.Networking
                 TickLoopTimer.Reset();
                 if (waitTime > 0.0D)
                 {
+                    Time.DeltaTime = waitTime;
                     Thread.Sleep((int)(waitTime * 1000.0D));
                 }
+                else
+                {
+                    Time.DeltaTime = 1.0D / (double)TPS;
+                }
             }
+        }
+
+
+        protected async Task<NetObject> ReceiveDataAsync(Socket client)
+        {
+            return await Task.Run(() => ReceiveData(client)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -232,61 +243,53 @@ namespace WEngine.Networking
         /// </summary>
         /// <param name="client">The socket to listen to.</param>
         /// <returns>The received <see cref="NetObject"/></returns>
-        protected async Task<NetObject> ReceiveDataAsync(Socket client)
+        protected NetObject ReceiveData(Socket client)
         {
-            NetObject netobj = null;
+            byte[] sizeInfo = new byte[sizeof(int)];
 
-            await Task.Run(() =>
+            int totalread = 0, currentread = 0;
+            currentread = totalread = client.Receive(sizeInfo);
+
+            while (totalread < sizeInfo.Length && currentread > 0)
             {
-                byte[] sizeInfo = new byte[sizeof(int)];
+                currentread = client.Receive(sizeInfo,
+                    totalread, //offset into the buffer
+                    sizeInfo.Length - totalread, //max amount to read
+                    SocketFlags.None);
 
-                int totalread = 0, currentread = 0;
-                currentread = totalread = client.Receive(sizeInfo);
+                totalread += currentread;
+            }
 
-                while (totalread < sizeInfo.Length && currentread > 0)
-                {
-                    currentread = client.Receive(sizeInfo,
-                        totalread, //offset into the buffer
-                        sizeInfo.Length - totalread, //max amount to read
-                        SocketFlags.None);
+            int messageSize = 0;
 
-                    totalread += currentread;
-                }
+            //could optionally call BitConverter.ToInt32(sizeinfo, 0);
+            messageSize |= sizeInfo[0];
+            messageSize |= (((int)sizeInfo[1]) << 8);
+            messageSize |= (((int)sizeInfo[2]) << 16);
+            messageSize |= (((int)sizeInfo[3]) << 24);
 
-                int messageSize = 0;
+            byte[] data = new byte[messageSize];
 
-                //could optionally call BitConverter.ToInt32(sizeinfo, 0);
-                messageSize |= sizeInfo[0];
-                messageSize |= (((int)sizeInfo[1]) << 8);
-                messageSize |= (((int)sizeInfo[2]) << 16);
-                messageSize |= (((int)sizeInfo[3]) << 24);
+            //read the first chunk of data
+            totalread = 0;
+            currentread = totalread = client.Receive(data,
+                totalread, //offset into the buffer
+                data.Length - totalread, //max amount to read
+                SocketFlags.None);
 
-                byte[] data = new byte[messageSize];
-
-                //read the first chunk of data
-                totalread = 0;
-                currentread = totalread = client.Receive(data,
+            //if we didn't get the entire message, read some more until we do
+            while (totalread < messageSize && currentread > 0)
+            {
+                currentread = client.Receive(data,
                     totalread, //offset into the buffer
                     data.Length - totalread, //max amount to read
                     SocketFlags.None);
+                totalread += currentread;
+            }
 
-                //if we didn't get the entire message, read some more until we do
-                while (totalread < messageSize && currentread > 0)
-                {
-                    currentread = client.Receive(data,
-                        totalread, //offset into the buffer
-                        data.Length - totalread, //max amount to read
-                        SocketFlags.None);
-                    totalread += currentread;
-                }
+            string rawdata = Encoding.Unicode.GetString(data);
 
-                string rawdata = Encoding.Unicode.GetString(data);
-
-                netobj = NetObject.Receive(rawdata, client);
-
-            }).ConfigureAwait(false);
-
-            return netobj;
+            return NetObject.Receive(rawdata, client);
         }
 
         /// <summary>
@@ -327,7 +330,7 @@ namespace WEngine.Networking
                 {
                     for (int i = 0; i < clients.Length; i++)
                     {
-                        if (!clients[i].Client.Connected)
+                        if (clients[i].Client != null && !clients[i].Client.Connected)
                         {
                             OnClientDisconnect?.Invoke(clients[i], DisconnectReason.Timeout);
 
@@ -382,9 +385,9 @@ namespace WEngine.Networking
             {
                 if(PendingData != null)
                 {
-                    foreach(NetObject obj in PendingData)
+                    foreach(PendingData data in PendingData)
                     {
-                        obj.Delete();
+                        data.Delete();
                     }
 
                     PendingData = null;

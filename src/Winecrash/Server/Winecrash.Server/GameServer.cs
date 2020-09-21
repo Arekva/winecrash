@@ -16,38 +16,35 @@ namespace Winecrash.Server
     {
         public GameServer(IPAddress listenIp, int port) : base(listenIp, port) { }
 
+        protected class RequiredAuth
+        {
+            public TcpClient Client { get; set; }
+            public double CooldownTimeout { get; set; }
+
+            public bool Deleted { get; private set; } = false;
+            
+            public void Delete()
+            {
+                if (Deleted) return;
+
+                Client = null;
+                Deleted = true;
+            }
+        }
+
+        protected List<RequiredAuth> AuthsRequired = new List<RequiredAuth>();
+        protected object AuthLocker = new object();
+
+        public double AuthTimeout = 0.5D;
+
         public override void Run()
         {
             base.Run();
 
             OnClientConnect += (client) =>
             {
-                Task.Run(async () =>
-                {
-                    try
-                    {
-                        Timer timer = new Timer((state) =>
-                        {
-                            throw new Exception();
-                        }, null, 0, 500);
-
-                        NetObject netobj = GetFirstObjectAsync(client);
-                        if (netobj is NetPlayer player)
-                        {
-                            Debug.Log($"{player.Nickname} connected ({client.Client.RemoteEndPoint})");
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"{client.Client.RemoteEndPoint} tried to connect but sent wrong infos (Execepted {typeof(NetPlayer)})");
-                            DisconnectClient(client, $"Wrong connexion info provided (Execepted {typeof(NetPlayer)}).");
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                        Debug.LogWarning($"{client.Client.RemoteEndPoint} tried to connect but sent no infos (Execepted {typeof(NetPlayer)})");
-                        DisconnectClient(client, $"Wrong connexion info provided (Execepted {typeof(NetPlayer)}).");
-                    }
-                });
+                lock (AuthLocker)
+                    AuthsRequired.Add(new RequiredAuth() { Client = client, CooldownTimeout = AuthTimeout });
             };
 
             OnClientDisconnect += (client, reason) =>
@@ -68,22 +65,54 @@ namespace Winecrash.Server
 
             Debug.Log("Winecrash " + Game.Version + " - Server online.");
         }
-        private async Task<NetObject> GetFirstObjectAsync(TcpClient client)
-        {
-            return await base.ReceiveDataAsync(client.Client);
-        }
+
         public override void Tick()
         {
-            NetObject[] objects;
+            PendingData[] data;
             lock (this.PendingDataLocker)
             {
-                objects = this.PendingData.ToArray();
+                data = this.PendingData.ToArray();
                 this.PendingData.Clear();
             }
 
-            for (int i = 0; i < objects.Length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
-                objects[i].Delete();
+                if (data[i].Deleted) continue;
+
+                if(data[i].NObject is NetPlayer player)
+                {
+                    RequiredAuth auth = null;
+                    lock (AuthLocker)
+                        auth = AuthsRequired.FirstOrDefault(a => a.Client == data[i].Client);
+
+                    if(auth != null)
+                    {
+                        Debug.LogWarning(player.Nickname + " joined the \"game\"");
+                        lock (AuthLocker)
+                            AuthsRequired.Remove(auth);
+                        auth.Delete();
+                    }
+                }
+
+                data[i].Delete();
+            }
+
+            RequiredAuth[] rauths = null;
+            lock(AuthLocker)
+                rauths = AuthsRequired.ToArray();
+
+            for(int i = 0; i < rauths.Length; i++)
+            {
+                rauths[i].CooldownTimeout -= Time.DeltaTime;
+                if (rauths[i].CooldownTimeout < 0.0)
+                {
+                    Debug.LogWarning("Client " + rauths[i].Client.Client.RemoteEndPoint + " couldn't authentify and has been kicked.");
+                    DisconnectClient(rauths[i].Client, "Failed to authentify to the server");
+                    
+                    lock (AuthLocker)
+                        AuthsRequired.Remove(rauths[i]);
+                    rauths[i].Delete();
+                }
             }
 
             //Debug.Log("NetObjects received within this tick: " + objects.Length);

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using WEngine;
 using WEngine.GUI;
 using WEngine.Networking;
+using Winecrash.Net;
 using Label = WEngine.GUI.Label;
 
 namespace Client
@@ -147,13 +148,14 @@ namespace Client
 
             btConnect.OnClick += () => 
             {
-                Debug.Log("Connecting..");
+                Debug.Log("Connecting to server " + (addressField.Text ?? addressField.EmptyText) + ":" + (string.IsNullOrEmpty(portField.Text) ? portField.EmptyText : portField.Text));
 
                 try
                 {
                     client = new GameClient(addressField.Text ?? addressField.EmptyText, int.Parse(string.IsNullOrEmpty(portField.Text) ? portField.EmptyText : portField.Text));
                     client.OnConnected += (server) =>
                     {
+                        NetObject.Send(new NetPlayer("Arthur"), server.Client);
                         Debug.Log("Connected !");
                     };
                 }

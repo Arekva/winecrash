@@ -103,6 +103,7 @@
     <Compile Include="Networking\NetObject.cs" />
     <Compile Include="Networking\NetObjects\NetKick.cs" />
     <Compile Include="Networking\NetObjects\NetPing.cs" />
+    <Compile Include="Networking\PendingData.cs" />
     <Compile Include="Render\Graphics.cs" />
     <Compile Include="Core\WRandom.cs" />
     <Compile Include="GUI\Anchor.cs" />
