@@ -126,15 +126,23 @@ namespace WEngine.Networking
             {
                 while (this.Running)
                 {
-                    NetObject obj = await ReceiveDataAsync(client.Client);
-
-                    if (this.Running)
+                    try
                     {
-                        lock (PendingDataLocker)
+                        NetObject obj = await ReceiveDataAsync(client.Client);
+
+
+                        if (client != null && this.Running)
                         {
-                            OnClientDataReceived?.Invoke(client, obj);
-                            PendingData.Add(new PendingData(client, obj));
+                            lock (PendingDataLocker)
+                            {
+                                OnClientDataReceived?.Invoke(client, obj);
+                                PendingData.Add(new PendingData(client, obj));
+                            }
                         }
+                    }
+                    catch
+                    {
+                        break;
                     }
                 }
             });
@@ -334,11 +342,7 @@ namespace WEngine.Networking
                         {
                             OnClientDisconnect?.Invoke(clients[i], DisconnectReason.Timeout);
 
-                            clients[i].Close();
-                            clients[i].Dispose();
-
-                            lock (ClientsLocker)
-                                Clients.Remove(clients[i]);
+                            DisconnectClient(clients[i], DisconnectReason.Timeout.ToString());
                         }
                     }
                 }
@@ -352,15 +356,17 @@ namespace WEngine.Networking
         protected virtual void DisconnectClient(TcpClient client, string reason)
         {
             NetObject.Send(new NetKick(reason), client.Client);
-            //client.Close();
+            client.Close();
             client.Dispose();
+            lock (ClientsLocker)
+                Clients.Remove(client);
         }
 
         /// <summary>
         /// Disconnects all TCP Clients within <see cref="Clients"/>.
         /// </summary>
         public void DisconnectAllClients()
-        {
+        { 
             lock (ClientsLocker)
             {
                 if (Clients != null)

@@ -60,7 +60,7 @@ namespace WEngine.Networking
         /// <exception cref="NullReferenceException"></exception>
         public static void Send(NetObject netobj, Socket socket)
         {
-            if (!netobj) throw new NullReferenceException("<NetObject.cs:58> " + nameof(netobj) + " cannot be null.");
+            if (!netobj) throw new NullReferenceException("NetObject.cs: " + nameof(netobj) + " cannot be null.");
 
             Type type = netobj.GetType();
 

@@ -52,8 +52,8 @@ namespace WEngine.Networking
                 { 
                     if (_AwaitedPings.TryGetValue(ping.ID, out DateTime sendTime))
                     {
-                        _AwaitedPings.Remove(ping.ID);
                         OnPingBack?.Invoke(DateTime.Now - sendTime);
+                        _AwaitedPings.Remove(ping.ID);  
                     }
 
                     else //if ping id isn't ours, send back.

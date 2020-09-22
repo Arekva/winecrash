@@ -93,8 +93,17 @@ namespace WEngine.Networking
         public void Send(Socket socket)
         {
             byte[] data = this.Raw;
-            socket.Send(BitConverter.GetBytes(data.Length));
-            socket.Send(data);
+            byte[] sizeData = BitConverter.GetBytes(data.Length);
+            using (SocketAsyncEventArgs sizeDataE = new SocketAsyncEventArgs())
+            {
+                sizeDataE.SetBuffer(sizeData, 0, sizeData.Length);
+                socket.SendAsync(sizeDataE);
+            }
+            using (SocketAsyncEventArgs byteDataE = new SocketAsyncEventArgs())
+            {
+                byteDataE.SetBuffer(data, 0, data.Length);
+                socket.SendAsync(byteDataE);
+            }
         }
     }
 }

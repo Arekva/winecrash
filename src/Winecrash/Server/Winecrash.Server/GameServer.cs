@@ -60,8 +60,6 @@ namespace Winecrash.Server
             OnClientDisconnect += (client, reason) =>
             {
                 TcpPlayer player = FindPlayer(client);
-                if (player) OnPlayerDisconnect?.Invoke(player, reason.ToString());
-                Debug.LogWarning("Client " + client.Client.RemoteEndPoint.ToString() + " disconnected: " + reason.ToString());
             };
 
             OnClientDataReceived += (client, data) =>
@@ -134,6 +132,8 @@ namespace Winecrash.Server
                     if(auth != null)
                     {
                         TcpPlayer player = new TcpPlayer(auth.Client, nplayer.Nickname);
+                        lock (ConnectedPlayersLocker)
+                            ConnectedPlayers.Add(player);
                         this.OnPlayerConnect?.Invoke(player);
                         lock (AuthLocker)
                             AuthsRequired.Remove(auth);
@@ -153,7 +153,6 @@ namespace Winecrash.Server
                 rauths[i].CooldownTimeout -= Time.DeltaTime;
                 if (rauths[i].CooldownTimeout < 0.0)
                 {
-                    Debug.LogWarning("Client " + rauths[i].Client.Client.RemoteEndPoint + " couldn't authentify and has been kicked.");
                     DisconnectClient(rauths[i].Client, "Failed to authentify to the server");
                     
                     lock (AuthLocker)
@@ -169,22 +168,23 @@ namespace Winecrash.Server
         protected override void DisconnectClient(TcpClient client, string reason)
         {
             TcpPlayer player = FindPlayer(client);
-
-            if(player)
+            if (player)
             {
-                player.Kick(reason);
-                lock(ConnectedPlayers)
-                {
-                    ConnectedPlayers.Remove(player);
-                }
-
                 this.OnPlayerDisconnect?.Invoke(player, reason);
+                player.Kick(reason);
+
+                lock (ConnectedPlayersLocker)
+                    ConnectedPlayers.Remove(player);
+
+                lock (ClientsLocker)
+                    Clients.Remove(client);
 
                 player.Delete();
             }
 
             else
             {
+                Debug.LogWarning("Client " + client.Client.RemoteEndPoint.ToString() + " disconnected: " + reason.ToString());
                 base.DisconnectClient(client, reason);
             }
         }

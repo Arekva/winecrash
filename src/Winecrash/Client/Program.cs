@@ -20,7 +20,7 @@ namespace Client
 
         private static Label LbDebug;
 
-        private static GameClient client;
+        public static GameClient Client;
 
         static void Main(string[] args)
         {
@@ -62,8 +62,9 @@ namespace Client
                 Debug.Log($"Ping to the server: {span.TotalMilliseconds:F0} ms");
             };
 
-            
 
+            WObject wobj = new WObject();
+            wobj.AddModule<ClientTester>();
 
             //Thread thread = new Thread(async () =>
             //{
@@ -152,12 +153,13 @@ namespace Client
 
                 try
                 {
-                    client = new GameClient(addressField.Text ?? addressField.EmptyText, int.Parse(string.IsNullOrEmpty(portField.Text) ? portField.EmptyText : portField.Text));
-                    client.OnConnected += (server) =>
+                    Client = new GameClient(addressField.Text ?? addressField.EmptyText, int.Parse(string.IsNullOrEmpty(portField.Text) ? portField.EmptyText : portField.Text));
+                    Client.OnConnected += (server) =>
                     {
                         NetObject.Send(new NetPlayer("Arthur"), server.Client);
                         Debug.Log("Connected !");
                     };
+
                 }
                 catch(Exception e)
                 {
@@ -165,6 +167,8 @@ namespace Client
 
                     TimeSpan span = new TimeSpan();
                 }
+
+                
             };
         }
 
