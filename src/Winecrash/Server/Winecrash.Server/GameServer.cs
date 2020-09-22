@@ -12,6 +12,9 @@ using Winecrash.Net;
 
 namespace Winecrash.Server
 {
+    public delegate void PlayerConnectionDelegate(TcpPlayer player);
+    public delegate void PlayerDisconnectionDelegate(TcpPlayer player, string reason);
+
     public class GameServer : BaseServer
     {
         public GameServer(IPAddress listenIp, int port) : base(listenIp, port) { }
@@ -32,6 +35,13 @@ namespace Winecrash.Server
             }
         }
 
+        public event PlayerConnectionDelegate OnPlayerConnect;
+        public event PlayerDisconnectionDelegate OnPlayerDisconnect;
+
+
+        public List<TcpPlayer> ConnectedPlayers { get; set; } = new List<TcpPlayer>();
+        public object ConnectedPlayersLocker = new object();
+
         protected List<RequiredAuth> AuthsRequired = new List<RequiredAuth>();
         protected object AuthLocker = new object();
 
@@ -49,6 +59,8 @@ namespace Winecrash.Server
 
             OnClientDisconnect += (client, reason) =>
             {
+                TcpPlayer player = FindPlayer(client);
+                if (player) OnPlayerDisconnect?.Invoke(player, reason.ToString());
                 Debug.LogWarning("Client " + client.Client.RemoteEndPoint.ToString() + " disconnected: " + reason.ToString());
             };
 
@@ -63,7 +75,41 @@ namespace Winecrash.Server
                 });
             };
 
+            OnPlayerConnect += (player) =>
+            {
+                Debug.LogWarning(player.Nickname + " joined the \"game\"");
+            };
+
+            OnPlayerDisconnect += (player, reason) =>
+            {
+                Debug.LogWarning($"{player.Nickname} left the \"game\" - {reason}");
+            };
+
             Debug.Log("Winecrash " + Game.Version + " - Server online.");
+        }
+
+        public TcpPlayer FindPlayer(TcpClient client)
+        {
+            TcpPlayer[] players = null;
+
+            lock(ConnectedPlayersLocker)
+            {
+                players = ConnectedPlayers.ToArray();
+            }
+
+            return players.FirstOrDefault(p => p.Client == client);
+        }
+
+        public TcpPlayer FindPlayer(string nickname)
+        {
+            TcpPlayer[] players = null;
+
+            lock (ConnectedPlayersLocker)
+            {
+                players = ConnectedPlayers.ToArray();
+            }
+
+            return players.FirstOrDefault(p => p.Nickname == nickname);
         }
 
         public override void Tick()
@@ -79,7 +125,7 @@ namespace Winecrash.Server
             {
                 if (data[i].Deleted) continue;
 
-                if(data[i].NObject is NetPlayer player)
+                if(data[i].NObject is NetPlayer nplayer)
                 {
                     RequiredAuth auth = null;
                     lock (AuthLocker)
@@ -87,7 +133,8 @@ namespace Winecrash.Server
 
                     if(auth != null)
                     {
-                        Debug.LogWarning(player.Nickname + " joined the \"game\"");
+                        TcpPlayer player = new TcpPlayer(auth.Client, nplayer.Nickname);
+                        this.OnPlayerConnect?.Invoke(player);
                         lock (AuthLocker)
                             AuthsRequired.Remove(auth);
                         auth.Delete();
@@ -117,6 +164,29 @@ namespace Winecrash.Server
 
             //Debug.Log("NetObjects received within this tick: " + objects.Length);
             Engine.ForceUpdate();
+        }
+
+        protected override void DisconnectClient(TcpClient client, string reason)
+        {
+            TcpPlayer player = FindPlayer(client);
+
+            if(player)
+            {
+                player.Kick(reason);
+                lock(ConnectedPlayers)
+                {
+                    ConnectedPlayers.Remove(player);
+                }
+
+                this.OnPlayerDisconnect?.Invoke(player, reason);
+
+                player.Delete();
+            }
+
+            else
+            {
+                base.DisconnectClient(client, reason);
+            }
         }
     }
 }

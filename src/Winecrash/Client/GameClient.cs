@@ -9,7 +9,6 @@ namespace Client
     {
         public GameClient(string hostname, int port = BaseClient.DefaultPort) : base(hostname, port)
         {
-            
             this.OnDisconnected += (reason) =>
             {
                 Debug.LogWarning("Disconnected from server: " + reason);
