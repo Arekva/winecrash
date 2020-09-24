@@ -132,6 +132,44 @@ namespace Winecrash
 #endregion
 
 
+        public SaveChunk ToSave()
+        {
+            Dictionary<string, ushort> distinctIDs = new Dictionary<string, ushort>(64);
+            ushort[] blocksRef = new ushort[Chunk.TotalBlocks];
+            
+            int chunkIndex = 0;
+            ushort paletteIndex = 0;
+            
+            for (int z = 0; z < Chunk.Depth; z++)
+            {
+                for (int y = 0; y < Chunk.Height; y++)
+                {
+                    for (int x = 0; x < Chunk.Width; x++)
+                    {
+                        string id = this[x, y, z].Identifier;
+
+                        if (!distinctIDs.ContainsKey(id))
+                        {
+                            distinctIDs.Add(id, paletteIndex++);
+                        }
+
+                        blocksRef[chunkIndex++] = distinctIDs[id];
+                    }
+                }
+            }
+
+            SaveChunk sc = new SaveChunk()
+            {
+                Coordinates = Coordinates,
+                Dimension = Dimension.Identifier,
+                Indices = blocksRef,
+                Palette = distinctIDs.Keys.ToArray()
+            };
+
+            return sc;
+        }
+
+
 #region Engine Logic
         protected override void OnDelete()
         {

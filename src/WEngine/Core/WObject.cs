@@ -238,6 +238,8 @@ namespace WEngine
 
         public WObject FindChild(string childName)
         {
+            if (this.Deleted) return null;
+            
             WObject[] children;
             lock (_ChildrenLocker)
                 children = _Children.ToArray();

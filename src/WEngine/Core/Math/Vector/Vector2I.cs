@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace WEngine
 {
@@ -13,12 +14,14 @@ namespace WEngine
     [Serializable]
     public struct Vector2I : IVectorable, IComparable, IComparable<Vector2I>, IEquatable<Vector2I>, IFormattable
     {
+        [JsonIgnore]
         public int Dimensions { get; }
 
         #region Properties
         /// <summary>
         /// Serialized X component of the vector.
         /// </summary>
+        [JsonIgnore]
         private int _X;
         /// <summary>
         /// X component of the vector.
@@ -31,6 +34,7 @@ namespace WEngine
         /// <summary>
         /// Serialized Y component of the vector.
         /// </summary>
+        [JsonIgnore]
         public int _Y;
         /// <summary>
         /// Y component of the vector.
@@ -41,6 +45,7 @@ namespace WEngine
             set => _Y = value;
         }
 
+        [JsonIgnore]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2I XY
         {
@@ -54,6 +59,7 @@ namespace WEngine
                 this = value;
             }
         }
+        [JsonIgnore]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public Vector2I YX
         {
@@ -72,6 +78,7 @@ namespace WEngine
         /// <summary>
         /// 2D Right (1,0)
         /// </summary>
+        [JsonIgnore]
         public static Vector2I Right
         {
             get
@@ -82,6 +89,7 @@ namespace WEngine
         /// <summary>
         /// 2D Left (-1,0)
         /// </summary>
+        [JsonIgnore]
         public static Vector2I Left
         {
             get
@@ -92,6 +100,7 @@ namespace WEngine
         /// <summary>
         /// 2D Up (1,0)
         /// </summary>
+        [JsonIgnore]
         public static Vector2I Up
         {
             get
@@ -102,6 +111,7 @@ namespace WEngine
         /// <summary>
         /// 2D Down (-1,0)
         /// </summary>
+        [JsonIgnore]
         public static Vector2I Down
         {
             get
@@ -113,6 +123,7 @@ namespace WEngine
         /// <summary>
         /// Null (mathematically) vector (0,0)
         /// </summary>
+        [JsonIgnore]
         public static Vector2I Zero
         {
             get
@@ -124,6 +135,7 @@ namespace WEngine
         /// <summary>
         /// Unit vector (1,1)
         /// </summary>
+        [JsonIgnore]
         public static Vector2I One
         {
             get
@@ -131,7 +143,7 @@ namespace WEngine
                 return new Vector2I(1);
             }
         }
-
+        [JsonIgnore]
         public double SquaredLength
         {
             get
@@ -139,6 +151,8 @@ namespace WEngine
                 return this.X * this.X + this.Y * this.Y;
             }
         }
+        
+        [JsonIgnore]
         public double Length
         {
             get
@@ -150,6 +164,7 @@ namespace WEngine
         /// <summary>
         /// The directional version of this vector (length 1)
         /// </summary>
+        [JsonIgnore]
         public Vector2I Normalized
         {
             get
@@ -176,6 +191,7 @@ namespace WEngine
         /// </summary>
         /// <param name="x">The X component.</param>
         /// <param name="y">The Y component.</param>
+        [JsonConstructor]
         public Vector2I(int x, int y)
         {
             this._X = x;

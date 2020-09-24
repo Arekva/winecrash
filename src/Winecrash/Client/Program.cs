@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using WEngine;
 using WEngine.GUI;
 using WEngine.Networking;
+using Winecrash;
 using Winecrash.Net;
 using Label = WEngine.GUI.Label;
 
@@ -45,6 +46,8 @@ namespace Client
                 wrapperPanel.MinAnchor = new Vector2D(0.6, 0.6);
                 wrapperPanel.Color = new Color256();
                 CreateDebugConnector(connectorWrapper);
+                
+                Database.Load("assets/items/items.json").ParseItems();
 
                 /*GameClient client = new GameClient("localhost", 27716);
                 client.OnConnect += (tpcclient) =>
@@ -63,7 +66,7 @@ namespace Client
             };
 
 
-            new WObject().AddModule<ClientTester>();
+            //new WObject().AddModule<ClientTester>();
 
             //Thread thread = new Thread(async () =>
             //{
@@ -148,34 +151,73 @@ namespace Client
 
             btConnect.OnClick += () => 
             {
-                Debug.Log("Connecting to server " + (addressField.Text ?? addressField.EmptyText) + ":" + (string.IsNullOrEmpty(portField.Text) ? portField.EmptyText : portField.Text));
-
+                string address = string.IsNullOrEmpty(addressField.Text) ? addressField.EmptyText : addressField.Text;
+                int port = int.Parse(string.IsNullOrEmpty(portField.Text) ? portField.EmptyText : portField.Text);
+                
+                Debug.Log("Connecting to " + address + ":" + port);
                 try
                 {
-                    Client = new GameClient(addressField.Text ?? addressField.EmptyText, int.Parse(string.IsNullOrEmpty(portField.Text) ? portField.EmptyText : portField.Text));
-                    Client.OnConnected += (server) =>
+                    if (Client == null)
                     {
-                        NetObject.Send(new NetPlayer("Arthur"), server.Client);
-                        Debug.Log("Connected !");
-                    };
-
+                        Client = new GameClient(address,port);
+                        Client.OnConnected += (server) =>
+                        {
+                            Debug.Log("A distant connection has been established. Authentication...");
+                        };
+                    }
+                    else
+                    {
+                        Client.Connect(address, port);
+                    }
                 }
                 catch(Exception e)
                 {
                     Debug.LogError(e.Message);
-
-                    TimeSpan span = new TimeSpan();
                 }
-
-                
             };
+
+            NetObject.OnReceive += (data, type, connection) =>
+            {
+                if (data is NetChunk chunk)
+                {
+                    Debug.Log($"Received Chunk[{chunk.Coordinates.X};{chunk.Coordinates.Y}] of {chunk.Dimension}");
+                    World.GetOrCreateChunk(chunk.ToSave());
+                }
+            };
+        }
+        
+        private static void LogVerboseCMD(object obj)
+        {
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("[ Verbose ] " + obj);
+            Console.ResetColor();
+        }
+        private static void LogWarnCMD(object obj)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("[ Warning ] " + obj);
+            Console.ResetColor();
+        }
+        private static void LogErrCMD(object obj)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("[  Error  ] " + obj);
+            Console.ResetColor();
+        }
+        private static void LogExceptionCMD(object obj)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("[Exception] " + obj);
+            Console.ResetColor();
         }
 
         private static void CreateDebugWindow()
         {
-            Debug.AddLogger(new Logger(LogVerbose, LogWarning , LogError, LogException));
+            Debug.AddLogger(new Logger(LogVerbose, LogWarning, LogError, LogException));
+            Debug.AddLogger(new Logger(LogVerboseCMD, LogWarnCMD, LogErrCMD, LogExceptionCMD));
         }
-
+        
         private static void LogVerbose(object obj)
         {
             if (LbDebug == null) return;

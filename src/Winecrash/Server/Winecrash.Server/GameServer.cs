@@ -54,6 +54,8 @@ namespace Winecrash.Server
             {
                 lock (AuthLocker)
                     AuthsRequired.Add(new RequiredAuth() { Client = client, CooldownTimeout = AuthTimeout });
+                
+                NetObject.Send(new NetPing(), client.Client);
             };
             
             OnClientDataReceived += (client, data) =>

@@ -300,7 +300,7 @@ namespace WEngine.Networking
                 totalread += currentread;
             }
 
-            string rawdata = Encoding.Unicode.GetString(data);
+            string rawdata = NetData<NetDummy>.Encoding.GetString(data);
 
             return NetObject.Receive(rawdata, client);
         }

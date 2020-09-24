@@ -49,6 +49,28 @@ namespace Winecrash
                    new WObject(dimension.Identifier) {Parent = WorldWObject};
         }
 
+        public static Chunk GetOrCreateChunk(SaveChunk saveChunk)
+        {
+            int dimIndex = Dimensions.IndexOf(GetOrCreateDimension(saveChunk.Dimension));
+
+            Chunk[] dimChunks = null;
+            lock (ChunksLocker)
+            {
+                dimChunks = Chunks[dimIndex].ToArray();
+            }
+
+            Chunk chunk = dimChunks.FirstOrDefault(c => c.Coordinates == saveChunk.Coordinates);
+
+            if (!chunk)
+            {
+                return CreateChunk(saveChunk.Coordinates, dimIndex, saveChunk.LoadBlocks());
+            }
+            else
+            {
+                return chunk;
+            }
+        }
+        
         public static Chunk GetOrCreateChunk(Vector2I coordinates, string dimension)
         {
             int dimIndex = Dimensions.IndexOf(GetOrCreateDimension(dimension));
@@ -63,26 +85,27 @@ namespace Winecrash
 
             if (!chunk)
             {
-                return CreateChunk(coordinates, dimIndex);
+                return CreateChunk(coordinates, dimIndex, new ushort[Chunk.TotalBlocks]);
             }
             else
             {
                 return chunk;
             }
         }
-
-        private static Chunk CreateChunk(Vector2I coordinates, int dimension)
+        
+        private static Chunk CreateChunk(Vector2I coordinates, int dimension, ushort[] blocks)
         {
             Chunk chunk = null;
 
             WObject wobj = new WObject($"Chunk [{coordinates.X};{coordinates.Y}]")
             {
-                Parent = GetOrCreateDimensionWObject(Dimensions.ElementAt(dimension))
+                Parent = GetOrCreateDimensionWObject(Dimensions.ElementAt(dimension)),
+                LocalPosition = new Vector3D(coordinates.X * 16, 0, coordinates.Y * 16)
             };
 
             chunk = wobj.AddModule<Chunk>();
             chunk.InterdimensionalCoordinates = new Vector3I(coordinates, dimension);
-            chunk.Blocks = new ushort[Chunk.TotalBlocks];
+            chunk.Blocks = blocks;
             
             return chunk;
         }

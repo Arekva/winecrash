@@ -56,12 +56,18 @@ namespace WEngine.Networking
         {
             ClientThread = new Thread(() =>
             {
-                Client = new TcpClient(host, port);
-                LoopListeningAsync();
+                Client = new TcpClient();
                 OnConnected?.Invoke(Client);
+                Connect(host, port);
             });
             ClientThread.Start();
             Engine.OnStop += () => ClientThread.Abort();
+        }
+
+        public void Connect(string host = "127.0.0.1", int port = DefaultPort)
+        {
+            Client.Connect(host, port);
+            LoopListeningAsync();
         }
 
         public void SendObject<T>(T netobj) where T : NetObject
@@ -160,7 +166,7 @@ namespace WEngine.Networking
                     totalread += currentread;
                 }
 
-                string rawdata = Encoding.Unicode.GetString(data);
+                string rawdata = NetData<NetDummy>.Encoding.GetString(data);
 
                 netobj = NetObject.Receive(rawdata, client);
 

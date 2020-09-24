@@ -45,7 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Chunk.cs" />
     <Compile Include="ConsoleUtils.cs" />
     <Compile Include="Dimension.cs" />
     <Compile Include="Game.cs" />
@@ -53,9 +52,11 @@
     <Compile Include="Items\Block.cs" />
     <Compile Include="Items\Cube.cs" />
     <Compile Include="Items\CubeTexturePaths.cs" />
+    <Compile Include="Items\Database.cs" />
     <Compile Include="Items\Item.cs" />
     <Compile Include="Items\ItemCache.cs" />
     <Compile Include="Items\ItemDB.cs" />
+    <Compile Include="Net\NetChunk.cs" />
     <Compile Include="Net\NetMessage.cs" />
     <Compile Include="Net\NetPlayer.cs" />
     <Compile Include="Player.cs" />
@@ -66,7 +67,9 @@
     <Compile Include="Save\SaveStatus.cs" />
     <Compile Include="StringMethods.cs" />
     <Compile Include="TickType.cs" />
-    <Compile Include="World.cs" />
+    <Compile Include="World\Chunk.cs" />
+    <Compile Include="World\SaveChunk.cs" />
+    <Compile Include="World\World.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\WEngine\WEngine.csproj">

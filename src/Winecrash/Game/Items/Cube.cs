@@ -22,16 +22,23 @@ namespace Winecrash
 
         public override void OnDeserialize()
         {
-            UpTexture = String.IsNullOrEmpty(Textures.Up) ? Texture.Blank : Texture.GetOrCreate(Textures.Up);
-            DownTexture = String.IsNullOrEmpty(Textures.Down) ? Texture.Blank : Texture.GetOrCreate(Textures.Down);
+            if (Engine.DoGUI)
+            {
+                UpTexture = String.IsNullOrEmpty(Textures.Up) ? Texture.Blank : Texture.GetOrCreate(Textures.Up);
+                DownTexture = String.IsNullOrEmpty(Textures.Down) ? Texture.Blank : Texture.GetOrCreate(Textures.Down);
 
-            EastTexture = String.IsNullOrEmpty(Textures.East) ? Texture.Blank : Texture.GetOrCreate(Textures.East);
-            WestTexture = String.IsNullOrEmpty(Textures.West) ? Texture.Blank : Texture.GetOrCreate(Textures.West);
+                EastTexture = String.IsNullOrEmpty(Textures.East) ? Texture.Blank : Texture.GetOrCreate(Textures.East);
+                WestTexture = String.IsNullOrEmpty(Textures.West) ? Texture.Blank : Texture.GetOrCreate(Textures.West);
 
-            NorthTexture = String.IsNullOrEmpty(Textures.North) ? Texture.Blank : Texture.GetOrCreate(Textures.North);
-            SouthTexture = String.IsNullOrEmpty(Textures.South) ? Texture.Blank : Texture.GetOrCreate(Textures.South);
-
+                NorthTexture = String.IsNullOrEmpty(Textures.North)
+                    ? Texture.Blank
+                    : Texture.GetOrCreate(Textures.North);
+                SouthTexture = String.IsNullOrEmpty(Textures.South)
+                    ? Texture.Blank
+                    : Texture.GetOrCreate(Textures.South);
+            }
             base.OnDeserialize();
+            
         }
     }
 }

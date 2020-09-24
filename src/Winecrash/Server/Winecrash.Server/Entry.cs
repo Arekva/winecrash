@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using WEngine;
+using WEngine.Networking;
 using Winecrash;
+using Winecrash.Net;
 
 namespace Winecrash.Server
 {
@@ -26,22 +28,24 @@ namespace Winecrash.Server
 
             Engine.Run(false);
             
-            WObject.TraceHierarchy();
-            
+            Database.Load("assets/items/items.json").ParseItems();
+
             server = new GameServer(IPAddress.Any, 27716);
 
             server.OnPlayerConnect += (player) =>
             {
-                for (int i = 0; i < 256; i++)
-                {
-                    World.GetOrCreateChunk(new Vector2I(0, i), "winecrash:overworld");
-                }
+                Debug.Log("Sending debug chunk");
+                NetObject.Send(new NetChunk(World.GetOrCreateChunk(Vector2I.Zero, "winecrash:overworld")), player.Client.Client);
+                //for (int i = 0; i < 256; i++)
+                //{
+                //World.GetOrCreateChunk(new Vector2I(0, i), "winecrash:overworld");
+                //}
             };
 
             server.OnPlayerDisconnect += (player, reason) =>
             {
-                WObject.TraceHierarchy();
-                World.WorldWObject.Delete();
+                //WObject.TraceHierarchy();
+                //World.WorldWObject?.Delete();
             };
             
             server.Run();

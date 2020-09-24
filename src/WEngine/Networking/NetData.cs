@@ -13,6 +13,8 @@ namespace WEngine.Networking
     [Serializable]
     internal struct NetData<T> : ISendible where T : NetObject
     {
+        public static Encoding Encoding { get; set; } = Encoding.Unicode;
+        
         /// <summary>
         /// Serialization type variable.
         /// </summary>
@@ -65,7 +67,7 @@ namespace WEngine.Networking
         {
             get
             {
-                return Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(this));
+                return Encoding.GetBytes(JsonConvert.SerializeObject(this));
             }
         }
 
@@ -83,7 +85,7 @@ namespace WEngine.Networking
         public NetData(T data) : this()
         {
             this._Type = typeof(T);
-            this._Data = JsonConvert.SerializeObject(data);
+            this._Data = JsonConvert.SerializeObject(data, Formatting.None);
         }
 
         /// <summary>

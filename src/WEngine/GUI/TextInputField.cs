@@ -25,7 +25,7 @@ namespace WEngine.GUI
         public bool Editing { get; private set; } = false;
 
         public string EmptyText { get; set; } = "Enter text...";
-        public string Text { get; set; } = "";
+        public string Text { get; set; } = null;
 
         public bool AllowNewLine { get; set; } = true;
 
@@ -76,7 +76,7 @@ namespace WEngine.GUI
 
                 for (int i = 0; i < keys.Length; i++)
                 {
-                    if (keys[i] != Keys.Back && Text.Length >= MaxChars)
+                    if (keys[i] != Keys.Back && Text?.Length >= MaxChars)
                     {
                         Text = Text.Substring(0, MaxChars);
                         textEdited = true;
