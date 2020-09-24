@@ -25,8 +25,8 @@ namespace Winecrash.Server
             //ConsoleUtils.PrintSaves();
 
             Engine.Run(false);
-
             
+            WObject.TraceHierarchy();
             
             server = new GameServer(IPAddress.Any, 27716);
 
@@ -40,6 +40,7 @@ namespace Winecrash.Server
 
             server.OnPlayerDisconnect += (player, reason) =>
             {
+                WObject.TraceHierarchy();
                 World.WorldWObject.Delete();
             };
             

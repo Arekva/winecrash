@@ -34,6 +34,9 @@ namespace Winecrash
             {
                 dim = new Dimension(identifier);
                 Dimensions.Add(dim);
+                
+                Chunks[Dimensions.IndexOf(dim)] = new List<Chunk>(256);
+                
                 return dim;
             }
         }
@@ -60,7 +63,7 @@ namespace Winecrash
 
             if (!chunk)
             {
-                return null;
+                return CreateChunk(coordinates, dimIndex);
             }
             else
             {

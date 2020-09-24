@@ -76,7 +76,7 @@ namespace Winecrash.Server
             {
                 Debug.LogWarning($"{player.Nickname} left the \"game\" - {reason}");
             };
-
+            
             Debug.Log("Winecrash " + Game.Version + " - Server online.");
         }
 

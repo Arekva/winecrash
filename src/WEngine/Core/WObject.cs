@@ -10,9 +10,9 @@ namespace WEngine
     /// </summary>
     public class WObject : BaseObject
     {
-        internal readonly static object wobjectLocker = new object();
+        internal static object WobjectsLocker = new object();
         // all the loaded wobjects
-        internal static List<WObject> _WObjects { get; set; } = new List<WObject>(1);
+        internal static List<WObject> WObjects { get; set; } = new List<WObject>(1);
         // modules linked to this wobject
         internal List<Module> _Modules { get; set; } = new List<Module>(1);
 
@@ -21,8 +21,8 @@ namespace WEngine
         /// </summary>
         public WObject() : base()
         {
-            lock(wobjectLocker)
-                _WObjects.Add(this);
+            lock(WobjectsLocker)
+                WObjects.Add(this);
 
             if (Engine.DoGUI)
                 Graphics.Window.OnRender += (e) => _RendersForward = this.Forward;
@@ -34,8 +34,8 @@ namespace WEngine
         /// <param name="name">The name of the WObject.</param>
         public WObject(string name) : base(name) 
         {
-            lock(wobjectLocker)
-                _WObjects.Add(this);
+            lock(WobjectsLocker)
+                WObjects.Add(this);
 
             if(Engine.DoGUI)
                 Graphics.Window.OnRender += (e) => _RendersForward = this.Forward;
@@ -231,8 +231,8 @@ namespace WEngine
         public static WObject Find(string name)
         {
             List<WObject> wobjs;
-            lock (wobjectLocker)
-                wobjs = _WObjects.ToList(); 
+            lock (WobjectsLocker)
+                wobjs = WObjects.ToList(); 
             return wobjs.FirstOrDefault(w => w.Name == name);
         }
 
@@ -332,8 +332,8 @@ namespace WEngine
 
             _Modules.Clear();
             _Modules = null;
-            lock (wobjectLocker)
-                _WObjects.Remove(this);
+            lock (WobjectsLocker)
+                WObjects.Remove(this);
 
             base.Delete();
         }
@@ -359,22 +359,15 @@ namespace WEngine
 
             _Modules?.Clear();
             _Modules = null;
-            lock (wobjectLocker)
-                _WObjects.Remove(this);
+            lock (WobjectsLocker)
+                WObjects.Remove(this);
 
             base.Delete();
         }
 
         public static void TraceHierarchy()
         {
-            WObject[] allWobjects = null;
-            lock (wobjectLocker)
-                allWobjects = _WObjects.Where(w => w.Parent == null).ToArray();
-
-            for (int i = 0; i < allWobjects.Length; i++)
-            {
-                
-            }
+            Debug.Log("All WObjects: \n" + GetHierachy(null, 0));
         }
 
         private static string GetHierachy(WObject parent, int recursiveCount)
@@ -389,20 +382,26 @@ namespace WEngine
             }
             else
             {
-                lock (wobjectLocker)
-                    children = _WObjects.Where(w => w.Parent == null).ToArray();
+                recursiveCount++;
+                children = WObjects.Where(w => w._Parent == null).ToArray();
             }
             
             for (int i = 0; i < children.Length; i++)
             {
                 str += "\n";
 
-                for (int j = 0; j < recursiveCount; j++)
-                {
-                    str += "\t";
-                }
                 
-                str += GetHierachy(children[i], recursiveCount++);
+                for (int j = 1; j < recursiveCount; j++)
+                {
+                    str += "  ";
+                }
+
+                if (i == children.Length - 1) str += "└─";
+                else str += "├─";
+                
+                
+                
+                str += GetHierachy(children[i], recursiveCount + 1);
             }
 
             return str;
