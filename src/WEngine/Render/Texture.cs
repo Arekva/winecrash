@@ -87,20 +87,27 @@ namespace WEngine
 
         public void Apply()
         {
-            Graphics.Window.InvokeRender(() =>
+            if (Engine.DoGUI)
             {
-                this.Use();
+                Graphics.Window.InvokeRender(() =>
+                {
+                    this.Use();
 
-                GL.TexImage2D(TextureTarget.Texture2D,
-                            0,
-                            PixelInternalFormat.Rgba,
-                            this.Width,
-                            this.Height,
-                            0,
-                            OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
-                            PixelType.UnsignedByte,
-                            this.Data);
-            });
+                    GL.TexImage2D(TextureTarget.Texture2D,
+                        0,
+                        PixelInternalFormat.Rgba,
+                        this.Width,
+                        this.Height,
+                        0,
+                        OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
+                        PixelType.UnsignedByte,
+                        this.Data);
+                });
+            }
+            else
+            {
+                Debug.LogWarning("Unable to apply a texture while being no GUI.");
+            }
         }
 
 

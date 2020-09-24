@@ -19,7 +19,7 @@ namespace WEngine.Networking
     /// </summary>
     /// <param name="client">The TCP client.</param>
     /// <param name="reason">The reason why the client got disconnected.</param>
-    public delegate void ClientDisconnectDelegate(TcpClient client, DisconnectReason reason);
+    public delegate void ClientDisconnectDelegate(TcpClient client, string reason);
     /// <summary>
     /// Delegate used when data is recieved from a client. Similar to <see cref="NetObject.OnReceive"/>
     /// </summary>
@@ -240,6 +240,11 @@ namespace WEngine.Networking
             }
         }
 
+        protected void InvokeOnClientDisconnected(TcpClient client, string reason)
+        {
+            this.OnClientDisconnect?.Invoke(client, reason);
+        }
+
 
         protected async Task<NetObject> ReceiveDataAsync(Socket client)
         {
@@ -340,7 +345,7 @@ namespace WEngine.Networking
                     {
                         if (clients[i].Client != null && !clients[i].Client.Connected)
                         {
-                            OnClientDisconnect?.Invoke(clients[i], DisconnectReason.Timeout);
+                            OnClientDisconnect?.Invoke(clients[i], DisconnectReason.Timeout.ToString());
 
                             DisconnectClient(clients[i], DisconnectReason.Timeout.ToString());
                         }
@@ -355,6 +360,7 @@ namespace WEngine.Networking
 
         protected virtual void DisconnectClient(TcpClient client, string reason)
         {
+            OnClientDisconnect?.Invoke(client, reason);
             NetObject.Send(new NetKick(reason), client.Client);
             client.Close();
             client.Dispose();

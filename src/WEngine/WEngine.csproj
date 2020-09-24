@@ -190,6 +190,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Physics\AABB.cs" />
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
   </ItemGroup>

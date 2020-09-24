@@ -80,13 +80,14 @@ namespace WEngine
                     this.Position = oldGlobalPosition;
                     this.Rotation = oldGlobalRotation;
                     this.Scale = oldGlobalScale;
-                }  
+                }
             }
         }
 
 
 
         private List<WObject> _Children { get; set; } = new List<WObject>();
+        private object _ChildrenLocker = new object();
         public WObject[] Children
         {
             get
@@ -235,6 +236,14 @@ namespace WEngine
             return wobjs.FirstOrDefault(w => w.Name == name);
         }
 
+        public WObject FindChild(string childName)
+        {
+            WObject[] children;
+            lock (_ChildrenLocker)
+                children = _Children.ToArray();
+            return children.FirstOrDefault(c => c.Name == childName);
+        }
+
         public T AddModule<T>() where T : Module
         {
             T mod = (T)Activator.CreateInstance(typeof(T));
@@ -302,7 +311,7 @@ namespace WEngine
 
         private bool ThisAndParentEnabled()
         {
-            return this._Enabled && (this.Parent ? this.Parent.Enabled : true);
+            return this._Enabled && (!this.Parent || this.Parent.Enabled);
         }
 
         internal sealed override void ForcedDelete()
@@ -317,7 +326,7 @@ namespace WEngine
                 _Children[i].ForcedDelete();
             }
 
-            this._Parent = null;
+            this.Parent = null;
             _Children.Clear();
             _Children = null;
 
@@ -344,7 +353,7 @@ namespace WEngine
                 for (int i = 0; i < _Children.Count; i++)
                     _Children[i].Delete();
 
-            this._Parent = null;
+            this.Parent = null;
             _Children?.Clear();
             _Children = null;
 
@@ -354,6 +363,49 @@ namespace WEngine
                 _WObjects.Remove(this);
 
             base.Delete();
+        }
+
+        public static void TraceHierarchy()
+        {
+            WObject[] allWobjects = null;
+            lock (wobjectLocker)
+                allWobjects = _WObjects.Where(w => w.Parent == null).ToArray();
+
+            for (int i = 0; i < allWobjects.Length; i++)
+            {
+                
+            }
+        }
+
+        private static string GetHierachy(WObject parent, int recursiveCount)
+        {
+            string str = parent == null ? "Scene" : parent.Name;
+            
+            WObject[] children = null;
+
+            if (parent)
+            {
+                children = parent.Children;
+            }
+            else
+            {
+                lock (wobjectLocker)
+                    children = _WObjects.Where(w => w.Parent == null).ToArray();
+            }
+            
+            for (int i = 0; i < children.Length; i++)
+            {
+                str += "\n";
+
+                for (int j = 0; j < recursiveCount; j++)
+                {
+                    str += "\t";
+                }
+                
+                str += GetHierachy(children[i], recursiveCount++);
+            }
+
+            return str;
         }
     }
 }

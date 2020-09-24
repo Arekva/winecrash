@@ -63,8 +63,7 @@ namespace Client
             };
 
 
-            WObject wobj = new WObject();
-            wobj.AddModule<ClientTester>();
+            new WObject().AddModule<ClientTester>();
 
             //Thread thread = new Thread(async () =>
             //{

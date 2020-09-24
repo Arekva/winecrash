@@ -38,14 +38,13 @@ namespace Winecrash.Server
         public event PlayerConnectionDelegate OnPlayerConnect;
         public event PlayerDisconnectionDelegate OnPlayerDisconnect;
 
-
         public List<TcpPlayer> ConnectedPlayers { get; set; } = new List<TcpPlayer>();
         public object ConnectedPlayersLocker = new object();
 
         protected List<RequiredAuth> AuthsRequired = new List<RequiredAuth>();
         protected object AuthLocker = new object();
 
-        public double AuthTimeout = 0.5D;
+        public double AuthTimeout = 5D;
 
         public override void Run()
         {
@@ -56,12 +55,7 @@ namespace Winecrash.Server
                 lock (AuthLocker)
                     AuthsRequired.Add(new RequiredAuth() { Client = client, CooldownTimeout = AuthTimeout });
             };
-
-            OnClientDisconnect += (client, reason) =>
-            {
-                TcpPlayer player = FindPlayer(client);
-            };
-
+            
             OnClientDataReceived += (client, data) =>
             {
                 Task.Run(() =>
@@ -170,7 +164,9 @@ namespace Winecrash.Server
             TcpPlayer player = FindPlayer(client);
             if (player)
             {
+                this.InvokeOnClientDisconnected(client, reason);
                 this.OnPlayerDisconnect?.Invoke(player, reason);
+                
                 player.Kick(reason);
 
                 lock (ConnectedPlayersLocker)

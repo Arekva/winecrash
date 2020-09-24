@@ -24,9 +24,25 @@ namespace Winecrash.Server
 
             //ConsoleUtils.PrintSaves();
 
-            //Engine.Run(false);
+            Engine.Run(false);
 
+            
+            
             server = new GameServer(IPAddress.Any, 27716);
+
+            server.OnPlayerConnect += (player) =>
+            {
+                for (int i = 0; i < 256; i++)
+                {
+                    World.GetOrCreateChunk(new Vector2I(0, i), "winecrash:overworld");
+                }
+            };
+
+            server.OnPlayerDisconnect += (player, reason) =>
+            {
+                World.WorldWObject.Delete();
+            };
+            
             server.Run();
 
             //Engine.OnStop += () => Debug.Log("Engine stopped.");
