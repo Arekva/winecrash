@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Winecrash.Game
+namespace Winecrash
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class SynchronizeAttribute : Attribute
