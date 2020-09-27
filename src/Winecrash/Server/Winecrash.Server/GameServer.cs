@@ -71,15 +71,15 @@ namespace Winecrash.Server
 
             OnPlayerConnect += (player) =>
             {
-                Debug.LogWarning(player.Nickname + " joined the \"game\"");
+                Debug.LogWarning(player.Nickname + " joined the game");
             };
 
             OnPlayerDisconnect += (player, reason) =>
             {
-                Debug.LogWarning($"{player.Nickname} left the \"game\" - {reason}");
+                Debug.LogWarning($"{player.Nickname} left the game");
             };
             
-            Debug.Log("Winecrash " + Game.Version + " - Server online.");
+            Debug.Log("Winecrash " + Winecrash.Version + " - Server online.");
         }
 
         public TcpPlayer FindPlayer(TcpClient client)

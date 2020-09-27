@@ -13,8 +13,7 @@ namespace Winecrash
     
     public static class Game
     {
-        public static WEngine.Version Version { get; } = new WEngine.Version(0, 0, 1, "Alpha");
-
+        
         /// <summary>
         /// Triggered when a new game language is set. Carries the new language object with it.
         /// </summary>
@@ -44,19 +43,19 @@ namespace Winecrash
         {
             get
             {
-                return Language.Languages.FirstOrDefault(l => l.Name == Configuration.Language);
+                return Language.Languages.FirstOrDefault(l => l.Name == Configuration.DisplayLanguage);
             }
 
             set
             {
                 if (value == null)
                 {
-                    Configuration.Language = DefaultLanguage;
+                    Configuration.DisplayLanguage = DefaultLanguage;
                 }
 
                 else
                 {
-                    Configuration.Language = value.Name;
+                    Configuration.DisplayLanguage = value.Name;
                 }
 
                 Game.InvokeLanguageChanged(value);

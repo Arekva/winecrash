@@ -134,7 +134,7 @@ namespace Winecrash
                     save = new Save(path.Split('\\', '/').Last(), true);
                     status |= SaveStatus.Sane;
 
-                    if(save.Informations.Version < Game.Version)
+                    if(save.Informations.Version < Winecrash.Version)
                     {
                         status |= SaveStatus.OutOfDate;
                     }

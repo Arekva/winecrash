@@ -21,8 +21,11 @@ namespace Winecrash.Client
         private static WObject MenuWobject = null;
         private static WObject MainMenuPanel = null;
         private static WObject MenuBGWObject = null;
-        private static WObject OptionPanel { get; set; } = null;
+        private static WObject OptionPanel = null;
         private static WObject MultiPanel = null;
+        private static WObject MultiDisconnectionPanel = null;
+        private static LocalizedLabel MultiDisconnectionReason = null;
+            
         private static LocalizedLabel MultiErrorLabel { get; set; } = null;
         private static void CreateMenu()
         {
@@ -35,7 +38,7 @@ namespace Winecrash.Client
             bgPanel.Parent = MenuWobject;
 
             LocalizedLabel lbVersion = bgPanel.AddModule<LocalizedLabel>();
-            lbVersion.LocalizationArgs = new object[] { Game.Version };
+            lbVersion.LocalizationArgs = new object[] { Winecrash.Version };
             lbVersion.Localization = "#menu_game_version";          
             lbVersion.Aligns = TextAligns.Down | TextAligns.Left;
             lbVersion.AutoSize = true;
@@ -224,8 +227,6 @@ namespace Winecrash.Client
             mainLb.AutoSize = true;
             mainLb.Aligns = TextAligns.Middle;
             
-
-
             WObject error = new WObject("Multi Error Label") {Parent = btnPanel };
             LocalizedLabel errLb = MultiErrorLabel = error.AddModule<LocalizedLabel>();
             errLb.Localization = "#server_connection_error";
@@ -319,6 +320,7 @@ namespace Winecrash.Client
                     try
                     {
                         Program.Client.Connect(address, port);
+                        MainMenu.Hide();
                     }
                     catch (SocketException e)
                     {
@@ -349,7 +351,67 @@ namespace Winecrash.Client
                 });
             };
         }
+        
+         public static void CreateDisconnection()
+        {
+            WObject mainPanel = MultiDisconnectionPanel = new WObject("Multi Disconnect UI Panel") { Parent = MenuWobject };
+            Image mainPanelImg = mainPanel.AddModule<Image>();
+            mainPanelImg.Color = new Color256(1.0, 0.0, 1.0, 0.0);
+            mainPanelImg.MinAnchor = new Vector2F(0.225F, 0.10F);
+            mainPanelImg.MaxAnchor = new Vector2F(0.775F, 0.95F);
+            mainPanelImg.MinSize = new Vector3F(400.0F, 400.0F, Single.PositiveInfinity);
+            mainPanelImg.MaxSize = new Vector3F(800.0F, 800.0F, Single.PositiveInfinity);
+            mainPanelImg.KeepRatio = true;
+            
+            WObject btnPanel = new WObject("Main UI Button Panel") { Parent = mainPanel };
+            Image btnPanelImg = btnPanel.AddModule<Image>();
+            btnPanelImg.Color = new Color256(1.0, 0.0, 1.0, 0.0);
+            btnPanelImg.MinAnchor = new Vector2F(0.075F, 0.0F);
+            btnPanelImg.MaxAnchor = new Vector2F(0.925F, 0.6F);
+            
+            WObject multiTitle = new WObject("Multi Main Label") { Parent = btnPanel };
+            LocalizedLabel mainLb = multiTitle.AddModule<LocalizedLabel>();
+            mainLb.Localization = "#multiplayer_disconnected";
+            mainLb.MinAnchor = new Vector2F(0.0F, 1.0F);
+            mainLb.MaxAnchor = new Vector2F(1.0F, 1.1F);
+            mainLb.AutoSize = true;
+            mainLb.Aligns = TextAligns.Middle;
+            
+            WObject error = new WObject("Multi Disconnected Label") { Parent = btnPanel };
+            LocalizedLabel reaLb = MultiDisconnectionReason = error.AddModule<LocalizedLabel>();
+            reaLb.Localization = "#server_disconnection_unspecified";
+            reaLb.MinAnchor = new Vector2F(0.0F, 0.82F);
+            reaLb.MaxAnchor = new Vector2F(1.0F, 0.88F);
+            reaLb.AutoSize = true;
+            reaLb.Aligns = TextAligns.Up | TextAligns.Vertical;
+            
+            WObject back = new WObject("Multi Back") { Parent = btnPanel };
+            GUI.LargeButton btnBack = back.AddModule<GUI.LargeButton>();
+            btnBack.Button.MinAnchor = new Vector2F(0.0F, 1.0F);
+            btnBack.Button.MaxAnchor = new Vector2F(0.45F, 0.6F);
+            btnBack.Label.Localization = "#menu_back";
+            btnBack.Button.OnClick += () =>
+            {
+                HideDisconnection();
+                ShowMain();
+            };
+        }
 
+         public static void ShowDisconnection(string reasonLoc = "#server_disconnection_unspecified")
+         {
+             if (!MultiDisconnectionPanel) CreateDisconnection();
+             
+             HideMain();
+             MultiDisconnectionReason.Localization = reasonLoc;
+             MultiDisconnectionPanel.Enabled = true;
+         }
+
+         public static void HideDisconnection()
+         {
+             if(MultiDisconnectionPanel) MultiDisconnectionPanel.Enabled = false;
+         }
+        
+        
         private static void ShowOptions()
         {
             if (OptionPanel) OptionPanel.Enabled = true;
@@ -377,8 +439,9 @@ namespace Winecrash.Client
         }
         private static void ShowMain()
         {
-            MainMenuPanel.Enabled = true;
             HideOptions();
+            HideMulti();
+            MainMenuPanel.Enabled = true;
         }
         private static void HideMain()
         {
@@ -390,16 +453,16 @@ namespace Winecrash.Client
             if (!MenuWobject)
             {
                 CreateMenu();
-                //CreateOptions();
             }
 
-
+            
             Camera.Main.FOV = 80.0D;
             Camera.Main.WObject.LocalRotation = new Quaternion(25, 0, 0);
 
+            
+            
             ShowMain();
-            HideOptions();
-            HideMulti();
+            MenuWobject.Enabled = true;
         }
 
         public static void Hide()

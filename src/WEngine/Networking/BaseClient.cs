@@ -19,7 +19,7 @@ namespace WEngine.Networking
     public delegate void ServerConnectDelegate(TcpClient client);
 
     public delegate void ServerDisconnectDelegate(string reason);
-
+    
 
     public abstract class BaseClient : BaseObject
     {
@@ -43,6 +43,8 @@ namespace WEngine.Networking
         public string Host { get; private set; } = "localhost";
         public int Port { get; private set; } = Networking.DefaultPort;
         
+        private static uint PingRate = 1U;
+        
 
         public bool Connected
         {
@@ -56,8 +58,6 @@ namespace WEngine.Networking
 
         public BaseClient()
         {
-            Client = new TcpClient();
-            OnConnected?.Invoke(Client);
             Engine.OnStop += () => ClientThread?.Abort();
         }
 
@@ -65,8 +65,13 @@ namespace WEngine.Networking
         {
             this.Host = host;
             this.Port = port;
+            
+            Client = new TcpClient();
+            OnConnected?.Invoke(Client);
             Client.Connect(host, port);
+            
             LoopListeningAsync();
+            DisconnectionCheckLoopAsync();
         }
 
         public void SendObject<T>(T netobj) where T : NetObject
@@ -86,8 +91,7 @@ namespace WEngine.Networking
                     {
                         if (obj is NetKick kick)
                         {
-                            this.OnDisconnected(kick.Reason);
-                            Disconnect();
+                            Disconnect(kick.Reason, true);
                             return;
                         }
                         else
@@ -101,15 +105,36 @@ namespace WEngine.Networking
                     }
                 }
 
-                Disconnect();
+                //Disconnect();
             });
         }
-
-        public virtual void Disconnect()
+        protected async Task DisconnectionCheckLoopAsync()
         {
-            Debug.Log("Disconnected");
-            this.Client.Close();
+            while (this.Connected)
+            {
+                int waitTime = (int)((1.0D / PingRate) * 1000.0D);
+                NetObject.Send(new NetPing(), this.Client.Client);
+                await Task.Delay(waitTime);
+            }
+            
+            Disconnect("#server_disconnection_timeout");
+        }
+
+        private bool IgnoreFollowingDisconnection = false;
+        public virtual void Disconnect(string reason, bool ignoreFollowing = false)
+        {
+            if (IgnoreFollowingDisconnection)
+            {
+                IgnoreFollowingDisconnection = ignoreFollowing;
+                return;
+            }
+
+            IgnoreFollowingDisconnection = ignoreFollowing;
+            
+            
+            this.OnDisconnected?.Invoke(reason);
             this.Client.Dispose();
+            Client = null;
         }
 
         /// <summary>

@@ -33,9 +33,20 @@ namespace Winecrash.Client
 
             CreateDebugWindow();
             
-            new Sound(@"assets/sounds/tagueule.mp3");
-            new Sound(@"assets/sounds/decide.mp3");
             new Sound(@"assets/sounds/button_click.mp3");
+
+
+            NetObject.OnReceive += (data, type, connection) =>
+            {
+                if (data is NetEntity netEntity)
+                {
+                    
+                }
+                else if (data is NetChunk chunk)
+                {
+                    Debug.Log("received chunk"+ chunk.Coordinates);
+                }
+            };
 
             GameApplication app = (GameApplication)Graphics.Window;
             app.OnLoaded += () =>

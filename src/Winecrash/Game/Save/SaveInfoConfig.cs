@@ -12,7 +12,7 @@ namespace Winecrash
     {
         public const string RelativePath = "info.json";
 
-        private string _Name = Winecrash.Save.DefaultName;
+        private string _Name = "world";
         /// <summary>
         /// The name of the save.
         /// </summary>
@@ -31,7 +31,7 @@ namespace Winecrash
             }
         }
 
-        private WEngine.Version _Version = Game.Version;
+        private WEngine.Version _Version = Winecrash.Version;
         /// <summary>
         /// The version of the save.
         /// </summary>

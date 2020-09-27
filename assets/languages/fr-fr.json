@@ -22,6 +22,9 @@
         "#error_no_address_entered": "Veuillez entrer une adresse",
         "#error_socket_host_not_found": "Aucun hôte existant à cette adresse",
         "#error_socket_connection_refused": "Connexion refusée",
-        "#error_socket_try_again": "Veuillez réessayer (erreur temporaire / domaine non valide)"
+        "#error_socket_try_again": "Veuillez réessayer (erreur temporaire / domaine non valide)",
+        "#multiplayer_disconnected": "Déconnecté du serveur",
+        "#server_disconnection_timeout": "La connexion à été intérrompue",
+        "#server_disconnection_unspecified": "Aucune raison spécifiée"
     }
 }

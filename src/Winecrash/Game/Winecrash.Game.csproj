@@ -45,10 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configs\GameConfig.cs" />
     <Compile Include="ConsoleUtils.cs" />
     <Compile Include="Dimension.cs" />
-    <Compile Include="Game.cs" />
+    <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\PlayerEntity.cs" />
     <Compile Include="Folders.cs" />
     <Compile Include="Items\Block.cs" />
     <Compile Include="Items\Cube.cs" />
@@ -57,8 +57,8 @@
     <Compile Include="Items\Item.cs" />
     <Compile Include="Items\ItemCache.cs" />
     <Compile Include="Items\ItemDB.cs" />
-    <Compile Include="Localization\Language.cs" />
     <Compile Include="Net\NetChunk.cs" />
+    <Compile Include="Net\NetEntity.cs" />
     <Compile Include="Net\NetMessage.cs" />
     <Compile Include="Net\NetPlayer.cs" />
     <Compile Include="Player.cs" />
@@ -72,6 +72,7 @@
     <Compile Include="Sync\SynchronizeAttribute.cs" />
     <Compile Include="Sync\SyncMode.cs" />
     <Compile Include="TickType.cs" />
+    <Compile Include="Winecrash.cs" />
     <Compile Include="World\Chunk.cs" />
     <Compile Include="World\SaveChunk.cs" />
     <Compile Include="World\World.cs" />
@@ -84,6 +85,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="World\Generation" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

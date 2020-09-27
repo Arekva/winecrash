@@ -109,5 +109,49 @@ namespace Winecrash
             
             return chunk;
         }
+
+        public static Vector2I[] GetCoordsInRange(Vector2I startPosition, uint renderDistance)
+        {
+            int x = startPosition.X;
+            int y = startPosition.Y;
+
+            List<Vector2I> pos = new List<Vector2I>();
+            
+            // for each level until max is reached
+            for (int dist = 1; dist < renderDistance; dist++)
+            {
+                // limits
+                int minx = x - dist;
+                int maxx = x + dist;
+                int maxy = y + dist;
+                int miny = y - dist;
+
+                // top line
+                for (int i = minx + 1; i < maxx + 1; i++)
+                {
+                    pos.Add(new Vector2I(i, maxy));
+                }
+
+                // right line
+                for (int i = maxy - 1; i > miny - 1; i--)
+                {
+                    pos.Add(new Vector2I(maxx, i));
+                }
+
+                // bottom line
+                for (int i = maxx - 1; i > minx - 1; i--)
+                {
+                    pos.Add(new Vector2I(i, minx));
+                }
+
+                // left line
+                for (int i = miny + 1; i < maxy + 1; i++)
+                {
+                    pos.Add(new Vector2I(minx, i));
+                }
+            }
+
+            return pos.ToArray();
+        }
     }
 }

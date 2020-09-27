@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,6 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientTester.cs" />
+    <Compile Include="Configs\GameConfig.cs" />
+    <Compile Include="Game.cs" />
     <Compile Include="GameClient.cs" />
     <Compile Include="GUI\GameButton.cs" />
     <Compile Include="GUI\LargeButton.cs" />
@@ -54,11 +60,13 @@
     <Compile Include="GUI\LocalizedLabel.cs" />
     <Compile Include="GUI\SmallButton.cs" />
     <Compile Include="GUI\TinyButton.cs" />
+    <Compile Include="Localization\Language.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="MenuBackgroundControler.cs" />
     <Compile Include="MenuTip.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SkyboxController.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -68,6 +76,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

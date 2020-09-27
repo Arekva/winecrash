@@ -10,18 +10,18 @@ namespace Winecrash
 {
     public class GameConfig : Config
     {
-        private string _Language = Winecrash.Language.CultureToWinecrash(CultureInfo.InstalledUICulture);//"English (United Kingdom)";
+        private string _DisplayLanguage = Language.CultureToWinecrash(CultureInfo.InstalledUICulture);//"English (United Kingdom)";
         [Synchronize]
-        public string Language
+        public string DisplayLanguage
         {
             get
             {
-                return this._Language;
+                return this._DisplayLanguage;
             }
 
             set
             {
-                this._Language = value;
+                this._DisplayLanguage = value;
                 FireConfigChanged();
             }
         }
