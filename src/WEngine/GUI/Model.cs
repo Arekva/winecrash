@@ -16,8 +16,7 @@
             get//GlobalScreenAnchors
             {
                 Vector3D totalExtentsScaled = new Vector3D((Vector2D)Canvas.Main.Extents * 2.0D, 1.0D) * (this.WObject.Scale / 2.0D);
-
-
+                
                 double[] anchors = this.GlobalScreenAnchors;
 
 
@@ -43,6 +42,7 @@
 
                     if (sca.Y < sca.X)
                     {
+                        
                         smallest = sca.Y;
                     }
 

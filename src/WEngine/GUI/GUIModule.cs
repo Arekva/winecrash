@@ -11,6 +11,10 @@ namespace WEngine.GUI
 
         public Vector3D MinSize { get; set; } = Vector3D.One * Single.NegativeInfinity;
         public Vector3D MaxSize { get; set; } = Vector3D.One * Single.PositiveInfinity;
+
+        public Vector2D MinScreenPercent { get; set; } = Vector2D.One * double.NegativeInfinity;
+        public Vector2D MaxScreenPercent { get; set; } = Vector2D.One * double.PositiveInfinity;
+        
         internal virtual Vector3D GlobalPosition
         {
             get
@@ -152,12 +156,12 @@ namespace WEngine.GUI
                 Vector3D sizes = new Vector3D(xMax - xMin, yMax - yMin, 0.0D);
                 Vector3D scaledSizes = totalExtents * sizes;
                        
-                Vector3D min = this.MinSize;
-                Vector3D max = this.MaxSize;
+                Vector3D minSize = this.MinSize;
+                Vector3D maxSize = this.MaxSize;
 
-                scaledSizes.X = WMath.Clamp(scaledSizes.X, min.X, max.X);
-                scaledSizes.Y = WMath.Clamp(scaledSizes.Y, min.Y, max.Y);
-                scaledSizes.Z = WMath.Clamp(scaledSizes.Z, min.Z, max.Z);
+                scaledSizes.X = WMath.Clamp(scaledSizes.X, minSize.X, maxSize.X);
+                scaledSizes.Y = WMath.Clamp(scaledSizes.Y, minSize.Y, maxSize.Y);
+                scaledSizes.Z = WMath.Clamp(scaledSizes.Z, minSize.Z, maxSize.Z);
 
                 sizes = scaledSizes / totalExtents;
                 Vector3D halfSizes = sizes / 2.0D;

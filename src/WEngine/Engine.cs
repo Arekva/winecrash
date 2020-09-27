@@ -45,7 +45,7 @@ namespace WEngine
         {
             DoGUI = gui;
 
-            //System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+            System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
             if (DoGUI)
             {

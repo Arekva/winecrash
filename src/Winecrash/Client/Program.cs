@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
@@ -11,9 +12,10 @@ using WEngine.GUI;
 using WEngine.Networking;
 using Winecrash;
 using Winecrash.Net;
+using Debug = WEngine.Debug;
 using Label = WEngine.GUI.Label;
 
-namespace Client
+namespace Winecrash.Client
 {
     static class Program
     {
@@ -25,17 +27,23 @@ namespace Client
 
         static void Main(string[] args)
         {
-
             Engine.Run(true).Wait();
 
             Engine.OnStop += () => End.Set();
 
             CreateDebugWindow();
+            
+            new Sound(@"assets/sounds/tagueule.mp3");
+            new Sound(@"assets/sounds/decide.mp3");
+            new Sound(@"assets/sounds/button_click.mp3");
 
             GameApplication app = (GameApplication)Graphics.Window;
             app.OnLoaded += () =>
             {
-                WObject debugLabel = new WObject("Debug Text") { Parent = Canvas.Main.WObject };
+                app.Title = "Winecrash " + IntPtr.Size * 8 + "bits";
+                Database.Load("assets/items/items.json").ParseItems();
+                MainMenu.Show();
+                /*WObject debugLabel = new WObject("Debug Text") { Parent = Canvas.Main.WObject };
                 LbDebug = debugLabel.AddModule<Label>();
                 LbDebug.Aligns = TextAligns.Up | TextAligns.Left;
                 LbDebug.FontSize = 42;
@@ -45,9 +53,9 @@ namespace Client
                 Image wrapperPanel = connectorWrapper.AddModule<Image>();
                 wrapperPanel.MinAnchor = new Vector2D(0.6, 0.6);
                 wrapperPanel.Color = new Color256();
-                CreateDebugConnector(connectorWrapper);
+                CreateDebugConnector(connectorWrapper);*/
                 
-                Database.Load("assets/items/items.json").ParseItems();
+                
 
                 /*GameClient client = new GameClient("localhost", 27716);
                 client.OnConnect += (tpcclient) =>
@@ -99,7 +107,7 @@ namespace Client
 
         
 
-        private static void CreateDebugConnector(WObject parent)
+        /*private static void CreateDebugConnector(WObject parent)
         {
             WObject connectorPanelWobj = new WObject("Server Connector") { Parent = parent };
             Image connectorPanel = connectorPanelWobj.AddModule<Image>();
@@ -184,7 +192,7 @@ namespace Client
                     World.GetOrCreateChunk(chunk.ToSave());
                 }
             };
-        }
+        }*/
         
         private static void LogVerboseCMD(object obj)
         {

@@ -7,8 +7,8 @@
     <ProjectGuid>{99F21FC3-4D3F-4306-940E-6B727866FDB9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Winecrash</RootNamespace>
-    <AssemblyName>Winecrash</AssemblyName>
+    <RootNamespace>WinecrashCore</RootNamespace>
+    <AssemblyName>WinecrashCore</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configs\GameConfig.cs" />
     <Compile Include="ConsoleUtils.cs" />
     <Compile Include="Dimension.cs" />
     <Compile Include="Game.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Items\Item.cs" />
     <Compile Include="Items\ItemCache.cs" />
     <Compile Include="Items\ItemDB.cs" />
+    <Compile Include="Localization\Language.cs" />
     <Compile Include="Net\NetChunk.cs" />
     <Compile Include="Net\NetMessage.cs" />
     <Compile Include="Net\NetPlayer.cs" />
@@ -66,6 +68,9 @@
     <Compile Include="Save\SaveInfoConfig.cs" />
     <Compile Include="Save\SaveStatus.cs" />
     <Compile Include="StringMethods.cs" />
+    <Compile Include="Sync\Config.cs" />
+    <Compile Include="Sync\SynchronizeAttribute.cs" />
+    <Compile Include="Sync\SyncMode.cs" />
     <Compile Include="TickType.cs" />
     <Compile Include="World\Chunk.cs" />
     <Compile Include="World\SaveChunk.cs" />

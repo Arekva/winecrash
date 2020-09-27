@@ -1,0 +1,1 @@
+gource --key --s 0.25 --max-file-lag 0.1

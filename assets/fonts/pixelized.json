@@ -139,7 +139,7 @@
             "Character": "j",
             "X" : 945,
             "Y" : 123,
-            "Width" : 43,
+            "Width" : 53,
             "Height" : 123
         },
 
@@ -888,6 +888,13 @@
         },
         {
             "Character": "'",
+            "X" : 625,
+            "Y" : 861,
+            "Width" : 18,
+            "Height" : 123
+        },
+        {
+            "Character": "’",
             "X" : 625,
             "Y" : 861,
             "Width" : 18,

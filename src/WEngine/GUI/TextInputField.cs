@@ -23,7 +23,6 @@ namespace WEngine.GUI
 
         private bool _FirstRun = true;
         public bool Editing { get; private set; } = false;
-
         public string EmptyText { get; set; } = "Enter text...";
         public string Text { get; set; } = null;
 

@@ -40,7 +40,9 @@ namespace WEngine.Networking
 
         public TcpClient Client { get; private set; }
 
-        public const int DefaultPort = 27716;
+        public string Host { get; private set; } = "localhost";
+        public int Port { get; private set; } = Networking.DefaultPort;
+        
 
         public bool Connected
         {
@@ -52,20 +54,17 @@ namespace WEngine.Networking
 
         public Thread ClientThread { get; private set; } = null;
 
-        public BaseClient(string host = "127.0.0.1", int port = DefaultPort)
+        public BaseClient()
         {
-            ClientThread = new Thread(() =>
-            {
-                Client = new TcpClient();
-                OnConnected?.Invoke(Client);
-                Connect(host, port);
-            });
-            ClientThread.Start();
-            Engine.OnStop += () => ClientThread.Abort();
+            Client = new TcpClient();
+            OnConnected?.Invoke(Client);
+            Engine.OnStop += () => ClientThread?.Abort();
         }
 
-        public void Connect(string host = "127.0.0.1", int port = DefaultPort)
+        public void Connect(string host = "127.0.0.1", int port = 27716)
         {
+            this.Host = host;
+            this.Port = port;
             Client.Connect(host, port);
             LoopListeningAsync();
         }

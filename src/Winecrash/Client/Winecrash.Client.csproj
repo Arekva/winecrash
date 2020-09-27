@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3D9EF50D-6FC5-40A2-BEBA-0DBDA0099293}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Client</RootNamespace>
-    <AssemblyName>Client</AssemblyName>
+    <RootNamespace>Winecrash.Client</RootNamespace>
+    <AssemblyName>Winecrash</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -47,13 +47,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientTester.cs" />
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="GameClient.cs" />
+    <Compile Include="GUI\GameButton.cs" />
+    <Compile Include="GUI\LargeButton.cs" />
+    <Compile Include="GUI\LargeTextField.cs" />
+    <Compile Include="GUI\LocalizedLabel.cs" />
+    <Compile Include="GUI\SmallButton.cs" />
+    <Compile Include="GUI\TinyButton.cs" />
+    <Compile Include="MainMenu.cs" />
+    <Compile Include="MenuBackgroundControler.cs" />
+    <Compile Include="MenuTip.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

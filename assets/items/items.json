@@ -3,47 +3,47 @@
     [
         {
             "Identifier": "winecrash:direction",
-            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
             "Path": "assets/items/direction.json"
         },
         {
             "Identifier": "winecrash:air",
-            "RuntimeType": "Winecrash.Game.Block, Winecrash",
+            "RuntimeType": "Winecrash.Block, WinecrashCore",
             "Path": "assets/items/air.json"
         },
         {
             "Identifier": "winecrash:grass",
-            "RuntimeType": "Winecrash.Game.Grass, Winecrash",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
             "Path": "assets/items/grass.json"
         },
         {
             "Identifier": "winecrash:dirt",
-            "RuntimeType": "Winecrash.Game.Dirt, Winecrash",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
             "Path": "assets/items/dirt.json"
         },
         {
             "Identifier": "winecrash:stone",
-            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
             "Path": "assets/items/stone.json"
         },
         {
             "Identifier": "winecrash:bedrock",
-            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
             "Path": "assets/items/bedrock.json"
         },
         {
             "Identifier": "winecrash:sand",
-            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
             "Path": "assets/items/sand.json"
         },
         {
             "Identifier": "winecrash:leaves",
-            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
             "Path": "assets/items/leaves.json"
         },
         {
             "Identifier": "winecrash:log",
-            "RuntimeType": "Winecrash.Game.Cube, Winecrash",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
             "Path": "assets/items/log.json"
         }
     ]

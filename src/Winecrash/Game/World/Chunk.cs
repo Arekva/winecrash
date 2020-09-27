@@ -126,12 +126,9 @@ namespace Winecrash
         public Chunk WestNeighbor { get; set; } = null;
 #endregion
 
-
 #region Events
         public static event ChunkDelegate OnChunkSpawn;
 #endregion
-
-
         public SaveChunk ToSave()
         {
             Dictionary<string, ushort> distinctIDs = new Dictionary<string, ushort>(64);
@@ -168,7 +165,8 @@ namespace Winecrash
 
             return sc;
         }
-
+        
+        
 
 #region Engine Logic
         protected override void OnDelete()

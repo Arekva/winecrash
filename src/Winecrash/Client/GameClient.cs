@@ -3,12 +3,12 @@ using WEngine;
 using WEngine.Networking;
 using Winecrash.Net;
 
-namespace Client
+namespace Winecrash.Client
 {
     public class GameClient : BaseClient
     {
         private bool firstPingReceived = false;
-        public GameClient(string hostname, int port = BaseClient.DefaultPort) : base(hostname, port)
+        public GameClient() : base()
         {
             this.OnDisconnected += (reason) =>
             {

@@ -291,8 +291,12 @@ namespace WEngine
         {
             Cache.Remove(this);
 
-            GL.DeleteTexture(Handle);
-            this.Handle = -1;
+            if (Engine.DoGUI)
+            {
+                GL.DeleteTexture(Handle);
+                this.Handle = -1;
+            }
+
             this.Data = null;
 
             base.Delete();

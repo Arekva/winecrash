@@ -11,6 +11,17 @@
         "#menu_settings": "Paramètres",
         "#menu_quit_game": "Quitter",
         "#menu_game_version": "Winecrash {0}",
-        "#error_undefined_text": "Aucun texte défini"
+        "#error_undefined_text": "Aucun texte défini",
+        "#menu_back": "Retour",
+        "#connect_to_server": "Se connecter",
+        "#enter_server_address": "Entrez l'adresse du serveur",
+        "#server_connection_error": "Erreur: {0}",
+        "#multiplayer_menu_title": "Jouer en multijoueur",
+        "#connecting_to_server": "Connexion...",
+        "#error_invalid_port": "Port invalide",
+        "#error_no_address_entered": "Veuillez entrer une adresse",
+        "#error_socket_host_not_found": "Aucun hôte existant à cette adresse",
+        "#error_socket_connection_refused": "Connexion refusée",
+        "#error_socket_try_again": "Veuillez réessayer (erreur temporaire / domaine non valide)"
     }
 }

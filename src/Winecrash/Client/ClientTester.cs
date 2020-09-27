@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using WEngine;
 using WEngine.Networking;
 
-namespace Client
+namespace Winecrash.Client
 {
     public class ClientTester : Module
     {
