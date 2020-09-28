@@ -53,59 +53,14 @@ namespace Winecrash.Client
             {
                 app.Title = "Winecrash " + IntPtr.Size * 8 + "bits";
                 Database.Load("assets/items/items.json").ParseItems();
+                
                 MainMenu.Show();
-                /*WObject debugLabel = new WObject("Debug Text") { Parent = Canvas.Main.WObject };
-                LbDebug = debugLabel.AddModule<Label>();
-                LbDebug.Aligns = TextAligns.Up | TextAligns.Left;
-                LbDebug.FontSize = 42;
-                LbDebug.Text = "\\/ DEBUG \\/";
-
-                WObject connectorWrapper = new WObject("Connector") { Parent = Canvas.Main.WObject };
-                Image wrapperPanel = connectorWrapper.AddModule<Image>();
-                wrapperPanel.MinAnchor = new Vector2D(0.6, 0.6);
-                wrapperPanel.Color = new Color256();
-                CreateDebugConnector(connectorWrapper);*/
-                
-                
-
-                /*GameClient client = new GameClient("localhost", 27716);
-                client.OnConnect += (tpcclient) =>
-                Task.Run(async () =>
-                {
-                    for (int i = 0; i < 100; i++)
-                    {
-                        NetObject.Send(new NetPing(), tpcclient.Client);
-                        await Task.Delay(1000);
-                    }
-                });*/
             };
 
             NetPing.OnPingBack += (span) => {
                 Debug.Log($"Ping to the server: {span.TotalMilliseconds:F0} ms");
             };
-
-
-            //new WObject().AddModule<ClientTester>();
-
-            //Thread thread = new Thread(async () =>
-            //{
-            //Debug.Log("yes");
-            /*for (int i = 0; i < 1; i++)
-            {*/
-            /*Task.Run(async () =>
-            {
-                await Task.Delay(10)
-                NetObject.Send(new NetPing(DateTime.UtcNow, default), client.Client.Client);
-            };*/
-                    //await Task.Delay(100);
-                //}
-            /*})
-            {
-                Priority = ThreadPriority.Highest
-            };*/
-
-            //thread.Start();
-
+            
 
 
             Task.Run(() =>

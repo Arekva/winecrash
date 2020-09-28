@@ -265,7 +265,7 @@ namespace WEngine
 
             for (int i = 0; i < cameras.Length; i++)
             {
-                //todo: threaded OnRender - note: nope lol.
+                //todo: threaded OnRender - note: nope lol (well, when I'll finally make the game run onto Vulkan).
                 Module[] modules = cameras[i].WObject._Modules.ToArray();
 
                 for (int j = 0; j < modules.Length; j++)

@@ -107,6 +107,11 @@ namespace Winecrash
             chunk.InterdimensionalCoordinates = new Vector3I(coordinates, dimension);
             chunk.Blocks = blocks;
             
+            lock (ChunksLocker)
+            {
+                Chunks[dimension].Add(chunk);
+            }
+            
             return chunk;
         }
 

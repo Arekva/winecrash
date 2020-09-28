@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -50,7 +51,7 @@ namespace WEngine.Networking
         {
             NetData<NetObject> data = JsonConvert.DeserializeObject<NetData<NetObject>>(rawDataJson);
             NetObject obj = JsonConvert.DeserializeObject(data.Data, data.Type) as NetObject;
-            OnReceive?.Invoke(obj, data.Type, socket);
+            OnReceive?.BeginInvoke(obj, data.Type, socket, null, null);
             return obj;
         }
 
@@ -73,7 +74,7 @@ namespace WEngine.Networking
             }
 
             OnSend?.BeginInvoke(netobj, type, socket, null, null);
-            ((ISendible)ctor.Invoke(new object[] { netobj })).Send(socket);
+            Task.Run(() => ((ISendible)ctor.Invoke(new object[] { netobj })).Send(socket));
         }
 
         public virtual void Delete()

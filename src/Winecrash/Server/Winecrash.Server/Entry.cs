@@ -34,12 +34,17 @@ namespace Winecrash.Server
 
             server.OnPlayerConnect += (player) =>
             {
-                Debug.Log("Sending debug chunks");
-
-                Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 15), (vector) =>
+                Task.Run(() =>
                 {
-                    NetObject.Send(new NetChunk(World.GetOrCreateChunk(vector, "winecrash:overworld")),
-                        player.Client.Client);
+                    //Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 15), (vector) =>
+                    //{
+                    foreach (Vector2I vector in World.GetCoordsInRange(Vector2I.Zero, 15))
+                    {
+                        NetObject.Send(new NetChunk(World.GetOrCreateChunk(vector, "winecrash:overworld")),
+                            player.Client.Client);
+                    }
+                        
+                    //});
                 });
 
                 //for (int i = 0; i < 256; i++)

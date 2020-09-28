@@ -12,6 +12,7 @@ using WEngine.GUI;
 using WEngine.Networking;
 using Winecrash;
 using Winecrash.GUI;
+using Winecrash.Net;
 using Label = WEngine.GUI.Label;
 
 namespace Winecrash.Client
@@ -315,7 +316,15 @@ namespace Winecrash.Client
                     btnBack.Button.Locked = true;
                     taddress.Locked = true;
                     btnConnect.Label.Localization = "#connecting_to_server";
-                    if (!Program.Client) Program.Client = new GameClient();
+                    if (!Program.Client)
+                    {
+                        Program.Client = new GameClient();
+                        Program.Client.OnConnected += async client =>
+                        {
+                            await Task.Delay(100);
+                            NetObject.Send(new NetPlayer("Arthur"), client.Client);
+                        };
+                    }
 
                     try
                     {
@@ -387,8 +396,8 @@ namespace Winecrash.Client
             
             WObject back = new WObject("Multi Back") { Parent = btnPanel };
             GUI.LargeButton btnBack = back.AddModule<GUI.LargeButton>();
-            btnBack.Button.MinAnchor = new Vector2F(0.0F, 1.0F);
-            btnBack.Button.MaxAnchor = new Vector2F(0.45F, 0.6F);
+            btnBack.Button.MinAnchor = new Vector2F(0.0F, 0.6F);
+            btnBack.Button.MaxAnchor = new Vector2F(1.0F, 0.7F);
             btnBack.Label.Localization = "#menu_back";
             btnBack.Button.OnClick += () =>
             {

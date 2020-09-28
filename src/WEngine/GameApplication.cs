@@ -215,8 +215,6 @@ namespace WEngine
         /// </summary>
         protected void InitializeGame()
         {
-            //new Texture(); //todo: static constructor.
-
             // create the main game camera
             WObject camWobj = new WObject("Main Camera");
             Camera cam = camWobj.AddModule<Camera>();

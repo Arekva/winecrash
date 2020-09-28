@@ -19,14 +19,6 @@ namespace Winecrash.Client
                 MainMenu.Show();
                 MainMenu.ShowDisconnection(reason);
             };
-
-            NetPing.OnReceive += (data, type, connection) =>
-            {
-                if (_FirstPingReceived) return;
-                _FirstPingReceived = true;
-                
-                NetObject.Send(new NetPlayer("Arthur"), this.Client.Client);
-            };
         }
     }
 }

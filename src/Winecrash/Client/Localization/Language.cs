@@ -150,6 +150,7 @@ namespace Winecrash
                     //if(specName == "fr-CA") return "Français (Canadien)";
                 }
                     break;
+                //TODO: literally all the languages of the world, cya in years (imma focus on Europeans for now).
                 default:
                     return "English (United Kingdom)";
             }
