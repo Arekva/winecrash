@@ -117,6 +117,8 @@ namespace Winecrash
 
             List<Vector2I> pos = new List<Vector2I>();
             
+            pos.Add(startPosition);
+            
             // for each level until max is reached
             for (int dist = 1; dist < renderDistance; dist++)
             {

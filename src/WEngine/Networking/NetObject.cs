@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Sockets;
@@ -34,7 +35,7 @@ namespace WEngine.Networking
         /// <summary>
         /// All the generic constructor already built.
         /// </summary>
-        private static Dictionary<Type, ConstructorInfo> _GenericConstructors = new Dictionary<Type, ConstructorInfo>(16);
+        private static ConcurrentDictionary<Type, ConstructorInfo> _GenericConstructors = new ConcurrentDictionary<Type, ConstructorInfo>();
 
         [JsonIgnore]
         public bool Deleted { get; private set; } = false;
@@ -68,7 +69,7 @@ namespace WEngine.Networking
             if(!_GenericConstructors.TryGetValue(type, out ConstructorInfo ctor))
             {
                 ctor = typeof(NetData<>).MakeGenericType(type).GetConstructor(new Type[] { type });
-                _GenericConstructors.Add(type,ctor);
+                _GenericConstructors.TryAdd(type,ctor);
             }
 
             OnSend?.BeginInvoke(netobj, type, socket, null, null);
