@@ -74,6 +74,8 @@
     <Compile Include="TickType.cs" />
     <Compile Include="Winecrash.cs" />
     <Compile Include="World\Chunk.cs" />
+    <Compile Include="World\Generation\IDimensionGenerator.cs" />
+    <Compile Include="World\Generation\IGenerator.cs" />
     <Compile Include="World\SaveChunk.cs" />
     <Compile Include="World\World.cs" />
   </ItemGroup>
@@ -85,9 +87,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="World\Generation" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
