@@ -6,10 +6,10 @@ namespace Winecrash.Net
 {
     public class NetChunk : NetObject
     {
-        public Vector2I Coordinates { get; }
-        public string Dimension { get; }
-        public string[] Palette { get; }
-        public ushort[] Indices { get; }
+        public Vector2I Coordinates { get; private set; }
+        public string Dimension { get; private set; }
+        public string[] Palette { get; private set; }
+        public ushort[] Indices { get; private set; }
         
 
         public NetChunk(Chunk chunk) : this(chunk.ToSave()) { }
@@ -40,6 +40,15 @@ namespace Winecrash.Net
                 Coordinates = Coordinates,
                 Dimension = Dimension
             };
+        }
+
+        public override void Delete()
+        {
+            Dimension = null;
+            Palette = null;
+            Indices = null;
+            
+            base.Delete();
         }
     }
 }

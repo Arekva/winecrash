@@ -51,7 +51,7 @@ namespace WEngine.Networking
         {
             NetData<NetObject> data = JsonConvert.DeserializeObject<NetData<NetObject>>(rawDataJson);
             NetObject obj = JsonConvert.DeserializeObject(data.Data, data.Type) as NetObject;
-            OnReceive?.BeginInvoke(obj, data.Type, socket, null, null);
+            OnReceive?.Invoke(obj, data.Type, socket);
             return obj;
         }
 

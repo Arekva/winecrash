@@ -11,8 +11,8 @@ namespace WEngine.Networking
     /// </summary>
     public class NetPing : NetObject
     {
-        private static readonly Dictionary<ushort, DateTime> _AwaitedPings = new Dictionary<ushort, DateTime>(3);
-        private static readonly object _PingsLockers = new object();
+        //private static readonly Dictionary<ushort, DateTime> _AwaitedPings = new Dictionary<ushort, DateTime>(3);
+        //private static readonly object _PingsLockers = new object();
         private static readonly WRandom _IDRandom = new WRandom("pings".GetHashCode());
 
         public static event PingBackDelegate OnPingBack;
@@ -22,17 +22,17 @@ namespace WEngine.Networking
 
         static NetPing()
         {
-            NetObject.OnReceive += ReceivePing;
+            //NetObject.OnReceive += ReceivePing;
         }
 
         public NetPing()
         {
             this.ID = (ushort)_IDRandom.Next(1, ushort.MaxValue);
 
-            lock (_PingsLockers)
-            {
-                _AwaitedPings.Add(this.ID, DateTime.Now);
-            }
+            //lock (_PingsLockers)
+            //{
+            //    _AwaitedPings.Add(this.ID, DateTime.Now);
+            //}
         }
         /// <summary>
         /// JSON constructor; use <see cref="NetPing.NetPing()"/>
@@ -44,7 +44,7 @@ namespace WEngine.Networking
             this.ID = id;
         }
 
-        private static void ReceivePing(NetObject data, Type dataType, Socket connection)
+        /*private static void ReceivePing(NetObject data, Type dataType, Socket connection)
         {
             if (data is NetPing ping)
             {
@@ -62,6 +62,6 @@ namespace WEngine.Networking
                     }
                 }
             }
-        }
+        }*/
     }
 }

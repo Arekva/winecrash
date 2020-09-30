@@ -32,7 +32,7 @@ namespace WEngine.Networking
         /// <summary>
         /// All the received untreated data of the server.
         /// </summary>
-        protected List<NetObject> PendingData { get; private set; } = new List<NetObject>();
+        protected List<NetObject> PendingData { get; private set; } = new List<NetObject>(1024);
         /// <summary>
         /// The thread locker object for the <see cref="PendingData"/> list.
         /// </summary>
@@ -86,7 +86,8 @@ namespace WEngine.Networking
                 while (this.Connected)
                 {
                     NetObject obj = await ReceiveDataAsync(this.Client.Client);
-
+                    
+                    
                     if (this.Connected)
                     {
                         if (obj is NetKick kick)
@@ -96,11 +97,9 @@ namespace WEngine.Networking
                         }
                         else
                         {
-                            lock (PendingDataLocker)
-                            {
-                                OnServerDataReceived?.Invoke(obj);
-                                PendingData.Add(obj);
-                            }
+                            OnServerDataReceived?.Invoke(obj);
+                            
+                            lock (PendingDataLocker) PendingData.Add(obj);
                         }
                     }
                 }
@@ -113,7 +112,7 @@ namespace WEngine.Networking
             while (this.Connected)
             {
                 int waitTime = (int)((1.0D / PingRate) * 1000.0D);
-                NetObject.Send(new NetPing(), this.Client.Client);
+                //NetObject.Send(new NetPing(), this.Client.Client);
                 await Task.Delay(waitTime);
             }
             
@@ -190,11 +189,17 @@ namespace WEngine.Networking
                     totalread += currentread;
                 }
 
-                string rawdata = NetData<NetDummy>.Encoding.GetString(data);
+                try
+                {
+                    netobj = NetObject.Receive(NetData<NetDummy>.Encoding.GetString(data), client);
+                }
+                catch (Exception e)
+                {
+                    netobj = new NetDummy();
+                    this.Disconnect("#server_disconnection_timeout");
+                }
 
-                netobj = NetObject.Receive(rawdata, client);
-
-            }).ConfigureAwait(false);
+            }).ConfigureAwait(true);
 
             return netobj;
         }

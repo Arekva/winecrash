@@ -300,9 +300,15 @@ namespace WEngine.Networking
                 totalread += currentread;
             }
 
-            string rawdata = NetData<NetDummy>.Encoding.GetString(data);
-
-            return NetObject.Receive(rawdata, client);
+            try
+            {
+                return NetObject.Receive(NetData<NetDummy>.Encoding.GetString(data), client);
+            }
+            catch(Exception e)
+            {
+                Task.Run(() => Debug.LogError("Error while parsing netdata from " + e));
+                return new NetDummy();
+            }
         }
 
         /// <summary>

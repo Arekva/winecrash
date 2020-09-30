@@ -318,12 +318,7 @@ namespace Winecrash.Client
                     btnConnect.Label.Localization = "#connecting_to_server";
                     if (!Program.Client)
                     {
-                        Program.Client = new GameClient();
-                        Program.Client.OnConnected += async client =>
-                        {
-                            await Task.Delay(100);
-                            NetObject.Send(new NetPlayer("Arthur"), client.Client);
-                        };
+                        Program.Client = new GameClient("Arthur");
                     }
 
                     try

@@ -114,13 +114,16 @@ namespace Winecrash.Server
                 data = this.PendingData.ToArray();
                 this.PendingData.Clear();
             }
-
+            
+            
             for (int i = 0; i < data.Length; i++)
             {
                 if (data[i].Deleted) continue;
+                Debug.Log(data[i].NObject.GetType());
 
-                if(data[i].NObject is NetPlayer nplayer)
+                if (data[i].NObject is NetPlayer nplayer)
                 {
+                    
                     RequiredAuth auth = null;
                     lock (AuthLocker)
                         auth = AuthsRequired.FirstOrDefault(a => a.Client == data[i].Client);

@@ -13,6 +13,14 @@ namespace Winecrash.Server
     {
         public TcpClient Client { get; }
 
+        public bool Connected
+        {
+            get
+            {
+                return this.Client.Connected;
+            }
+        }
+
         public TcpPlayer(TcpClient client, string nickname) : base(nickname)
         {
             this.Client = client;

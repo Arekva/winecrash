@@ -40,8 +40,10 @@ namespace Winecrash.Server
                     //{
                     foreach (Vector2I vector in World.GetCoordsInRange(Vector2I.Zero, 15))
                     {
-                        NetObject.Send(new NetChunk(World.GetOrCreateChunk(vector, "winecrash:overworld")),
-                            player.Client.Client);
+                        if (!player.Connected) break;
+                        //Debug.Log("sending chunk");
+                        //NetObject.Send(new NetChunk(World.GetOrCreateChunk(vector, "winecrash:overworld")),
+                        //    player.Client.Client);
                     }
                         
                     //});
