@@ -61,7 +61,7 @@ namespace WEngine.Networking
         /// <param name="netobj">The NetObject to send. Cannot be null.</param>
         /// <param name="socket">The client to send the data to.</param>
         /// <exception cref="NullReferenceException"></exception>
-        public static void Send(NetObject netobj, Socket socket)
+        public static void Send(NetObject netobj, Socket socket, bool deleteOnSend = true)
         {
             if (!netobj) throw new NullReferenceException("NetObject.cs: " + nameof(netobj) + " cannot be null.");
 
@@ -74,7 +74,11 @@ namespace WEngine.Networking
             }
 
             OnSend?.BeginInvoke(netobj, type, socket, null, null);
-            Task.Run(() => ((ISendible)ctor.Invoke(new object[] { netobj })).Send(socket));
+            Task.Run(() =>
+            {
+                ((ISendible)ctor.Invoke(new object[] {netobj})).Send(socket);
+                if(deleteOnSend) netobj.Delete();
+            });
         }
 
         public virtual void Delete()

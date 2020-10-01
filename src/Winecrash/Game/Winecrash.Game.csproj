@@ -51,6 +51,7 @@
     <Compile Include="Entities\PlayerEntity.cs" />
     <Compile Include="Folders.cs" />
     <Compile Include="Items\Block.cs" />
+    <Compile Include="Items\BlockFaces.cs" />
     <Compile Include="Items\Cube.cs" />
     <Compile Include="Items\CubeTexturePaths.cs" />
     <Compile Include="Items\Database.cs" />

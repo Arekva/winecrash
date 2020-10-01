@@ -33,7 +33,7 @@ namespace WEngine
 
         public Material(Shader shader) : base()
         { 
-            Cache.Add(this);
+            lock(CacheLocker) Cache.Add(this);
 
             if (shader == null)
             {
@@ -69,11 +69,15 @@ namespace WEngine
         internal MaterialData[] _Data { get; set; }
         private MaterialData[] _DataInMaterial;
 
-        internal static List<Material> Cache = new List<Material>();
+        internal static List<Material> Cache { get; set; } = new List<Material>();
+        internal static object CacheLocker { get; } = new object();
 
         public static Material Find(string name)
         {
-            return Cache.FirstOrDefault(mat => mat.Name == name);
+            Material[] mats = null;
+            lock (CacheLocker) mats = Cache.ToArray();
+            
+            return mats.FirstOrDefault(mat => mat.Name == name);
         }
 
         public BlendEquationMode BlendEquation { get; set; } = BlendEquationMode.FuncAdd;
@@ -217,7 +221,10 @@ namespace WEngine
         {
             this.Shader = null;
             this._Data = null;
-            Cache.Remove(this);
+            this._DataInMaterial = null;
+            
+            lock(CacheLocker) Cache.Remove(this);
+            
             base.Delete();
         }
 

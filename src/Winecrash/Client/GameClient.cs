@@ -49,6 +49,12 @@ namespace Winecrash.Client
                         NetObject.Send(new NetPlayer(Nickname), Client.Client);
                     }
                 }
+                
+                else if (nobj is NetChunk nchunk)
+                {
+                    Debug.Log("nchunk");
+                    World.GetOrCreateChunk(nchunk.ToSave());
+                }
 
                 pending[i].Delete();
             }

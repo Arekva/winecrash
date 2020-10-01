@@ -130,6 +130,10 @@ namespace WEngine.Networking
                     {
                         NetObject obj = await ReceiveDataAsync(client.Client);
 
+                        if (obj is NetDummy)
+                        {
+                            break;
+                        }
 
                         if (client != null && this.Running)
                         {
@@ -306,7 +310,7 @@ namespace WEngine.Networking
             }
             catch(Exception e)
             {
-                Task.Run(() => Debug.LogError("Error while parsing netdata from " + e));
+                //Task.Run(() => Debug.LogError("Error while parsing netdata from " + e));
                 return new NetDummy();
             }
         }

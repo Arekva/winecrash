@@ -5,7 +5,7 @@ namespace WEngine
     /// <summary>
     /// The base object used by the engine. Mostly contains a GUID and can be deleted by properly handling objects for the GC.
     /// </summary>
-    public abstract class BaseObject : IComparable
+    public abstract class BaseObject : IEquatable<BaseObject>
     {
         /// <summary>
         /// The name of this object.
@@ -86,11 +86,6 @@ namespace WEngine
             this.Deleted = true;
         }
 
-        public int CompareTo(object obj)
-        {
-            return Name.CompareTo(obj);
-        }
-
         public override string ToString()
         {
             return $"{this.Name} ({this.GetType().Name})";
@@ -103,7 +98,12 @@ namespace WEngine
         /// <returns>If both objects are the same one.</returns>
         public override bool Equals(object obj)
         {
-            return obj is BaseObject wobj ? this.Identifier == wobj.Identifier : false;
+            return obj is BaseObject wobj && Equals(wobj);
+        }
+
+        public bool Equals(BaseObject other)
+        {
+            return other && other.Identifier == this.Identifier;
         }
 
         public override int GetHashCode()

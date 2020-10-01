@@ -119,8 +119,6 @@ namespace WEngine
             for (int i = 0; i < nAttribs; i++)
             {
                 GL.GetActiveAttrib(Handle, i, 16, out int ALength, out int ASize, out ActiveAttribType AType, out string AName);
-
-
                 
                 this.Attributes[i] = new ShaderAttributeData(AName, i, ASize, ALength, AType);
             }

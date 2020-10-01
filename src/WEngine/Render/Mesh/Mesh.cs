@@ -9,12 +9,12 @@ namespace WEngine
     {
         public Mesh() : base() 
         {
-            Cache.Add(this);
+            lock(CacheLocker) Cache.Add(this);
         }
 
         public Mesh(string name) : base(name) 
         {
-            Cache.Add(this);
+            lock(CacheLocker) Cache.Add(this);
         }
 
         public Mesh(Mesh original) : base()
@@ -25,7 +25,7 @@ namespace WEngine
             this.Tangents = original.Tangents;
             this.Normals = original.Normals;
 
-            Cache.Add(this);
+            lock(CacheLocker) Cache.Add(this);
 
 
             this.Apply(true);
@@ -50,7 +50,8 @@ namespace WEngine
 
         public event MeshDeleteDelegate OnDelete;
 
-        internal static List<Mesh> Cache = new List<Mesh>();
+        internal static List<Mesh> Cache { get; set; } = new List<Mesh>();
+        internal static object CacheLocker { get; } = new object();
 
         internal void ApplySafe(bool deleteWorkArrays)
         {
@@ -266,7 +267,7 @@ namespace WEngine
             OnDelete?.Invoke();
             OnDelete = null;
 
-            Cache.Remove(this);
+            lock(CacheLocker) Cache.Remove(this);
 
             base.Delete();
         }

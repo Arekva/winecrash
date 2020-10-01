@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using Winecrash;
 
 namespace WEngine
 {
@@ -64,7 +66,8 @@ namespace WEngine
             {
                 if(_Parent != null)
                 {
-                    _Parent._Children.Remove(this);
+                    lock(_Parent._ChildrenLocker)
+                        _Parent._Children.Remove(this);
                     _Parent = null;
                 }
 
@@ -75,8 +78,10 @@ namespace WEngine
                     Vector3F oldGlobalScale = this.Scale;
 
                     this._Parent = value;
-                    value._Children.Add(this);
-
+                    
+                    lock(value._ChildrenLocker)
+                        value._Children.Add(this);
+                    
                     this.Position = oldGlobalPosition;
                     this.Rotation = oldGlobalRotation;
                     this.Scale = oldGlobalScale;

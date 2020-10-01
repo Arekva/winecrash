@@ -25,8 +25,8 @@ namespace WEngine.GUI
 							Matrix4D.Identity
 				* sender.ViewMatrix * sender.ProjectionMatrix;
 
-			GL.BindVertexArray(_Mesh.VertexArrayObject);
-			GL.BindBuffer(BufferTarget.ArrayBuffer, _Mesh.VertexBufferObject);
+			GL.BindVertexArray(Mesh.VertexArrayObject);
+			GL.BindBuffer(BufferTarget.ArrayBuffer, Mesh.VertexBufferObject);
 
 			this.Material.Shader.SetAttribute("position", AttributeTypes.Vertice);
 			this.Material.Shader.SetAttribute("uv", AttributeTypes.UV);
@@ -37,7 +37,7 @@ namespace WEngine.GUI
 
 			GL.Disable(EnableCap.DepthTest);
 
-			GL.DrawElements((Wireframe | Global_Wireframe ) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)_Mesh.Indices, DrawElementsType.UnsignedInt, 0);
+			GL.DrawElements((Wireframe | Global_Wireframe ) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)Mesh.Indices, DrawElementsType.UnsignedInt, 0);
 		}
 
 		protected internal override void OnDelete()

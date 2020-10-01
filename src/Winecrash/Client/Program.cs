@@ -38,29 +38,21 @@ namespace Winecrash.Client
             new Sound(@"assets/sounds/button_click.mp3");
             
             Tester = new WObject("tester") /*{ Enabled = false }*/.AddModule<ClientTester>();
-            
+
+            new Shader("assets/shaders/chunk/Chunk.vert", "assets/shaders/chunk/Chunk.frag");
             
             GameApplication app = (GameApplication)Graphics.Window;
             app.OnLoaded += () =>
             {
+
                 app.Title = "Winecrash " + IntPtr.Size * 8 + "bits";
                 Database.Load("assets/items/items.json").ParseItems();
                 
                 MainMenu.Show();
             };
-
-            NetPing.OnPingBack += (span) => {
-                Debug.Log($"Ping to the server: {span.TotalMilliseconds:F0} ms");
-            };
             
-
-
-            Task.Run(() =>
-            {
-                End.WaitOne();
-                //thread.Abort();
-                return;
-            }).Wait();
+            
+            Task.Run(() => End.WaitOne()).Wait();
         }
 
         private static void LogVerboseCMD(object obj)

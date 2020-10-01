@@ -8,28 +8,15 @@ namespace WEngine
     
     public class MeshRenderer : Module
     {
-        public Mesh Mesh
-        {
-            get
-            { 
-                return this._Mesh;
-            }
-
-            set
-            {
-                this._Mesh = value;
-            }
-        }
-        protected Mesh _Mesh = null;
+        public Mesh Mesh { get; set; } = null;
 
         public Material Material { get; set; } = Material.Find("Error");
 
         internal static object ActiveMeshRenderersLocker = new object();
         internal static List<MeshRenderer> ActiveMeshRenderers { get; set; } = new List<MeshRenderer>();
         internal static List<MeshRenderer> MeshRenderers { get; set; } = new List<MeshRenderer>();
-
-        //public event MeshRenderDelegate OnRender;
-
+        internal static object MeshRenderersLocker { get; } = new object();
+        
         public bool UseMask { get; set; } = true;
         public bool Wireframe { get; set; } = false;
 
@@ -37,7 +24,7 @@ namespace WEngine
 
         protected bool CheckValidity(Camera sender)
         {
-            return (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0) || Deleted || _Mesh == null  || _Mesh.ElementBufferObject == -1 || _Mesh.VertexArrayObject == -1 || _Mesh.VertexBufferObject == -1;
+            return (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0) || Deleted || Mesh == null  || Mesh.ElementBufferObject == -1 || Mesh.VertexArrayObject == -1 || Mesh.VertexBufferObject == -1;
         }
 
         internal virtual void Use(Camera sender)
@@ -50,8 +37,8 @@ namespace WEngine
             Matrix4D.Mult(in trans, in sender._RenderViewMatrix, out transform);
             Matrix4D.Mult(in transform, sender._RenderProjectionMatrix, out transform);
 
-            GL.BindVertexArray(_Mesh.VertexArrayObject);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _Mesh.VertexBufferObject);
+            GL.BindVertexArray(Mesh.VertexArrayObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, Mesh.VertexBufferObject);
 
             this.Material.SetData<Matrix4>("transform", (Matrix4)transform);
 
@@ -63,7 +50,7 @@ namespace WEngine
 
             //OnRender?.Invoke();
 
-            GL.DrawElements((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)_Mesh.Indices, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)Mesh.Indices, DrawElementsType.UnsignedInt, 0);
         }
 
         protected internal override void Creation()
@@ -93,13 +80,15 @@ namespace WEngine
 
         protected internal override void OnDelete()
         {
-            lock(ActiveMeshRenderersLocker)
-            {
-                Material = null;
-                MeshRenderers.Remove(this);
+            lock (ActiveMeshRenderersLocker)
                 ActiveMeshRenderers.Remove(this);
-            }
-            this._Mesh = null;
+
+            lock (MeshRenderersLocker)
+                MeshRenderers.Remove(this);
+            
+                        
+            this.Material = null;
+            this.Mesh = null;
         }
     }
 }

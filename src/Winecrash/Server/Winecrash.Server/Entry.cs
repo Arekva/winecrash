@@ -30,6 +30,13 @@ namespace Winecrash.Server
             
             Database.Load("assets/items/items.json").ParseItems();
 
+            Debug.Log("Loading world...");
+            foreach(Vector2I vector in World.GetCoordsInRange(Vector2I.Zero, 15))
+            {
+                World.GetOrCreateChunk(vector, "winecrash:overworld");
+            };
+            Debug.Log("World loaded !");
+
             server = new GameServer(IPAddress.Any, 27716);
 
             server.OnPlayerConnect += (player) =>
@@ -41,24 +48,12 @@ namespace Winecrash.Server
                     foreach (Vector2I vector in World.GetCoordsInRange(Vector2I.Zero, 15))
                     {
                         if (!player.Connected) break;
-                        //Debug.Log("sending chunk");
-                        //NetObject.Send(new NetChunk(World.GetOrCreateChunk(vector, "winecrash:overworld")),
-                        //    player.Client.Client);
-                    }
                         
+                        NetObject.Send(new NetChunk(World.GetOrCreateChunk(vector, "winecrash:overworld")),
+                            player.Client.Client);
+                    }
                     //});
                 });
-
-                //for (int i = 0; i < 256; i++)
-                //{
-                //World.GetOrCreateChunk(new Vector2I(0, i), "winecrash:overworld");
-                //}
-            };
-
-            server.OnPlayerDisconnect += (player, reason) =>
-            {
-                //WObject.TraceHierarchy();
-                //World.WorldWObject?.Delete();
             };
             
             server.Run();
