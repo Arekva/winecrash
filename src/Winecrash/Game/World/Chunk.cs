@@ -213,7 +213,6 @@ namespace Winecrash
 
             if (Engine.DoGUI)
             {
-                Debug.Log("GUI CHUNK");
                 BlocksRenderer = this.WObject.AddModule<MeshRenderer>();
 
                 Material m = BlocksRenderer.Material = new Material(Shader.Find("Chunk"));
@@ -221,6 +220,8 @@ namespace Winecrash
                 m.SetData("color", new Color256(1, 1, 1, 1));
                 m.SetData("minLight", 0.1F);
                 m.SetData("maxLight", 1.0F);
+
+                Task.Run(Construct);
             }
         }
 
@@ -379,7 +380,7 @@ namespace Winecrash
 
             if (vertices.Count != 0)
             {
-                
+                Debug.Log("vertices");
                 if (this.BlocksRenderer.Mesh == null)
                 {
                     this.BlocksRenderer.Mesh = new Mesh("Chunk Mesh");

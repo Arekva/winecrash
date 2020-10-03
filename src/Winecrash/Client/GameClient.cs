@@ -52,7 +52,6 @@ namespace Winecrash.Client
                 
                 else if (nobj is NetChunk nchunk)
                 {
-                    Debug.Log("nchunk");
                     World.GetOrCreateChunk(nchunk.ToSave());
                 }
 

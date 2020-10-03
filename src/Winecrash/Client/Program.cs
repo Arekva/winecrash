@@ -39,15 +39,23 @@ namespace Winecrash.Client
             
             Tester = new WObject("tester") /*{ Enabled = false }*/.AddModule<ClientTester>();
 
-            new Shader("assets/shaders/chunk/Chunk.vert", "assets/shaders/chunk/Chunk.frag");
+            Client = new GameClient("Arthur");
+
             
+
+            Client.OnConnected += client =>
+            {
+                Camera.Main.WObject.Position = Vector3D.Up * 80;
+                Camera.Main.WObject.Rotation = new Quaternion(20, 0, 0);
+            };
+
             GameApplication app = (GameApplication)Graphics.Window;
             app.OnLoaded += () =>
             {
-
+                new Shader("assets/shaders/chunk/Chunk.vert", "assets/shaders/chunk/Chunk.frag");
                 app.Title = "Winecrash " + IntPtr.Size * 8 + "bits";
                 Database.Load("assets/items/items.json").ParseItems();
-                
+                Chunk.Texture = ItemCache.BuildChunkTexture(out int xsize, out int ysize);
                 MainMenu.Show();
             };
             

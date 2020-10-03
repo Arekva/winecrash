@@ -8,7 +8,7 @@ using WEngine;
 
 namespace Winecrash
 {
-    internal static class ItemCache
+    public static class ItemCache
     {
         private static readonly Dictionary<string, Item> _ItemsIdentifiers = new Dictionary<string, Item>();
         private static readonly Dictionary<Item, ushort> _ItemsListIndexes = new Dictionary<Item, ushort>();
