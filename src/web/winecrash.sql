@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : sam. 03 oct. 2020 à 23:48
+-- Généré le : Dim 04 oct. 2020 à 01:08
 -- Version du serveur :  5.7.31
 -- Version de PHP : 7.3.21
 
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `nickname` (
   `userGuid` varchar(36) NOT NULL COMMENT 'The GUID of the user.',
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'The identifier of this nickname. Relative to user.',
   `value` varchar(16) NOT NULL COMMENT 'The actual value of the nickname (max 16 chars) in alphanumeric + -/_',
-  `changeDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'When this nickname has been set.',
+  `changeStamp` int(11) NOT NULL COMMENT 'When this nickname has been set.',
   PRIMARY KEY (`userGuid`,`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Relative to user.';
 
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `skin` (
 DROP TABLE IF EXISTS `token`;
 CREATE TABLE IF NOT EXISTS `token` (
   `value` varchar(64) NOT NULL COMMENT 'The actual key of the token.',
-  `creationDate` timestamp NOT NULL COMMENT 'The creation timestamp of the token.',
+  `creationStamp` int(11) NOT NULL COMMENT 'The creation timestamp of the token.',
   `userGuid` varchar(36) NOT NULL COMMENT 'The user''s unique identifier.',
   PRIMARY KEY (`value`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -74,9 +74,9 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `guid` varchar(36) NOT NULL COMMENT 'The global unique identifier - GUID - (128 bits) of the user. ',
   `username` varchar(16) NOT NULL COMMENT 'The username of the user. Must be in alphanumerial + -/_',
-  `password` varchar(32) NOT NULL COMMENT 'The password of the user. Must be encrypted.',
+  `password` varchar(64) NOT NULL COMMENT 'The password of the user. Must be encrypted.',
   `email` varchar(32) NOT NULL COMMENT 'The email of the user.',
-  `creationDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'The timestamp of the creation of this user.',
+  `creationStamp` int(14) NOT NULL COMMENT 'The timestamp of the creation of this user.',
   PRIMARY KEY (`guid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 COMMIT;
