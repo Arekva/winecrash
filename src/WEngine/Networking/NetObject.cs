@@ -55,6 +55,11 @@ namespace WEngine.Networking
             return obj;
         }
 
+        internal static Task<NetObject> ReceiveAsync(string rawDataJson, Socket socket)
+        {
+            return Task.Run(() => Receive(rawDataJson, socket));
+        }
+
         /// <summary>
         /// Send a <see cref="NetObject"/>.
         /// </summary>

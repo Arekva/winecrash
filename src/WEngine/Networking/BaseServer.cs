@@ -306,7 +306,7 @@ namespace WEngine.Networking
 
             try
             {
-                return NetObject.Receive(NetData<NetDummy>.Encoding.GetString(data), client);
+                return NetObject.Receive(NetData<NetDummy>.Encoding.GetString(NetData<NetDummy>.Decompress(data)), client);
             }
             catch(Exception e)
             {

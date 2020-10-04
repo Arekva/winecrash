@@ -191,7 +191,7 @@ namespace WEngine.Networking
 
                 try
                 {
-                    netobj = NetObject.Receive(NetData<NetDummy>.Encoding.GetString(data), client);
+                    netobj = NetObject.Receive(NetData<NetDummy>.Encoding.GetString(NetData<NetDummy>.Decompress(data)), client);
                 }
                 catch (Exception e)
                 {

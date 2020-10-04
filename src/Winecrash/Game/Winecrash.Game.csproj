@@ -59,9 +59,11 @@
     <Compile Include="Items\ItemCache.cs" />
     <Compile Include="Items\ItemDB.cs" />
     <Compile Include="Net\NetChunk.cs" />
+    <Compile Include="Net\NetEdit.cs" />
     <Compile Include="Net\NetEntity.cs" />
     <Compile Include="Net\NetMessage.cs" />
     <Compile Include="Net\NetPlayer.cs" />
+    <Compile Include="Net\NetUser.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Save\Save.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

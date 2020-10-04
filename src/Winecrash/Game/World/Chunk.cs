@@ -217,7 +217,7 @@ namespace Winecrash
 
                 Material m = BlocksRenderer.Material = new Material(Shader.Find("Chunk"));
                 m.SetData("albedo", Chunk.Texture);
-                m.SetData("color", new Color256(1, 1, 1, 1));
+                m.SetData("color", new Color256(1, 1, 1, 0));
                 m.SetData("minLight", 0.1F);
                 m.SetData("maxLight", 1.0F);
 

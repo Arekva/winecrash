@@ -1,3 +1,7 @@
+# Safety
+dbConnect.*
+
+
 # IntelliJ Rider
 .idea/
 
