@@ -3,16 +3,16 @@
 
     $requestType = "none";
 
-    if(isset($_REQUEST['t'])) $requestType = "token";
-    else if(isset($_REQUEST['n'])) $requestType = "nickname";
-    else if(isset($_REQUEST['g'])) $requestType = "identifier";
+    if(isset($_REQUEST['token'])) $requestType = "token";
+    else if(isset($_REQUEST['nickname'])) $requestType = "nickname";
+    else if(isset($_REQUEST['guid'])) $requestType = "identifier";
 
 
     require "RequestError.php";
 
     require "dbManage.php";
 
-    CreateUser("arekva", "test", "arekva@protonmail.com");
+    echo CreateUser("Arekva", "test", "arekvaa@protonmail.com", "Arekva");
 
 
     switch ($requestType)
@@ -37,7 +37,7 @@
 
         default:
             {
-                $error = new RequestError(400, "Invalid request code. Use t for Token, n for Nickname and g for GUID.");
+                $error = new RequestError(400, "Invalid request code. Use 'token', 'nickname', 'guid'.");
                 echo json_encode($error);
             }
             break;
