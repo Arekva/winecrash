@@ -146,16 +146,16 @@ namespace Winecrash
 #endregion
         public SaveChunk ToSave()
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            ConcurrentDictionary<string, ushort> distinctIDsC = new ConcurrentDictionary<string, ushort>();
-            //Dictionary<string, ushort> distinctIDs = new Dictionary<string, ushort>(64);
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
+            //ConcurrentDictionary<string, ushort> distinctIDsC = new ConcurrentDictionary<string, ushort>();
+            Dictionary<string, ushort> distinctIDs = new Dictionary<string, ushort>(64);
             ushort[] blocksRef = new ushort[Chunk.TotalBlocks];
             
-            //int chunkIndex = 0;
-            //ushort paletteIndex = 0;
+            int chunkIndex = 0;
+            ushort paletteIndex = 0;
 
-            Parallel.For(0, Chunk.TotalBlocks, i =>
+            /*Parallel.For(0, Chunk.TotalBlocks, i =>
             {
                 string id = ItemCache.GetIdentifier(this.Blocks[i]);
                 
@@ -167,9 +167,9 @@ namespace Winecrash
 
                 blocksRef[i] = distinctIDsC[id];
                 //Debug.Log(blocksRef[i]);
-            });
+            });*/
             
-            /*for (int z = 0; z < Chunk.Depth; z++)
+            for (int z = 0; z < Chunk.Depth; z++)
             {
                 for (int y = 0; y < Chunk.Height; y++)
                 {
@@ -185,9 +185,9 @@ namespace Winecrash
                         blocksRef[chunkIndex++] = distinctIDs[id];
                     }
                 }
-            }*/
-            sw.Stop();
-            Debug.Log("Save making time: " + sw.Elapsed.TotalMilliseconds.ToString("F0") + " ms");
+            }
+            //sw.Stop();
+            //Debug.Log("Save making time: " + sw.Elapsed.TotalMilliseconds.ToString("F0") + " ms");
             //Debug.Log();
 
             SaveChunk sc = new SaveChunk()
@@ -195,7 +195,7 @@ namespace Winecrash
                 Coordinates = Coordinates,
                 Dimension = Dimension.Identifier,
                 Indices = blocksRef,
-                Palette = distinctIDsC.Keys.ToArray()
+                Palette = distinctIDs.Keys.ToArray()
             };
             
             
@@ -245,8 +245,6 @@ namespace Winecrash
                 m.SetData("color", new Color256(1, 1, 1, 0));
                 m.SetData("minLight", 0.1F);
                 m.SetData("maxLight", 1.0F);
-
-                Task.Run(Construct);
             }
         }
 
@@ -273,7 +271,7 @@ namespace Winecrash
                 {
                     BuildEndFrame = false;
 
-                    Task.Run(Construct);
+                    /*Task.Run(*/Construct()/*)*/;
                 }
             }
 
@@ -341,6 +339,13 @@ namespace Winecrash
         }
         public void Construct()
         {
+            if (this.Deleted) return;
+
+            if (this.Blocks == null) 
+            {
+                BuildEndFrame = true;
+                return;
+            }
             cwest = this.WestNeighbor != null;
             ceast = this.EastNeighbor != null;
             cnorth = this.NorthNeighbor != null;
@@ -405,7 +410,7 @@ namespace Winecrash
 
             if (vertices.Count != 0)
             {
-                Debug.Log("vertices");
+                //Debug.Log("vertices");
                 if (this.BlocksRenderer.Mesh == null)
                 {
                     this.BlocksRenderer.Mesh = new Mesh("Chunk Mesh");

@@ -12,7 +12,9 @@
 
     require "dbManage.php";
 
-    echo CreateUser("Arekva", "test", "arekvaa@protonmail.com", "Arekva");
+    require "utils.php";
+
+    echo CreateUser("Arekva", "test", "arekva@protonmail.com", "Arekva");
 
 
     switch ($requestType)

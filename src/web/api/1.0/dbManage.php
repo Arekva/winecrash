@@ -3,7 +3,7 @@
 function CreateUser($username, $password, $email, $nickname)
 {
     require "dbConnect.php";
-    require "utils.php";
+    require_once "utils.php";
 
     $username = strtolower($username);
     $email = strtolower($email);
@@ -79,5 +79,44 @@ function CreateUser($username, $password, $email, $nickname)
     $exec = $bdd->prepare($sql);
     $exec->bindParam(':nickname', $nickname);
     $exec->execute();
+
+}
+
+function LogUserLogin($login, $password)
+{
+    require "dbConnect.php";
+    require_once "utils.php";
+
+
+    $hashedPass = hash("sha256", $password);
+
+
+
+    $isUsername = IsValidUsername($login);
+
+    $sql = "SELECT * FROM user WHERE user." . ($isUsername ? "username" : "email") . " = :login AND user.password = :pass";
+
+    $exec = $bdd->prepare($sql);
+    $exec->bindParam(':login', $login);
+    $exec->bindParam(':pass', $hashedPass);
+    $exec->execute();
+    $curseur=$exec->fetchAll();
+    if(count($curseur) == 0)
+    {
+        return "No user found.";
+    }
+
+    require_once "Token.php";
+
+    $token = getRandomHex(32);
+    $nowStamp = (new DateTime)->getTimestamp();
+    $expireStamp = $nowStamp + 6912000; //expire time : 30 days
+    $userGuid = $curseur[0]['guid'];
+
+    $sql = "INSERT INTO token VALUES('$token', $nowStamp, '$userGuid')";
+    $exec = $bdd->prepare($sql);
+    $exec->execute();
+
+    return $token;
 
 }

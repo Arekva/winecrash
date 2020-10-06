@@ -45,8 +45,18 @@ namespace Winecrash.Client
 
             Client.OnConnected += client =>
             {
-                Camera.Main.WObject.Position = Vector3D.Up * 80;
-                Camera.Main.WObject.Rotation = new Quaternion(20, 0, 0);
+                Camera.Main._FarClip = 4096;
+                Camera.Main.WObject.Position = Vector3D.Up * 512;
+
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        Camera.Main.WObject.Rotation = new Quaternion(90, 0, 0);
+                        Task.Delay(1).Wait();
+                    }
+                });
+               
             };
 
             GameApplication app = (GameApplication)Graphics.Window;

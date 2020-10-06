@@ -19,7 +19,7 @@ namespace WEngine
         /// <summary>
         /// If this object is deleted.
         /// </summary>
-        internal bool Deleted { get; private set; } = false;
+        public bool Deleted { get; private set; } = false;
         /// <summary>
         /// If this object is undeletable.
         /// </summary>

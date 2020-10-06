@@ -22,12 +22,13 @@ namespace Winecrash.Client
                 World.WorldWObject?.Delete();
                 MainMenu.Show();
                 MainMenu.ShowDisconnection(reason);
-                
+
             };
         }
 
         public void ThreatData()
         {
+            
             NetObject[] pending = null;
 
             lock (this.PendingDataLocker)
@@ -35,6 +36,7 @@ namespace Winecrash.Client
                 pending = this.PendingData.ToArray();
                 this.PendingData.Clear();
             }
+
             //Debug.Log(pending.Length);
             for (int i = 0; i < pending.Length; i++)
             {
@@ -52,7 +54,7 @@ namespace Winecrash.Client
                 
                 else if (nobj is NetChunk nchunk)
                 {
-                    World.GetOrCreateChunk(nchunk.ToSave());
+                    World.GetOrCreateChunk(nchunk);
                 }
 
                 pending[i].Delete();

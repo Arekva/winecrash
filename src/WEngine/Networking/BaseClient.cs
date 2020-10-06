@@ -44,9 +44,11 @@ namespace WEngine.Networking
         public int Port { get; private set; } = Networking.DefaultPort;
         
         private static uint PingRate = 1U;
-        
 
-        public bool Connected
+
+        public bool Connected { get; set; } = false;
+
+        private bool TCPConnected
         {
             get
             {
@@ -68,7 +70,10 @@ namespace WEngine.Networking
             
             Client = new TcpClient();
             OnConnected?.Invoke(Client);
+
+            Connected = true;
             Client.Connect(host, port);
+            
             
             LoopListeningAsync();
             DisconnectionCheckLoopAsync();
@@ -85,7 +90,17 @@ namespace WEngine.Networking
             {
                 while (this.Connected)
                 {
-                    NetObject obj = await ReceiveDataAsync(this.Client.Client);
+                    NetObject obj = null;
+                    try
+                    {
+                        obj = await ReceiveDataAsync(this.Client.Client);
+                    }
+                    catch(Exception e)
+                    {
+
+                        obj = new NetDummy();
+                        Debug.LogError("Error while receiving data: " + e.Message);
+                    }
                     
                     
                     if (this.Connected)
@@ -97,25 +112,30 @@ namespace WEngine.Networking
                         }
                         else
                         {
-                            OnServerDataReceived?.Invoke(obj);
-                            
-                            lock (PendingDataLocker) PendingData.Add(obj);
+                            Task.Run(() =>
+                            {
+                                OnServerDataReceived?.Invoke(obj);
+
+                                lock (PendingDataLocker) PendingData.Add(obj);
+                            });
                         }
                     }
                 }
 
+                Debug.Log("stoppped checking data.");
+                
                 //Disconnect();
             });
         }
         protected async Task DisconnectionCheckLoopAsync()
         {
-            while (this.Connected)
+            while (this.TCPConnected)
             {
                 int waitTime = (int)((1.0D / PingRate) * 1000.0D);
-                //NetObject.Send(new NetPing(), this.Client.Client);
+                
                 await Task.Delay(waitTime);
+                NetObject.Send(new NetPing(), this.Client.Client);
             }
-            
             Disconnect("#server_disconnection_timeout");
         }
 
@@ -129,7 +149,8 @@ namespace WEngine.Networking
             }
 
             IgnoreFollowingDisconnection = ignoreFollowing;
-            
+
+            Connected = false;
             
             this.OnDisconnected?.Invoke(reason);
             this.Client.Dispose();
@@ -189,13 +210,17 @@ namespace WEngine.Networking
                     totalread += currentread;
                 }
 
+                string str = NetData<NetDummy>.Encoding.GetString(NetData<NetDummy>.Decompress(data));
+
                 try
                 {
-                    netobj = NetObject.Receive(NetData<NetDummy>.Encoding.GetString(NetData<NetDummy>.Decompress(data)), client);
+                    netobj = NetObject.Receive(str, client);
                 }
                 catch (Exception e)
                 {
+                    Debug.LogError("Transmission error.");
                     netobj = new NetDummy();
+                    
                     this.Disconnect("#server_disconnection_timeout");
                 }
 

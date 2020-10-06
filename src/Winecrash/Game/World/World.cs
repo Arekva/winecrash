@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Security.AccessControl;
 using System.Threading.Tasks;
 using WEngine;
+using Winecrash.Net;
 
 namespace Winecrash
 {
@@ -67,7 +68,28 @@ namespace Winecrash
 
             return dimChunks.FirstOrDefault(c => c.Coordinates == coordinates);
         }
-        
+
+        public static Chunk GetOrCreateChunk(NetChunk nchunk)
+        {
+            int dimIndex = Dimensions.IndexOf(GetOrCreateDimension(nchunk.Dimension));
+
+            Chunk[] dimChunks = null;
+            lock (ChunksLocker)
+            {
+                dimChunks = Chunks[dimIndex].ToArray();
+            }
+
+            Chunk chunk = dimChunks.FirstOrDefault(c => c.Coordinates == nchunk.Coordinates);
+
+            if (!chunk)
+            {
+                return CreateChunk(nchunk.Coordinates, dimIndex, nchunk.Indices);
+            }
+            else
+            {
+                return chunk;
+            }
+        }
         public static Chunk GetOrCreateChunk(SaveChunk saveChunk)
         {
             int dimIndex = Dimensions.IndexOf(GetOrCreateDimension(saveChunk.Dimension));
@@ -166,9 +188,8 @@ namespace Winecrash
             return blocks;
         }
         
-        private static Chunk CreateChunk(Vector2I coordinates, int dimension, ushort[] blocks)
+        private static Chunk CreateChunk(Vector2I coordinates, int dimension, ushort[] blocks, bool build = true)
         {
-            Debug.Log("chunk creation");
             Chunk chunk = null;
 
             WObject wobj = new WObject($"Chunk [{coordinates.X};{coordinates.Y}]")
@@ -180,10 +201,21 @@ namespace Winecrash
             chunk = wobj.AddModule<Chunk>();
             chunk.InterdimensionalCoordinates = new Vector3I(coordinates, dimension);
             chunk.Blocks = blocks;
-            
+
+
+            chunk.Group = int.Parse(dimension.ToString() + Math.Abs((coordinates.X / 4) + Math.Abs((coordinates.Y / 4))));
+
+            chunk.RunAsync = false;
+
+
             lock (ChunksLocker)
             {
                 Chunks[dimension].Add(chunk);
+            }
+
+            if(Engine.DoGUI && build)
+            {
+                chunk.BuildEndFrame = true;
             }
             
             return chunk;

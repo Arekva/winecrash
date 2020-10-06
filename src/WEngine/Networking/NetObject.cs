@@ -79,11 +79,11 @@ namespace WEngine.Networking
             }
 
             OnSend?.BeginInvoke(netobj, type, socket, null, null);
-            Task.Run(() =>
-            {
+            //Task.Run(() =>
+            //{
                 ((ISendible)ctor.Invoke(new object[] {netobj})).Send(socket);
                 if(deleteOnSend) netobj.Delete();
-            });
+            //});
         }
 
         public virtual void Delete()

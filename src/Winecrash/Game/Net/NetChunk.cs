@@ -8,30 +8,34 @@ namespace Winecrash.Net
     {
         public Vector2I Coordinates { get; private set; }
         public string Dimension { get; private set; }
-        public string[] Palette { get; private set; }
-        public ushort[] Indices { get; private set; }
         
+        //TODO: efficient palette serialization. This is assuming server and client has the same palette.
+        //public string[] Palette { get; private set; }
+        public ushort[] Indices { get; private set; }
 
-        public NetChunk(Chunk chunk) : this(chunk.ToSave()) { }
 
-        public NetChunk(SaveChunk saveChunk)
+
+        public NetChunk(Chunk chunk) : this(chunk.Coordinates, chunk.Dimension.Identifier, chunk.Blocks) { }
+        //public NetChunk(Chunk chunk) : this(chunk.ToSave()) { }
+
+        /*public NetChunk(SaveChunk saveChunk)
         {
             this.Coordinates = saveChunk.Coordinates;
             this.Dimension = saveChunk.Dimension;
             this.Palette = saveChunk.Palette;
             this.Indices = saveChunk.Indices;
-        }
+        }*/
 
         [JsonConstructor]
-        public NetChunk(Vector2I coordinates, string dimension, string[] palette, ushort[] indices)
+        public NetChunk(Vector2I coordinates, string dimension, /*string[] palette,*/ ushort[] indices)
         {
             this.Coordinates = coordinates;
             this.Dimension = dimension;
-            this.Palette = palette;
+            //this.Palette = palette;
             this.Indices = indices;
         }
 
-        public SaveChunk ToSave()
+        /*public SaveChunk ToSave()
         {
             return new SaveChunk()
             {
@@ -40,12 +44,12 @@ namespace Winecrash.Net
                 Coordinates = Coordinates,
                 Dimension = Dimension
             };
-        }
+        }*/
 
         public override void Delete()
         {
             Dimension = null;
-            Palette = null;
+            //Palette = null;
             Indices = null;
             
             base.Delete();
