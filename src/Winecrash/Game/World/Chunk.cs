@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WEngine;
+using Debug = WEngine.Debug;
 
 namespace Winecrash
 {
@@ -143,13 +146,30 @@ namespace Winecrash
 #endregion
         public SaveChunk ToSave()
         {
-            Dictionary<string, ushort> distinctIDs = new Dictionary<string, ushort>(64);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            ConcurrentDictionary<string, ushort> distinctIDsC = new ConcurrentDictionary<string, ushort>();
+            //Dictionary<string, ushort> distinctIDs = new Dictionary<string, ushort>(64);
             ushort[] blocksRef = new ushort[Chunk.TotalBlocks];
             
-            int chunkIndex = 0;
-            ushort paletteIndex = 0;
+            //int chunkIndex = 0;
+            //ushort paletteIndex = 0;
+
+            Parallel.For(0, Chunk.TotalBlocks, i =>
+            {
+                string id = ItemCache.GetIdentifier(this.Blocks[i]);
+                
+                //if (!distinctIDs.ContainsKey(id))
+                //{
+                if(!distinctIDsC.ContainsKey(id))
+                    distinctIDsC.TryAdd(id, (ushort)(distinctIDsC.Count));
+                //}
+
+                blocksRef[i] = distinctIDsC[id];
+                //Debug.Log(blocksRef[i]);
+            });
             
-            for (int z = 0; z < Chunk.Depth; z++)
+            /*for (int z = 0; z < Chunk.Depth; z++)
             {
                 for (int y = 0; y < Chunk.Height; y++)
                 {
@@ -165,15 +185,20 @@ namespace Winecrash
                         blocksRef[chunkIndex++] = distinctIDs[id];
                     }
                 }
-            }
+            }*/
+            sw.Stop();
+            Debug.Log("Save making time: " + sw.Elapsed.TotalMilliseconds.ToString("F0") + " ms");
+            //Debug.Log();
 
             SaveChunk sc = new SaveChunk()
             {
                 Coordinates = Coordinates,
                 Dimension = Dimension.Identifier,
                 Indices = blocksRef,
-                Palette = distinctIDs.Keys.ToArray()
+                Palette = distinctIDsC.Keys.ToArray()
             };
+            
+            
 
             return sc;
         }

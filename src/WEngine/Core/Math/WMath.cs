@@ -81,6 +81,20 @@ namespace WEngine
             x = index % width;
             y = index / width;
         }
+        
+        
+        public static int Flatten3D(int x, int y, int z, int width, int height)
+        {
+            return x + width*y + width*height*z;
+        }
+
+
+        public static void FlatTo3D(int index, int width, int height, out int x, out int y, out int z)
+        {
+            x = index % width;
+            y = (index / width)%height;
+            z = index / (width*height);
+        }
 
 
         #region CopySign
