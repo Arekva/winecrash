@@ -16,6 +16,8 @@ namespace WEngine.Networking
     internal struct NetData<T> : ISendible where T : NetObject
     {
         public static Encoding Encoding { get; set; } = Encoding.Unicode;
+
+        private static object SendLocker = new object();
         
         /// <summary>
         /// Serialization type variable.
@@ -98,15 +100,32 @@ namespace WEngine.Networking
         {
             byte[] data = Compress(this.Raw);
             byte[] sizeData = BitConverter.GetBytes(data.Length);
-            using (SocketAsyncEventArgs sizeDataE = new SocketAsyncEventArgs())
+
+            /*byte[] sendibleData = new byte[data.Length + sizeData.Length];
+            Array.Copy(sizeData, sendibleData, data.Length);
+            Array.Copy(data, 0, sendibleData, data.Length, sendibleData.Length);
+
+
+            using (SocketAsyncEventArgs dataE = new SocketAsyncEventArgs())
             {
-                sizeDataE.SetBuffer(sizeData, 0, sizeData.Length);
-                socket.SendAsync(sizeDataE);
-            }
-            using (SocketAsyncEventArgs byteDataE = new SocketAsyncEventArgs())
+                dataE.SetBuffer(data, 0, data.Length);
+                socket.SendAsync(dataE);
+            }*/
+
+            lock (SendLocker)
             {
-                byteDataE.SetBuffer(data, 0, data.Length);
-                socket.SendAsync(byteDataE);
+                socket.Send(sizeData);
+                socket.Send(data);
+                /*using (SocketAsyncEventArgs sizeDataE = new SocketAsyncEventArgs())
+                {
+                    sizeDataE.SetBuffer(sizeData, 0, sizeData.Length);
+                    socket.SendAsync(sizeDataE);
+                }
+                using (SocketAsyncEventArgs byteDataE = new SocketAsyncEventArgs())
+                {
+                    byteDataE.SetBuffer(data, 0, data.Length);
+                    socket.SendAsync(byteDataE);
+                }*/
             }
         }
         

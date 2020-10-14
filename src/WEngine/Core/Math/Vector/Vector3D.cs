@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 
 namespace WEngine
@@ -9,21 +10,25 @@ namespace WEngine
     [Serializable]
     public struct Vector3D : IVectorable, IComparable, IComparable<Vector3D>, IEquatable<Vector3D>, IFormattable
     {
+        [JsonIgnore]
         public int Dimensions { get; }
 
         #region Properties
+        [JsonIgnore]
         private double _X;
         public double X
         {
             get => _X;
             set => _X = value;
         }
+        [JsonIgnore]
         private double _Y;
         public double Y
         {
             get => _Y;
             set => _Y = value;
         }
+        [JsonIgnore]
         private double _Z;
         public double Z
         {
@@ -31,6 +36,7 @@ namespace WEngine
             set => _Z = value;
         }
 
+        [JsonIgnore]
         public double this[int index]
         {
             get
@@ -76,6 +82,7 @@ namespace WEngine
 
         #region Multi Dimensional Accessors
         [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [JsonIgnore]
         public Vector2D XY
         {
             get
@@ -90,6 +97,7 @@ namespace WEngine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [JsonIgnore]
         public Vector2D YX
         {
             get
@@ -104,6 +112,7 @@ namespace WEngine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [JsonIgnore]
         public Vector2D YZ
         {
             get
@@ -118,6 +127,7 @@ namespace WEngine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [JsonIgnore]
         public Vector2D ZY
         {
             get
@@ -132,6 +142,7 @@ namespace WEngine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [JsonIgnore]
         public Vector2D XZ
         {
             get
@@ -146,6 +157,7 @@ namespace WEngine
             }
         }
         [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [JsonIgnore]
         public Vector2D ZX
         {
             get
@@ -250,7 +262,7 @@ namespace WEngine
             }
         }
 
-
+        [JsonIgnore]
         public double SquaredLength
         {
             get
@@ -258,6 +270,7 @@ namespace WEngine
                 return this.X * this.X + this.Y * this.Y + this.Z * this.Z;
             }
         }
+        [JsonIgnore]
         public double Length
         {
             get
@@ -265,7 +278,7 @@ namespace WEngine
                 return Math.Sqrt(this.SquaredLength);
             }
         }
-
+        [JsonIgnore]
         public Vector3D Normalized
         {
             get
@@ -310,6 +323,7 @@ namespace WEngine
 
             this.Dimensions = 3;
         }
+        [JsonConstructor]
         public Vector3D(double x, double y, double z)
         {
             this._X = x;

@@ -28,7 +28,7 @@ namespace Winecrash.Server
 
         public void Kick(string reason)
         {
-            NetObject.Send(new NetKick(reason), this.Client.Client);
+            new NetKick(reason).Send(this.Client.Client);
             this.Client.Close();
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 using WEngine;
 using WEngine.Networking;
@@ -16,7 +17,7 @@ namespace Winecrash.Client
             this.Nickname = nickname;
             this.OnDisconnected += (reason) =>
             {
-                Debug.LogWarning("Disconnected from server: " + reason);
+                WEngine.Debug.LogWarning("Disconnected from server: " + reason);
                 this.Client.Client.Disconnect(true);
                 FirstPingReceived = false;
                 World.WorldWObject?.Delete();
@@ -26,6 +27,7 @@ namespace Winecrash.Client
             };
         }
 
+        int n = 0;
         public void ThreatData()
         {
             
@@ -48,7 +50,9 @@ namespace Winecrash.Client
                     {
                         FirstPingReceived = true;
 
-                        NetObject.Send(new NetPlayer(Nickname), Client.Client);
+                        //send auth on first data received.
+
+                        new NetPlayer(Nickname).Send(Client.Client);
                     }
                 }
                 

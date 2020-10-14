@@ -371,7 +371,7 @@ namespace WEngine.Networking
         protected virtual void DisconnectClient(TcpClient client, string reason)
         {
             OnClientDisconnect?.Invoke(client, reason);
-            NetObject.Send(new NetKick(reason), client.Client);
+            new NetKick(reason).Send(client.Client);
             client.Close();
             client.Dispose();
             lock (ClientsLocker)

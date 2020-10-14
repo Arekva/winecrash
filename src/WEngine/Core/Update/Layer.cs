@@ -34,7 +34,7 @@ namespace WEngine
             }
         }
 
-        internal List<Group> _Groups = new List<Group>(1);
+        internal List<Group> _Groups { get; set; } = new List<Group>(1);
 
         internal bool Deleted { get; set; } = false;
 
@@ -68,9 +68,15 @@ namespace WEngine
 
                         if (layer.Deleted) continue;
 
-                        Group[] groups = layer._Groups.ToArray();
+                        Group[] groups;
+                        lock(Group.groupLocker)
+                            groups = layer._Groups.ToArray();
+
+                        if (groups == null) continue;
+
                         for (int j = 0; j < groups.Length; j++)
                         {
+                            if (groups[j].Deleted) continue;
                             groups[j].FixedUpdate();
                         }
                     }
@@ -81,9 +87,16 @@ namespace WEngine
 
                         if (layer.Deleted) continue;
 
-                        Group[] groups = layer._Groups.ToArray();
+                        Group[] groups;
+                        lock (Group.groupLocker) 
+                            groups = layer._Groups.ToArray();
+
+
+                        if (groups == null) continue;
+
                         for (int j = 0; j < groups.Length; j++)
                         {
+                            if (groups[j].Deleted) continue;
                             groups[j].LateFixedUpdate();
                         }
                     }
@@ -336,15 +349,19 @@ namespace WEngine
 
                 if (layer.Deleted) continue;
 
-                List<ManualResetEvent> doneEvents = new List<ManualResetEvent>(layer._Groups.Count);
+                Group[] groups = null;
+                lock (Group.groupLocker)
+                    groups = layer._Groups.ToArray();
+
+                List<ManualResetEvent> doneEvents = new List<ManualResetEvent>(groups.Length);
 
                 for (int j = 0; j < layer._Groups.Count; j++)
                 {
-                    if (layer._Groups[j].Deleted) continue;
+                    if (groups[j].Deleted) continue;
 
-                    layer._Groups[j].DoneEvent.Reset();
-                    doneEvents.Add(layer._Groups[j].DoneEvent);
-                    layer._Groups[j].ResetEvent.Set(); //unlock thread
+                    groups[j].DoneEvent.Reset();
+                    doneEvents.Add(groups[j].DoneEvent);
+                    groups[j].ResetEvent.Set(); //unlock thread
                 }
 
                 WaitHandle.WaitAll(doneEvents.ToArray()); //wait for all the threads of the group

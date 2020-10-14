@@ -10,8 +10,10 @@ namespace Winecrash
     public class Player : BaseObject
     {
         public string Nickname { get; private set; }
+        public Guid GUID { get; private set; }
+        public Texture Skin { get; private set; }
 
-        public Player(string nickname)
+        public Player(string nickname/*, Guid guid, string skinAddress = null*/)
         {
             this.Nickname = nickname;
         }
@@ -19,6 +21,8 @@ namespace Winecrash
         public override void Delete()
         {
             this.Nickname = null;
+            if(Engine.DoGUI)
+                this.Skin?.Delete();
             base.Delete();
         }
     }

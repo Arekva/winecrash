@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using Newtonsoft.Json;
+using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace WEngine
     public struct Quaternion
     {
         #region Properties
-
+        [JsonIgnore]
         private double _X;
         /// <summary>
         /// X component of the quaternion. Avoid direct edition.
@@ -24,6 +25,7 @@ namespace WEngine
             get => _X;
             set => _X = value;
         }
+        [JsonIgnore]
         private double _Y;
         /// <summary>
         /// Y component of the quaternion. Avoid direct edition.
@@ -33,6 +35,7 @@ namespace WEngine
             get => _Y;
             set => _Y = value;
         }
+        [JsonIgnore]
         private double _Z;
         /// <summary>
         /// Z component of the quaternion. Avoid direct edition.
@@ -42,6 +45,7 @@ namespace WEngine
             get => _Z;
             set => _Z = value;
         }
+        [JsonIgnore]
         private double _W;
         /// <summary>
         /// W component of the quaternion. Avoid direct edition.
@@ -66,6 +70,7 @@ namespace WEngine
         /// <summary>
         /// The length of that quaternion.
         /// </summary>
+        [JsonIgnore]
         public double Length
         {
             get
@@ -77,6 +82,7 @@ namespace WEngine
         /// <summary>
         /// The squared length of that quaternion. Faster than <see cref="Length"/> but has to be squared rooted.
         /// </summary>
+        [JsonIgnore]
         public double LengthSquared
         {
             get
@@ -88,6 +94,7 @@ namespace WEngine
         /// <summary>
         /// Get or set the euler rotation (degree) of this quaternion.
         /// </summary>
+        [JsonIgnore]
         public Vector3D Euler
         {
             get
@@ -150,6 +157,7 @@ namespace WEngine
         /// <summary>
         /// The direction version of this quaternion.
         /// </summary>
+        [JsonIgnore]
         public Quaternion Normalized
         {
             get
@@ -160,6 +168,7 @@ namespace WEngine
         /// <summary>
         /// The conjugated version of this quaternion.
         /// </summary>
+        [JsonIgnore]
         public Quaternion Conjugated
         {
             get
@@ -171,6 +180,7 @@ namespace WEngine
         /// <summary>
         /// The inverted version of this quaternion.
         /// </summary>
+        [JsonIgnore]
         public Quaternion Inverted
         {
             get
@@ -188,6 +198,7 @@ namespace WEngine
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <param name="w"></param>
+        [JsonConstructor]
         public Quaternion(double x, double y, double z, double w)
         {
             this._X = x;

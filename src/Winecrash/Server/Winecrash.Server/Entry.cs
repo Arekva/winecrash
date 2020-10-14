@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using WEngine;
@@ -20,40 +22,60 @@ namespace Winecrash.Server
         {
             CreateDebugWindow();
 
-            //Folders.UserData = "Data/";
+
+            Folders.UserData = "Data/";
+            ConsoleUtils.PrintSaves();
+
 
             //new Save(Save.DefaultName, false);
 
-            //ConsoleUtils.PrintSaves();
 
-            Engine.Run(false);
+
+            Engine.Run(false).Wait();
             
             Database.Load("assets/items/items.json").ParseItems();
 
-            Debug.Log("Loading world...");
-            foreach(Vector2I vector in World.GetCoordsInRange(Vector2I.Zero, 15))
+            try
+            {
+                WEngine.Debug.Log("Save \"save\" found. Loading.");
+                Server.Save = new Save("save", true);
+            }
+            catch (SaveException se)
+            {
+                WEngine.Debug.Log("Save \"save\" not found. Creating.");
+                Server.Save = new Save("save", false);
+            }
+
+            Stopwatch worldLoadSW = new Stopwatch();         
+            WEngine.Debug.Log("Loading world...");
+            worldLoadSW.Start();
+            Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 15), vector =>
             {
                 World.GetOrCreateChunk(vector, "winecrash:overworld");
-            };
-            Debug.Log("World loaded !");
+            });
+            worldLoadSW.Stop();
+            WEngine.Debug.Log($"World loaded ! ({worldLoadSW.Elapsed.TotalMilliseconds:F0} ms)");
 
             server = new GameServer(IPAddress.Any, 27716);
 
-            server.OnPlayerConnect += (player) =>
+            server.OnPlayerConnect += player =>
             {
                 Task.Run(() =>
                 {
-                    //Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 15), (vector) =>
-                    //{
-                    foreach (Vector2I vector in World.GetCoordsInRange(Vector2I.Zero, 15))
+                    Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 15), vector =>
                     {
-                        if (!player.Connected) break;
+                        if (!player.Connected) return;
                         
-                        NetObject.Send(new NetChunk(World.GetOrCreateChunk(vector, "winecrash:overworld")),
+                        new NetChunk(World.GetOrCreateChunk(vector, "winecrash:overworld")).Send(
                             player.Client.Client);
-                    }
-                    //});
+                    });
                 });
+            };
+
+            server.OnPlayerDisconnect += (player, reason) =>
+            {
+                //World.Unload();
+                //GC.Collect();
             };
             
             server.Run();
@@ -67,7 +89,7 @@ namespace Winecrash.Server
 
         private static void CreateDebugWindow()
         {
-            Debug.AddLogger(new Logger(LogVerbose, LogWarn, LogErr, LogException));
+            WEngine.Debug.AddLogger(new Logger(LogVerbose, LogWarn, LogErr, LogException));
         }
 
         private static void LogVerbose(object obj)

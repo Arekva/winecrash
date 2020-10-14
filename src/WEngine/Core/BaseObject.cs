@@ -14,7 +14,7 @@ namespace WEngine
         /// <summary>
         /// The global unique identifier of this object. Automatically generated.
         /// </summary>
-        public Guid Identifier { get; }
+        public Guid Identifier { get; set; }
 
         /// <summary>
         /// If this object is deleted.

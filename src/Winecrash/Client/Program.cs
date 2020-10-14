@@ -11,6 +11,7 @@ using WEngine;
 using WEngine.GUI;
 using WEngine.Networking;
 using Winecrash;
+using Winecrash.Entities;
 using Winecrash.Net;
 using Debug = WEngine.Debug;
 using Label = WEngine.GUI.Label;
@@ -41,10 +42,19 @@ namespace Winecrash.Client
 
             Client = new GameClient("Arthur");
 
-            
-
             Client.OnConnected += client =>
             {
+                WObject playerWobj = new WObject("Local Player");
+
+                Task.Run(() =>
+                {
+                    Task.Delay(1000).Wait();
+
+                    PlayerController.LocalPlayer = playerWobj.AddModule<PlayerEntity>();
+                    PlayerController pc = playerWobj.AddModule<PlayerController>();
+
+                });
+
                 Camera.Main._FarClip = 4096;
                 Camera.Main.WObject.Position = Vector3D.Up * 512;
 
@@ -57,6 +67,11 @@ namespace Winecrash.Client
                     }
                 });
                
+            };
+
+            Client.OnDisconnected += client =>
+            {
+
             };
 
             GameApplication app = (GameApplication)Graphics.Window;

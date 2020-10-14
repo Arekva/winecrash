@@ -12,7 +12,7 @@ namespace WEngine
 
         public static Camera Main { get; set; }
 
-        public Int64 RenderLayers { get; set; } = Int64.MaxValue;
+        public UInt64 RenderLayers { get; set; } = UInt64.MaxValue;
 
         public double Depth { get; set; } = 0.0D;
 

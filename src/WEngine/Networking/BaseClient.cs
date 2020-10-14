@@ -81,45 +81,54 @@ namespace WEngine.Networking
 
         public void SendObject<T>(T netobj) where T : NetObject
         {
-            NetObject.Send(netobj, Client.Client);
+            netobj.Send(Client.Client);
         }
 
+        private ManualResetEvent LoopResetEvent = new ManualResetEvent(true);
         protected void LoopListeningAsync()
         {
             Task.Run(async () =>
             {
                 while (this.Connected)
                 {
-                    NetObject obj = null;
-                    try
-                    {
-                        obj = await ReceiveDataAsync(this.Client.Client);
-                    }
-                    catch(Exception e)
-                    {
+                    //Debug.Log("waiting for right to read data");
+                    LoopResetEvent.WaitOne();
+                    LoopResetEvent.Reset();
+                    //Debug.Log("right granted");
 
-                        obj = new NetDummy();
-                        Debug.LogError("Error while receiving data: " + e.Message);
-                    }
-                    
-                    
-                    if (this.Connected)
+                    Task.Run(() =>
                     {
-                        if (obj is NetKick kick)
+                        NetObject obj = null;
+                        try
                         {
-                            Disconnect(kick.Reason, true);
-                            return;
+                            obj = ReceiveDataAsync(this.Client.Client).Result;
                         }
-                        else
+                        catch (Exception e)
                         {
-                            Task.Run(() =>
+
+                            obj = new NetDummy();
+                            Debug.LogError("Error while receiving data: " + e.Message);
+                        }
+
+
+                        if (this.Connected)
+                        {
+                            if (obj is NetKick kick)
                             {
-                                OnServerDataReceived?.Invoke(obj);
+                                Disconnect(kick.Reason, true);
+                                return;
+                            }
+                            else
+                            {
+                                Task.Run(() =>
+                                {
+                                    OnServerDataReceived?.Invoke(obj);
 
-                                lock (PendingDataLocker) PendingData.Add(obj);
-                            });
+                                    lock (PendingDataLocker) PendingData.Add(obj);
+                                });
+                            }
                         }
-                    }
+                    });
                 }
 
                 Debug.Log("stoppped checking data.");
@@ -134,7 +143,7 @@ namespace WEngine.Networking
                 int waitTime = (int)((1.0D / PingRate) * 1000.0D);
                 
                 await Task.Delay(waitTime);
-                NetObject.Send(new NetPing(), this.Client.Client);
+                new NetPing().Send(this.Client.Client);
             }
             Disconnect("#server_disconnection_timeout");
         }
@@ -209,6 +218,8 @@ namespace WEngine.Networking
                         SocketFlags.None);
                     totalread += currentread;
                 }
+
+                LoopResetEvent.Set();
 
                 string str = NetData<NetDummy>.Encoding.GetString(NetData<NetDummy>.Decompress(data));
 

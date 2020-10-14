@@ -290,10 +290,13 @@ namespace Winecrash
             this.WestNeighbor = null;
             this.EastNeighbor = null;
             this.Blocks = null;
-            
-            this.BlocksRenderer.Mesh.Delete();
-            this.BlocksRenderer.Material.Delete();
-            this.BlocksRenderer.Delete();
+
+            if (Engine.DoGUI)
+            {
+                this.BlocksRenderer.Mesh.Delete();
+                this.BlocksRenderer.Material.Delete();
+                this.BlocksRenderer.Delete();
+            }
             
             base.OnDelete();
         }

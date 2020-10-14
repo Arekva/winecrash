@@ -81,10 +81,7 @@ namespace Winecrash
                 {
                     langs.Add(new Language(str));
                 }
-                catch (Exception)
-                {
-                    continue;
-                }
+                catch { }
             }
 
             return langs;

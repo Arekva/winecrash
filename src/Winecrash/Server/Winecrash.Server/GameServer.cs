@@ -55,7 +55,7 @@ namespace Winecrash.Server
                 lock (AuthLocker)
                     AuthsRequired.Add(new RequiredAuth() { Client = client, CooldownTimeout = AuthTimeout });
                 
-                NetObject.Send(new NetPing(), client.Client);
+                new NetPing().Send(client.Client);
             };
             
             OnClientDataReceived += (client, data) =>
@@ -119,7 +119,6 @@ namespace Winecrash.Server
             for (int i = 0; i < data.Length; i++)
             {
                 if (data[i].Deleted) continue;
-                Debug.Log(data[i].NObject.GetType());
 
                 if (data[i].NObject is NetPlayer nplayer)
                 {
@@ -138,6 +137,11 @@ namespace Winecrash.Server
                             AuthsRequired.Remove(auth);
                         auth.Delete();
                     }
+                }
+
+                else if(data[i].NObject is NetEntity nentity)
+                {
+                    nentity.Parse();
                 }
 
                 data[i].Delete();

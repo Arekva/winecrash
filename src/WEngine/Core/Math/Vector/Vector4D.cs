@@ -56,7 +56,7 @@ namespace WEngine
                         return W;
 
                     default:
-                        throw new ArgumentOutOfRangeException("Vector3D indexer must be between 0 and 2 (0:X, 1:Y, 2:Z)");
+                        throw new ArgumentOutOfRangeException("Vector4D indexer must be between 0 and 2 (0:X, 1:Y, 2:Z, 3:W)");
                 }
             }
 
@@ -81,7 +81,7 @@ namespace WEngine
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException("Vector3D indexer must be between 0 and 2 (0:X, 1:Y, 2:Z)");
+                        throw new ArgumentOutOfRangeException("Vector4D indexer must be between 0 and 2 (0:X, 1:Y, 2:Z, 3:W)");
                 }
             }
         }

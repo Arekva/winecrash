@@ -66,23 +66,24 @@ namespace WEngine.Networking
         /// <param name="netobj">The NetObject to send. Cannot be null.</param>
         /// <param name="socket">The client to send the data to.</param>
         /// <exception cref="NullReferenceException"></exception>
-        public static void Send(NetObject netobj, Socket socket, bool deleteOnSend = true)
+        public void Send(Socket socket, bool deleteOnSend = true)
         {
-            if (!netobj) throw new NullReferenceException("NetObject.cs: " + nameof(netobj) + " cannot be null.");
-
-            Type type = netobj.GetType();
-
-            if(!_GenericConstructors.TryGetValue(type, out ConstructorInfo ctor))
+            Task.Run(() =>
             {
-                ctor = typeof(NetData<>).MakeGenericType(type).GetConstructor(new Type[] { type });
-                _GenericConstructors.TryAdd(type,ctor);
-            }
+                Type type = this.GetType();
 
-            OnSend?.BeginInvoke(netobj, type, socket, null, null);
-            //Task.Run(() =>
-            //{
-                ((ISendible)ctor.Invoke(new object[] {netobj})).Send(socket);
-                if(deleteOnSend) netobj.Delete();
+                if (!_GenericConstructors.TryGetValue(type, out ConstructorInfo ctor))
+                {
+                    ctor = typeof(NetData<>).MakeGenericType(type).GetConstructor(new Type[] { type });
+                    _GenericConstructors.TryAdd(type, ctor);
+                }
+
+                OnSend?.BeginInvoke(this, type, socket, null, null);
+                //Task.Run(() =>
+                //{
+                ((ISendible)ctor.Invoke(new object[] { this })).Send(socket);
+                if (deleteOnSend) this.Delete();
+            });
             //});
         }
 

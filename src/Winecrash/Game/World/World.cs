@@ -87,6 +87,17 @@ namespace Winecrash
             }
             else
             {
+                //todo: edit chunk.
+                if(nchunk.GetHashCode() != chunk.GetHashCode())
+                {
+                    chunk.Blocks = nchunk.Indices;
+
+                    if(Engine.DoGUI)
+                    {
+                        chunk.BuildEndFrame = true;
+                    }
+                }
+
                 return chunk;
             }
         }
@@ -203,9 +214,9 @@ namespace Winecrash
             chunk.Blocks = blocks;
 
 
-            chunk.Group = int.Parse(dimension.ToString() + Math.Abs((coordinates.X / 4) + Math.Abs((coordinates.Y / 4))));
+            chunk.Group = int.Parse(dimension.ToString() + Math.Abs(((coordinates.X) / 4) + Math.Abs(((coordinates.Y) / 4))));
 
-            chunk.RunAsync = false;
+            //chunk.RunAsync = true;
 
 
             lock (ChunksLocker)

@@ -50,7 +50,7 @@ namespace WEngine
         /// 
         /// ex: 1<<32 = skybox
         /// </summary>
-        public Int64 Layer { get; set; } = 1L; // Default layer = 1;
+        public UInt64 Layer { get; set; } = UInt64.MaxValue; // Default layer = 1;
 
         
 
@@ -251,6 +251,47 @@ namespace WEngine
             return children.FirstOrDefault(c => c.Name == childName);
         }
 
+        public Module AddModule(Type type)
+        {
+            if(type == null)
+            {
+                Debug.LogError("Unabled to a null type module to a WObject.");
+                return null;
+            }
+            if(!type.IsSubclassOf(typeof(Module)))
+            {
+                Debug.LogError("Unabled to add " + type.Name + " to a WObject: it is not a Module.");
+                return null;
+            }
+
+            Module mod = Activator.CreateInstance(type) as Module;
+
+            if (mod.Undeletable && !this.Undeletable)
+            {
+                Debug.LogError("Cannot add undeletable module on deletable WObject !");
+
+                Group.GetGroup(0).RemoveModule(mod);
+                return null;
+            }
+
+            mod.Name = mod.GetType().Name;
+            mod.WObject = this;
+
+            this._Modules.Add(mod);
+
+            mod.Creation();
+
+            if (this.Enabled)
+            {
+                mod.OnEnable();
+            }
+            else
+            {
+                mod.OnDisable();
+            }
+
+            return mod;
+        }
         public T AddModule<T>() where T : Module
         {
             T mod = (T)Activator.CreateInstance(typeof(T));

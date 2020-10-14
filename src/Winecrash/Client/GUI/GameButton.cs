@@ -46,7 +46,6 @@ namespace Winecrash.GUI
             {
                 if (!ClickSound) ClickSound = Sound.Find("button_click");
                 ClickSound.Play();
-                //Sound.Find(count++ % 2 == 0 ? "tagueule" : "decide").Play();
             };
 
             Button.KeepRatio = true;
