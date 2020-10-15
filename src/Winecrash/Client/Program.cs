@@ -40,13 +40,15 @@ namespace Winecrash.Client
             
             Tester = new WObject("tester") /*{ Enabled = false }*/.AddModule<ClientTester>();
 
-            Client = new GameClient("Arthur");
-
+            Client = new GameClient(new Player("Arthur"));
+            
+            //Game.OnPartyJoined += type => { };
+                
             Client.OnConnected += client =>
             {
                 WObject playerWobj = new WObject("Local Player");
 
-                Task.Run(() =>
+                /*Task.Run(() =>
                 {
                     Task.Delay(1000).Wait();
 
@@ -56,22 +58,12 @@ namespace Winecrash.Client
                 });
 
                 Camera.Main._FarClip = 4096;
-                Camera.Main.WObject.Position = Vector3D.Up * 512;
-
-                Task.Run(() =>
-                {
-                    while (true)
-                    {
-                        Camera.Main.WObject.Rotation = new Quaternion(90, 0, 0);
-                        Task.Delay(1).Wait();
-                    }
-                });
-               
+                Camera.Main.WObject.Position = Vector3D.Up * 512;*/
             };
 
             Client.OnDisconnected += client =>
             {
-
+                Game.InvokePartyLeft(PartyType.Multiplayer);
             };
 
             GameApplication app = (GameApplication)Graphics.Window;
@@ -83,8 +75,25 @@ namespace Winecrash.Client
                 Chunk.Texture = ItemCache.BuildChunkTexture(out int xsize, out int ysize);
                 MainMenu.Show();
             };
-            
-            
+
+            Game.OnPartyJoined += type => 
+            {
+                MainMenu.Hide();
+                Camera.Main._FarClip = 4096;
+                //Camera.Main.WObject.Position = Vector3D.Up * 512;
+                //Debug.Log("Joined a " + type + " game");
+            };
+            Game.OnPartyLeft += type =>
+            {
+                World.Unload();
+                
+                MainMenu.Show();
+                
+                //Camera.Main._FarClip = 4096;
+                //Camera.Main.WObject.Position = Vector3D.Zero;
+            };
+
+
             Task.Run(() => End.WaitOne()).Wait();
         }
 

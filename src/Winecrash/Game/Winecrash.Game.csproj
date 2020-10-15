@@ -64,6 +64,7 @@
     <Compile Include="Net\NetMessage.cs" />
     <Compile Include="Net\NetPlayer.cs" />
     <Compile Include="Net\NetUser.cs" />
+    <Compile Include="PartyType.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Save\Save.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

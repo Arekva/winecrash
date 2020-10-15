@@ -102,6 +102,13 @@ namespace WEngine.Networking
         /// </summary>
         public static IPEndPoint DefaultListenAddress { get; } = new IPEndPoint(0L, 27716);
 
+
+        public BaseServer()
+        {
+            Servers.Add(this);
+            OnClientConnect += LoopListening;
+        }
+        
         /// <summary>
         /// Create a basic server able to listen to incoming NetObjects from multiple clients.
         /// </summary>

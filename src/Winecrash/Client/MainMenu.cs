@@ -108,8 +108,18 @@ namespace Winecrash.Client
             btnSingle.Button.MinAnchor = new Vector2F(0.0F, 0.9F);
             btnSingle.Button.MaxAnchor = new Vector2F(1.0F, 1.0F);
             btnSingle.Label.Localization = "#menu_singleplayer";
-            btnSingle.Button.Locked = true;
+            btnSingle.Button.Locked = false;
             //btnSingle.Button.OnClick += () => { Graphics.Window.InvokeUpdate(() => Program.RunGameDebug()); };
+            btnSingle.Button.OnClick += () =>
+            {
+                Game.InvokePartyJoined(PartyType.Singleplayer);
+                Task.Run(() =>
+                {
+                    //Parallel.ForEach()
+                    //IntegratedServer server = IntegratedServer.CurrentIntegratedServer = new IntegratedServer(new Player("Arthur"));
+                    //server.Run();
+                });
+            };
 
             WObject mult = new WObject("Multiplayer Button") { Parent = btnPanel };
             GUI.LargeButton btnMult = mult.AddModule<GUI.LargeButton>();
@@ -318,12 +328,13 @@ namespace Winecrash.Client
                     btnConnect.Label.Localization = "#connecting_to_server";
                     if (!Program.Client)
                     {
-                        Program.Client = new GameClient("Arthur");
+                        Program.Client = new GameClient(new Player("Arthur"));
                     }
 
                     try
                     {
                         Program.Client.Connect(address, port);
+                        Game.InvokePartyJoined(PartyType.Multiplayer);
                         MainMenu.Hide();
                     }
                     catch (SocketException e)

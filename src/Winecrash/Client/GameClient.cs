@@ -11,10 +11,10 @@ namespace Winecrash.Client
     {
         public static bool FirstPingReceived { get; set; } = false;
         
-        public string Nickname { get; set; } = null;
-        public GameClient(string nickname) : base()
+        public Player Player { get; set; } = null;
+        public GameClient(Player localPlayer) : base()
         {
-            this.Nickname = nickname;
+            this.Player = localPlayer;
             this.OnDisconnected += (reason) =>
             {
                 WEngine.Debug.LogWarning("Disconnected from server: " + reason);
@@ -52,7 +52,7 @@ namespace Winecrash.Client
 
                         //send auth on first data received.
 
-                        new NetPlayer(Nickname).Send(Client.Client);
+                        new NetPlayer(Player.Nickname).Send(Client.Client);
                     }
                 }
                 

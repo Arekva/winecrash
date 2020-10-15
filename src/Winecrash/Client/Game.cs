@@ -10,14 +10,18 @@ using WEngine;
 namespace Winecrash
 {
     public delegate void LanguageChangeDelegate(Language language);
+
+    public delegate void PartyDelegate(PartyType type);
     
     public static class Game
     {
-        
         /// <summary>
         /// Triggered when a new game language is set. Carries the new language object with it.
         /// </summary>
         public static event LanguageChangeDelegate OnLanguageChanged;
+
+        public static event PartyDelegate OnPartyJoined;
+        public static event PartyDelegate OnPartyLeft;
 
         public static GameConfig Configuration { get; } = new GameConfig("settings.json");
 
@@ -70,6 +74,15 @@ namespace Winecrash
         internal static void InvokeLanguageChanged(Language lang)
         {
             OnLanguageChanged?.Invoke(lang);
+        }
+        
+        internal static void InvokePartyJoined(PartyType type)
+        {
+            OnPartyJoined?.Invoke(type);
+        }
+        internal static void InvokePartyLeft(PartyType type)
+        {
+            OnPartyLeft?.Invoke(type);
         }
 
         internal static List<Language> LoadLanguagesInFolder(string path)
