@@ -33,7 +33,7 @@ namespace Winecrash.Client
                 MeshRenderer mr = ForwardPlane.AddModule<MeshRenderer>();
                 mr.Mesh = quad;
                 mr.Material = new Material(shader);
-                mr.Material.SetData<Texture>("albedo", new Texture("assets/textures/menu/+z.png", null, true));
+                mr.Material.SetData<Texture>("albedo", Texture.GetOrCreate("assets/textures/menu/+z.png", true));
                 mr.Material.SetData<Color256>("color", Color256.White);
                 mr.Material.SetData<Vector2D>("tiling", Vector2D.One);
             });
@@ -47,7 +47,7 @@ namespace Winecrash.Client
                 MeshRenderer mr = BackwardPlane.AddModule<MeshRenderer>();
                 mr.Mesh = quad;
                 mr.Material = new Material(shader);
-                mr.Material.SetData<Texture>("albedo", new Texture("assets/textures/menu/-z.png", null, true));
+                mr.Material.SetData<Texture>("albedo", Texture.GetOrCreate("assets/textures/menu/-z.png", true));
                 mr.Material.SetData<Color256>("color", Color256.White);
                 mr.Material.SetData<Vector2D>("tiling", Vector2D.One);
             });
@@ -61,7 +61,7 @@ namespace Winecrash.Client
                 MeshRenderer mr = UpPlane.AddModule<MeshRenderer>();
                 mr.Mesh = quad;
                 mr.Material = new Material(Shader.Find("Unlit"));
-                mr.Material.SetData<Texture>("albedo", new Texture("assets/textures/menu/+y.png", null, true));
+                mr.Material.SetData<Texture>("albedo", Texture.GetOrCreate("assets/textures/menu/+y.png", true));
                 mr.Material.SetData<Color256>("color", Color256.White);
                 mr.Material.SetData<Vector2D>("tiling", Vector2D.One);
             });
@@ -74,7 +74,7 @@ namespace Winecrash.Client
                 MeshRenderer mr = DownPlane.AddModule<MeshRenderer>();
                 mr.Mesh = quad;
                 mr.Material = new Material(shader);
-                mr.Material.SetData<Texture>("albedo", new Texture("assets/textures/menu/-y.png", null, true));
+                mr.Material.SetData<Texture>("albedo", Texture.GetOrCreate("assets/textures/menu/-y.png", true));
                 mr.Material.SetData<Color256>("color", Color256.White);
                 mr.Material.SetData<Vector2D>("tiling", Vector2D.One);
             });
@@ -88,7 +88,7 @@ namespace Winecrash.Client
                 MeshRenderer mr = EastPlane.AddModule<MeshRenderer>();
                 mr.Mesh = quad;
                 mr.Material = new Material(shader);
-                mr.Material.SetData<Texture>("albedo", new Texture("assets/textures/menu/+x.png", null, true));
+                mr.Material.SetData<Texture>("albedo", Texture.GetOrCreate("assets/textures/menu/+x.png", true));
                 mr.Material.SetData<Color256>("color", Color256.White);
                 mr.Material.SetData<Vector2D>("tiling", Vector2D.One);
             });
@@ -101,7 +101,7 @@ namespace Winecrash.Client
                 MeshRenderer mr = WestPlane.AddModule<MeshRenderer>();
                 mr.Mesh = quad;
                 mr.Material = new Material(shader);
-                mr.Material.SetData<Texture>("albedo", new Texture("assets/textures/menu/-x.png", null, true));
+                mr.Material.SetData<Texture>("albedo", Texture.GetOrCreate("assets/textures/menu/-x.png", true));
                 mr.Material.SetData<Color256>("color", Color256.White);
                 mr.Material.SetData<Vector2D>("tiling", Vector2D.One);
             });

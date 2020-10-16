@@ -118,5 +118,5 @@ function LogUserLogin($login, $password)
     $exec->execute();
 
     return $token;
-
 }
+

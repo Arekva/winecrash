@@ -1,16 +1,17 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using WEngine.Networking;
 
 namespace Winecrash.Net
 {
     public class NetPlayer : NetObject
     {
-        public string Nickname { get; set; }
+        public Guid GUID { get; set; }
 
         [JsonConstructor]
-        public NetPlayer(string nickname)
+        public NetPlayer(Guid guid)
         {
-            this.Nickname = nickname;
+            this.GUID = guid;
         }
     }
 }

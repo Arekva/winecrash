@@ -61,6 +61,7 @@
     <Compile Include="GUI\SmallButton.cs" />
     <Compile Include="GUI\TinyButton.cs" />
     <Compile Include="Localization\Language.cs" />
+    <Compile Include="MainLoadScreen.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="MenuBackgroundControler.cs" />
     <Compile Include="MenuTip.cs" />

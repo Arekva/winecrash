@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using System.Threading;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
@@ -145,52 +145,67 @@ namespace WEngine
             string[] reps = vertexPath.Split('/', '\\');
             this.Name = reps[reps.Length - 1].Split('.')[0];
 
-            string shaderSource = LoadSource(vertexPath);
-            int vertexShader = GL.CreateShader(ShaderType.VertexShader);
-            GL.ShaderSource(vertexShader, shaderSource);
-            CompileShader(vertexShader);
-
-            shaderSource = LoadSource(fragmentPath);
-            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(fragmentShader, shaderSource);
-            CompileShader(fragmentShader);
-
-            this.Handle = GL.CreateProgram();
-
-            GL.AttachShader(Handle, vertexShader);
-            GL.AttachShader(Handle, fragmentShader);
-
-            LinkProgram(Handle);
-
-            GL.DetachShader(Handle, vertexShader);
-            GL.DetachShader(Handle, fragmentShader);
-            GL.DeleteShader(fragmentShader);
-            GL.DeleteShader(vertexShader);
-
-
-            GL.GetProgram(Handle, GetProgramParameterName.ActiveAttributes, out int nAttribs);
-            Attributes = new ShaderAttributeData[nAttribs];
-            
-            for (int i = 0; i < nAttribs; i++)
+            void genGL()
             {
-                GL.GetActiveAttrib(Handle, i, 16, out int ALength, out int ASize, out ActiveAttribType AType, out string AName);
 
-                this.Attributes[i] = new ShaderAttributeData(AName, GL.GetAttribLocation(Handle, AName), ASize, ALength, AType);
+                string shaderSource = LoadSource(vertexPath);
+                int vertexShader = GL.CreateShader(ShaderType.VertexShader);
+                GL.ShaderSource(vertexShader, shaderSource);
+                CompileShader(vertexShader);
+
+                shaderSource = LoadSource(fragmentPath);
+                int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
+                GL.ShaderSource(fragmentShader, shaderSource);
+                CompileShader(fragmentShader);
+
+                this.Handle = GL.CreateProgram();
+
+                GL.AttachShader(Handle, vertexShader);
+                GL.AttachShader(Handle, fragmentShader);
+
+                LinkProgram(Handle);
+
+                GL.DetachShader(Handle, vertexShader);
+                GL.DetachShader(Handle, fragmentShader);
+                GL.DeleteShader(fragmentShader);
+                GL.DeleteShader(vertexShader);
+
+
+                GL.GetProgram(Handle, GetProgramParameterName.ActiveAttributes, out int nAttribs);
+                Attributes = new ShaderAttributeData[nAttribs];
+
+                for (int i = 0; i < nAttribs; i++)
+                {
+                    GL.GetActiveAttrib(Handle, i, 16, out int ALength, out int ASize, out ActiveAttribType AType,
+                        out string AName);
+
+                    this.Attributes[i] = new ShaderAttributeData(AName, GL.GetAttribLocation(Handle, AName), ASize,
+                        ALength, AType);
+                }
+
+
+                GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int nUniforms);
+                Uniforms = new ShaderUniformData[nUniforms];
+
+                for (int i = 0; i < nUniforms; i++)
+                {
+                    string UName = GL.GetActiveUniform(Handle, i, out int USize, out ActiveUniformType UType);
+                    Uniforms[i] = new ShaderUniformData(UName, GL.GetUniformLocation(Handle, UName), USize, UType);
+                }
+
+                SetAttribute("position", AttributeTypes.Vertice);
+                SetAttribute("uv", AttributeTypes.UV);
+                SetAttribute("normal", AttributeTypes.Normal);
             }
-            
 
-            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int nUniforms);
-            Uniforms = new ShaderUniformData[nUniforms];
-
-            for (int i = 0; i < nUniforms; i++)
+            if (Thread.CurrentThread == Graphics.Window.Thread)
             {
-                string UName = GL.GetActiveUniform(Handle, i, out int USize, out ActiveUniformType UType);
-                Uniforms[i] = new ShaderUniformData(UName, GL.GetUniformLocation(Handle, UName), USize, UType);
+                genGL();
             }
-
-            SetAttribute("position", AttributeTypes.Vertice);
-            SetAttribute("uv", AttributeTypes.UV);
-            SetAttribute("normal", AttributeTypes.Normal);
+            else
+            {
+                Graphics.Window.InvokeRender(genGL);
+            }
 
             Cache.Add(this);
         }

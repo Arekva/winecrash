@@ -36,29 +36,18 @@ namespace Winecrash.Client
 
             CreateDebugWindow();
             
+            
+            MainLoadScreen.Show();
+            
             new Sound(@"assets/sounds/button_click.mp3");
             
             Tester = new WObject("tester") /*{ Enabled = false }*/.AddModule<ClientTester>();
 
             Client = new GameClient(new Player("Arthur"));
             
-            //Game.OnPartyJoined += type => { };
-                
             Client.OnConnected += client =>
             {
                 WObject playerWobj = new WObject("Local Player");
-
-                /*Task.Run(() =>
-                {
-                    Task.Delay(1000).Wait();
-
-                    PlayerController.LocalPlayer = playerWobj.AddModule<PlayerEntity>();
-                    PlayerController pc = playerWobj.AddModule<PlayerController>();
-
-                });
-
-                Camera.Main._FarClip = 4096;
-                Camera.Main.WObject.Position = Vector3D.Up * 512;*/
             };
 
             Client.OnDisconnected += client =>
@@ -67,10 +56,11 @@ namespace Winecrash.Client
             };
 
             GameApplication app = (GameApplication)Graphics.Window;
+            app.Title = $"Winecrash {Winecrash.Version} ({IntPtr.Size * 8}bits)";
+            new Shader("assets/shaders/chunk/Chunk.vert", "assets/shaders/chunk/Chunk.frag");
+            
             app.OnLoaded += () =>
             {
-                new Shader("assets/shaders/chunk/Chunk.vert", "assets/shaders/chunk/Chunk.frag");
-                app.Title = "Winecrash " + IntPtr.Size * 8 + "bits";
                 Database.Load("assets/items/items.json").ParseItems();
                 Chunk.Texture = ItemCache.BuildChunkTexture(out int xsize, out int ysize);
                 MainMenu.Show();

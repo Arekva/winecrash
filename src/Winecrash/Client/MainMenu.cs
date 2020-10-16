@@ -465,6 +465,7 @@ namespace Winecrash.Client
 
         public static void Show()
         {
+            MainLoadScreen.Hide();
             if (!MenuWobject)
             {
                 CreateMenu();

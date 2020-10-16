@@ -8,12 +8,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using WEngine;
 using WEngine.Networking;
+using Winecrash.Entities;
 using Winecrash.Net;
 
 namespace Winecrash.Server
 {
-    public delegate void PlayerConnectionDelegate(TcpPlayer player);
-    public delegate void PlayerDisconnectionDelegate(TcpPlayer player, string reason);
+    public delegate void PlayerConnectionDelegate(Player player);
+    public delegate void PlayerDisconnectionDelegate(Player player, string reason);
 
     public class GameServer : BaseServer
     {
@@ -38,7 +39,7 @@ namespace Winecrash.Server
         public event PlayerConnectionDelegate OnPlayerConnect;
         public event PlayerDisconnectionDelegate OnPlayerDisconnect;
 
-        public List<TcpPlayer> ConnectedPlayers { get; set; } = new List<TcpPlayer>();
+        public List<Player> ConnectedPlayers { get; set; } = new List<Player>();
         public object ConnectedPlayersLocker = new object();
 
         protected List<RequiredAuth> AuthsRequired = new List<RequiredAuth>();
@@ -82,9 +83,9 @@ namespace Winecrash.Server
             Debug.Log("Winecrash " + Winecrash.Version + " - Server online.");
         }
 
-        public TcpPlayer FindPlayer(TcpClient client)
+        public Player FindPlayer(TcpClient client)
         {
-            TcpPlayer[] players = null;
+            Player[] players = null;
 
             lock(ConnectedPlayersLocker)
             {
@@ -94,9 +95,9 @@ namespace Winecrash.Server
             return players.FirstOrDefault(p => p.Client == client);
         }
 
-        public TcpPlayer FindPlayer(string nickname)
+        public Player FindPlayer(string nickname)
         {
-            TcpPlayer[] players = null;
+            Player[] players = null;
 
             lock (ConnectedPlayersLocker)
             {
@@ -129,7 +130,7 @@ namespace Winecrash.Server
 
                     if(auth != null)
                     {
-                        TcpPlayer player = new TcpPlayer(auth.Client, nplayer.Nickname);
+                        Player player = new Player(nplayer.Nickname, auth.Client, , );
                         lock (ConnectedPlayersLocker)
                             ConnectedPlayers.Add(player);
                         this.OnPlayerConnect?.Invoke(player);
@@ -156,7 +157,7 @@ namespace Winecrash.Server
                 rauths[i].CooldownTimeout -= Time.DeltaTime;
                 if (rauths[i].CooldownTimeout < 0.0)
                 {
-                    DisconnectClient(rauths[i].Client, "Failed to authentify to the server");
+                    DisconnectClient(rauths[i].Client, "Failed to auth to the server");
                     
                     lock (AuthLocker)
                         AuthsRequired.Remove(rauths[i]);
@@ -170,7 +171,7 @@ namespace Winecrash.Server
 
         protected override void DisconnectClient(TcpClient client, string reason)
         {
-            TcpPlayer player = FindPlayer(client);
+            Player player = FindPlayer(client);
             if (player)
             {
                 this.InvokeOnClientDisconnected(client, reason);

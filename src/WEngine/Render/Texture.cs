@@ -191,13 +191,13 @@ namespace WEngine
             Cache.Add(this);
         }
 
-        public static Texture GetOrCreate(string path)
+        public static Texture GetOrCreate(string path, bool clearOnApply = false)
         {
             string name = path.Split('/', '\\').Last().Split('.')[0];
             Texture tex = Texture.Find(name);
             if(tex == null)
             {
-                tex = new Texture(path, name);
+                tex = new Texture(path, name, clearOnApply);
             }
 
             return tex;

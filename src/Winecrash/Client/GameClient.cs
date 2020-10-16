@@ -38,8 +38,7 @@ namespace Winecrash.Client
                 pending = this.PendingData.ToArray();
                 this.PendingData.Clear();
             }
-
-            //Debug.Log(pending.Length);
+            
             for (int i = 0; i < pending.Length; i++)
             {
                 NetObject nobj = pending[i];
@@ -52,13 +51,18 @@ namespace Winecrash.Client
 
                         //send auth on first data received.
 
-                        new NetPlayer(Player.Nickname).Send(Client.Client);
+                        new NetPlayer(Player.GUID).Send(Client.Client);
                     }
                 }
                 
                 else if (nobj is NetChunk nchunk)
                 {
                     World.GetOrCreateChunk(nchunk);
+                }
+                
+                else if (nobj is NetEntity nent)
+                {
+                    nent.Parse();
                 }
 
                 pending[i].Delete();

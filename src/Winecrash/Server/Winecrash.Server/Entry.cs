@@ -58,8 +58,12 @@ namespace Winecrash.Server
 
             server = new GameServer(IPAddress.Any, 27716);
 
+            
+            //df828b1e-dd64-491c-a6b1-504fee1a203b
             server.OnPlayerConnect += player =>
             {
+                new 
+                
                 Task.Run(() =>
                 {
                     Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 15), vector =>
