@@ -14,7 +14,7 @@ namespace Winecrash.Client
     {
         public static PlayerEntity LocalPlayer { get; set; }
 
-        protected override void Update() //todo: NetworkUpdate
+        protected override void FixedUpdate() //todo: NetworkUpdate
         {
             if (LocalPlayer != null)
             {

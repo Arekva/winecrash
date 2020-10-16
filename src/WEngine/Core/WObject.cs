@@ -54,20 +54,25 @@ namespace WEngine
         
 
         private WObject _Parent = null;
+        public object ParentLocker = new object();
         public WObject Parent
         {
             get
             {
-                return this._Parent;
+                lock(ParentLocker)
+                    return this._Parent;
             }
 
             set
             {
                 if(_Parent != null)
                 {
-                    lock(_Parent._ChildrenLocker)
-                        _Parent._Children.Remove(this);
-                    _Parent = null;
+                    lock (ParentLocker)
+                    {
+                        lock (_Parent._ChildrenLocker)
+                            _Parent._Children.Remove(this);
+                        _Parent = null;
+                    }
                 }
 
                 if(value != null)
@@ -76,7 +81,8 @@ namespace WEngine
                     Quaternion oldGlobalRotation = this.Rotation;
                     Vector3F oldGlobalScale = this.Scale;
 
-                    this._Parent = value;
+                    lock(ParentLocker)
+                        this._Parent = value;
                     
                     lock(value._ChildrenLocker)
                         value._Children.Add(this);
@@ -103,12 +109,16 @@ namespace WEngine
         public Vector3D Position
         {
             get
-            {   //                                      first set to scale                                     then rotate                          then add parent's position
+            {  
+                lock(ParentLocker)
+                //                                      first set to scale                                     then rotate                          then add parent's position
                 return this._Parent ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3D.Zero, this._Parent.Rotation) + this._Parent.Position : this.LocalPosition;
             }
 
             set
-            {   //                                      first get relative position                              then rotate by invert                                 then scale
+            {  
+                lock(ParentLocker)
+                //                                      first get relative position                              then rotate by invert                                 then scale
                 this.LocalPosition = this._Parent ? (value - this._Parent.Position).RotateAround(Vector3D.Zero, this._Parent.Rotation) * (Vector3D.One / this._Parent.Scale) : value;
             }
         }
@@ -118,11 +128,13 @@ namespace WEngine
         {
             get
             {
+                lock(ParentLocker)
                 return this._Parent ? this._Parent.Rotation * this.LocalRotation : this.LocalRotation;
             }
 
             set
             {
+                lock(ParentLocker)
                 this.LocalRotation = this._Parent ? this._Parent.Rotation.Inverted * value : value;
             }
         }
@@ -132,11 +144,13 @@ namespace WEngine
         {
             get
             {
+                lock(ParentLocker)
                 return this._Parent ? this._Parent.Scale * this.LocalScale : this.LocalScale;
             }
 
             set
             {
+                lock(ParentLocker)
                 this.LocalScale = this._Parent ? value / this._Parent.Scale : value;
             }
         }
@@ -373,7 +387,8 @@ namespace WEngine
                 _Children[i].ForcedDelete();
             }
 
-            this.Parent = null;
+            lock(ParentLocker)
+                this.Parent = null;
             _Children.Clear();
             _Children = null;
 
@@ -400,7 +415,8 @@ namespace WEngine
                 for (int i = 0; i < _Children.Count; i++)
                     _Children[i].Delete();
 
-            this.Parent = null;
+            lock(ParentLocker)
+                this.Parent = null;
             _Children?.Clear();
             _Children = null;
 

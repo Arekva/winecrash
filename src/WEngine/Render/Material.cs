@@ -67,6 +67,8 @@ namespace WEngine
         }
 
         internal MaterialData[] _Data { get; set; }
+        private object DataLocker = new object();
+
         private MaterialData[] _DataInMaterial;
 
         internal static List<Material> Cache { get; set; } = new List<Material>();
@@ -92,25 +94,31 @@ namespace WEngine
 
         internal void Use()
         {
-            Shader.Use();
-            GL.BlendFuncSeparate(SourceColorBlending, DestinationColorBlending, SourceAlphaBlending, DestinationAlphaBlending);
-
-            //set the lights
-            DirectionalLight main = DirectionalLight.Main;
-            if(main != null)
-            {  
-                this.SetData<Vector4>("mainLightColor", main.Color);
-                this.SetData<Vector3>("mainLightDirection", -main.WObject._RendersForward);
-                this.SetData<Vector4>("mainLightAmbiant", main.Ambient);
-            }
-
-            int texCount = 0;
-            for (int i = 0; i < _Data.Length; i++)
+            if (DataLocker == null || this._Data == null) return;
+            lock (DataLocker)
             {
-                if (ReferenceEquals(_DataInMaterial[i].Data, _Data[i])) continue;
+                Shader.Use();
+                GL.BlendFuncSeparate(SourceColorBlending, DestinationColorBlending, SourceAlphaBlending, DestinationAlphaBlending);
 
-                MaterialData data = _DataInMaterial[i] = _Data[i];
-                SetGLData(ref data, ref texCount);
+                //set the lights
+                DirectionalLight main = DirectionalLight.Main;
+                if(main != null)
+                {  
+                    this.SetData<Vector4>("mainLightColor", main.Color);
+                    this.SetData<Vector3>("mainLightDirection", -main.WObject._RendersForward);
+                    this.SetData<Vector4>("mainLightAmbiant", main.Ambient);
+                }
+
+                int texCount = 0;
+            
+                if (_Data == null || _DataInMaterial == null) return;
+                for (int i = 0; i < _Data.Length; i++)
+                {
+                    if (ReferenceEquals(_DataInMaterial[i].Data, _Data[i])) continue;
+
+                    MaterialData data = _DataInMaterial[i] = _Data[i];
+                    SetGLData(ref data, ref texCount);
+                }
             }
         }
         internal void SetGLData(ref MaterialData data, ref int texCount)
@@ -220,10 +228,13 @@ namespace WEngine
         public override void Delete()
         {
             this.Shader = null;
-            this._Data = null;
+            lock(DataLocker)
+                this._Data = null;
             this._DataInMaterial = null;
-            
-            lock(CacheLocker) Cache.Remove(this);
+            this.DataLocker = null;
+
+
+            lock (CacheLocker) Cache.Remove(this);
             
             base.Delete();
         }
@@ -267,9 +278,12 @@ namespace WEngine
 
             MaterialData matdata = null;
 
+            if (DataLocker == null) return;
+
+            lock(DataLocker)
             for (int i = 0; i < this._Data.Length; i++)
             {
-                if(this._Data[i].Name == name)
+                if(this._Data[i]?.Name == name)
                 {
                     matdata = this._Data[i];
                     break;

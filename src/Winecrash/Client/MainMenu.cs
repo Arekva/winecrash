@@ -452,13 +452,13 @@ namespace Winecrash.Client
                 MultiPanel.Enabled = false;
             }
         }
-        private static void ShowMain()
+        public static void ShowMain()
         {
             HideOptions();
             HideMulti();
             MainMenuPanel.Enabled = true;
         }
-        private static void HideMain()
+        public static void HideMain()
         {
             MainMenuPanel.Enabled = false;
         }
@@ -470,20 +470,14 @@ namespace Winecrash.Client
                 CreateMenu();
             }
 
-            
-            Camera.Main.FOV = 80.0D;
-            Camera.Main.WObject.LocalRotation = new Quaternion(25, 0, 0);
-
-            
-            
             ShowMain();
             MenuWobject.Enabled = true;
         }
 
         public static void Hide()
         {
-            Camera.Main.FOV = 45.0D;
-            Camera.Main.WObject.LocalRotation = new Quaternion(0, 0, 0);
+            //Camera.Main.FOV = 45.0D;
+            //Camera.Main.WObject.LocalRotation = new Quaternion(0, 0, 0);
             //MainMenuPanel.Enabled = false;
             HideMain();
             HideOptions();

@@ -131,9 +131,9 @@ namespace WEngine
         {
             this.OnDelete();
 
-            this.WObject._Modules.Remove(this);
+            this.WObject?._Modules.Remove(this);
             this.WObject = null;
-            WEngine.Group.GetGroup(this.Group).RemoveModule(this);
+            WEngine.Group.GetGroup(this.Group)?.RemoveModule(this);
 
             base.Delete();
         }

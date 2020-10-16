@@ -88,6 +88,11 @@ namespace Winecrash.Client
                 World.Unload();
                 
                 MainMenu.Show();
+
+                if(type == PartyType.Multiplayer)
+                {
+                    MainMenu.HideMain();
+                }
                 
                 //Camera.Main._FarClip = 4096;
                 //Camera.Main.WObject.Position = Vector3D.Zero;

@@ -68,6 +68,8 @@ namespace WEngine.Networking
         /// <exception cref="NullReferenceException"></exception>
         public void Send(Socket socket, bool deleteOnSend = true)
         {
+            if (socket == null) return;
+
             Task.Run(() =>
             {
                 Type type = this.GetType();

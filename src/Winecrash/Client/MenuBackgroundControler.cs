@@ -112,5 +112,13 @@ namespace Winecrash.Client
             Rotation += Time.DeltaTime * RotationSpeed;
             this.WObject.LocalRotation = new Quaternion(RotationAxis, Rotation);
         }
+
+        protected override void OnEnable()
+        {
+            Camera.Main.FOV = 80.0D;
+            Camera.Main.WObject.LocalRotation = new Quaternion(25, 0, 0);
+
+            base.OnEnable();
+        }
     }
 }

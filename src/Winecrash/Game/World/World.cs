@@ -281,6 +281,10 @@ namespace Winecrash
         public static void Unload()
         {
             Parallel.ForEach(Dimensions, dim => UnloadDimension(dim));
+
+            Dimensions.Clear();
+
+            GC.Collect(2, GCCollectionMode.Forced, true, true);
         }
 
         public static void UnloadDimension(Dimension dimension)
@@ -313,6 +317,48 @@ namespace Winecrash
             
             lock(ChunksLocker)
                 Chunks[Dimensions.IndexOf(c.Dimension)].Remove(c);
+        }
+
+        // Get the surface height at a certain position / dimension
+        public static uint GetSurface(int x, int z, string dimension)
+        {
+            GlobalToLocal(new Vector3F(x, 255, z), out Vector3I cpos, out Vector3I bpos);
+
+            Chunk c = World.GetChunk(cpos.XY, dimension);
+
+            ushort[] blocks = null;
+
+            if (c != null) blocks = c.Blocks;
+            else blocks = GenerateSimple();
+
+            for (int i = 255; i > -1 ; i--)
+            {
+                if (ItemCache.Get<Block>(blocks[WMath.Flatten3D(x, i, z, Chunk.Width, Chunk.Height)]).Transparent)
+                    return (uint)i;
+            }
+
+            return 64u;
+        }
+
+        public static void GlobalToLocal(Vector3F global, out Vector3I ChunkPosition, out Vector3I LocalPosition)
+        {
+            ChunkPosition = new Vector3I(
+                ((int)global.X / Chunk.Width) + (global.X < 0.0F ? -1 : 0), //X position
+                ((int)global.Z / Chunk.Depth) + (global.Z < 0.0F ? -1 : 0), //Y position
+                0);                                                         //Z dimension
+
+            float localX = global.X % Chunk.Width;
+            if (localX < 0) localX += Chunk.Width;
+
+            float localZ = global.Z % Chunk.Depth;
+            if (localZ < 0) localZ += Chunk.Depth;
+
+            LocalPosition = new Vector3I((int)localX, (int)global.Y, (int)localZ);
+        }
+
+        public static Vector3I LocalToGlobal(Vector2I chunk, Vector3I block)
+        {
+            return new Vector3I(chunk.X * Chunk.Width, 0, chunk.Y * Chunk.Depth) + block;
         }
     }
 }

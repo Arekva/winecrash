@@ -254,7 +254,7 @@ namespace Winecrash
         {
             if (Engine.DoGUI)
             {
-                if (ConstructedOnce)
+                if (ConstructedOnce && _TimeSinceAnimate <= _AnimationTime)
                 {
                     _TimeSinceAnimate += Time.DeltaTime;
                     BlocksRenderer.Material.SetData("color",
@@ -291,11 +291,12 @@ namespace Winecrash
             this.EastNeighbor = null;
             this.Blocks = null;
 
-            if (Engine.DoGUI)
+            if (Engine.DoGUI && this.BlocksRenderer)
             {
-                this.BlocksRenderer.Mesh.Delete();
-                this.BlocksRenderer.Material.Delete();
+                this.BlocksRenderer.Mesh?.Delete();
+                this.BlocksRenderer.Material?.Delete();
                 this.BlocksRenderer.Delete();
+                this.BlocksRenderer = null;
             }
             
             base.OnDelete();
