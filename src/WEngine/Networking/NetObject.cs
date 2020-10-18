@@ -89,6 +89,13 @@ namespace WEngine.Networking
             //});
         }
 
+        public void Send(Socket[] sockets, bool deleteOnSend = true)
+        {
+            if (sockets == null) return;
+            Parallel.ForEach(sockets, socket => this.Send(socket, false));
+            if (deleteOnSend) this.Delete();
+        }
+
         public virtual void Delete()
         {
             this.Deleted = true;

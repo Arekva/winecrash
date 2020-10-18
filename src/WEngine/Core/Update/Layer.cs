@@ -355,7 +355,7 @@ namespace WEngine
 
                 List<ManualResetEvent> doneEvents = new List<ManualResetEvent>(groups.Length);
 
-                for (int j = 0; j < layer._Groups.Count; j++)
+                for (int j = 0; j < groups.Length; j++)
                 {
                     if (groups[j].Deleted) continue;
 

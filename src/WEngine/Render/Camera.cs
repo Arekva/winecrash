@@ -149,6 +149,7 @@ namespace WEngine
 
         protected internal override void OnRender()
         {
+            if (!this.Enabled) return;
             _RenderProjectionMatrix = this.ProjectionMatrix;
              this.ViewMatrixRef(out _RenderViewMatrix);
 

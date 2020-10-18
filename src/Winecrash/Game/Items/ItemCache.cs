@@ -109,27 +109,34 @@ namespace Winecrash
                 Name = "Cache"
             };
 
-            for (int y = 0; y < (int)TotalItems; y++)
+            //for (int y = 0; y < (int)TotalItems; y++)
+            Parallel.For(0, (int) TotalItems, y =>
             {
-                if(ItemCache.TryGet<Cube>(y, out Cube c))
+                if (ItemCache.TryGet<Cube>(y, out Cube c))
                 {
                     //East
-                    tex.SetPixels(texsize * 0, y * texsize, texsize, texsize, c.EastTexture.GetPixels(0, 0, texsize, texsize));
+                    tex.SetPixels(texsize * 0, y * texsize, texsize, texsize,
+                        c.EastTexture.GetPixels(0, 0, texsize, texsize));
                     //West
-                    tex.SetPixels(texsize * 1, y * texsize, texsize, texsize, c.WestTexture.GetPixels(0, 0, texsize, texsize));
+                    tex.SetPixels(texsize * 1, y * texsize, texsize, texsize,
+                        c.WestTexture.GetPixels(0, 0, texsize, texsize));
 
                     //Up
-                    tex.SetPixels(texsize * 2, y * texsize, texsize, texsize, c.UpTexture.GetPixels(0, 0, texsize, texsize));
+                    tex.SetPixels(texsize * 2, y * texsize, texsize, texsize,
+                        c.UpTexture.GetPixels(0, 0, texsize, texsize));
                     //Down
-                    tex.SetPixels(texsize * 3, y * texsize, texsize, texsize, c.DownTexture.GetPixels(0, 0, texsize, texsize));
+                    tex.SetPixels(texsize * 3, y * texsize, texsize, texsize,
+                        c.DownTexture.GetPixels(0, 0, texsize, texsize));
 
 
                     //North
-                    tex.SetPixels(texsize * 4, y * texsize, texsize, texsize, c.NorthTexture.GetPixels(0,0, texsize, texsize));
+                    tex.SetPixels(texsize * 4, y * texsize, texsize, texsize,
+                        c.NorthTexture.GetPixels(0, 0, texsize, texsize));
                     //South
-                    tex.SetPixels(texsize * 5, y * texsize, texsize, texsize, c.SouthTexture.GetPixels(0, 0, texsize, texsize));
+                    tex.SetPixels(texsize * 5, y * texsize, texsize, texsize,
+                        c.SouthTexture.GetPixels(0, 0, texsize, texsize));
                 }
-            }
+            });
 
 
             tex.Apply();

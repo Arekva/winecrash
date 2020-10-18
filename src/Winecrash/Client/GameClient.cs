@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using WEngine;
 using WEngine.Networking;
+using Winecrash.Entities;
 using Winecrash.Net;
+using Debug = WEngine.Debug;
 
 namespace Winecrash.Client
 {
@@ -11,26 +14,21 @@ namespace Winecrash.Client
     {
         public static bool FirstPingReceived { get; set; } = false;
         
-        public Player Player { get; set; } = null;
-        public GameClient(Player localPlayer) : base()
+        public GameClient() : base()
         {
-            this.Player = localPlayer;
+            Player.LocalPlayer.Client = this.Client;
             this.OnDisconnected += (reason) =>
             {
                 WEngine.Debug.LogWarning("Disconnected from server: " + reason);
                 this.Client.Client.Disconnect(true);
                 FirstPingReceived = false;
-                World.WorldWObject?.Delete();
                 MainMenu.Show();
                 MainMenu.ShowDisconnection(reason);
-
             };
         }
-
-        int n = 0;
+        
         public void ThreatData()
         {
-            
             NetObject[] pending = null;
 
             lock (this.PendingDataLocker)
@@ -51,7 +49,7 @@ namespace Winecrash.Client
 
                         //send auth on first data received.
 
-                        new NetPlayer(Player.GUID).Send(Client.Client);
+                        new NetPlayer(Player.LocalPlayer).Send(Client.Client);
                     }
                 }
                 
@@ -60,9 +58,32 @@ namespace Winecrash.Client
                     World.GetOrCreateChunk(nchunk);
                 }
                 
+                else if (nobj is NetPlayer nplay)
+                {
+                    Player existingP = Player.Find(nplay.Nickname);
+
+                    if (existingP == null)
+                    {
+                        PlayerEntity existingE = (PlayerEntity)Entity.Get(EGuid.UniqueFromString(nplay.Nickname));
+                        existingP = new Player(nplay.Nickname);
+                        
+                        if (existingE != null)
+                        {
+                            existingP.Entity = existingE;
+                        }
+                        else
+                        {
+                            existingP.CreateEntity(new WObject(nplay.Nickname));
+                        }
+                        //existingP.CreateNonLocalElements();
+                    }
+                    
+                    existingP.Entity.CreateModel();
+                }
+                
                 else if (nobj is NetEntity nent)
                 {
-                    nent.Parse();
+                    Entity ent = nent.Parse();
                 }
 
                 pending[i].Delete();

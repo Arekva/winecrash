@@ -115,9 +115,6 @@ namespace Winecrash.Client
 
         protected override void OnEnable()
         {
-            Camera.Main.FOV = 80.0D;
-            Camera.Main.WObject.LocalRotation = new Quaternion(25, 0, 0);
-
             base.OnEnable();
         }
     }

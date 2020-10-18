@@ -1,5 +1,5 @@
 <?php
-    //header('Content-Type: application/json');
+    header('Content-Type: application/json');
 
     $requestType = "none";
 
@@ -14,7 +14,7 @@
 
     require "utils.php";
 
-    echo CreateUser("Arekva", "test", "arekva@protonmail.com", "Arekva");
+    //echo CreateUser("Arekva", "test", "arekva@protonmail.com", "Arekva");
 
 
     switch ($requestType)

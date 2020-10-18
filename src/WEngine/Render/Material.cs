@@ -279,7 +279,6 @@ namespace WEngine
             MaterialData matdata = null;
 
             if (DataLocker == null) return;
-
             lock(DataLocker)
             for (int i = 0; i < this._Data.Length; i++)
             {

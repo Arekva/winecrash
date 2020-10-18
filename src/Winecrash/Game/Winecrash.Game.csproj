@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -50,6 +51,7 @@
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\PlayerEntity.cs" />
     <Compile Include="Folders.cs" />
+    <Compile Include="GameInput.cs" />
     <Compile Include="Items\Block.cs" />
     <Compile Include="Items\BlockFaces.cs" />
     <Compile Include="Items\Cube.cs" />
@@ -61,6 +63,7 @@
     <Compile Include="Net\NetChunk.cs" />
     <Compile Include="Net\NetEdit.cs" />
     <Compile Include="Net\NetEntity.cs" />
+    <Compile Include="Net\NetInput.cs" />
     <Compile Include="Net\NetMessage.cs" />
     <Compile Include="Net\NetPlayer.cs" />
     <Compile Include="Net\NetUser.cs" />

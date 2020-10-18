@@ -65,6 +65,11 @@ namespace WEngine
 
             set
             {
+                if (value != null && this.Deleted)
+                {
+                    Debug.LogWarning( $"Unable to set a parent to \"{this.Name}\": it is deleted. Consider setting it to null everywhere.");
+                }
+
                 if(_Parent != null)
                 {
                     lock (ParentLocker)
@@ -77,16 +82,24 @@ namespace WEngine
 
                 if(value != null)
                 {
+                    if (value.Deleted)
+                    {
+                        Debug.LogWarning($"Unable to set \"{value.Name}\" as a parent for \"{this.Name}\": parent is deleted ! Consider setting it to null everywhere.");
+                        return;
+                    }
+
+                    //value.Enabled = this.Enabled;
+                    
                     Vector3F oldGlobalPosition = this.Position;
                     Quaternion oldGlobalRotation = this.Rotation;
                     Vector3F oldGlobalScale = this.Scale;
 
                     lock(ParentLocker)
                         this._Parent = value;
-                    
-                    lock(value._ChildrenLocker)
+
+                    lock (value._ChildrenLocker)
                         value._Children.Add(this);
-                    
+
                     this.Position = oldGlobalPosition;
                     this.Rotation = oldGlobalRotation;
                     this.Scale = oldGlobalScale;
@@ -97,7 +110,7 @@ namespace WEngine
 
 
         private List<WObject> _Children { get; set; } = new List<WObject>();
-        private object _ChildrenLocker = new object();
+        private object _ChildrenLocker { get; set; } = new object();
         public WObject[] Children
         {
             get
@@ -253,6 +266,14 @@ namespace WEngine
                 wobjs = WObjects.ToList(); 
             return wobjs.FirstOrDefault(w => w.Name == name);
         }
+        
+        public static WObject Find(Guid identifier)
+        {
+            List<WObject> wobjs;
+            lock (WobjectsLocker)
+                wobjs = WObjects.ToList(); 
+            return wobjs.FirstOrDefault(w => w.Identifier == identifier);
+        }
 
         public WObject FindChild(string childName)
         {
@@ -321,10 +342,10 @@ namespace WEngine
             mod.WObject = this;
 
             this._Modules.Add(mod);
-
+            
             mod.Creation();
-
-            if(this.Enabled)
+            
+            if (this.Enabled)
             {
                 mod.OnEnable();
             }
@@ -332,7 +353,7 @@ namespace WEngine
             {
                 mod.OnDisable();
             }
-
+            
             return mod;
         }
 

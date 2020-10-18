@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -15,6 +16,14 @@ namespace WEngine
 
         private static int KeysAmount = Enum.GetValues(typeof(Keys)).Length;
         private static Dictionary<Keys, KeyStates> RegisteredKeyStates = new Dictionary<Keys, KeyStates>(KeysAmount);
+
+        public static ReadOnlyDictionary<Keys, KeyStates> KeyDictionary
+        {
+            get
+            {
+                return new ReadOnlyDictionary<Keys, KeyStates>(RegisteredKeyStates);
+            }
+        }
 
         public static bool CursorVisible
         {
@@ -111,7 +120,8 @@ namespace WEngine
                 }
             }
             
-            UpdateKeysStates();
+            if(Graphics.Window != null && Graphics.Window.Focused)
+                UpdateKeysStates();
         }
 
         protected internal override void OnDelete()
@@ -246,7 +256,7 @@ namespace WEngine
             return m;
         }
 
-        private static KeyStates GetKeyState(Keys key, Dictionary<Keys, KeyStates> dictionary)
+        public static KeyStates GetKeyState(Keys key, IDictionary<Keys, KeyStates> dictionary)
         {
             if (dictionary == null) return KeyStates.None;
 

@@ -30,7 +30,7 @@ namespace Winecrash.Net
             this.Rotation = entity.WObject.Rotation;
         }
 
-        public void Parse()
+        public Entity Parse()
         {
             try
             {
@@ -38,22 +38,31 @@ namespace Winecrash.Net
 
                 if (entity != null)
                 {
-                    //Debug.Log("Updating Entity " + GUID);
+                    //Debug.Log($"Updating Entity [{entity.GetType().Name}] {GUID}");
+
                     entity.WObject.Position = Position;
-                    entity.WObject.Rotation = Rotation;
                 }
                 else
                 {
-                    WObject ettWobj = new WObject("Entity " + GUID);
-                    Entity ent = (Entity)ettWobj.AddModule(this.EntityType);
-                    ent.Identifier = GUID;
+                    WObject ettWobj = new WObject("Entity " + GUID)
+                    {
+                        Position = Position,
+                    };
+                    entity = (Entity)ettWobj.AddModule(this.EntityType);
+                    entity.Identifier = GUID;
+                    entity.Rotation = Rotation;
 
-                    Debug.Log($"Created Entity [{ent.GetType().Name}] {GUID}");
+                    //Debug.Log($"Created Entity [{ent.GetType().Name}] {GUID}");
                 }
+                
+                entity.Rotation = Rotation;
+
+                return entity;
             }
             catch(Exception e)
             {
                 Debug.LogError("Error when trying to parse entity: " + e.Message);
+                return null;
             }
         }
     }

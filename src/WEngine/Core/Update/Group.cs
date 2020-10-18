@@ -122,6 +122,8 @@ namespace WEngine
             {
                 for (int i = 0; i < modules.Length; i++)
                 {
+                    if (modules[i] == null || !modules[i].Enabled || modules[i].Deleted) continue;
+                    
                     try
                     {
                         modules[i]?.FixedUpdate();

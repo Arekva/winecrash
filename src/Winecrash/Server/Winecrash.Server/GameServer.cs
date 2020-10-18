@@ -10,6 +10,7 @@ using WEngine;
 using WEngine.Networking;
 using Winecrash.Entities;
 using Winecrash.Net;
+using WinecrashCore.Net;
 
 namespace Winecrash.Server
 {
@@ -119,6 +120,7 @@ namespace Winecrash.Server
             
             for (int i = 0; i < data.Length; i++)
             {
+                //Debug.Log("DATA");
                 if (data[i].Deleted) continue;
 
                 if (data[i].NObject is NetPlayer nplayer)
@@ -130,10 +132,29 @@ namespace Winecrash.Server
 
                     if(auth != null)
                     {
-                        Player player = new Player(nplayer.Nickname, auth.Client, , );
+                        Guid playerGuid = EGuid.UniqueFromString(nplayer.Nickname);
+                        Debug.Log(nplayer.Nickname + " : " + playerGuid);
+                        
+                        WObject playerWobj = new WObject(nplayer.Nickname);
+                        Player player = new Player(nplayer.Nickname, auth.Client, playerGuid, null);
+                        player.CreateEntity(playerWobj);
+
                         lock (ConnectedPlayersLocker)
+                        {
+                            foreach (Player p in ConnectedPlayers)
+                            {
+                                //send all curent players to the new one
+                                new NetPlayer(p).Send(player.Client.Client);
+                                
+                                //send the new player to the connected ones
+                                new NetPlayer(player).Send(p.Client.Client);
+                            }
+
                             ConnectedPlayers.Add(player);
+                        }
+
                         this.OnPlayerConnect?.Invoke(player);
+
                         lock (AuthLocker)
                             AuthsRequired.Remove(auth);
                         auth.Delete();
@@ -143,6 +164,15 @@ namespace Winecrash.Server
                 else if(data[i].NObject is NetEntity nentity)
                 {
                     nentity.Parse();
+                }
+                
+                else if (data[i].NObject is NetInput ninput)
+                {
+                    Player p = this.FindPlayer(data[i].Client);
+                    if (p != null)
+                    {
+                        p.ParseInputs(ninput);
+                    }
                 }
 
                 data[i].Delete();
@@ -165,8 +195,36 @@ namespace Winecrash.Server
                 }
             }
 
+            Entity[] entities;
+            lock (Entity.EntitiesLocker)
+            {
+                entities = Entity.Entities.ToArray();
+            }
+
+            for (int i = 0; i < entities.Length; i++)
+            {
+                if(entities[i].Deleted) continue;
+                SyncEntity(entities[i]);
+            }
+
             //Debug.Log("NetObjects received within this tick: " + objects.Length);
             Engine.ForceUpdate();
+        }
+
+        public virtual void SyncEntity(Entity entity)
+        {
+            Socket[] clients = null;
+            lock (ConnectedPlayersLocker)
+            {
+                clients = new Socket[ConnectedPlayers.Count];
+
+                for (int i = 0; i < clients.Length; i++)
+                {
+                    clients[i] = ConnectedPlayers[i].Client.Client;
+                }
+            }
+
+            new NetEntity(entity).Send(clients);
         }
 
         protected override void DisconnectClient(TcpClient client, string reason)

@@ -91,47 +91,69 @@ namespace WEngine.Networking
             {
                 while (this.Connected)
                 {
-                    //Debug.Log("waiting for right to read data");
                     LoopResetEvent.WaitOne();
+                    if (!this.Connected)
+                    {
+                        this.Disconnect("#server_disconnection_timeout");
+                    }
                     LoopResetEvent.Reset();
-                    //Debug.Log("right granted");
 
                     Task.Run(() =>
                     {
-                        NetObject obj = null;
                         try
                         {
-                            obj = ReceiveDataAsync(this.Client.Client).Result;
+                            NetObject obj = ReceiveDataAsync(this.Client.Client).Result;
+
+                            
+                            if (this.Connected)
+                            {
+                                if (obj is NetKick kick)
+                                {
+                                    Disconnect(kick.Reason, true);
+                                    return;
+                                }
+
+                                if (obj is NetDummy)
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    Task.Run(() =>
+                                    {
+                                        OnServerDataReceived?.Invoke(obj);
+
+                                        lock (PendingDataLocker) PendingData.Add(obj);
+                                    });
+                                }
+                            }
+                        }
+                        catch (AggregateException e)
+                        {
+                            foreach (Exception exc in e.InnerExceptions)
+                            {
+                                if (exc is SocketException se)
+                                {
+                                    Connected = false;
+                                    LoopResetEvent.Set();
+                                }
+                            }
+
+                            if (Connected)
+                            {
+                                Debug.LogError("Multiple errors while receiving data: " + e);
+                                LoopResetEvent.Set();
+                            }
                         }
                         catch (Exception e)
                         {
-
-                            obj = new NetDummy();
-                            Debug.LogError("Error while receiving data: " + e.Message);
-                        }
-
-
-                        if (this.Connected)
-                        {
-                            if (obj is NetKick kick)
-                            {
-                                Disconnect(kick.Reason, true);
-                                return;
-                            }
-                            else
-                            {
-                                Task.Run(() =>
-                                {
-                                    OnServerDataReceived?.Invoke(obj);
-
-                                    lock (PendingDataLocker) PendingData.Add(obj);
-                                });
-                            }
+                            Debug.LogError("Error while receiving data: " + e);
+                            LoopResetEvent.Set();
                         }
                     });
                 }
 
-                Debug.Log("stoppped checking data.");
+                //Debug.Log("stopped checking data.");
                 
                 //Disconnect();
             });
@@ -220,19 +242,15 @@ namespace WEngine.Networking
                 }
 
                 LoopResetEvent.Set();
-
-                string str = NetData<NetDummy>.Encoding.GetString(NetData<NetDummy>.Decompress(data));
-
+                
                 try
                 {
-                    netobj = NetObject.Receive(str, client);
+                    netobj = NetObject.Receive(NetData<NetDummy>.Encoding.GetString(NetData<NetDummy>.Decompress(data)), client);
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("Transmission error.");
+                    Debug.LogError("Transmission error or decompressing error.");
                     netobj = new NetDummy();
-                    
-                    this.Disconnect("#server_disconnection_timeout");
                 }
 
             }).ConfigureAwait(true);

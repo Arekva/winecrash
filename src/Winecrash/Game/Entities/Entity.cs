@@ -5,10 +5,28 @@ using WEngine;
 
 namespace Winecrash.Entities
 {
+    public delegate void EntityRotationUpdate(Quaternion quaternion);
+    
     public abstract class Entity : Module
     {
-        public static List<Entity> Entities { get; private set; }= new List<Entity>();
-        public static object EntitiesLocker { get; }= new object();
+        public static List<Entity> Entities { get; private set; } = new List<Entity>();
+        public static object EntitiesLocker { get; } = new object();
+
+        public event EntityRotationUpdate OnRotate;
+
+        private Quaternion _Rotation;
+        public Quaternion Rotation
+        {
+            get
+            {
+                return this._Rotation;
+            }
+            set
+            {
+                _Rotation = value;
+                OnRotate?.Invoke(value);
+            }
+        }
 
         protected override void Creation()
         {
@@ -20,6 +38,8 @@ namespace Winecrash.Entities
         {
             lock(EntitiesLocker)
                 Entities.Remove(this);
+
+            OnRotate = null;
         }
 
         public static Entity Get(Guid guid)

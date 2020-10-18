@@ -34,33 +34,71 @@ namespace Winecrash.Client
 
             Engine.OnStop += () => End.Set();
 
+            
             CreateDebugWindow();
             
             
-            MainLoadScreen.Show();
+            //MainLoadScreen.Show();
             
             new Sound(@"assets/sounds/button_click.mp3");
             
             Tester = new WObject("tester") /*{ Enabled = false }*/.AddModule<ClientTester>();
 
-            Client = new GameClient(new Player("Arthur"));
+            Player.LocalPlayer = new Player("Arthur_" + new Random().Next(1000, 10000));
+
+            Camera.Main.WObject.Delete();
+            Camera.Main = null;
             
+            
+            
+            
+            WObject localPlayerWobj = new WObject("Local Player");
+            localPlayerWobj.Enabled = false;
+            localPlayerWobj.AddModule<PlayerController>();
+            
+            WObject camW = new WObject("Player Camera");
+            camW.Parent = localPlayerWobj;
+            camW.LocalPosition = Vector3D.Up * 1.62D;
+            Camera.Main = camW.AddModule<Camera>();
+            Camera.Main.FOV = 80;
+
+            
+
+            Client = new GameClient();
             Client.OnConnected += client =>
             {
-                WObject playerWobj = new WObject("Local Player");
-            };
+                localPlayerWobj.Enabled = true;
+                Player.LocalPlayer.CreateEntity(localPlayerWobj);
+                Player.LocalPlayer.Entity.OnRotate += rotation => Camera.Main.WObject.Rotation = rotation;
 
+            };
             Client.OnDisconnected += client =>
             {
+                localPlayerWobj.Enabled = false;
+                Player.LocalPlayer.Entity?.Delete();
+                Player.LocalPlayer.Entity = null;
                 Game.InvokePartyLeft(PartyType.Multiplayer);
             };
 
             GameApplication app = (GameApplication)Graphics.Window;
-            app.Title = $"Winecrash {Winecrash.Version} ({IntPtr.Size * 8}bits)";
-            new Shader("assets/shaders/chunk/Chunk.vert", "assets/shaders/chunk/Chunk.frag");
+            app.VSync = VSyncMode.On;
+
+            string title = $"Winecrash {Winecrash.Version} ({IntPtr.Size * 8}bits)";
+
+#if DEBUG
+            title += " <DEBUG BUILD>";
+#endif
+            
+            app.Title = title;
+            
+            
+            
             
             app.OnLoaded += () =>
             {
+                new Shader("assets/shaders/player/Player.vert", "assets/shaders/player/Player.frag");
+                new Shader("assets/shaders/Unlit/Unlit.vert", "assets/shaders/Unlit/Unlit.frag");
+                new Shader("assets/shaders/chunk/Chunk.vert", "assets/shaders/chunk/Chunk.frag");
                 Database.Load("assets/items/items.json").ParseItems();
                 Chunk.Texture = ItemCache.BuildChunkTexture(out int xsize, out int ysize);
                 MainMenu.Show();
@@ -69,8 +107,9 @@ namespace Winecrash.Client
             Game.OnPartyJoined += type => 
             {
                 MainMenu.Hide();
-                Camera.Main._FarClip = 4096;
+                //Camera.Main._FarClip = 4096;
                 //Camera.Main.WObject.Position = Vector3D.Up * 512;
+                //Camera.Main.WObject.Rotation = new Quaternion(90,0,0);
                 //Debug.Log("Joined a " + type + " game");
             };
             Game.OnPartyLeft += type =>

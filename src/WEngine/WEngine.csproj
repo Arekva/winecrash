@@ -90,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Input\KeysModifiers.cs" />
+    <Compile Include="Extentions\EGuid.cs" />
     <Compile Include="GUI\TextInputField.cs" />
     <Compile Include="JSON\Config.cs" />
     <Compile Include="Core\Color\Color256.cs" />

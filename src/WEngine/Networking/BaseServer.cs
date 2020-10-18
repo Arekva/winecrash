@@ -139,7 +139,7 @@ namespace WEngine.Networking
 
                         if (obj is NetDummy)
                         {
-                            break;
+                            continue;
                         }
 
                         if (client != null && this.Running)
@@ -151,8 +151,10 @@ namespace WEngine.Networking
                             }
                         }
                     }
-                    catch
+                    catch(SocketException skte) {}
+                    catch(Exception e)
                     {
+                        Debug.LogError("Error on receiving infos from client: " + e);
                         break;
                     }
                 }

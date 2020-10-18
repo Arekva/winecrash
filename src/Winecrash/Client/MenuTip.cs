@@ -36,13 +36,13 @@ namespace Winecrash.Client
 
         public static string[] Tips { get; set; }
 
-        private Random _Random = new Random();
-
         protected override void Creation()
         {
             try
             {
                 Tips = File.ReadAllLines("assets/other/tips.txt");
+                Parallel.For(0, Tips.Length, i => 
+                    Tips[i] = Tips[i].Replace(@"\n", "\n"));
             }
             catch(Exception e)
             {
@@ -65,7 +65,7 @@ namespace Winecrash.Client
         {
             if(Tips != null && Tips.Length != 0)
             {
-                return Tips[_Random.Next(Tips.Length)];
+                return Tips[new Random().Next(Tips.Length)];
             }
             else
             {

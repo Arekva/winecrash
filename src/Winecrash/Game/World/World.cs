@@ -284,6 +284,9 @@ namespace Winecrash
 
             Dimensions.Clear();
 
+            WorldWObject?.Delete();
+            WorldWObject = null;
+
             GC.Collect(2, GCCollectionMode.Forced, true, true);
         }
 
@@ -333,7 +336,7 @@ namespace Winecrash
 
             for (int i = 255; i > -1 ; i--)
             {
-                if (ItemCache.Get<Block>(blocks[WMath.Flatten3D(x, i, z, Chunk.Width, Chunk.Height)]).Transparent)
+                if (!ItemCache.Get<Block>(blocks[WMath.Flatten3D(x, i, z, Chunk.Width, Chunk.Height)]).Transparent)
                     return (uint)i;
             }
 

@@ -26,13 +26,20 @@ namespace Winecrash.Client
         private static WObject MultiPanel = null;
         private static WObject MultiDisconnectionPanel = null;
         private static LocalizedLabel MultiDisconnectionReason = null;
+
+        public static WObject MenuCameraWobj { get; set; } = null;
             
         private static LocalizedLabel MultiErrorLabel { get; set; } = null;
         private static void CreateMenu()
         {
             MenuWobject = new WObject("Main Menu");
+            MenuCameraWobj = new WObject("Main Menu Camera Wobject") { Parent = MenuWobject };
+            Camera MainMenuCamera = MenuCameraWobj.AddModule<Camera>();
             MenuBGWObject = new WObject("Main Menu Background Object");
             MenuBGWObject.Parent = MenuWobject;
+            MainMenuCamera.FOV = 80.0D;
+            MainMenuCamera.WObject.LocalRotation = new Quaternion(25, 0, 0);
+
             MenuBGWObject.AddModule<MenuBackgroundControler>();
 
             WObject bgPanel = new WObject("Background Panel") { Parent = MenuWobject };
@@ -326,10 +333,6 @@ namespace Winecrash.Client
                     btnBack.Button.Locked = true;
                     taddress.Locked = true;
                     btnConnect.Label.Localization = "#connecting_to_server";
-                    if (!Program.Client)
-                    {
-                        Program.Client = new GameClient(new Player("Arthur"));
-                    }
 
                     try
                     {
