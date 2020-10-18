@@ -98,13 +98,14 @@ namespace WEngine.Networking
                     }
                     LoopResetEvent.Reset();
 
-                    Task.Run(() =>
+                    Task.Run(async () =>
                     {
                         try
                         {
-                            NetObject obj = ReceiveDataAsync(this.Client.Client).Result;
+                            NetObject obj = await NetData<NetDummy>.ReceiveDataAsync(this.Client.Client, LoopResetEvent)
+                                .ConfigureAwait(true); //ReceiveDataAsync(this.Client.Client).Result;
 
-                            
+
                             if (this.Connected)
                             {
                                 if (obj is NetKick kick)
@@ -115,7 +116,7 @@ namespace WEngine.Networking
 
                                 if (obj is NetDummy)
                                 {
-                                    
+
                                 }
                                 else
                                 {
@@ -127,6 +128,10 @@ namespace WEngine.Networking
                                     });
                                 }
                             }
+                        }
+                        catch (System.IO.InvalidDataException e)
+                        {
+                            
                         }
                         catch (AggregateException e)
                         {

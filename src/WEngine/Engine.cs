@@ -93,7 +93,12 @@ namespace WEngine
 
         public static void Load()
         {
-            Initializer.InitializeEngine();
+            Initialize();
+            
+            
+            Time.Initialize();
+            Layer.Initialize();
+            //Initializer.InitializeEngine();
         }
         internal static void Stop(object sender)
         {
@@ -137,7 +142,7 @@ namespace WEngine
             Stop(null);
         }
 
-        [Initializer(Int32.MinValue + 10)]
+        //[Initializer(Int32.MinValue + 10)]
         private static void Initialize()
         {
             CheckPlateform();

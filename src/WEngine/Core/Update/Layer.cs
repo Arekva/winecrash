@@ -40,8 +40,8 @@ namespace WEngine
 
         public static Thread FixedThread;
 
-        [Initializer]
-        private static void Initialize()
+        //[Initializer]
+        internal static void Initialize()
         {
             Layer.CreateOrGetLayer(0, "Default Layer", null);
             Group.CreateOrGetGroup(0, "Default Group", null);

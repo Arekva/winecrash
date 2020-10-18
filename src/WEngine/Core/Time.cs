@@ -65,8 +65,8 @@ namespace WEngine
             }
         }
 
-        [Initializer]
-        private static void Initialize()
+        //[Initializer]
+        internal static void Initialize()
         {
             ElapsedTimeWatch.Start();
         }

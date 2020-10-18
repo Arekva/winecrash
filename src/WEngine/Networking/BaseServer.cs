@@ -133,9 +133,53 @@ namespace WEngine.Networking
             {
                 while (this.Running)
                 {
+                    NetObject obj = new NetDummy();;
+
                     try
                     {
-                        NetObject obj = await ReceiveDataAsync(client.Client);
+                        obj = await NetData<NetDummy>.ReceiveDataAsync(client.Client).ConfigureAwait(true);
+                    }
+                    catch (NullReferenceException ne)
+                    {
+                        Debug.LogError("Unknown error while receiving data from client: " + ne);
+                        break;
+                    }
+                    catch (ObjectDisposedException obje)
+                    {
+                        Debug.LogError("Unknown error while receiving data from client: " + obje);
+                        break;
+                    }
+                    catch (SocketException se)
+                    {
+                        //Debug.LogError("Unknown error while receiving data from client: " + se);
+                        break;
+                    }
+                    catch (System.IO.InvalidDataException de)
+                    {
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("Unknown error while receiving data from client: " + e);
+                    }
+                    
+                    if (obj is NetDummy)
+                    {
+                        continue;
+                    }
+                    else if (client != null && this.Running)
+                    {
+                        OnClientDataReceived?.Invoke(client, obj);
+                        
+                        lock (PendingDataLocker)
+                        {
+                            PendingData.Add(new PendingData(client, obj));
+                        }
+                    }
+                    
+                    /*try
+                    {
+                        NetObject obj = await NetData<NetDummy>.ReceiveDataAsync(client.Client).ConfigureAwait(true);
 
                         if (obj is NetDummy)
                         {
@@ -152,11 +196,12 @@ namespace WEngine.Networking
                         }
                     }
                     catch(SocketException skte) {}
+                    catch(ObjectDisposedException obje) {}
                     catch(Exception e)
                     {
                         Debug.LogError("Error on receiving infos from client: " + e);
                         break;
-                    }
+                    }*/
                 }
             });
         }
@@ -256,72 +301,6 @@ namespace WEngine.Networking
         protected void InvokeOnClientDisconnected(TcpClient client, string reason)
         {
             this.OnClientDisconnect?.Invoke(client, reason);
-        }
-
-
-        protected async Task<NetObject> ReceiveDataAsync(Socket client)
-        {
-            return await Task.Run(() => ReceiveData(client)).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Wait for received data asynchronously. Used by <see cref="LoopListening(TcpClient)"/>.
-        /// </summary>
-        /// <param name="client">The socket to listen to.</param>
-        /// <returns>The received <see cref="NetObject"/></returns>
-        protected NetObject ReceiveData(Socket client)
-        {
-            byte[] sizeInfo = new byte[sizeof(int)];
-
-            int totalread = 0, currentread = 0;
-            currentread = totalread = client.Receive(sizeInfo);
-
-            while (totalread < sizeInfo.Length && currentread > 0)
-            {
-                currentread = client.Receive(sizeInfo,
-                    totalread, //offset into the buffer
-                    sizeInfo.Length - totalread, //max amount to read
-                    SocketFlags.None);
-
-                totalread += currentread;
-            }
-
-            int messageSize = 0;
-
-            //could optionally call BitConverter.ToInt32(sizeinfo, 0);
-            messageSize |= sizeInfo[0];
-            messageSize |= (((int)sizeInfo[1]) << 8);
-            messageSize |= (((int)sizeInfo[2]) << 16);
-            messageSize |= (((int)sizeInfo[3]) << 24);
-
-            byte[] data = new byte[messageSize];
-
-            //read the first chunk of data
-            totalread = 0;
-            currentread = totalread = client.Receive(data,
-                totalread, //offset into the buffer
-                data.Length - totalread, //max amount to read
-                SocketFlags.None);
-
-            //if we didn't get the entire message, read some more until we do
-            while (totalread < messageSize && currentread > 0)
-            {
-                currentread = client.Receive(data,
-                    totalread, //offset into the buffer
-                    data.Length - totalread, //max amount to read
-                    SocketFlags.None);
-                totalread += currentread;
-            }
-
-            try
-            {
-                return NetObject.Receive(NetData<NetDummy>.Encoding.GetString(NetData<NetDummy>.Decompress(data)), client);
-            }
-            catch(Exception e)
-            {
-                //Task.Run(() => Debug.LogError("Error while parsing netdata from " + e));
-                return new NetDummy();
-            }
         }
 
         /// <summary>

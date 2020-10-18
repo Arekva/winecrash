@@ -3,7 +3,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Net.Sockets;
 using System.Text;
-
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace WEngine.Networking
@@ -98,35 +99,46 @@ namespace WEngine.Networking
         /// <param name="socket">The socket to send data through</param>
         public void Send(Socket socket)
         {
-            byte[] data = Compress(this.Raw);
-            byte[] sizeData = BitConverter.GetBytes(data.Length);
+            byte[] actualData = Compress(this.Raw);
+            byte[] headerData = BitConverter.GetBytes(actualData.Length);
 
-            /*byte[] sendibleData = new byte[data.Length + sizeData.Length];
-            Array.Copy(sizeData, sendibleData, data.Length);
-            Array.Copy(data, 0, sendibleData, data.Length, sendibleData.Length);
-
-
-            using (SocketAsyncEventArgs dataE = new SocketAsyncEventArgs())
-            {
-                dataE.SetBuffer(data, 0, data.Length);
-                socket.SendAsync(dataE);
-            }*/
+            byte[] data = new byte[sizeof(int) + actualData.Length];
+            
+            Array.Copy(headerData, data, sizeof(int));
+            Array.Copy(actualData, 0, data, sizeof(int), actualData.Length);
 
             lock (SendLocker)
             {
-                socket.Send(sizeData);
                 socket.Send(data);
-                /*using (SocketAsyncEventArgs sizeDataE = new SocketAsyncEventArgs())
-                {
-                    sizeDataE.SetBuffer(sizeData, 0, sizeData.Length);
-                    socket.SendAsync(sizeDataE);
-                }
-                using (SocketAsyncEventArgs byteDataE = new SocketAsyncEventArgs())
-                {
-                    byteDataE.SetBuffer(data, 0, data.Length);
-                    socket.SendAsync(byteDataE);
-                }*/
             }
+        }
+        
+        public static async Task<NetObject> ReceiveDataAsync(Socket client, ManualResetEvent resetEvent = null)
+        {
+            return await Task.Run(() => Receive(client, resetEvent)).ConfigureAwait(false);
+        }
+
+        public static NetObject Receive(Socket client, ManualResetEvent resetEvent = null)
+        {
+            byte[] sizeInfo = new byte[sizeof(int)];
+            client.Receive(sizeInfo);
+            int actualDataSize = BitConverter.ToInt32(sizeInfo, 0);
+
+            byte[] data = new byte[actualDataSize];
+            
+            int totalread = 0, currentread = sizeof(int);
+            while (totalread < actualDataSize && currentread > 0)
+            {
+                currentread = client.Receive(data,
+                    totalread, //offset into the buffer
+                    data.Length - totalread, //max amount to read
+                    SocketFlags.None);
+                totalread += currentread;
+            }
+
+            resetEvent?.Set();
+            
+            return NetObject.Receive(NetData<NetDummy>.Encoding.GetString(NetData<NetDummy>.Decompress(data)), client);
         }
         
         public static byte[] Compress(byte[] data)

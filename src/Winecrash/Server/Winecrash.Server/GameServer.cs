@@ -248,7 +248,8 @@ namespace Winecrash.Server
 
             else
             {
-                Debug.LogWarning("Client " + client.Client.RemoteEndPoint.ToString() + " disconnected: " + reason.ToString());
+                if(client.Client != null)
+                    Debug.LogWarning("Client " + client.Client.RemoteEndPoint.ToString() + " disconnected: " + reason.ToString());
                 base.DisconnectClient(client, reason);
             }
         }

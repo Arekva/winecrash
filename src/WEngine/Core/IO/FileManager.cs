@@ -13,7 +13,7 @@ namespace WEngine
         /// </summary>
         public static string Root { get; private set; } = AppDomain.CurrentDomain.BaseDirectory;
             
-        [Initializer(Int32.MinValue)]
+        //[Initializer(Int32.MinValue)]
         private static void Initialize()
         {
             //CreateFolders();

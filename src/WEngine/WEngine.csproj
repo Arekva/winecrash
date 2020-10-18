@@ -129,7 +129,7 @@
     <Compile Include="Core\Debugging\Debug.cs" />
     <Compile Include="Core\Debugging\LogCallbackTypes.cs" />
     <Compile Include="Core\Debugging\Logger.cs" />
-    <Compile Include="Core\Initializer.cs" />
+    <Compile Include="Core\Initializer.cs_o" />
     <Compile Include="Core\Input\IInputWrapper.cs" />
     <Compile Include="Core\Input\KeyStates.cs" />
     <Compile Include="Core\Input\Wrappers\LinuxInputWrapper.cs" />

@@ -30,7 +30,7 @@ namespace Winecrash.Entities
             MeshRenderer mr = PlayerHead.AddModule<MeshRenderer>();
             mr.Mesh = PlayerHeadMesh;
             mr.Material = new Material(Shader.Find("Player"));
-            mr.Material.SetData("albedo", DefaultTexture);
+            mr.Material.SetData("albedo", Texture.Blank);//DefaultTexture);
             mr.Material.SetData("color", Color256.White);
             mr.Material.SetData("tiling", Vector2D.One);
         }

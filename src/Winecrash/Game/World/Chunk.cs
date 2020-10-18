@@ -238,14 +238,19 @@ namespace Winecrash
 
             if (Engine.DoGUI)
             {
-                BlocksRenderer = this.WObject.AddModule<MeshRenderer>();
-
-                Material m = BlocksRenderer.Material = new Material(Shader.Find("Chunk"));
-                m.SetData("albedo", Chunk.Texture);
-                m.SetData("color", new Color256(1, 1, 1, 0));
-                m.SetData("minLight", 0.1F);
-                m.SetData("maxLight", 1.0F);
+                CreateRenderer();
             }
+        }
+
+        private void CreateRenderer()
+        {
+            BlocksRenderer = this.WObject.AddModule<MeshRenderer>();
+
+            Material m = BlocksRenderer.Material = new Material(Shader.Find("Chunk"));
+            m.SetData("albedo", Chunk.Texture);
+            m.SetData("color", new Color256(1, 1, 1, 0));
+            m.SetData("minLight", 0.1F);
+            m.SetData("maxLight", 1.0F);
         }
 
         private double _TimeSinceAnimate = 0.0D;
@@ -254,12 +259,17 @@ namespace Winecrash
         {
             if (Engine.DoGUI)
             {
-                if (ConstructedOnce && _TimeSinceAnimate <= _AnimationTime)
-                {
-                    _TimeSinceAnimate += Time.DeltaTime;
-                    BlocksRenderer.Material.SetData("color",
-                        new Color256(1, 1, 1, WMath.Clamp(_TimeSinceAnimate / _AnimationTime, 0.0D, 1.0D)));
-                }
+                UpdateMaterial();
+            }
+        }
+
+        private void UpdateMaterial()
+        {
+            if (ConstructedOnce && _TimeSinceAnimate <= _AnimationTime)
+            {
+                _TimeSinceAnimate += Time.DeltaTime;
+                BlocksRenderer.Material.SetData("color",
+                    new Color256(1, 1, 1, WMath.Clamp(_TimeSinceAnimate / _AnimationTime, 0.0D, 1.0D)));
             }
         }
 
