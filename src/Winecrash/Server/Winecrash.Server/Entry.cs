@@ -58,18 +58,16 @@ namespace Winecrash.Server
             WEngine.Debug.Log($"World loaded ! ({worldLoadSW.Elapsed.TotalMilliseconds:F0} ms)");
 
             server = new GameServer(IPAddress.Any, 27716);
-
             
-            //df828b1e-dd64-491c-a6b1-504fee1a203b
             server.OnPlayerConnect += player =>
             {
                 uint height = World.GetSurface(0, 0, "winecrash:overworld") + 1;
                 player.Entity.WObject.Position = new Vector3D(0,height,0);
                 //Debug.Log(height);
-                //player.Entity.WObject.Rotation = new Quaternion(90,0,0);
+                player.Entity.WObject.Rotation = new Quaternion(90,0,0);
                 Task.Run(() =>
                 {
-                    Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 4), vector =>
+                    Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 2), vector =>
                     {
                         if (!player.Connected) return;
                         

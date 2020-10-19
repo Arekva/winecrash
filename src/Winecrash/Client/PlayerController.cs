@@ -13,8 +13,9 @@ namespace Winecrash.Client
 {
     public class PlayerController : Module
     {
-        public static double WalkSpeed = 5.0D;
-        protected override void FixedUpdate() //todo: NetworkUpdate
+        public static double MouseSensivity = 5.0D;
+        
+        protected override void Update() //todo: NetworkUpdate
         {
             if (Player.LocalPlayer.Entity != null)
             {
@@ -43,11 +44,14 @@ namespace Winecrash.Client
                 inputs.Add("move_backward", Input.GetKeyState(GameInput.Key("Backward"), Input.KeyDictionary));
                 inputs.Add("move_right", Input.GetKeyState(GameInput.Key("Right"), Input.KeyDictionary));
                 inputs.Add("move_left", Input.GetKeyState(GameInput.Key("Left"), Input.KeyDictionary));
+                inputs.Add("move_jump", Input.GetKeyState(GameInput.Key("Jump"), Input.KeyDictionary));
+                
+                NetInput ninput = new NetInput(inputs, Input.MouseDelta * Time.DeltaTime * MouseSensivity);
+                Player.LocalPlayer.ParseNetInput(ninput);
+                ninput.Send(Program.Client.Client.Client);
+                
+                //ninput.Delete();
 
-                new NetInput(inputs).Send(Program.Client.Client.Client);
-                
-                Player.LocalPlayer.ParseInputs(inputs);
-                
                 //if (Input.IsPressing(GameInput.Key("Forward")) || Input.IsPressed(GameInput.Key("Forward")))
                 //    NetEntity ne = new NetEntity(Player.LocalPlayer.Entity);
                 // ik the player shouldn't send anything else as inputs, but for now it will be enough.

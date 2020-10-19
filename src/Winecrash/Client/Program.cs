@@ -104,8 +104,10 @@ namespace Winecrash.Client
                 MainMenu.Show();
             };
 
-            Game.OnPartyJoined += type => 
+            Game.OnPartyJoined += type =>
             {
+                Input.LockMode = CursorLockModes.Lock;
+                Input.CursorVisible = false;
                 MainMenu.Hide();
                 //Camera.Main._FarClip = 4096;
                 //Camera.Main.WObject.Position = Vector3D.Up * 512;
@@ -114,6 +116,8 @@ namespace Winecrash.Client
             };
             Game.OnPartyLeft += type =>
             {
+                Input.LockMode = CursorLockModes.Free;
+                Input.CursorVisible = true;
                 World.Unload();
                 
                 MainMenu.Show();

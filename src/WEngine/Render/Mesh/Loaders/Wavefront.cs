@@ -177,15 +177,15 @@ namespace WEngine.ModelLoaders
                                 v++;
                                 break;
                             case "vt":
-                                mesh.Uv[vt] = new Vector2F(Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]));
+                                mesh.Uv[vt] = /*Vector2F.Right - */new Vector2F(1.0F-Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]));
                                 vt++;
                                 break;
                             case "vt1":
-                                mesh.Uv[vt1] = new Vector2F(Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]));
+                                mesh.Uv[vt1] = /*Vector2F.Right - */new Vector2F(Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]));
                                 vt1++;
                                 break;
                             case "vt2":
-                                mesh.Uv[vt2] = new Vector2F(Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]));
+                                mesh.Uv[vt2] = /*Vector2F.Right - */new Vector2F(Convert.ToSingle(brokenString[1]), Convert.ToSingle(brokenString[2]));
                                 vt2++;
                                 break;
                             case "vn":

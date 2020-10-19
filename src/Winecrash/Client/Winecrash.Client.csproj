@@ -102,10 +102,6 @@
       <Project>{99f21fc3-4d3f-4306-940e-6b727866fdb9}</Project>
       <Name>Winecrash.Game</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Server\Winecrash.Server\Winecrash.Server.csproj">
-      <Project>{0e2532cb-85a6-4efe-a71f-42ebdac43703}</Project>
-      <Name>Winecrash.Server</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

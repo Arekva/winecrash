@@ -48,6 +48,10 @@ namespace Winecrash.Server
 
         public double AuthTimeout = 5D;
 
+        // Force the client to resync its local player to the server.
+        public double PlayerSelfSyncDelay = 1.0D;
+        private double PlayerSelfSyncCD = 1.0D;
+
         public override void Run()
         {
             base.Run();
@@ -110,6 +114,9 @@ namespace Winecrash.Server
 
         public override void Tick()
         {
+            PlayerSelfSyncCD -= Time.DeltaTime;
+            
+            
             PendingData[] data;
             lock (this.PendingDataLocker)
             {
@@ -171,7 +178,7 @@ namespace Winecrash.Server
                     Player p = this.FindPlayer(data[i].Client);
                     if (p != null)
                     {
-                        p.ParseInputs(ninput);
+                        p.ParseNetInput(ninput);
                     }
                 }
 
@@ -207,7 +214,21 @@ namespace Winecrash.Server
                 SyncEntity(entities[i]);
             }
 
-            //Debug.Log("NetObjects received within this tick: " + objects.Length);
+
+            if (PlayerSelfSyncCD <= 0.0D)
+            {
+                PlayerSelfSyncCD = PlayerSelfSyncDelay;
+
+                Player[] players;
+                lock (ConnectedPlayersLocker)
+                    players = ConnectedPlayers.ToArray();
+
+                for (int i = 0; i < players.Length; i++)
+                {
+                    new NetCamera(players[i].CameraAngles).Send(players[i].Client.Client);
+                }
+            }
+
             Engine.ForceUpdate();
         }
 

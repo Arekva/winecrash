@@ -8,11 +8,14 @@ namespace WinecrashCore.Net
     public class NetInput : NetObject
     {
         public Dictionary<string, KeyStates> KeyStateses { get; set; }
+        
+        public Vector2D MouseDeltas { get; set; }
 
         [JsonConstructor]
-        public NetInput(Dictionary<string, KeyStates> keys)
+        public NetInput(Dictionary<string, KeyStates> keys, Vector2D deltas)
         {
             this.KeyStateses = keys;
+            this.MouseDeltas = deltas;
         }
 
         public void AddInput(string key, KeyStates state)

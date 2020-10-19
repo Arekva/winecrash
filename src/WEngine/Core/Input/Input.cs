@@ -80,6 +80,7 @@ namespace WEngine
 
         private double timeSinceMouseRefresh = 0.0D;
         private bool firstTime = true;
+        private bool ignoreNextFocusFrame = true;
         protected internal override void Update()
         {
             timeSinceMouseRefresh += Time.DeltaTime;
@@ -100,9 +101,15 @@ namespace WEngine
                     Vector2I winpos = Graphics.Window.SurfacePosition;
                     Vector2I centre = new Vector2I((int)(winpos.X + s.X / 2f), (int)(winpos.Y + s.Y / 2f));
 
+                    if (!Graphics.Window.Focused)
+                    {
+                        ignoreNextFocusFrame = true;
+                    }
+
                     if (!firstTime)
                     {
-                        MouseDelta = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Lock ? centre - (Vector2D)pos : Vector2D.Zero;
+                        MouseDelta = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Lock ? (ignoreNextFocusFrame ? Vector2D.Zero : centre - (Vector2D)pos) : Vector2D.Zero;
+                        if (Graphics.Window.Focused && ignoreNextFocusFrame) ignoreNextFocusFrame = false;
 
                         MousePosition = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Free ? /*centre - pos*/Graphics.Window.ScreenToWindow(pos) : Vector2I.Zero;
                     }
@@ -120,7 +127,7 @@ namespace WEngine
                 }
             }
             
-            if(Graphics.Window != null && Graphics.Window.Focused)
+            if(Graphics.Window != null)
                 UpdateKeysStates();
         }
 
@@ -168,8 +175,8 @@ namespace WEngine
             {
                 KeyStates previousState = GetKeyState(key, RegisteredKeyStates);
                 KeyStates newState;
-
-                if (InputWrapper.GetKey(key))
+                
+                if (Graphics.Window.Focused && InputWrapper.GetKey(key))
                 {
                     if (previousState == KeyStates.Pressed) continue; // nothing new, continue;
 

@@ -119,7 +119,9 @@ namespace WEngine
                 double cosy_cosp = 1.0D - 2.0D * (q.Y * q.Y + q.Z * q.Z);
                 angles.Z = Math.Atan2(siny_cosp, cosy_cosp);
 
-                return angles * WMath.RadToDeg;
+                angles *= WMath.RadToDeg;
+
+                return angles;
             }
             set
             {
@@ -468,6 +470,24 @@ namespace WEngine
 
             return r;
         }
+        
+        public static double Angle(Quaternion a, Quaternion b)
+        {
+            double dot = Dot(a, b);
+            return IsEqualUsingDot(dot) ? 0.0D : Math.Acos(Math.Min(Math.Abs(dot), 1.0D)) * 2.0D * WMath.RadToDeg;
+        }
+        
+        public static double Dot(Quaternion a, Quaternion b)
+        {
+            return a._X * b._X + a._Y * b._Y + a._Z * b._Z + a._W * b._W;
+        }
+        
+        private const double kEpsilon = 0.000001D;
+        
+        private static bool IsEqualUsingDot(double dot)
+        {
+            return dot > 1.0D - kEpsilon;
+        }
 
         public static Quaternion operator *(Quaternion a, Quaternion b)
         {
@@ -476,6 +496,17 @@ namespace WEngine
                 a.W * b.Y + a.Y * b.W + a.Z * b.X - a.X * b.Z,
                 a.W * b.Z + a.Z * b.W + a.X * b.Y - a.Y * b.X,
                 a.W * b.W - a.X * b.X - a.Y * b.Y - a.Z * b.Z);
+        }
+
+        public static double AngleY(Quaternion a, Quaternion b)
+        {
+            Vector3D aDir = a * Vector3D.Forward;
+            Vector3D bDir = b * Vector3D.Forward;
+
+            double aAngle = Math.Atan2(aDir.X, aDir.Z) * WMath.RadToDeg;
+            double bAngle = Math.Atan2(bDir.X, bDir.Z) * WMath.RadToDeg;
+
+            return WMath.DeltaAngle(aAngle, bAngle);
         }
 
         public override string ToString()

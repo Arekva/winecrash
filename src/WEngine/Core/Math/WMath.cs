@@ -340,5 +340,20 @@ namespace WEngine
         {
             return newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
         }
+        
+        
+        public static double DeltaAngle(double current, double target)
+        {
+            double delta = WMath.Repeat((target - current), 360.0F);
+            if (delta > 180.0F)
+                delta -= 360.0F;
+            return delta;
+        }
+        
+        public static double Repeat(double t, double length)
+        {
+            return Clamp(t - Math.Floor(t / length) * length, 0.0D, length);
+        }
+
     }
 }

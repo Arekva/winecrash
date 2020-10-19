@@ -13,13 +13,16 @@ namespace Winecrash.Net
         public Vector3D Position { get; set; }
         public Quaternion Rotation { get; set; }
         
+        public Vector3D Velocity { get; set; }
+        
         [JsonConstructor]
-        public NetEntity(Guid id, Type type, Vector3D pos, Quaternion rot)
+        public NetEntity(Guid id, Type type, Vector3D pos, Quaternion rot, Vector3D velocity)
         {
             this.GUID = id;
             this.EntityType = type;
             this.Position = pos;
             this.Rotation = rot;
+            this.Velocity = velocity;
         }
         
         public NetEntity(Entity entity)
@@ -27,7 +30,8 @@ namespace Winecrash.Net
             this.GUID = entity.Identifier;
             this.EntityType = entity.GetType();
             this.Position = entity.WObject.Position;
-            this.Rotation = entity.WObject.Rotation;
+            this.Rotation = entity.Rotation;
+            this.Velocity = entity.RigidBody.Velocity;
         }
 
         public Entity Parse()
@@ -50,12 +54,12 @@ namespace Winecrash.Net
                     };
                     entity = (Entity)ettWobj.AddModule(this.EntityType);
                     entity.Identifier = GUID;
-                    entity.Rotation = Rotation;
-
+                    
                     //Debug.Log($"Created Entity [{ent.GetType().Name}] {GUID}");
                 }
                 
                 entity.Rotation = Rotation;
+                entity.RigidBody.Velocity = this.Velocity;
 
                 return entity;
             }

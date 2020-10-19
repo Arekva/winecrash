@@ -41,8 +41,9 @@ namespace WEngine
                 Matrix4D transform;
                 //sender.ViewMatrixRef(out Matrix4D view);
                 this.WObject.TransformMatrixRef(out Matrix4D trans);
-                Matrix4D.Mult(in trans, in sender._RenderViewMatrix, out transform);
-                Matrix4D.Mult(in transform, sender._RenderProjectionMatrix, out transform);
+                Matrix4D vmat = sender.ViewMatrix;
+                Matrix4D.Mult(in trans, in vmat, out transform);
+                Matrix4D.Mult(in transform, sender.ProjectionMatrix, out transform);
 
                 GL.BindVertexArray(Mesh.VertexArrayObject);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, Mesh.VertexBufferObject);

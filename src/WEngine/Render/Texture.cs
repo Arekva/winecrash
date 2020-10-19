@@ -129,10 +129,12 @@ namespace WEngine
         }
 
         internal static List<Texture> Cache { get; set; } = new List<Texture>();
+        internal static object CacheLocker { get; set; } = new object();
 
         public static Texture Find(string name)
         {
-            return Cache?.FirstOrDefault(t => t.Name == name);
+            lock(CacheLocker)
+                return Cache?.FirstOrDefault(t => t.Name == name);
         }
 
         public static Texture Blank { get; set; }
@@ -188,7 +190,8 @@ namespace WEngine
                 Graphics.Window.InvokeRender(genGL);
             }
 
-            Cache.Add(this);
+            lock(CacheLocker)
+                Cache.Add(this);
         }
 
         public static Texture GetOrCreate(string path, bool clearOnApply = false)
@@ -233,8 +236,8 @@ namespace WEngine
                 this.Data = this.Data.Reverse().ToArray();
             }
 
-
-            Cache.Add(this);
+            lock(CacheLocker)
+                Cache.Add(this);
 
             void glApply()
             {
@@ -289,7 +292,8 @@ namespace WEngine
 
         public override void Delete()
         {
-            Cache.Remove(this);
+            lock(CacheLocker)
+                Cache.Remove(this);
 
             if (Engine.DoGUI)
             {

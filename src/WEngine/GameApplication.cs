@@ -372,7 +372,9 @@ namespace WEngine
                 for (int i = 0; i < shaders.Length; i++)
                     shaders[i]?.Delete();
 
-            Texture[] textures = Texture.Cache.ToArray();
+            Texture[] textures;
+            lock(Texture.CacheLocker)
+                textures = Texture.Cache.ToArray();
 
             if (textures != null)
                 for (int i = 0; i < textures.Length; i++)

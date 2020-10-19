@@ -94,13 +94,13 @@ namespace WEngine
             }
         }
 
-        internal Matrix4D _RenderViewMatrix;
+        //internal Matrix4D _RenderViewMatrix;
         internal Matrix4D ViewMatrix
         {
             get
             {
                 Vector3D p = this.WObject.Position;
-                Vector3D t = this.WObject._RendersForward;
+                Vector3D t = this.WObject.Forward;
                 Vector3D u = this.WObject.Up;
 
                 //ok
@@ -111,12 +111,12 @@ namespace WEngine
         internal void ViewMatrixRef(out Matrix4D result)
         {
             Vector3D p = this.WObject.Position;
-            Vector3D t = this.WObject._RendersForward;
+            Vector3D t = this.WObject.Forward;
             Vector3D u = this.WObject.Up;
 
             Matrix4D.LookAtRef(new Vector3D(p.X, p.Y, p.Z), new Vector3D(p.X + t.X, p.Y + t.Y, p.Z + t.Z), new Vector3D(u.X, u.Y, u.Z), out result);
         }
-        internal Matrix4D _RenderProjectionMatrix;
+        //internal Matrix4D _RenderProjectionMatrix;
         internal Matrix4D ProjectionMatrix
         {
             get
@@ -150,8 +150,8 @@ namespace WEngine
         protected internal override void OnRender()
         {
             if (!this.Enabled) return;
-            _RenderProjectionMatrix = this.ProjectionMatrix;
-             this.ViewMatrixRef(out _RenderViewMatrix);
+            //_RenderProjectionMatrix = this.ProjectionMatrix;
+            //this.ViewMatrixRef(out _RenderViewMatrix);
 
 
             MeshRenderer[] mrs = null;

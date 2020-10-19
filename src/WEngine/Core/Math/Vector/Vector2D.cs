@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Newtonsoft.Json;
 
 namespace WEngine
 {
@@ -9,12 +10,14 @@ namespace WEngine
     [Serializable]
     public struct Vector2D : IVectorable, IComparable, IComparable<Vector2D>, IEquatable<Vector2D>, IFormattable
     {
+        [JsonIgnore]
         public int Dimensions { get; }
 
         #region Properties
         /// <summary>
         /// Serializable X component of this vector.
         /// </summary>
+        [JsonIgnore]
         private double _X;
         /// <summary>
         /// X component of this vector.
@@ -27,6 +30,7 @@ namespace WEngine
         /// <summary>
         /// Serializable Y component of this vector.
         /// </summary>
+        [JsonIgnore]
         private double _Y;
         /// <summary>
         /// Y component of this vector.
@@ -42,6 +46,7 @@ namespace WEngine
         /// The X and Y components as a <see cref="Vector2D"/>
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [JsonIgnore]
         public Vector2D XY
         {
             get
@@ -58,6 +63,7 @@ namespace WEngine
         /// The Y and X components as a <see cref="Vector2D"/>
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [JsonIgnore]
         public Vector2D YX
         {
             get
@@ -138,6 +144,7 @@ namespace WEngine
         /// <summary>
         /// The squared length of this vector. Faster than <see cref="Length"/> but has to be rooted.
         /// </summary>
+        [JsonIgnore]
         public double SquaredLength
         {
             get
@@ -148,6 +155,7 @@ namespace WEngine
         /// <summary>
         /// The length of this vector. Slower than <see cref="Length"/> but rooted.
         /// </summary>
+        [JsonIgnore]
         public double Length
         {
             get
@@ -159,6 +167,7 @@ namespace WEngine
         /// <summary>
         /// The directional version of this vector (1.0 of length)
         /// </summary>
+        [JsonIgnore]
         public Vector2D Normalized
         {
             get
@@ -185,6 +194,7 @@ namespace WEngine
         /// </summary>
         /// <param name="x">The X value.</param>
         /// <param name="y">The Y value.</param>
+        [JsonConstructor]
         public Vector2D(double x, double y)
         {
             this._X = x;

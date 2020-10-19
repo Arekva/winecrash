@@ -13,10 +13,8 @@ uniform vec3 lightDir;
 
 void main()
 {
-    vec4 diffuse = texture(albedo, (texCoord * tiling) + offset);
+    vec4 diffuse = texture(albedo, texCoord);
 
-    outputColor = diffuse * color;
+    outputColor = diffuse;// * color;
     outputColor.a = 1.0;
-
-    outputColor = vec4(1.0);
 }

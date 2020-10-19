@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using WEngine;
@@ -17,7 +18,37 @@ namespace Winecrash
         public static List<Player> Players { get; set; } = new List<Player>();
         public static object PlayersLocker { get; private set; } = new object();
         
-        public static double WalkSpeed = 5.0D;
+        
+        
+        private Vector2D _CameraAngles = Vector2D.Zero;
+        public static double MaxYAngles = 89.99D;
+
+        public static double JumpTimer = 0.1D;
+        public static double JumpForce = 5.0D;
+
+        public static double WalkSpeed = 4.3D;
+        public static double WalkAcceleration = 50.0D;
+
+        public static double StopSpeed = 0.05D;
+        
+        public Vector2D CameraAngles
+        {
+            get
+            {
+                return this._CameraAngles;
+            }
+
+            set
+            {
+                value.Y = WMath.Clamp(value.Y, -MaxYAngles, MaxYAngles);
+                this._CameraAngles = value;
+
+                if (this.Entity != null)
+                {
+                    this.Entity.Rotation = new Quaternion(-value.Y, value.X, 0);
+                }
+            }
+        }
         
         public string Nickname { get; private set; }
         public Guid GUID { get; private set; }
@@ -26,7 +57,7 @@ namespace Winecrash
         
         public TcpClient Client { get; set; }
         public PlayerEntity Entity { get; set; }
-        
+
         public bool IsLocal
         {
             get
@@ -117,6 +148,11 @@ namespace Winecrash
             base.Delete();
         }
 
+        public void ForceCameraAngles(Vector2D angles)
+        {
+            this._CameraAngles = angles;
+        }
+
         public void CreateNonLocalElements()
         {
             MeshRenderer mr = this.Entity.WObject.AddModule<MeshRenderer>();
@@ -125,40 +161,72 @@ namespace Winecrash
             mr.Material.SetData("albedo", Color256.White);
             mr.Mesh = Mesh.LoadFile("assets/models/Player_Head.obj", MeshFormats.Wavefront);
         }
-
-        public void ParseInputs(NetInput inputs)
+        
+        public void ParseNetInput(NetInput inputs)
         {
+            this.ParseMouse(inputs.MouseDeltas);
             this.ParseInputs(inputs.KeyStateses);
+        }
+        public void ParseMouse(Vector2D deltas)
+        {
+            this.CameraAngles += deltas;
         }
         public void ParseInputs(Dictionary<string, KeyStates> ks)
         {
             Vector3D dir = new Vector3D();
-            
+
+            Entity.AnyMoveInputOnFrame = false;
             if(ks.TryGetValue("move_forward", out KeyStates state))
             {
-                if(state == KeyStates.Pressing || state == KeyStates.Pressed)
+                if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+                {
                     dir += Vector3D.Forward;
+                    Entity.AnyMoveInputOnFrame = true;
+                }
+
             }
             if (ks.TryGetValue("move_backward", out state))
             {
-                if(state == KeyStates.Pressing || state == KeyStates.Pressed)
+                if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+                {
                     dir += Vector3D.Backward;
+                    Entity.AnyMoveInputOnFrame = true;
+                }
             }
             if (ks.TryGetValue("move_left", out state))
             {
-                if(state == KeyStates.Pressing || state == KeyStates.Pressed)
+                if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+                {
                     dir -= Vector3D.Left;
+                    Entity.AnyMoveInputOnFrame = true;
+                }
             }
             if (ks.TryGetValue("move_right", out state))
             {
-                if(state == KeyStates.Pressing || state == KeyStates.Pressed)
+                if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+                {
                     dir -= Vector3D.Right;
+                    Entity.AnyMoveInputOnFrame = true;
+                }
             }
 
-            Entity.WObject.Position += dir.Normalized * Time.FixedDeltaTime * WalkSpeed;
+            if (ks.TryGetValue("move_jump", out state))
+            {
+                if (state == KeyStates.Pressing || state == KeyStates.Pressed && Entity.JumpCD <= 0.0D)
+                {
+                    //Debug.Log("jump key");
+                    Entity.JumpCD = JumpTimer;
+                    
+                   // Jump(JumpForce);
+                }
+            }
+
+            //double angleY = Quaternion.AngleY();
+            
+            Entity.RigidBody.Velocity += (new Quaternion(0,CameraAngles.X,0) * dir.Normalized) * Time.FixedDeltaTime * WalkAcceleration;
             //Debug.Log(Entity.WObject.Position);
         }
-
+        
         public PlayerEntity CreateEntity(WObject parent)
         {
             if (Entity != null) return Entity;

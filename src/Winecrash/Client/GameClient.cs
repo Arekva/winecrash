@@ -85,6 +85,11 @@ namespace Winecrash.Client
                 {
                     Entity ent = nent.Parse();
                 }
+                
+                else if (nobj is NetCamera ncam)
+                {
+                    Player.LocalPlayer.CameraAngles = ncam.Angles;
+                }
 
                 pending[i].Delete();
             }

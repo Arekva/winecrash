@@ -14,6 +14,8 @@ namespace Winecrash.Entities
 
         public event EntityRotationUpdate OnRotate;
 
+        public RigidBody RigidBody { get; private set; } = null;
+
         private Quaternion _Rotation;
         public Quaternion Rotation
         {
@@ -32,6 +34,9 @@ namespace Winecrash.Entities
         {
             lock(EntitiesLocker)
                 Entities.Add(this);
+
+            this.RigidBody = this.WObject.AddModule<RigidBody>();
+            RigidBody.UseGravity = false;
         }
 
         protected override void OnDelete()
@@ -40,6 +45,9 @@ namespace Winecrash.Entities
                 Entities.Remove(this);
 
             OnRotate = null;
+
+            RigidBody.Delete();
+            RigidBody = null;
         }
 
         public static Entity Get(Guid guid)
