@@ -61,6 +61,7 @@ namespace Winecrash.Client
             camW.LocalPosition = Vector3D.Up * 1.62D;
             Camera.Main = camW.AddModule<Camera>();
             Camera.Main.FOV = 80;
+            Camera.Main.NearClip = 0.01D;
 
             
 

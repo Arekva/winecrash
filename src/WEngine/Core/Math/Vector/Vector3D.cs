@@ -364,7 +364,7 @@ namespace WEngine
         }
         public static double Angle(Vector3D v1, Vector3D v2)
         {
-            return Math.Acos((v1.Normalized * v2.Normalized).Length);
+            return Math.Acos((v1.Normalized * v2.Normalized).Length) * WMath.RadToDeg;
         }
 
         public Vector3D Normalize()

@@ -5,9 +5,12 @@ namespace Winecrash.Entities
 {
     public class PlayerEntity : Entity
     {
-        public static double HeadMaxAngleToBody { get; set; } = 45.0D;
-
+        public static double HeadMaxAngleToBody { get; set; } = 25.0D;
         public bool AnyMoveInputOnFrame { get; set; } = false;
+        public static double WalkAnimationMaxAngle { get; set; } = 45;
+
+        public static double WalkAnimationSpeedCoef { get; set; } = 0.5D;
+        public static double WalkAnimationTorsoOrientCoef { get; set; } = 0.1D;
         
         public WObject ModelWObject { get; set; }
         public WObject PlayerHead { get; set; }
@@ -26,8 +29,6 @@ namespace Winecrash.Entities
         
         public static Mesh PlayerRightLegMesh { get; set; }
         public static Mesh PlayerLeftLegMesh { get; set; }
-        
-        
         
         public static Texture DefaultTexture { get; set; }
 
@@ -112,6 +113,71 @@ namespace Winecrash.Entities
             };
         }
 
+        public void AnimateIdle()
+        {
+            
+        }
+
+        public static double WalkAnimationTimeStandBy { get; set; } = 0.5D;
+        public static double CurrentWalkAnimationTime { get; set; } = WalkAnimationTimeStandBy;
+
+        private static int Sign = 1;
+
+        public void AnimateWalk(Vector3D velocity)
+        {
+            double speed = velocity.XZ.Length;
+            
+            if (CurrentWalkAnimationTime >= 1.0) Sign = -1;
+            if (CurrentWalkAnimationTime <= 0.0) Sign = 1;
+            
+            CurrentWalkAnimationTime += Time.DeltaTime * Sign * speed * WalkAnimationSpeedCoef;
+
+            CurrentWalkAnimationTime = WMath.Clamp(CurrentWalkAnimationTime, 0, 1);
+            
+            double speedCoef = speed <= 0.05D ? 0.0D : speed / Player.WalkSpeed;
+
+            double currentAngle = WMath.Remap(CurrentWalkAnimationTime, 0, 1, -WalkAnimationMaxAngle * speedCoef, WalkAnimationMaxAngle * speedCoef);
+            
+            Quaternion leftRot = new Quaternion(-currentAngle,0,0);
+            Quaternion rightRot = new Quaternion(currentAngle,0,0);
+            
+            PlayerLeftLeg.LocalRotation = PlayerRightArm.LocalRotation = leftRot;
+            PlayerRightLeg.LocalRotation = PlayerLeftArm.LocalRotation = rightRot;
+
+
+            Vector3D flattenVel = new Vector3D(velocity.X, 0,velocity.Z);
+            Vector3D flattenDir = flattenVel.Normalized;
+            double flattenSpeed = flattenVel.Length;
+            
+            if (flattenSpeed >= 0.1D)
+            {
+                double currentTorsoAngle = Quaternion.AngleY(PlayerTorso.Rotation, Quaternion.Identity);
+                double rawNewAngle = (Math.Atan2(flattenDir.X, flattenDir.Z) * WMath.RadToDeg) * -1;
+                
+
+                double deltaAngle = WMath.DeltaAngle(currentTorsoAngle, rawNewAngle);
+
+                deltaAngle = WMath.Clamp(deltaAngle, -HeadMaxAngleToBody, HeadMaxAngleToBody);
+                
+                //Debug.Log(deltaAngle);
+
+                PlayerTorso.LocalRotation *= new Quaternion(0,-deltaAngle * WalkAnimationTorsoOrientCoef,0);
+                /*double a = rawNewAngle;
+
+                if (deltaAngle < -HeadMaxAngleToBody)
+                {
+                    a += deltaAngle + HeadMaxAngleToBody;
+                }
+
+                if (deltaAngle > HeadMaxAngleToBody)
+                {
+                    a -= deltaAngle - HeadMaxAngleToBody;
+                }*/
+                
+                //PlayerTorso.LocalRotation = new Quaternion(0,rawNewAngle,0);
+            }
+        }
+
         protected override void Creation()
         {
             base.Creation();
@@ -124,6 +190,10 @@ namespace Winecrash.Entities
             base.Update();
 
             JumpCD -= Time.DeltaTime;
+            
+            if (Player.LocalPlayer.Entity == this) return;
+            
+            AnimateWalk(this.RigidBody.Velocity);
         }
 
         protected override void FixedUpdate()
@@ -151,7 +221,11 @@ namespace Winecrash.Entities
                 this.WObject.Position += new Vector3D(0,64,0);
             }
 
-            if (!AnyMoveInputOnFrame)
+            if (AnyMoveInputOnFrame)
+            {
+                //AnimateWalk();
+            }
+            else
             {
                 if (xzVel <= Player.StopSpeed)
                 {
@@ -160,7 +234,7 @@ namespace Winecrash.Entities
 
                 else
                 {
-                    Vector2D xySpeedDecay = xzDir * xzVel * 16.0D * Time.FixedDeltaTime;
+                    Vector2D xySpeedDecay = xzDir * xzVel * Player.WalkDeaccelerationFactor * Time.FixedDeltaTime;
 
                     Vector2D newSpeed = (xzDir * xzVel) - xySpeedDecay;
                     this.RigidBody.Velocity = new Vector3D(newSpeed.X, this.RigidBody.Velocity.Y, newSpeed.Y);
