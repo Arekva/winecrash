@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL4;
 
 namespace WEngine
@@ -42,6 +42,11 @@ namespace WEngine
         public Vector2F[] UVs { get; set; }
         public Vector4F[] Tangents { get; set; }
         public Vector3F[] Normals { get; set; }
+        
+        /// <summary>
+        /// The maximum extents of the mesh.
+        /// </summary>
+        public Vector3D Bounds { get; private set; }
 
         internal float[] Vertex { get; set; } = null;
         internal uint Indices { get; private set; } = 0;
@@ -57,12 +62,18 @@ namespace WEngine
         {
             Vertex = new float[this.Vertices.Length * 8];
 
-            for (int vert = 0; vert < this.Vertices.Length; vert++)
+            float maxX = 0, maxY = 0, maxZ = 0;
+
+            Parallel.For(0, this.Vertices.Length, vert => //) (int vert = 0; vert < this.Vertices.Length; vert++)
             {
                 Vector3F vertice = this.Vertices[vert];
                 Vertex[vert * 8 + 0] = vertice.X;
                 Vertex[vert * 8 + 1] = vertice.Y;
                 Vertex[vert * 8 + 2] = vertice.Z;
+
+                maxX = Math.Max(Math.Abs(vertice.X), maxX);
+                maxY = Math.Max(Math.Abs(vertice.X), maxY);
+                maxZ = Math.Max(Math.Abs(vertice.X), maxZ);
 
                 Vector2F uvs = this.UVs[vert];
                 Vertex[vert * 8 + 3] = uvs.X;
@@ -73,7 +84,9 @@ namespace WEngine
                 Vertex[vert * 8 + 5] = normal.X;
                 Vertex[vert * 8 + 6] = normal.Y;
                 Vertex[vert * 8 + 7] = normal.Z;
-            }
+            });
+            
+            this.Bounds = new Vector3D(maxX, maxY, maxZ);
 
             Indices = (uint)this.Triangles.Length;
 
@@ -128,18 +141,25 @@ namespace WEngine
             }
 
             float[] vertex = new float[this.Vertices.Length * 8];
+            
+            float maxX = 0, maxY = 0, maxZ = 0;
 
-            for (int vert = 0; vert < this.Vertices.Length; vert++)
+            Parallel.For(0, this.Vertices.Length, vert => //for (int vert = 0; vert < this.Vertices.Length; vert++)
             {
-                if(abort)
+                if (abort)
                 {
                     abort = false;
                     return;
                 }
+
                 Vector3F vertice = this.Vertices[vert];
                 vertex[vert * 8 + 0] = vertice.X;
                 vertex[vert * 8 + 1] = vertice.Y;
                 vertex[vert * 8 + 2] = vertice.Z;
+                
+                maxX = Math.Max(Math.Abs(vertice.X), maxX);
+                maxY = Math.Max(Math.Abs(vertice.X), maxY);
+                maxZ = Math.Max(Math.Abs(vertice.X), maxZ);
 
                 Vector2F uvs = this.UVs[vert];
                 vertex[vert * 8 + 3] = uvs.X;
@@ -150,7 +170,9 @@ namespace WEngine
                 vertex[vert * 8 + 5] = normal.X;
                 vertex[vert * 8 + 6] = normal.Y;
                 vertex[vert * 8 + 7] = normal.Z;
-            }
+            });
+            
+            this.Bounds = new Vector3D(maxX, maxY, maxZ);
 
             if (abort)
             {

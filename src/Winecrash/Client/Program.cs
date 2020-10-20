@@ -30,12 +30,14 @@ namespace Winecrash.Client
 
         static void Main(string[] args)
         {
+            CreateDebugWindow();
+
             Engine.Run(true).Wait();
 
             Engine.OnStop += () => End.Set();
 
             
-            CreateDebugWindow();
+            
             
             
             //MainLoadScreen.Show();
@@ -82,7 +84,7 @@ namespace Winecrash.Client
             };
 
             GameApplication app = (GameApplication)Graphics.Window;
-            app.VSync = VSyncMode.On;
+            app.VSync = VSyncMode.Off;
 
             string title = $"Winecrash {Winecrash.Version} ({IntPtr.Size * 8}bits)";
 
@@ -140,25 +142,25 @@ namespace Winecrash.Client
         {
 
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("[ Verbose ] " + obj);
+            Console.WriteLine(obj);
             Console.ResetColor();
         }
         private static void LogWarnCMD(object obj)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("[ Warning ] " + obj);
+            Console.WriteLine(obj);
             Console.ResetColor();
         }
         private static void LogErrCMD(object obj)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("[  Error  ] " + obj);
+            Console.WriteLine(obj);
             Console.ResetColor();
         }
         private static void LogExceptionCMD(object obj)
         {
             Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("[Exception] " + obj);
+            Console.WriteLine(obj);
             Console.ResetColor();
         }
 

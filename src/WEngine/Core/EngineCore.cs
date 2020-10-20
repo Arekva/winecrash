@@ -20,21 +20,19 @@
         protected internal override void Start()
         {
             this.WObject.Position = Vector3F.Left * 5.0F;
-            
-            
         }
 
         protected internal override void Update()
         {
             // alt f4 close
-            if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressed(Keys.F4))
+            if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressing(Keys.F4))
             {
                 Graphics.Window.Close();
                 return;
             }
 
             // fullscreen
-            if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressed(Keys.Enter))
+            if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressing(Keys.Enter) || Input.IsPressing(Keys.F11))
             {
                 Graphics.Window.WindowState = Graphics.Window.WindowState == WindowState.Fullscreen ? WindowState.Normal : WindowState.Fullscreen;
             }

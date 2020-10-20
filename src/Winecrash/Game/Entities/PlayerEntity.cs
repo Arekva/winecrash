@@ -1,17 +1,29 @@
 ﻿using System;
+using System.Security.Policy;
 using WEngine;
 
 namespace Winecrash.Entities
 {
     public class PlayerEntity : Entity
     {
+        #region Animation
         public static double HeadMaxAngleToBody { get; set; } = 25.0D;
-        public bool AnyMoveInputOnFrame { get; set; } = false;
         public static double WalkAnimationMaxAngle { get; set; } = 45;
-
         public static double WalkAnimationSpeedCoef { get; set; } = 0.5D;
         public static double WalkAnimationTorsoOrientCoef { get; set; } = 0.1D;
+        public static double WalkAnimationTimeStandBy { get; set; } = 0.5D;
+        public static double CurrentWalkAnimationTime { get; set; } = WalkAnimationTimeStandBy;
+        private static int WalkAnimationSign = 1;
+
+        public static double IdleAnimationArmMinAngle { get; set; } = 2.0D;
+        public static double IdleAnimationArmMaxAngle { get; set; } = 5.0D;
+        public static double IdleAnimationSpeed { get; set; } = 1.1D;
+        public static double CurrentIdleAnimationTime { get; set; } = 0.0D;
         
+        
+        #endregion
+        
+        #region WObjects
         public WObject ModelWObject { get; set; }
         public WObject PlayerHead { get; set; }
         public WObject PlayerTorso { get; set; }
@@ -19,19 +31,22 @@ namespace Winecrash.Entities
         public WObject PlayerLeftArm { get; set; }
         public WObject PlayerRightLeg { get; set; }
         public WObject PlayerLeftLeg { get; set; }
-        
-        public Material SkinMaterial { get; set; }
-        
+        #endregion
+
+        #region Meshes
         public static Mesh PlayerHeadMesh { get; set; }
         public static Mesh PlayerTorsoMesh { get; set; }
         public static Mesh PlayerRightArmMesh { get; set; }
         public static Mesh PlayerLeftArmMesh { get; set; }
-        
         public static Mesh PlayerRightLegMesh { get; set; }
         public static Mesh PlayerLeftLegMesh { get; set; }
+        #endregion
         
         public static Texture DefaultTexture { get; set; }
+        public Material SkinMaterial { get; set; }
 
+        public bool AnyMoveInputOnFrame { get; set; } = false;
+        
         public double JumpCD = 0.0D;
 
         static PlayerEntity()
@@ -112,25 +127,31 @@ namespace Winecrash.Entities
                 }
             };
         }
-
+        
         public void AnimateIdle()
         {
+            PlayerLeftArm.LocalRotation = PlayerRightArm.LocalRotation = Quaternion.Identity;
             
+            CurrentIdleAnimationTime += Time.DeltaTime * IdleAnimationSpeed;
+
+            double t = WMath.Remap(Math.Cos(CurrentIdleAnimationTime), -1, 1, 0, 1);
+
+            double currentZAngle = WMath.Lerp(IdleAnimationArmMinAngle, IdleAnimationArmMaxAngle, t);
+
+            double currentXAngle = currentZAngle * 0.25D;
+            
+            PlayerLeftArm.LocalRotation = new Quaternion(currentXAngle,0,currentZAngle);
+            PlayerRightArm.LocalRotation = new Quaternion(-currentXAngle,0,-currentZAngle);
         }
-
-        public static double WalkAnimationTimeStandBy { get; set; } = 0.5D;
-        public static double CurrentWalkAnimationTime { get; set; } = WalkAnimationTimeStandBy;
-
-        private static int Sign = 1;
 
         public void AnimateWalk(Vector3D velocity)
         {
             double speed = velocity.XZ.Length;
             
-            if (CurrentWalkAnimationTime >= 1.0) Sign = -1;
-            if (CurrentWalkAnimationTime <= 0.0) Sign = 1;
+            if (CurrentWalkAnimationTime >= 1.0) WalkAnimationSign = -1;
+            if (CurrentWalkAnimationTime <= 0.0) WalkAnimationSign = 1;
             
-            CurrentWalkAnimationTime += Time.DeltaTime * Sign * speed * WalkAnimationSpeedCoef;
+            CurrentWalkAnimationTime += Time.DeltaTime * WalkAnimationSign * speed * WalkAnimationSpeedCoef;
 
             CurrentWalkAnimationTime = WMath.Clamp(CurrentWalkAnimationTime, 0, 1);
             
@@ -141,8 +162,11 @@ namespace Winecrash.Entities
             Quaternion leftRot = new Quaternion(-currentAngle,0,0);
             Quaternion rightRot = new Quaternion(currentAngle,0,0);
             
-            PlayerLeftLeg.LocalRotation = PlayerRightArm.LocalRotation = leftRot;
-            PlayerRightLeg.LocalRotation = PlayerLeftArm.LocalRotation = rightRot;
+            PlayerLeftLeg.LocalRotation = leftRot;
+            PlayerRightLeg.LocalRotation = rightRot;
+
+            PlayerRightArm.LocalRotation *= leftRot;
+            PlayerLeftArm.LocalRotation *= rightRot;
 
 
             Vector3D flattenVel = new Vector3D(velocity.X, 0,velocity.Z);
@@ -154,27 +178,11 @@ namespace Winecrash.Entities
                 double currentTorsoAngle = Quaternion.AngleY(PlayerTorso.Rotation, Quaternion.Identity);
                 double rawNewAngle = (Math.Atan2(flattenDir.X, flattenDir.Z) * WMath.RadToDeg) * -1;
                 
-
                 double deltaAngle = WMath.DeltaAngle(currentTorsoAngle, rawNewAngle);
 
                 deltaAngle = WMath.Clamp(deltaAngle, -HeadMaxAngleToBody, HeadMaxAngleToBody);
                 
-                //Debug.Log(deltaAngle);
-
                 PlayerTorso.LocalRotation *= new Quaternion(0,-deltaAngle * WalkAnimationTorsoOrientCoef,0);
-                /*double a = rawNewAngle;
-
-                if (deltaAngle < -HeadMaxAngleToBody)
-                {
-                    a += deltaAngle + HeadMaxAngleToBody;
-                }
-
-                if (deltaAngle > HeadMaxAngleToBody)
-                {
-                    a -= deltaAngle - HeadMaxAngleToBody;
-                }*/
-                
-                //PlayerTorso.LocalRotation = new Quaternion(0,rawNewAngle,0);
             }
         }
 
@@ -191,9 +199,13 @@ namespace Winecrash.Entities
 
             JumpCD -= Time.DeltaTime;
             
-            if (Player.LocalPlayer.Entity == this) return;
-            
-            AnimateWalk(this.RigidBody.Velocity);
+            if (Engine.DoGUI)
+            {
+                if (Player.LocalPlayer != null && Player.LocalPlayer.Entity == this) return;
+                
+                AnimateIdle();
+                AnimateWalk(this.RigidBody.Velocity);
+            }
         }
 
         protected override void FixedUpdate()

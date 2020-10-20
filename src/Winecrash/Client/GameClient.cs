@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using WEngine;
 using WEngine.Networking;
@@ -36,8 +37,8 @@ namespace Winecrash.Client
                 pending = this.PendingData.ToArray();
                 this.PendingData.Clear();
             }
-            
-            for (int i = 0; i < pending.Length; i++)
+
+            Parallel.For(0, pending.Length, i => //for(int i = 0; i < pending.Length; i++)
             {
                 NetObject nobj = pending[i];
 
@@ -52,21 +53,21 @@ namespace Winecrash.Client
                         new NetPlayer(Player.LocalPlayer).Send(Client.Client);
                     }
                 }
-                
+
                 else if (nobj is NetChunk nchunk)
                 {
                     World.GetOrCreateChunk(nchunk);
                 }
-                
+
                 else if (nobj is NetPlayer nplay)
                 {
                     Player existingP = Player.Find(nplay.Nickname);
 
                     if (existingP == null)
                     {
-                        PlayerEntity existingE = (PlayerEntity)Entity.Get(EGuid.UniqueFromString(nplay.Nickname));
+                        PlayerEntity existingE = (PlayerEntity) Entity.Get(EGuid.UniqueFromString(nplay.Nickname));
                         existingP = new Player(nplay.Nickname);
-                        
+
                         if (existingE != null)
                         {
                             existingP.Entity = existingE;
@@ -75,24 +76,25 @@ namespace Winecrash.Client
                         {
                             existingP.CreateEntity(new WObject(nplay.Nickname));
                         }
+
                         //existingP.CreateNonLocalElements();
                     }
-                    
+
                     existingP.Entity.CreateModel();
                 }
-                
+
                 else if (nobj is NetEntity nent)
                 {
                     Entity ent = nent.Parse();
                 }
-                
+
                 else if (nobj is NetCamera ncam)
                 {
                     Player.LocalPlayer.CameraAngles = ncam.Angles;
                 }
 
                 pending[i].Delete();
-            }
+            });
         }
     }
 }

@@ -150,7 +150,7 @@ namespace WEngine
                     if (!type.IsInterface && typeof(IInputWrapper).IsAssignableFrom(type))
                     {
                         IInputWrapper wrapper = Activator.CreateInstance(type) as IInputWrapper;
-                        if(wrapper.CorrespondingOS == Engine.OS)
+                        if(wrapper.CorrespondingOS == Engine.OS.Platform)
                         {
                             InputWrapper = wrapper;
                             return true;

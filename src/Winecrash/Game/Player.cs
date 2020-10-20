@@ -223,10 +223,9 @@ namespace Winecrash
                 }
             }
 
-            //double angleY = Quaternion.AngleY();
+            if(dir == Vector3D.Zero) Entity.AnyMoveInputOnFrame = false;
             
             Entity.RigidBody.Velocity += (new Quaternion(0,CameraAngles.X,0) * dir.Normalized) * Time.FixedDeltaTime * WalkAcceleration;
-            //Debug.Log(Entity.WObject.Position);
         }
         
         public PlayerEntity CreateEntity(WObject parent)

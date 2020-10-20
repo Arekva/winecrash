@@ -355,5 +355,10 @@ namespace WEngine
             return Clamp(t - Math.Floor(t / length) * length, 0.0D, length);
         }
 
+        public static double Lerp(double a, double b, double t)
+        {
+            return (1.0D - t) * a + t * b;
+        }
+
     }
 }

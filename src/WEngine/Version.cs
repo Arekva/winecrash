@@ -93,6 +93,11 @@ namespace WEngine
             return $"{Name} {Major}.{Minor}.{Patch}";
         }
 
+        public string ToString(string format)
+        {
+            return format.Replace("{M}", Major.ToString()).Replace("{m}", Minor.ToString()).Replace("{p}", Patch.ToString()).Replace("{n}", Name);
+        }
+
         public override bool Equals(object obj)
         {
             return obj is Version v && Equals(v);

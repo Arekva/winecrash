@@ -67,7 +67,7 @@ namespace Winecrash.Server
                 player.Entity.WObject.Rotation = new Quaternion(90,0,0);
                 Task.Run(() =>
                 {
-                    Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 2), vector =>
+                    Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 15), vector =>
                     {
                         if (!player.Connected) return;
                         

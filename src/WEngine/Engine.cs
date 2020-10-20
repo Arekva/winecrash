@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Drawing;
 using System.IO;
+using System.Numerics;
+using JCS;
 
 namespace WEngine
 {
@@ -16,9 +18,31 @@ namespace WEngine
     public static class Engine
     {
         /// <summary>
-        /// The Operating System running the program.
+        /// The engine version running.
         /// </summary>
-        public static OSPlatform OS { get; private set; }
+        public static Version Version { get; } = new Version(0, 0, 1, "Stève");
+
+        public const string SourceLink = "https://github.com/breaks-and-continues/winecrash";
+
+        /// <summary>
+        /// The OS running the engine.
+        /// </summary>
+        public static OS OS { get; } = OS.FromCurrentConfig();
+
+        /// <summary>
+        /// The current CPU running the program ~~or not~~
+        /// </summary>
+        public static CPU CPU { get; } = CPU.FromCurrentConfig();
+
+        public static GPU GPU { get; } = GPU.FromCurrentConfig();
+
+        public static RAM RAM { get; } = RAM.FromCurrentConfig();
+        
+        /// <summary>
+        /// Are Single-Instruction-Multiple-Data available?
+        /// </summary>
+        public static bool IsSIMDAvailable { get; } = Vector.IsHardwareAccelerated;
+
         /// <summary>
         /// All Operating Systems the engine supports. MacOS should come with NET 5.0.
         /// </summary>
@@ -32,7 +56,7 @@ namespace WEngine
         /// <summary>
         /// The <see cref="WObject"/> of the Engine. It is undestructible and manages things like the Input.
         /// </summary>
-        public static WObject EngineObject { get; private set; } = null;
+        private static WObject EngineObject { get; set; } = null;
 
         public static bool DoGUI { get; private set; }
 
@@ -77,7 +101,7 @@ namespace WEngine
             
             // mono dislikes the icon constructor...
             // TODO: change that under NET 5.0
-            if(Engine.OS == OSPlatform.Windows && File.Exists("assets/icon.ico"))
+            if(Engine.OS.Platform == OSPlatform.Windows && File.Exists("assets/icon.ico"))
             {
                 icon = new Icon("assets/icon.ico");
             }
@@ -145,11 +169,16 @@ namespace WEngine
         //[Initializer(Int32.MinValue + 10)]
         private static void Initialize()
         {
-            CheckPlateform();
+            DebugInfos();
 
-            if(!SupportedOS.Contains(OS))
+            if (!SupportedOS.Contains(OS.Platform))
             {
-                Debug.LogError("Sorry, but Winecrash is not compatible with system " + OS.ToString());
+                throw new EngineException("Sorry, but Winecrash is not compatible with system " + OS.ToString());
+            }
+
+            if(!IsSIMDAvailable)
+            {
+                Debug.LogWarning("SIMD is not supported on this system. The game might run slower.");
             }
 
             if (DoGUI)
@@ -160,8 +189,25 @@ namespace WEngine
             {
                 Layer.CreateOrGetLayer(0).Name = "Default Layer";
                 //Group.CreateOrGetGroup(0, "Default Group");
-
             }
+        }
+        
+        private static void DebugInfos()
+        {
+            string engine = "WEngine " + Version.ToString("{M}.{m}.{p} \"{n}\"");
+            string os = OS.Version.Name + " x" + OS.Architecture + " (" + OS.Version.ToString("{M}.{m}.{p}") + ")";
+            string cpu = CPU.Name;
+            string gpu = GPU.Name;
+            string ram = (RAM.Capacity / 1_000_000UL).ToString() + "MB";
+            
+            Debug.Log(engine + 
+                      Environment.NewLine + SourceLink + 
+                      Environment.NewLine + Environment.NewLine + 
+                      "---- Specifications --------------" +
+                      Environment.NewLine + "OS : " + os + 
+                      Environment.NewLine + "CPU: " + cpu + 
+                      Environment.NewLine + "GPU: " + gpu + 
+                      Environment.NewLine + "RAM: " + ram);
         }
 
         private static WObject CreateEngineWObject()
@@ -189,22 +235,6 @@ namespace WEngine
 
             EngineObject = wobj;
             return wobj;
-        }
-
-        private static void CheckPlateform()
-        {
-            if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                OS = OSPlatform.Windows;
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                OS = OSPlatform.Linux;
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                OS = OSPlatform.OSX;
-            }
         }
 
         private static double _TimeSinceLastUpdate = 0.0D;
