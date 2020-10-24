@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Security.AccessControl;
 using System.Threading.Tasks;
 using WEngine;
+using Winecrash.Entities;
 using Winecrash.Net;
 
 namespace Winecrash
@@ -281,6 +282,13 @@ namespace Winecrash
         public static void Unload()
         {
             Parallel.ForEach(Dimensions, dim => UnloadDimension(dim));
+
+            Entity[] entities = null;
+            lock (Entity.EntitiesLocker) entities = Entity.Entities.ToArray();
+
+            for (int i = 0; i < entities.Length; i++) entities[i].Delete();
+            Entity.Entities.Clear();
+
 
             Dimensions.Clear();
 

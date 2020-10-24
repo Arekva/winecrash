@@ -661,6 +661,7 @@ namespace Winecrash
         /// <param name="z">The Z position of the cube.</param>
         /// <param name="face">The orientation of the face.</param>
         /// <param name="vertices">The vertice list to add to.</param>
+        private const float AntiJitteringCoef = 1.00001F;
         private static void CreateVerticesCube(int x, int y, int z, BlockFaces face, List<Vector3F> vertices)
         {
             const int incr = 1;
@@ -669,12 +670,12 @@ namespace Winecrash
                 case BlockFaces.Up:
                     {
                         vertices.AddRange(new[] {
-                            new Vector3F(x, y + incr, z),
-                            new Vector3F(x, y + incr, z + incr),
-                            new Vector3F(x + incr, y + incr, z),
-                            new Vector3F(x + incr, y + incr, z),
-                            new Vector3F(x, y + incr, z + incr),
-                            new Vector3F(x + incr, y + incr, z + incr)
+                            new Vector3F(x, y + incr, z) * AntiJitteringCoef,
+                            new Vector3F(x, y + incr, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y + incr, z) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y + incr, z) * AntiJitteringCoef,
+                            new Vector3F(x, y + incr, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y + incr, z + incr) * AntiJitteringCoef
                         });
                     }
                     break;
@@ -682,12 +683,12 @@ namespace Winecrash
                 case BlockFaces.Down:
                     {
                         vertices.AddRange(new[] {
-                            new Vector3F(x, y, z + incr),
-                            new Vector3F(x, y, z),
-                            new Vector3F(x + incr, y, z + incr),
-                            new Vector3F(x + incr, y, z + incr),
-                            new Vector3F(x, y, z),
-                            new Vector3F(x + incr, y, z)
+                            new Vector3F(x, y, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x, y, z) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x, y, z) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y, z) * AntiJitteringCoef
                         });
                     }
                     break;
@@ -695,12 +696,12 @@ namespace Winecrash
                 case BlockFaces.West:
                     {
                         vertices.AddRange(new[] {
-                            new Vector3F(x, y, z),
-                            new Vector3F(x, y, z + incr),
-                            new Vector3F(x, y + incr, z),
-                            new Vector3F(x, y + incr, z),
-                            new Vector3F(x, y, z + incr),
-                            new Vector3F(x, y + incr, z + incr)
+                            new Vector3F(x, y, z) * AntiJitteringCoef,
+                            new Vector3F(x, y, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x, y + incr, z) * AntiJitteringCoef,
+                            new Vector3F(x, y + incr, z) * AntiJitteringCoef,
+                            new Vector3F(x, y, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x, y + incr, z + incr)  * AntiJitteringCoef
                         });
                     }
                     break;
@@ -709,12 +710,12 @@ namespace Winecrash
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(x + incr, y + incr, z + incr),
-                            new Vector3F(x + incr, y, z + incr),
-                            new Vector3F(x + incr, y + incr, z),
-                            new Vector3F(x + incr, y + incr, z),
-                            new Vector3F(x + incr, y, z + incr),
-                            new Vector3F(x + incr, y, z)
+                            new Vector3F(x + incr, y + incr, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y + incr, z) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y + incr, z) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y, z) * AntiJitteringCoef
                         });
                     }
                     break;
@@ -723,12 +724,12 @@ namespace Winecrash
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(x, y, z + incr),
-                            new Vector3F(x + incr, y, z + incr),
-                            new Vector3F(x, y + incr, z + incr),
-                            new Vector3F(x, y + incr, z + incr),
-                            new Vector3F(x + incr, y, z + incr),
-                            new Vector3F(x + incr, y + incr, z + incr)
+                            new Vector3F(x, y, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x, y + incr, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x, y + incr, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y, z + incr) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y + incr, z + incr) * AntiJitteringCoef
                         });
                     }
                     break;
@@ -737,12 +738,12 @@ namespace Winecrash
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(x + incr, y + incr, z),
-                            new Vector3F(x + incr, y, z),
-                            new Vector3F(x, y + incr, z),
-                            new Vector3F(x, y + incr, z),
-                            new Vector3F(x + incr, y, z),
-                            new Vector3F(x, y, z)
+                            new Vector3F(x + incr, y + incr, z) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y, z) * AntiJitteringCoef,
+                            new Vector3F(x, y + incr, z) * AntiJitteringCoef,
+                            new Vector3F(x, y + incr, z) * AntiJitteringCoef,
+                            new Vector3F(x + incr, y, z) * AntiJitteringCoef,
+                            new Vector3F(x, y, z) * AntiJitteringCoef
                         });
                     }
                     break;

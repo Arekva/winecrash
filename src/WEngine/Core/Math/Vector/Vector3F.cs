@@ -277,9 +277,34 @@ namespace WEngine
 
             this.Dimensions = 3;
         }
+
+        public Vector3F(float[] values)
+        {
+            this._X = values[0];
+            this._Y = values[1];
+            this._Z = values[2];
+
+            this.Dimensions = 3;
+        }
         #endregion
 
         #region Methods
+
+        public float[] ToArray()
+        {
+            return new float[3] {_X, _Y, _Z};
+        }
+        
+        /*public Vector<float> ToSIMD()
+        {
+            float[] buffer = new float[Vector<float>.Count];
+            buffer[0] = _X;
+            buffer[1] = _Y;
+            buffer[2] = _Z;
+
+            return new Vector<float>(buffer);
+        }*/
+        
         public static float Distance(Vector3F v1, Vector3F v2)
         {
             return Math.Abs((v1 - v2).Length);
@@ -300,7 +325,6 @@ namespace WEngine
         {
             return (rotation * (this - pivot)) + pivot;
         }
-
         public static Vector3F Cross(Vector3F v1, Vector3F v2)
         {
             return new Vector3F
@@ -328,7 +352,6 @@ namespace WEngine
 
             return vector / vector.Length;
         }
-
         public override bool Equals(object obj)
         {
             return obj is Vector3F d &&
@@ -336,7 +359,6 @@ namespace WEngine
                    Y == d.Y &&
                    Z == d.Z;
         }
-
         public override int GetHashCode()
         {
             var hashCode = -307843816;
@@ -369,7 +391,6 @@ namespace WEngine
         {
             return value is Vector3F v ? CompareTo(v) : 1;
         }
-
         public int CompareTo(Vector3F value)
         {
             float l1 = this.SquaredLength, l2 = value.SquaredLength;
@@ -417,7 +438,18 @@ namespace WEngine
         }
         public static Vector3F operator *(Vector3F v, float n)
         {
-            return new Vector3F(v.X * n, v.Y * n, v.Z * n);
+            /*if (Engine.IsSIMDAvailable)
+            {*/
+                /*Vector<float> vn = new Vector<float>(n);
+
+                float[] buffer = new float[Vector<float>.Count];
+                (v.ToSIMD() * vn).CopyTo(buffer);
+                return new Vector3F(buffer);*/
+            /*}
+            else
+            {*/
+                return new Vector3F(v._X * n, v._Y * n, v._Z * n);
+            /*}*/
         }
         public static Vector3F operator *(Vector3F v1, Vector3F v2)
         {

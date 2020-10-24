@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WEngine;
+using WEngine.GUI;
 using WEngine.Networking;
 using Winecrash.Entities;
 using Winecrash.Net;
@@ -45,10 +46,15 @@ namespace Winecrash.Client
                 inputs.Add("move_right", Input.GetKeyState(GameInput.Key("Right"), Input.KeyDictionary));
                 inputs.Add("move_left", Input.GetKeyState(GameInput.Key("Left"), Input.KeyDictionary));
                 inputs.Add("move_jump", Input.GetKeyState(GameInput.Key("Jump"), Input.KeyDictionary));
+
                 
                 NetInput ninput = new NetInput(inputs, Input.MouseDelta * Time.DeltaTime * MouseSensivity);
                 Player.LocalPlayer.ParseNetInput(ninput);
-                ninput.Send(Program.Client.Client.Client);
+
+                if (Program.Client.Connected)
+                {
+                    ninput.Send(Program.Client.Client.Client);
+                }
                 
                 //ninput.Delete();
 

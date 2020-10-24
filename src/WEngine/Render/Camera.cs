@@ -108,6 +108,19 @@ namespace WEngine
             }
         }
 
+        internal Matrix4D ViewMatrixRelative
+        {
+            get
+            {
+                Vector3D p = this.WObject.Position;
+                Vector3D t = this.WObject.Forward;
+                Vector3D u = this.WObject.Up;
+
+                //ok
+                return new Matrix4D(Vector3D.Zero, /*new Vector3D(p.X + t.X, p.Y + t.Y, p.Z + t.Z)*/t, /*new Vector3D(u.X, u.Y, u.Z)*/u);
+            }
+        }
+
         internal void ViewMatrixRef(out Matrix4D result)
         {
             Vector3D p = this.WObject.Position;
@@ -147,12 +160,31 @@ namespace WEngine
             }
         }
 
+
+
+        internal Vector3D _RenderPosition;
+        internal Vector3D _RenderScale;
+        internal Quaternion _RenderRotation;
+        internal Matrix4D _RenderProjectionMatrix;
+        internal Vector3D _RenderUp;
+        internal Vector3D _RenderForward;
+
+
+        internal void PrepareForRender()
+        {
+            _RenderPosition = this.WObject.Position;
+            _RenderScale = this.WObject.Scale;
+            _RenderRotation = this.WObject.Rotation;
+            _RenderProjectionMatrix = this.ProjectionMatrix;
+            _RenderUp = this.WObject.Up;
+            _RenderForward = this.WObject.Forward;
+        }
+
         protected internal override void OnRender()
         {
             if (!this.Enabled) return;
-            //_RenderProjectionMatrix = this.ProjectionMatrix;
-            //this.ViewMatrixRef(out _RenderViewMatrix);
 
+            PrepareForRender();
 
             MeshRenderer[] mrs = null;
             lock(MeshRenderer.ActiveMeshRenderersLocker)

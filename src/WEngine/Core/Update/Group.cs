@@ -101,7 +101,7 @@ namespace WEngine
 
             Thread = new Thread(Update)
             {
-                Priority = ThreadPriority.Highest,
+                Priority = ThreadPriority.AboveNormal,
                 IsBackground = true,
                 Name = this._Name + " Thread"
             };

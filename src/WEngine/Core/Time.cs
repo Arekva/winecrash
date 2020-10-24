@@ -11,6 +11,10 @@ namespace WEngine
 
         public static double FixedDeltaTime {get; internal set; } = 1D / 60;
         public static double FixedTimeScale { get; set; } = 1D;
+        
+        internal static Stopwatch FrameTimer { get; set; } = new Stopwatch();
+        
+        
 
 
         internal static double TimeSinceRenderBegan

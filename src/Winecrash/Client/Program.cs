@@ -36,10 +36,9 @@ namespace Winecrash.Client
 
             Engine.OnStop += () => End.Set();
 
-            
-            
-            
-            
+            Debug.Log("\n\n");
+
+
             //MainLoadScreen.Show();
             
             new Sound(@"assets/sounds/button_click.mp3");
@@ -65,21 +64,16 @@ namespace Winecrash.Client
             Camera.Main.FOV = 80;
             Camera.Main.NearClip = 0.01D;
 
+
+            Canvas.Main.UICamera.FarClip = 100.0D;
+
+            EngineCore.Instance.WObject.AddModule<GameDebug>();
+
             
 
             Client = new GameClient();
-            Client.OnConnected += client =>
-            {
-                localPlayerWobj.Enabled = true;
-                Player.LocalPlayer.CreateEntity(localPlayerWobj);
-                Player.LocalPlayer.Entity.OnRotate += rotation => Camera.Main.WObject.Rotation = rotation;
-
-            };
             Client.OnDisconnected += client =>
             {
-                localPlayerWobj.Enabled = false;
-                Player.LocalPlayer.Entity?.Delete();
-                Player.LocalPlayer.Entity = null;
                 Game.InvokePartyLeft(PartyType.Multiplayer);
             };
 
@@ -92,10 +86,7 @@ namespace Winecrash.Client
             title += " <DEBUG BUILD>";
 #endif
             
-            app.Title = title;
-            
-            
-            
+            app.Title = title;   
             
             app.OnLoaded += () =>
             {
@@ -112,6 +103,20 @@ namespace Winecrash.Client
                 Input.LockMode = CursorLockModes.Lock;
                 Input.CursorVisible = false;
                 MainMenu.Hide();
+
+                localPlayerWobj.Enabled = true;
+                Player.LocalPlayer.CreateEntity(localPlayerWobj);
+                Player.LocalPlayer.Entity.OnRotate += rotation => Camera.Main.WObject.Rotation = rotation;
+
+                if (type == PartyType.Singleplayer)
+                {
+                    Player.LocalPlayer.CameraAngles = Vector2I.Zero;
+
+                    Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 2), vector =>
+                    {
+                        World.GetOrCreateChunk(vector, "winecrash:overworld");
+                    });
+                }
                 //Camera.Main._FarClip = 4096;
                 //Camera.Main.WObject.Position = Vector3D.Up * 512;
                 //Camera.Main.WObject.Rotation = new Quaternion(90,0,0);
@@ -122,7 +127,11 @@ namespace Winecrash.Client
                 Input.LockMode = CursorLockModes.Free;
                 Input.CursorVisible = true;
                 World.Unload();
-                
+
+                localPlayerWobj.Enabled = false;
+                Player.LocalPlayer.Entity?.Delete();
+                Player.LocalPlayer.Entity = null;
+
                 MainMenu.Show();
 
                 if(type == PartyType.Multiplayer)

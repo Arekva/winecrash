@@ -1,4 +1,5 @@
 ﻿using System.Management;
+using System.Runtime.InteropServices;
 
 namespace WEngine
 {
@@ -11,16 +12,32 @@ namespace WEngine
 
         public static GPU FromCurrentConfig(uint gpuID = 0)
         {
-            GPU gpu = new GPU();
-            
-            var gpus = new ManagementObjectSearcher("select * from Win32_VideoController");
-            
-            foreach (var item in gpus.Get())
+            if (!Engine.DoGUI)
             {
-                gpu.Name = (string)item["Name"];
+                return new GPU() { Name = "No GUI mode" };
             }
             
-            return gpu;
+            if(Engine.OS.Platform == OSPlatform.Windows)
+            {
+                GPU gpu = new GPU();
+                
+                var gpus = new ManagementObjectSearcher("select * from Win32_VideoController");
+                
+                foreach (var item in gpus.Get())
+                {
+                    gpu.Name = (string)item["Name"];
+                }
+                
+                return gpu;
+            
+            }
+            else
+            {
+                return new GPU()
+                {
+                    Name = "TODO"
+                };
+            }
         }
     }
 }

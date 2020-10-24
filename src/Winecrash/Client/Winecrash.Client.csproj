@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="ClientTester.cs" />
     <Compile Include="Configs\GameConfig.cs" />
+    <Compile Include="GameDebug.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameClient.cs" />
     <Compile Include="GUI\GameButton.cs" />

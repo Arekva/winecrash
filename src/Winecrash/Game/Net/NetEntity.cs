@@ -12,11 +12,11 @@ namespace Winecrash.Net
         public Type EntityType { get; set; }
         public Vector3D Position { get; set; }
         public Quaternion Rotation { get; set; }
-        
         public Vector3D Velocity { get; set; }
+        public bool Removed { get; set; }
         
         [JsonConstructor]
-        public NetEntity(Guid id, Type type, Vector3D pos, Quaternion rot, Vector3D velocity)
+        public NetEntity(Guid id, Type type, Vector3D pos, Quaternion rot, Vector3D velocity, bool removed)
         {
             this.GUID = id;
             this.EntityType = type;

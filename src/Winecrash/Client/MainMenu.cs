@@ -476,6 +476,8 @@ namespace Winecrash.Client
 
             ShowMain();
             MenuWobject.Enabled = true;
+            
+            //WObject.TraceHierarchy();
         }
 
         public static void Hide()

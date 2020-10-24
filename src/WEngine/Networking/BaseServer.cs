@@ -141,12 +141,12 @@ namespace WEngine.Networking
                     }
                     catch (NullReferenceException ne)
                     {
-                        Debug.LogError("Unknown error while receiving data from client: " + ne);
+                        //Debug.LogError("Unknown error while receiving data from client: " + ne);
                         break;
                     }
                     catch (ObjectDisposedException obje)
                     {
-                        Debug.LogError("Unknown error while receiving data from client: " + obje);
+                        //Debug.LogError("Unknown error while receiving data from client: " + obje);
                         break;
                     }
                     catch (SocketException se)

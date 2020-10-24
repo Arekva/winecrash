@@ -29,36 +29,65 @@ namespace WEngine
             return (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0) || MeshLocker == null || Deleted || Mesh == null || Mesh.ElementBufferObject == -1 || Mesh.VertexArrayObject == -1 || Mesh.VertexBufferObject == -1;
         }
 
+
+        private Vector3D _RenderPosition;
+        private Vector3D _RenderForward;
+        private Vector3D _RenderUp;
+        private Vector3D _RenderScale;
+        private Quaternion _RenderRotation;
+
+        internal virtual void PrepareForRender()
+        {
+            _RenderPosition = this.WObject.Position;
+            _RenderForward = this.WObject.Forward;
+            _RenderScale = this.WObject.Scale;
+            _RenderRotation = this.WObject.Rotation;
+            _RenderUp = this.WObject.Up;
+        }
+
         internal virtual void Use(Camera sender)
         {
             if (MeshLocker == null || MaterialLocker == null) return;
 
-            lock(MaterialLocker)
-            lock (MeshLocker)
+            lock (MaterialLocker)
             {
-                if (CheckValidity(sender)) return;
+                lock (MeshLocker)
+                {
+                    if (CheckValidity(sender)) return;
 
-                Matrix4D transform;
-                //sender.ViewMatrixRef(out Matrix4D view);
-                this.WObject.TransformMatrixRef(out Matrix4D trans);
-                Matrix4D vmat = sender.ViewMatrix;
-                Matrix4D.Mult(in trans, in vmat, out transform);
-                Matrix4D.Mult(in transform, sender.ProjectionMatrix, out transform);
+                    Matrix4D transform;
+                    Matrix4D objTrans;
+                    Matrix4D finalTransform;
 
-                GL.BindVertexArray(Mesh.VertexArrayObject);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, Mesh.VertexBufferObject);
+                    // object transform
+                    Matrix4D scaD = new Matrix4D(_RenderScale, true);
+                    Matrix4D rotD = new Matrix4D(_RenderRotation);
+                    Matrix4D posD = new Matrix4D(_RenderPosition - sender._RenderPosition, false);
+                    Matrix4D.Mult(in scaD, in rotD, out objTrans);
+                    Matrix4D.Mult(in objTrans, in posD, out objTrans);
+                    Matrix4D.Mult(in objTrans, Matrix4D.Identity, out objTrans);
 
-                this.Material.SetData<Matrix4>("transform", (Matrix4)transform);
+                    // camera view relative to object
+                    Matrix4D vmat = new Matrix4D(Vector3D.Zero, sender._RenderForward, sender._RenderUp);
 
-                this.Material.Use();
+                    Matrix4D.Mult(in objTrans, in vmat, out transform);
+                    Matrix4D.Mult(in transform, sender._RenderProjectionMatrix, out finalTransform);
+
+                    GL.BindVertexArray(Mesh.VertexArrayObject);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, Mesh.VertexBufferObject);
+
+                    this.Material.SetData<Matrix4>("transform", (Matrix4)finalTransform);
+
+                    this.Material.Use();
 
 
-                GL.Enable(EnableCap.DepthTest);
-                GL.DepthMask(UseMask);
+                    GL.Enable(EnableCap.DepthTest);
+                    GL.DepthMask(UseMask);
 
-                //OnRender?.Invoke();
+                    //OnRender?.Invoke();
 
-                GL.DrawElements((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)Mesh.Indices, DrawElementsType.UnsignedInt, 0);
+                    GL.DrawElements((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)Mesh.Indices, DrawElementsType.UnsignedInt, 0);
+                }
             }
         }
 

@@ -41,7 +41,7 @@ namespace WEngine
         /// <summary>
         /// Are Single-Instruction-Multiple-Data available?
         /// </summary>
-        public static bool IsSIMDAvailable { get; } = Vector.IsHardwareAccelerated;
+        //public static bool IsSIMDAvailable { get; } = Vector.IsHardwareAccelerated;
 
         /// <summary>
         /// All Operating Systems the engine supports. MacOS should come with NET 5.0.
@@ -176,10 +176,10 @@ namespace WEngine
                 throw new EngineException("Sorry, but Winecrash is not compatible with system " + OS.ToString());
             }
 
-            if(!IsSIMDAvailable)
+            /*if(!IsSIMDAvailable)
             {
                 Debug.LogWarning("SIMD is not supported on this system. The game might run slower.");
-            }
+            }*/
 
             if (DoGUI)
             {
@@ -207,7 +207,8 @@ namespace WEngine
                       Environment.NewLine + "OS : " + os + 
                       Environment.NewLine + "CPU: " + cpu + 
                       Environment.NewLine + "GPU: " + gpu + 
-                      Environment.NewLine + "RAM: " + ram);
+                      Environment.NewLine + "RAM: " + ram +
+                      Environment.NewLine);
         }
 
         private static WObject CreateEngineWObject()

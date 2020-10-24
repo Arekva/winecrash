@@ -24,9 +24,6 @@ namespace WEngine
         {
             lock(WobjectsLocker)
                 WObjects.Add(this);
-
-            if (Engine.DoGUI)
-                Graphics.Window.OnRender += (e) => _RendersForward = this.Forward;
         }
 
         /// <summary>
@@ -37,9 +34,6 @@ namespace WEngine
         {
             lock(WobjectsLocker)
                 WObjects.Add(this);
-
-            if(Engine.DoGUI)
-                Graphics.Window.OnRender += (e) => _RendersForward = this.Forward;
         }
 
         /// <summary>
@@ -49,7 +43,7 @@ namespace WEngine
         /// 
         /// ex: 1<<32 = skybox
         /// </summary>
-        public UInt64 Layer { get; set; } = UInt64.MaxValue; // Default layer = 1;
+        public UInt64 Layer { get; set; } = 1; // Default layer = 1;
 
         
 
@@ -59,7 +53,7 @@ namespace WEngine
         {
             get
             {
-                lock(ParentLocker)
+                //lock(ParentLocker)
                     return this._Parent;
             }
 
@@ -107,8 +101,6 @@ namespace WEngine
             }
         }
 
-
-
         private List<WObject> _Children { get; set; } = new List<WObject>();
         private object _ChildrenLocker { get; set; } = new object();
         public WObject[] Children
@@ -119,112 +111,274 @@ namespace WEngine
             }
         }
 
+        private Vector3D _Position;
         public Vector3D Position
         {
             get
-            {  
-                lock(ParentLocker)
-                //                                      first set to scale                                     then rotate                          then add parent's position
-                return this._Parent ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3D.Zero, this._Parent.Rotation) + this._Parent.Position : this.LocalPosition;
+            {
+                if (_PositionNeedsUpdate)
+                {
+                    _PositionNeedsUpdate = false;
+                    lock (ParentLocker)
+                        //                                      first set to scale                                     then rotate                          then add parent's position
+                        this._Position = this._Parent ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3D.Zero, this._Parent.Rotation) + this._Parent.Position : this.LocalPosition;
+                }
+
+                return _Position;
             }
 
             set
-            {  
-                lock(ParentLocker)
-                //                                      first get relative position                              then rotate by invert                                 then scale
-                this.LocalPosition = this._Parent ? (value - this._Parent.Position).RotateAround(Vector3D.Zero, this._Parent.Rotation) * (Vector3D.One / this._Parent.Scale) : value;
+            {
+                lock (ParentLocker)
+                {
+                    //                                      first get relative position                              then rotate by invert                                 then scale
+                    this.LocalPosition = this._Parent ? (value - this._Parent.Position).RotateAround(Vector3D.Zero, this._Parent.Rotation) * (Vector3D.One / this._Parent.Scale) : value;
+                }
+
+                this._Position = value;
+                _PositionNeedsUpdate = false;
+
+                FlagTransformUpdatesRecursive(true, true, true, false, false);
             }
         }
-        public Vector3D LocalPosition { get; set; } = Vector3D.Zero;
+        private Vector3D _LocalPosition = Vector3D.Zero;
+        public Vector3D LocalPosition
+        {
+            get
+            {
+                return this._LocalPosition;
+            }
+            set
+            {
+                this._LocalPosition = value;
+                FlagTransformUpdatesRecursive(true, false, true, false, false);
+            }
+        }
 
+        private Quaternion _Rotation;
         public Quaternion Rotation
         {
             get
             {
-                lock(ParentLocker)
-                return this._Parent ? this._Parent.Rotation * this.LocalRotation : this.LocalRotation;
+                if (_RotationNeedsUpdate)
+                {
+                    _RotationNeedsUpdate = false;
+                    lock (ParentLocker)
+                        _Rotation = this._Parent ? this._Parent.Rotation * this.LocalRotation : this.LocalRotation;
+                }
+
+                return _Rotation;
             }
 
             set
             {
                 lock(ParentLocker)
                 this.LocalRotation = this._Parent ? this._Parent.Rotation.Inverted * value : value;
+
+                this._Rotation = value;
+                _RotationNeedsUpdate = false;
+
+                FlagTransformUpdatesRecursive(true, true, true, true, false);
             }
         }
-        public Quaternion LocalRotation { get; set; } = Quaternion.Identity;
 
+        private Quaternion _LocalRotation = Quaternion.Identity;
+        public Quaternion LocalRotation
+        {
+            get
+            {
+                return _LocalRotation;
+            }
+
+            set
+            {
+                this._LocalRotation = value;
+                FlagTransformUpdatesRecursive(true, false, true, true, false);
+            }
+        }
+
+        private Vector3D _Scale;
         public Vector3D Scale
         {
             get
             {
-                lock(ParentLocker)
-                return this._Parent ? this._Parent.Scale * this.LocalScale : this.LocalScale;
+                if (_ScaleNeedsUpdate)
+                {
+                    _ScaleNeedsUpdate = false;
+                    lock (ParentLocker)
+                        _Scale = this._Parent ? this._Parent.Scale * this.LocalScale : this.LocalScale;
+                }
+
+                return _Scale;
             }
 
             set
             {
                 lock(ParentLocker)
                 this.LocalScale = this._Parent ? value / this._Parent.Scale : value;
+
+                this._Scale = value;
+                _ScaleNeedsUpdate = false;
+
+
+                FlagTransformUpdatesRecursive(true, true, true, false, true);
             }
         }
-        public Vector3D LocalScale { get; set; } = Vector3D.One;
+        private Vector3D _LocalScale = Vector3D.One;
+        public Vector3D LocalScale
+        {
+            get
+            {
+                return this._LocalScale;
+            }
+            set
+            {
+                this._LocalScale = value;
+                FlagTransformUpdatesRecursive(true, false, true, false, true);
+            }
+        }
 
+        private bool _PositionNeedsUpdate = true;
+        private bool _RotationNeedsUpdate = true;
+        private bool _ScaleNeedsUpdate = true;
+
+
+        private bool _RightNeedsUpdate = true;
+        private bool _LeftNeedsUpdate = true;
+        private bool _UpNeedsUpdate = true;
+        private bool _DownNeedsUpdate = true;
+        private bool _ForwardNeedsUpdate = true;
+        private bool _BackwardNeedsUpdate = true;
+
+        private void FlagTransformUpdatesRecursive(bool value, bool excludeThis, bool doPosition, bool doRotation, bool doScale)
+        {
+            this.FlagDirectionUpdates(value);
+            if (doPosition && !excludeThis) this._PositionNeedsUpdate = true;
+            if (doRotation && !excludeThis) this._RotationNeedsUpdate = true;
+            if (doScale && !excludeThis) this._ScaleNeedsUpdate = true;
+
+
+            //this.FlagTransformUpdates(value);
+
+            WObject[] children = null;
+            lock (_ChildrenLocker)
+                children = (WObject[])this.Children.Clone();
+
+            for (int i = 0; i < children.Length; i++)
+            {
+                children[i].FlagTransformUpdatesRecursive(value, false, doPosition, doRotation, doScale);
+            }
+        }
+
+        private void FlagTransformUpdates(bool value)
+        {
+            _PositionNeedsUpdate = _RotationNeedsUpdate = _ScaleNeedsUpdate = value;
+        }
+
+        private void FlagDirectionUpdates(bool value)
+        {
+            _RightNeedsUpdate = _LeftNeedsUpdate = _UpNeedsUpdate = _DownNeedsUpdate = _ForwardNeedsUpdate = _BackwardNeedsUpdate = value;
+        }
+
+
+        private Vector3D _Right;
         public Vector3D Right
         {
             get
             {
-                return this.Rotation * Vector3D.Right;
+                if (_RightNeedsUpdate)
+                {
+                    _RightNeedsUpdate = false;
+                    _Right = this.Rotation * Vector3D.Right;
+                }
+                return _Right;
             }
         }
+
+        private Vector3D _Left;
         public Vector3D Left
         {
             get
             {
-                return this.Rotation * Vector3D.Left;
+                if (_LeftNeedsUpdate)
+                {
+                    _LeftNeedsUpdate = false;
+                    _Left = this.Rotation * Vector3D.Left;
+                }
+                return _Left;
             }
         }
+
+        private Vector3D _Up;
         public Vector3D Up
         {
             get
             {
-                return this.Rotation * Vector3D.Up;
+                if (_UpNeedsUpdate)
+                {
+                    _UpNeedsUpdate = false;
+                    _Up = this.Rotation * Vector3D.Up;
+                }
+                return _Up;
             }
 
             set
             {
-                this.Rotation = Quaternion.Identity;
+                Quaternion quat = Quaternion.Identity;
 
-                this.Rotation *= new Quaternion(Vector3D.Up, Vector2D.Angle(Vector2D.Right, value.XZ) * WMath.RadToDeg);
+                quat *= new Quaternion(Vector3D.Up, Vector2D.Angle(Vector2D.Right, value.XZ) * WMath.RadToDeg);
 
-                this.Rotation *= new Quaternion(Vector3D.Right, Vector2D.Angle(Vector2D.Up, value.YZ) * WMath.RadToDeg);
+                quat *= new Quaternion(Vector3D.Right, Vector2D.Angle(Vector2D.Up, value.YZ) * WMath.RadToDeg);
 
-                this.Rotation *= new Quaternion(Vector3D.Forward, Vector2D.Angle(Vector2D.Up, value.XY) * WMath.RadToDeg);
+                quat *= new Quaternion(Vector3D.Forward, Vector2D.Angle(Vector2D.Up, value.XY) * WMath.RadToDeg);
+
+                this.Rotation = quat;
             }
         }
+
+        private Vector3D _Down;
         public Vector3D Down
         {
             get
             {
-                return this.Rotation * Vector3D.Down;
+                if (_DownNeedsUpdate)
+                {
+                    _DownNeedsUpdate = false;
+                    _Down = this.Rotation * Vector3D.Down;
+                }
+                return _Down;
             }
         }
+        private Vector3D _Forward;
         public Vector3D Forward
         {
             get
             {
-                return this.Rotation * Vector3D.Forward;
+                if (_ForwardNeedsUpdate)
+                {
+                    _ForwardNeedsUpdate = false;
+                    _Forward = this.Rotation * Vector3D.Forward;
+                }
+                return _Forward;
             }
         }
-        internal Vector3D _RendersForward;
+
+
+        private Vector3D _Backward;
         public Vector3D Backward
         {
             get
             {
-                return this.Rotation * Vector3D.Backward;
+                if (_BackwardNeedsUpdate)
+                {
+                    _BackwardNeedsUpdate = false;
+                    _Backward = this.Rotation * Vector3D.Backward;
+                }
+                return _Backward;
             }
         }
 
-        internal Matrix4D _RendersTransformMatrix;
+
         internal protected virtual Matrix4D TransformMatrix
         {
             get
@@ -241,6 +395,22 @@ namespace WEngine
 
                 return scaD * rotD * posD * Matrix4D.Identity;
             }
+        }
+
+        internal protected virtual void TransformMatrixRelativeRef(Vector3D relative, out Matrix4D result)
+        {
+            Matrix4D scaD =
+                     new Matrix4D(this.Scale, true);
+
+            Matrix4D rotD =
+                new Matrix4D(this.Rotation);
+
+            Matrix4D posD =
+                new Matrix4D(this.Position - relative, false);
+
+            Matrix4D.Mult(in scaD, in rotD, out result);
+            Matrix4D.Mult(in result, in posD, out result);
+            Matrix4D.Mult(in result, Matrix4D.Identity, out result);
         }
 
         internal protected virtual void TransformMatrixRef(out Matrix4D result)

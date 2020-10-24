@@ -1,4 +1,5 @@
 ﻿using System.Management;
+using System.Runtime.InteropServices;
 
 namespace WEngine
 {
@@ -21,19 +22,29 @@ namespace WEngine
 
         public static CPU FromCurrentConfig(uint cpuID = 0)
         {
-            CPU cpu = new CPU();
-            
-            var cpus = new ManagementObjectSearcher("select * from Win32_Processor");
-            
-            //foreach CPU
-            foreach (var item in cpus.Get())
+            if (Engine.OS.Platform == OSPlatform.Windows)
             {
-                cpu.Name = (string) item["Name"];
-                cpu.Frequency = 0.001D * (uint) item["MaxClockSpeed"];
-                cpu.Cores = (uint) item["NumberOfCores"];
+                CPU cpu = new CPU();
+
+                var cpus = new ManagementObjectSearcher("select * from Win32_Processor");
+
+                //foreach CPU
+                foreach (var item in cpus.Get())
+                {
+                    cpu.Name = (string) item["Name"];
+                    cpu.Frequency = 0.001D * (uint) item["MaxClockSpeed"];
+                    cpu.Cores = (uint) item["NumberOfCores"];
+                }
+
+                return cpu;
             }
-            
-            return cpu;
+            else
+            {
+                return new CPU()
+                {
+                    Name = "TODO" 
+                };
+            }
         }
     }
 }

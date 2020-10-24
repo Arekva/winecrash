@@ -64,6 +64,7 @@
     <Compile Include="Net\NetChunk.cs" />
     <Compile Include="Net\NetEdit.cs" />
     <Compile Include="Net\NetEntity.cs" />
+    <Compile Include="Net\NetEntityDeletion.cs" />
     <Compile Include="Net\NetInput.cs" />
     <Compile Include="Net\NetMessage.cs" />
     <Compile Include="Net\NetPlayer.cs" />

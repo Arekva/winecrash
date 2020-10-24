@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Management;
+using System.Runtime.InteropServices;
 
 namespace WEngine
 {
@@ -12,20 +15,53 @@ namespace WEngine
 
         public static RAM FromCurrentConfig()
         {
-            RAM ram = new RAM();
-            
-            var rams = new ManagementObjectSearcher("select * from Win32_PhysicalMemory");
-
-            ulong totalCapacity = 0UL;
-            
-            foreach (var item in rams.Get())
+            if (Engine.OS.Platform == OSPlatform.Windows)
             {
-                totalCapacity += (ulong)item["Capacity"];
-            }
+                RAM ram = new RAM();
 
-            ram.Capacity = totalCapacity;
+                var rams = new ManagementObjectSearcher("select * from Win32_PhysicalMemory");
+
+                ulong totalCapacity = 0UL;
+
+                foreach (var item in rams.Get())
+                {
+                    totalCapacity += (ulong) item["Capacity"];
+                }
+
+                ram.Capacity = totalCapacity;
+
+                return ram;
+            }
+            if (Engine.OS.Platform == OSPlatform.OSX)
+            {
+                return new RAM();
+            }
+            else
+            {
+                return new RAM();
+                /*Process p = new Process();
+
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.FileName = "/bin/bash";
+                p.StartInfo.Arguments = "-c 'cat /proc/meminfo'";
+
+                p.Start();
+                string output = p.StandardOutput.ReadToEnd();
+                p.WaitForExit();
+                
+                string[] lines = output.Split('\n');
+
+                string totMemParam = "MemTotal";
             
-            return ram;
+                string totMemLine = lines.First(l => l.Contains(totMemParam));
+                string totMem = totMemLine.Substring((nameParam + "=\"").Length, (nameParam + "=\"").Length - 1);
+
+                System.Version sversion = os.OperatingSystem.Version;
+                os.Version = new Version((uint) sversion.Major, (uint) sversion.Minor, (uint) sversion.Build,
+                    name);*/
+            }
         }
     }
 }

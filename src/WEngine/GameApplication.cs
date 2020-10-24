@@ -6,7 +6,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 using System.Drawing;
-
+using System.Threading.Tasks;
 
 namespace WEngine
 {
@@ -261,6 +261,8 @@ namespace WEngine
         }
 
         WindowBorder _PreviousBorder;
+        
+        
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if(_TitleChanged)
@@ -315,7 +317,15 @@ namespace WEngine
             doUpdateOnce?.Invoke();
 
             Input.SetMouseScroll(Mouse.GetState().WheelPrecise);
-            Time.DeltaTime = e.Time * Time.TimeScale;
+
+            Time.FrameTimer.Stop();
+            Time.DeltaTime = Time.FrameTimer.Elapsed.TotalSeconds * Time.TimeScale;//e.Time * Time.TimeScale; 
+            
+            Time.FrameTimer.Reset();
+            Time.FrameTimer.Start();
+            
+            
+            //Debug.Log(Time.DeltaTime);
 
             MouseState ms = Mouse.GetState();
             Vector2D delta = new Vector2D(this._PreviousMouseState.X - ms.X, this._PreviousMouseState.Y - ms.Y);
@@ -339,6 +349,15 @@ namespace WEngine
                 _InvokeOnRender = null;
             }
             onRenderOnce?.Invoke();
+
+            lock(MeshRenderer.ActiveMeshRenderersLocker)
+            {
+                Parallel.ForEach(MeshRenderer.ActiveMeshRenderers, mr =>
+                {
+                    mr.PrepareForRender();
+                });
+            }
+
 
             Time.ResetRender();
             Time.BeginRender();

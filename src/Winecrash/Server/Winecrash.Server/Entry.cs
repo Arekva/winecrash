@@ -25,7 +25,7 @@ namespace Winecrash.Server
 
 
             Folders.UserData = "Data/";
-            ConsoleUtils.PrintSaves();
+            //ConsoleUtils.PrintSaves();
 
 
             //new Save(Save.DefaultName, false);
@@ -67,7 +67,7 @@ namespace Winecrash.Server
                 player.Entity.WObject.Rotation = new Quaternion(90,0,0);
                 Task.Run(() =>
                 {
-                    Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 15), vector =>
+                    Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 2), vector =>
                     {
                         if (!player.Connected) return;
                         
@@ -99,27 +99,26 @@ namespace Winecrash.Server
 
         private static void LogVerbose(object obj)
         {
-
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("[ Verbose ] " + obj);
+            Console.WriteLine(obj);
             Console.ResetColor();
         }
         private static void LogWarn(object obj)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("[ Warning ] " + obj);
+            Console.WriteLine(obj);
             Console.ResetColor();
         }
         private static void LogErr(object obj)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("[  Error  ] " + obj);
+            Console.WriteLine(obj);
             Console.ResetColor();
         }
         private static void LogException(object obj)
         {
             Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("[Exception] " + obj);
+            Console.WriteLine(obj);
             Console.ResetColor();
         }
     }
