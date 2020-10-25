@@ -9,6 +9,9 @@ using WEngine;
 using Winecrash.Entities;
 using Winecrash.Net;
 
+using LibNoise;
+using LibNoise.Primitive;
+
 namespace Winecrash
 {
     public static class World
@@ -143,13 +146,19 @@ namespace Winecrash
             {
                 //Debug.Log(dimChunks.Length);
                 //Debug.Log("CREATING CHUNK");
-                chunk = CreateChunk(coordinates, dimIndex, GenerateSimple());
+                chunk = CreateChunk(coordinates, dimIndex, GenerateSimple(coordinates));
             }
 
             return chunk;
         }
+        
+        
+        
+        private static LibNoise.Primitive.ImprovedPerlin perlin = new ImprovedPerlin("lol".GetHashCode(), NoiseQuality.Fast);
 
-        private static ushort[] GenerateSimple()
+        private static double size = 0.05D;
+
+        private static ushort[] GenerateSimple(Vector2I chunkCoords)
         {
             Dictionary<string, ushort> idsCache = new Dictionary<string, ushort>();
             
@@ -164,27 +173,38 @@ namespace Winecrash
                     {
                         string id = airID;
 
-                        int idx = x + Chunk.Width * y + Chunk.Width * Chunk.Height * z;
-                        
-                        if (y < 64)
+
+                        double sample = perlin.GetValue((float)((x + chunkCoords.X * Chunk.Width)*size), (float)((z + chunkCoords.Y * Chunk.Depth)*size), 0);
+                        double remapped = WMath.Remap(sample, -1, 1, 0, 64);
+
+                        int height = 64 + (int)remapped;
+
+                        int srfDelta = height - y;
+
+                        if (srfDelta == 0)
                         {
-                            if (y == 63)
-                            {
-                                id = "winecrash:grass";
-                            }
-                            else if (y > 60)
+                            id = "winecrash:grass";
+                        }
+                        else if (srfDelta > 0)
+                        {
+                            if (srfDelta < 3)
                             {
                                 id = "winecrash:dirt";
                             }
-                            else if (y > 3)
+
+                            else
                             {
                                 id = "winecrash:stone";
                             }
-                            else
-                            {
-                                id = "winecrash:bedrock";
-                            }
                         }
+
+                        if (y == 0)
+                        {
+                            id = "winecrash:bedrock";
+                        }
+                        
+                        int idx = x + Chunk.Width * y + Chunk.Width * Chunk.Height * z;
+                        
 
                         if(!idsCache.TryGetValue(id, out ushort cacheindex))
                         {
@@ -331,37 +351,37 @@ namespace Winecrash
         }
 
         // Get the surface height at a certain position / dimension
-        public static uint GetSurface(int x, int z, string dimension)
+        public static uint GetSurface(Vector3D position, string dimension)
         {
-            GlobalToLocal(new Vector3F(x, 255, z), out Vector3I cpos, out Vector3I bpos);
+            GlobalToLocal(position, out Vector3I cpos, out Vector3I bpos);
 
             Chunk c = World.GetChunk(cpos.XY, dimension);
 
             ushort[] blocks = null;
 
             if (c != null) blocks = c.Blocks;
-            else blocks = GenerateSimple();
+            else blocks = GenerateSimple(cpos.XY);
 
             for (int i = 255; i > -1 ; i--)
             {
-                if (!ItemCache.Get<Block>(blocks[WMath.Flatten3D(x, i, z, Chunk.Width, Chunk.Height)]).Transparent)
+                if (!ItemCache.Get<Block>(blocks[WMath.Flatten3D(bpos.X, i, bpos.Z, Chunk.Width, Chunk.Height)]).Transparent)
                     return (uint)i;
             }
 
-            return 64u;
+            return 0U;
         }
 
-        public static void GlobalToLocal(Vector3F global, out Vector3I ChunkPosition, out Vector3I LocalPosition)
+        public static void GlobalToLocal(Vector3D global, out Vector3I ChunkPosition, out Vector3I LocalPosition)
         {
             ChunkPosition = new Vector3I(
                 ((int)global.X / Chunk.Width) + (global.X < 0.0F ? -1 : 0), //X position
                 ((int)global.Z / Chunk.Depth) + (global.Z < 0.0F ? -1 : 0), //Y position
                 0);                                                         //Z dimension
 
-            float localX = global.X % Chunk.Width;
+            double localX = global.X % Chunk.Width;
             if (localX < 0) localX += Chunk.Width;
 
-            float localZ = global.Z % Chunk.Depth;
+            double localZ = global.Z % Chunk.Depth;
             if (localZ < 0) localZ += Chunk.Depth;
 
             LocalPosition = new Vector3I((int)localX, (int)global.Y, (int)localZ);

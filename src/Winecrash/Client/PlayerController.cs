@@ -14,31 +14,96 @@ namespace Winecrash.Client
 {
     public class PlayerController : Module
     {
-        public static double MouseSensivity = 5.0D;
-        
+        public static double MouseSensivity { get; set; } = 5.0D;
+
+        private CameraMode _CameraMode { get; set; } = CameraMode.FPS;
+
+        public bool CameraLocked { get; set; } = false;
+
+
+        public CameraMode CameraMode
+        {
+            get
+            {
+                return _CameraMode;
+            }
+
+            set
+            {
+                _CameraMode = value;
+
+                switch(value)
+                {
+                    case CameraMode.FPS:
+                        {
+                            Player.LocalPlayer.Entity.ModelWObject.Enabled = false;
+
+                            Camera.Main.WObject.Parent = this.WObject;
+                            Camera.Main.WObject.LocalPosition = Vector3D.Up * EyeHeight;
+                            CameraLocked = false;
+                        }
+                        break;
+
+                    case CameraMode.TPSBehind:
+                        {
+                            Player.LocalPlayer.Entity.ModelWObject.Enabled = true;
+                            Camera.Main.WObject.Parent = Player.LocalPlayer.Entity.PlayerHead;
+                            Camera.Main.WObject.LocalPosition = /*Vector3D.Up * EyeHeight + */Vector3D.Backward * TPSMaxDistance;
+                            Camera.Main.WObject.LocalRotation = new Quaternion(0, 0, 0);
+                            CameraLocked = true;
+                        }
+                        break;
+
+                    case CameraMode.TPSFront:
+                        {
+                            Player.LocalPlayer.Entity.ModelWObject.Enabled = true;
+                            Camera.Main.WObject.Parent = Player.LocalPlayer.Entity.PlayerHead;
+                            Camera.Main.WObject.LocalPosition = /*Vector3D.Up * EyeHeight + */Vector3D.Forward * TPSMaxDistance;
+                            Camera.Main.WObject.LocalRotation = new Quaternion(0, 180, 0);
+                            CameraLocked = true;
+                        }
+                        break;
+                }
+            }
+        }
+
+        public static double TPSMaxDistance { get; set; }= 3.5D;
+
+        public static double EyeHeight { get; set; } = 1.62D;
+
+        protected override void Creation()
+        {
+            base.Creation();
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+
+            CameraMode = CameraMode.FPS;
+        }
+
+
         protected override void Update() //todo: NetworkUpdate
         {
             if (Player.LocalPlayer.Entity != null)
             {
-                /*Vector3D dir = new Vector3D();
-                if (Input.IsPressing(GameInput.Key("Forward")) || Input.IsPressed(GameInput.Key("Forward")))
+                if(Input.IsPressing(GameInput.Key("View")))
                 {
-                    dir += Vector3D.Forward;
-                }
-                if (Input.IsPressing(GameInput.Key("Backward")) || Input.IsPressed(GameInput.Key("Backward")))
-                {
-                    dir += Vector3D.Backward;
-                }
-                if (Input.IsPressing(GameInput.Key("Right")) || Input.IsPressed(GameInput.Key("Right")))
-                {
-                    dir -= Vector3D.Right;
-                }
-                if (Input.IsPressing(GameInput.Key("Left")) || Input.IsPressed(GameInput.Key("Left")))
-                {
-                    dir -= Vector3D.Left;
+                    switch(CameraMode)
+                    {
+                        case CameraMode.FPS:
+                            CameraMode = CameraMode.TPSBehind;
+                            break;
+                        case CameraMode.TPSBehind:
+                            CameraMode = CameraMode.TPSFront;
+                            break;
+                        default:
+                            CameraMode = CameraMode.FPS;
+                            break;
+                    }
                 }
 
-                Player.LocalPlayer.Entity.WObject.Position += dir.Normalized * Time.FixedDeltaTime * WalkSpeed;*/
                 
                 Dictionary<string, KeyStates> inputs = new Dictionary<string, KeyStates>();
                 inputs.Add("move_forward", Input.GetKeyState(GameInput.Key("Forward"), Input.KeyDictionary));

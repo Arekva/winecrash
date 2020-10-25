@@ -61,7 +61,7 @@ namespace Winecrash.Server
             
             server.OnPlayerConnect += player =>
             {
-                uint height = World.GetSurface(0, 0, "winecrash:overworld") + 1;
+                uint height = World.GetSurface(Vector3D.Zero,  "winecrash:overworld") + 1;
                 player.Entity.WObject.Position = new Vector3D(0,height,0);
                 //Debug.Log(height);
                 player.Entity.WObject.Rotation = new Quaternion(90,0,0);

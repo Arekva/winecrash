@@ -51,11 +51,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CameraMode.cs" />
     <Compile Include="ClientTester.cs" />
     <Compile Include="Configs\GameConfig.cs" />
     <Compile Include="GameDebug.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameClient.cs" />
+    <Compile Include="GameInput.cs" />
     <Compile Include="GUI\GameButton.cs" />
     <Compile Include="GUI\LargeButton.cs" />
     <Compile Include="GUI\LargeTextField.cs" />

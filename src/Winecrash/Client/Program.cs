@@ -55,7 +55,7 @@ namespace Winecrash.Client
             
             WObject localPlayerWobj = new WObject("Local Player");
             localPlayerWobj.Enabled = false;
-            localPlayerWobj.AddModule<PlayerController>();
+            PlayerController pc = localPlayerWobj.AddModule<PlayerController>();
             
             WObject camW = new WObject("Player Camera");
             camW.Parent = localPlayerWobj;
@@ -65,7 +65,7 @@ namespace Winecrash.Client
             Camera.Main.NearClip = 0.01D;
 
 
-            Canvas.Main.UICamera.FarClip = 100.0D;
+            Canvas.Main.UICamera.FarClip = 4096.0D;
 
             EngineCore.Instance.WObject.AddModule<GameDebug>();
 
@@ -78,7 +78,7 @@ namespace Winecrash.Client
             };
 
             GameApplication app = (GameApplication)Graphics.Window;
-            app.VSync = VSyncMode.Off;
+            app.VSync = VSyncMode.On;
 
             string title = $"Winecrash {Winecrash.Version} ({IntPtr.Size * 8}bits)";
 
@@ -106,7 +106,23 @@ namespace Winecrash.Client
 
                 localPlayerWobj.Enabled = true;
                 Player.LocalPlayer.CreateEntity(localPlayerWobj);
-                Player.LocalPlayer.Entity.OnRotate += rotation => Camera.Main.WObject.Rotation = rotation;
+                
+                localPlayerWobj.Position = Vector3D.Up * 70;
+                
+                WObject debugW = new WObject("aaaa");
+                debugW.AddModule<RigidBody>();
+                MeshRenderer dmr = debugW.AddModule<MeshRenderer>();
+                dmr.Material = new Material(Shader.Find("Unlit"));
+                dmr.Material.SetData("color", Color256.White);
+                dmr.Mesh = Mesh.LoadFile("assets/models/Skycube.obj", MeshFormats.Wavefront);
+
+                debugW.Position = Vector3D.Up * 70;// + Vector3D.Backward * 2;
+                
+                Player.LocalPlayer.Entity.OnRotate += rotation => 
+                {
+                    if (!pc.CameraLocked)
+                        Camera.Main.WObject.Rotation = rotation;
+                };
 
                 if (type == PartyType.Singleplayer)
                 {
@@ -117,10 +133,6 @@ namespace Winecrash.Client
                         World.GetOrCreateChunk(vector, "winecrash:overworld");
                     });
                 }
-                //Camera.Main._FarClip = 4096;
-                //Camera.Main.WObject.Position = Vector3D.Up * 512;
-                //Camera.Main.WObject.Rotation = new Quaternion(90,0,0);
-                //Debug.Log("Joined a " + type + " game");
             };
             Game.OnPartyLeft += type =>
             {

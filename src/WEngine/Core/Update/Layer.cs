@@ -76,7 +76,7 @@ namespace WEngine
 
                         for (int j = 0; j < groups.Length; j++)
                         {
-                            if (groups[j].Deleted) continue;
+                            if (groups[j] == null || groups[j].Deleted) continue;
                             groups[j].FixedUpdate();
                         }
                     }

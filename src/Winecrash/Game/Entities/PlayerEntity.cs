@@ -8,12 +8,14 @@ namespace Winecrash.Entities
     {
         #region Animation
         public static double HeadMaxAngleToBody { get; set; } = 25.0D;
-        public static double WalkAnimationMaxAngle { get; set; } = 45;
-        public static double WalkAnimationSpeedCoef { get; set; } = 0.5D;
-        public static double WalkAnimationTorsoOrientCoef { get; set; } = 6D;
+        public static double WalkAnimationMaxAngle { get; set; } = 55D;
+        public static double WalkAnimationSpeedCoef { get; set; } = 2.45D;
+        public static double WalkAnimationTorsoOrientCoef { get; set; } = 12D;
+
+        public static double WalkAnimationLegCoef { get; set; } = 1.4D;
+        
         public static double WalkAnimationTimeStandBy { get; set; } = 0.5D;
         public static double CurrentWalkAnimationTime { get; set; } = WalkAnimationTimeStandBy;
-        private static int WalkAnimationSign = 1;
 
         public static double IdleAnimationArmMinAngle { get; set; } = 2.0D;
         public static double IdleAnimationArmMaxAngle { get; set; } = 5.0D;
@@ -151,28 +153,30 @@ namespace Winecrash.Entities
 
         public void AnimateWalk(Vector3D velocity)
         {
-            //if(PlayerLeftLeg == null || PlayerRightLeg == null )
+            if (PlayerLeftLeg == null || PlayerRightLeg == null) return;
             double speed = WMath.Clamp(velocity.XZ.Length,0,Player.WalkSpeed);
-            
-            if (CurrentWalkAnimationTime >= 1.0) WalkAnimationSign = -1;
-            if (CurrentWalkAnimationTime <= 0.0) WalkAnimationSign = 1;
 
-            CurrentWalkAnimationTime += Time.DeltaTime * WalkAnimationSign * speed * WalkAnimationSpeedCoef;
+            CurrentWalkAnimationTime += Time.DeltaTime * speed * WalkAnimationSpeedCoef;
 
-            CurrentWalkAnimationTime = WMath.Clamp(CurrentWalkAnimationTime, 0, 1);
-            
+            double t = WMath.Remap(Math.Cos(CurrentWalkAnimationTime), -1, 1, 0, 1);
+
             double speedCoef = speed <= 0.05D ? 0.0D : speed / Player.WalkSpeed;
 
-            double currentAngle = WMath.Remap(CurrentWalkAnimationTime, 0, 1, -WalkAnimationMaxAngle * speedCoef, WalkAnimationMaxAngle * speedCoef);
-            
-            Quaternion leftRot = new Quaternion(-currentAngle,0,0);
-            Quaternion rightRot = new Quaternion(currentAngle,0,0);
-            
-            PlayerLeftLeg.LocalRotation = leftRot;
-            PlayerRightLeg.LocalRotation = rightRot;
+            double currentAngle = WMath.Lerp(-WalkAnimationMaxAngle * speedCoef, WalkAnimationMaxAngle * speedCoef, t);//WMath.Remap(CurrentWalkAnimationTime, 0, 1, -WalkAnimationMaxAngle * speedCoef, WalkAnimationMaxAngle * speedCoef);
 
-            PlayerRightArm.LocalRotation *= leftRot;
-            PlayerLeftArm.LocalRotation *= rightRot;
+
+            Quaternion leftRotLeg = new Quaternion(-currentAngle * WalkAnimationLegCoef,0,0);
+            Quaternion rightRotLeg = new Quaternion(currentAngle * WalkAnimationLegCoef,0,0);
+            
+            Quaternion rightRotArm = new Quaternion(-currentAngle,0,0);
+            Quaternion leftRotArm = new Quaternion(currentAngle,0,0);
+
+            
+            PlayerLeftLeg.LocalRotation = leftRotLeg;
+            PlayerRightLeg.LocalRotation = rightRotLeg;
+
+            PlayerRightArm.LocalRotation *= rightRotArm;
+            PlayerLeftArm.LocalRotation *= leftRotArm;
 
 
             Vector3D flattenVel = new Vector3D(velocity.X, 0,velocity.Z);
@@ -197,21 +201,32 @@ namespace Winecrash.Entities
             base.Creation();
 
             this.RigidBody.UseGravity = true;
+
+            if (Engine.DoGUI)
+            {
+                CreateModel();
+            }
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+
+            ModelWObject.Enabled = !(Player.LocalPlayer != null && Player.LocalPlayer.Entity == this);
         }
 
         protected override void Update()
         {
             base.Update();
 
-            JumpCD -= Time.DeltaTime;
-            
             if (Engine.DoGUI)
             {
-                if (Player.LocalPlayer != null && Player.LocalPlayer.Entity == this) return;
-
-                AnimateHead();
-                AnimateIdle();
-                AnimateWalk(this.RigidBody.Velocity);
+                if (this.ModelWObject != null && this.ModelWObject.Enabled)
+                {
+                    AnimateHead();
+                    AnimateIdle();
+                    AnimateWalk(this.RigidBody.Velocity);
+                }
             }
         }
 
@@ -224,6 +239,10 @@ namespace Winecrash.Entities
             double xzVel = this.RigidBody.Velocity.XZ.Length;
 
             Vector2D xzDir = this.RigidBody.Velocity.Normalized.XZ;
+
+            uint currentHeight = 1+World.GetSurface(this.WObject.Position, "winecrash:overworld");
+            
+            //Debug.Log(currentHeight);
             
             if (xzVel > Player.WalkSpeed)
             {
@@ -232,11 +251,11 @@ namespace Winecrash.Entities
                 this.RigidBody.Velocity += new Vector3D(xzDir.X, 0, xzDir.Y) * Player.WalkSpeed;
             }
 
-            if (this.WObject.Position.Y < 64.0D)
+            if (this.WObject.Position.Y < currentHeight)
             {
                 this.RigidBody.Velocity *= new Vector3D(1,0,1);
                 this.WObject.Position *= new Vector3D(1,0,1);
-                this.WObject.Position += new Vector3D(0,64,0);
+                this.WObject.Position += new Vector3D(0,currentHeight,0);
             }
 
             if (AnyMoveInputOnFrame)

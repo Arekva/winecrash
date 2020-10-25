@@ -27,7 +27,7 @@ namespace Winecrash
         public static double JumpForce = 5.0D;
 
         public static double WalkSpeed = 4.3D;
-        public static double WalkAcceleration = 50.0D;
+        public static double WalkAcceleration = 50.0D/2.0D;
         public static double WalkDeaccelerationFactor = 16.0D;
         public static double StopSpeed = 0.05D;
 

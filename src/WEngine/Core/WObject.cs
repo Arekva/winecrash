@@ -111,34 +111,48 @@ namespace WEngine
             }
         }
 
+        private object _PositionLocker = new object();
         private Vector3D _Position;
         public Vector3D Position
         {
             get
             {
-                if (_PositionNeedsUpdate)
+                lock (_PositionLocker)
                 {
-                    _PositionNeedsUpdate = false;
-                    lock (ParentLocker)
-                        //                                      first set to scale                                     then rotate                          then add parent's position
-                        this._Position = this._Parent ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3D.Zero, this._Parent.Rotation) + this._Parent.Position : this.LocalPosition;
+                    if (_PositionNeedsUpdate)
+                    {
+                        _PositionNeedsUpdate = false;
+                        lock (ParentLocker)
+                            //                                      first set to scale                                     then rotate                          then add parent's position
+                            this._Position = this._Parent
+                                ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3D.Zero,
+                                    this._Parent.Rotation) + this._Parent.Position
+                                : this.LocalPosition;
+                    }
                 }
 
                 return _Position;
+                
             }
 
             set
             {
-                lock (ParentLocker)
+                lock (_PositionLocker)
                 {
-                    //                                      first get relative position                              then rotate by invert                                 then scale
-                    this.LocalPosition = this._Parent ? (value - this._Parent.Position).RotateAround(Vector3D.Zero, this._Parent.Rotation) * (Vector3D.One / this._Parent.Scale) : value;
+                    lock (ParentLocker)
+                    {
+                        //                                      first get relative position                              then rotate by invert                                 then scale
+                        this.LocalPosition = this._Parent
+                            ? (value - this._Parent.Position).RotateAround(Vector3D.Zero, this._Parent.Rotation) *
+                              (Vector3D.One / this._Parent.Scale)
+                            : value;
+                    }
+
+                    this._Position = value;
+                    _PositionNeedsUpdate = false;
+
+                    FlagTransformUpdatesRecursive(true, true, true, false, false);
                 }
-
-                this._Position = value;
-                _PositionNeedsUpdate = false;
-
-                FlagTransformUpdatesRecursive(true, true, true, false, false);
             }
         }
         private Vector3D _LocalPosition = Vector3D.Zero;
@@ -150,38 +164,50 @@ namespace WEngine
             }
             set
             {
-                this._LocalPosition = value;
-                FlagTransformUpdatesRecursive(true, false, true, false, false);
+                lock (_PositionLocker)
+                {
+                    this._LocalPosition = value;
+                    FlagTransformUpdatesRecursive(true, false, true, true, true);
+                }
             }
         }
 
+        private object _RotationLocker = new object();
         private Quaternion _Rotation;
         public Quaternion Rotation
         {
             get
             {
-                if (_RotationNeedsUpdate)
+                lock (_RotationLocker)
                 {
-                    _RotationNeedsUpdate = false;
-                    lock (ParentLocker)
-                        _Rotation = this._Parent ? this._Parent.Rotation * this.LocalRotation : this.LocalRotation;
+                    if (_RotationNeedsUpdate)
+                    {
+                        _RotationNeedsUpdate = false;
+                        lock (ParentLocker)
+                            _Rotation = this._Parent ? this._Parent.Rotation * this.LocalRotation : this.LocalRotation;
+                    }
                 }
 
                 return _Rotation;
+                
             }
 
             set
             {
-                lock(ParentLocker)
-                this.LocalRotation = this._Parent ? this._Parent.Rotation.Inverted * value : value;
+                lock (_RotationLocker)
+                {
+                    lock (ParentLocker)
+                        this.LocalRotation = this._Parent ? this._Parent.Rotation.Inverted * value : value;
 
-                this._Rotation = value;
-                _RotationNeedsUpdate = false;
+                    this._Rotation = value;
+                    _RotationNeedsUpdate = false;
 
-                FlagTransformUpdatesRecursive(true, true, true, true, false);
+                    FlagTransformUpdatesRecursive(true, true, true, true, false);
+                }
             }
         }
 
+        
         private Quaternion _LocalRotation = Quaternion.Identity;
         public Quaternion LocalRotation
         {
@@ -192,36 +218,46 @@ namespace WEngine
 
             set
             {
-                this._LocalRotation = value;
-                FlagTransformUpdatesRecursive(true, false, true, true, false);
+                lock (_RotationLocker)
+                {
+                    this._LocalRotation = value;
+                    FlagTransformUpdatesRecursive(true, false, true, true, false);
+                }
             }
         }
-
+        
+        private object _ScaleLocker = new object();
         private Vector3D _Scale;
         public Vector3D Scale
         {
             get
             {
-                if (_ScaleNeedsUpdate)
+                lock (_ScaleLocker)
                 {
-                    _ScaleNeedsUpdate = false;
-                    lock (ParentLocker)
-                        _Scale = this._Parent ? this._Parent.Scale * this.LocalScale : this.LocalScale;
-                }
+                    if (_ScaleNeedsUpdate)
+                    {
+                        _ScaleNeedsUpdate = false;
+                        lock (ParentLocker)
+                            _Scale = this._Parent ? this._Parent.Scale * this.LocalScale : this.LocalScale;
+                    }
 
-                return _Scale;
+                    return _Scale;
+                }
             }
 
             set
             {
-                lock(ParentLocker)
-                this.LocalScale = this._Parent ? value / this._Parent.Scale : value;
+                lock (_ScaleLocker)
+                {
+                    lock (ParentLocker)
+                        this.LocalScale = this._Parent ? value / this._Parent.Scale : value;
 
-                this._Scale = value;
-                _ScaleNeedsUpdate = false;
+                    this._Scale = value;
+                    _ScaleNeedsUpdate = false;
 
 
-                FlagTransformUpdatesRecursive(true, true, true, false, true);
+                    FlagTransformUpdatesRecursive(true, true, true, false, true);
+                }
             }
         }
         private Vector3D _LocalScale = Vector3D.One;
@@ -233,8 +269,11 @@ namespace WEngine
             }
             set
             {
-                this._LocalScale = value;
-                FlagTransformUpdatesRecursive(true, false, true, false, true);
+                lock (_ScaleLocker)
+                {
+                    this._LocalScale = value;
+                    FlagTransformUpdatesRecursive(true, false, true, false, true);
+                }
             }
         }
 

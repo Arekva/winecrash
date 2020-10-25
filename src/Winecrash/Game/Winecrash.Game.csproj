@@ -33,6 +33,10 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LibNoise, Version=0.2.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\LibNoise.0.2\lib\NET45\LibNoise.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -51,7 +55,6 @@
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\PlayerEntity.cs" />
     <Compile Include="Folders.cs" />
-    <Compile Include="GameInput.cs" />
     <Compile Include="Items\Block.cs" />
     <Compile Include="Items\BlockFaces.cs" />
     <Compile Include="Items\Cube.cs" />

@@ -20,7 +20,8 @@ namespace Winecrash.Client
             { "Destroy", Keys.MouseLeftButton },
             { "Interact", Keys.MouseRightButton },
             { "Debug", Keys.F3 },
-            { "Back", Keys.Escape }
+            { "Back", Keys.Escape },
+            { "View", Keys.F5 }
         };
 
         public static Keys Key(string name)

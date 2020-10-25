@@ -80,7 +80,7 @@ namespace Winecrash.Client
                         //existingP.CreateNonLocalElements();
                     }
 
-                    existingP.Entity.CreateModel();
+                    
                 }
 
                 else if (nobj is NetEntity nent)
