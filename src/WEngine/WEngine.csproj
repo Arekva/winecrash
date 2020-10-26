@@ -116,6 +116,8 @@
     <Compile Include="Networking\NetObjects\NetPing.cs" />
     <Compile Include="Networking\Networking.cs" />
     <Compile Include="Networking\PendingData.cs" />
+    <Compile Include="Physics\ICollider.cs" />
+    <Compile Include="Physics\ICollisionProvider.cs" />
     <Compile Include="Render\Graphics.cs" />
     <Compile Include="Core\WRandom.cs" />
     <Compile Include="GUI\Anchor.cs" />
@@ -171,7 +173,6 @@
     <Compile Include="GUI\LabelRenderer.cs" />
     <Compile Include="Render\MeshRenderer.cs" />
     <Compile Include="Physics\BoxCollider.cs" />
-    <Compile Include="Physics\Collider.cs" />
     <Compile Include="GUI\ModelRenderer.cs" />
     <Compile Include="Physics\HitInfo.cs" />
     <Compile Include="Physics\Physics.cs" />

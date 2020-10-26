@@ -36,7 +36,8 @@ namespace Winecrash.Client
                 {
                     case CameraMode.FPS:
                         {
-                            Player.LocalPlayer.Entity.ModelWObject.Enabled = false;
+                            if(Player.LocalPlayer && Player.LocalPlayer.Entity && Player.LocalPlayer.Entity.ModelWObject) Player.LocalPlayer.Entity.ModelWObject.Enabled = false;
+                            if(Player.LocalPlayer && Player.LocalPlayer.Entity && PlayerEntity.PlayerHandWobject) PlayerEntity.PlayerHandWobject.Enabled = true;
 
                             Camera.Main.WObject.Parent = this.WObject;
                             Camera.Main.WObject.LocalPosition = Vector3D.Up * EyeHeight;
@@ -47,6 +48,7 @@ namespace Winecrash.Client
                     case CameraMode.TPSBehind:
                         {
                             Player.LocalPlayer.Entity.ModelWObject.Enabled = true;
+                            PlayerEntity.PlayerHandWobject.Enabled = false;
                             Camera.Main.WObject.Parent = Player.LocalPlayer.Entity.PlayerHead;
                             Camera.Main.WObject.LocalPosition = /*Vector3D.Up * EyeHeight + */Vector3D.Backward * TPSMaxDistance;
                             Camera.Main.WObject.LocalRotation = new Quaternion(0, 0, 0);
@@ -57,6 +59,7 @@ namespace Winecrash.Client
                     case CameraMode.TPSFront:
                         {
                             Player.LocalPlayer.Entity.ModelWObject.Enabled = true;
+                            PlayerEntity.PlayerHandWobject.Enabled = false;
                             Camera.Main.WObject.Parent = Player.LocalPlayer.Entity.PlayerHead;
                             Camera.Main.WObject.LocalPosition = /*Vector3D.Up * EyeHeight + */Vector3D.Forward * TPSMaxDistance;
                             Camera.Main.WObject.LocalRotation = new Quaternion(0, 180, 0);
@@ -104,16 +107,35 @@ namespace Winecrash.Client
                     }
                 }
 
-                
-                Dictionary<string, KeyStates> inputs = new Dictionary<string, KeyStates>();
-                inputs.Add("move_forward", Input.GetKeyState(GameInput.Key("Forward"), Input.KeyDictionary));
-                inputs.Add("move_backward", Input.GetKeyState(GameInput.Key("Backward"), Input.KeyDictionary));
-                inputs.Add("move_right", Input.GetKeyState(GameInput.Key("Right"), Input.KeyDictionary));
-                inputs.Add("move_left", Input.GetKeyState(GameInput.Key("Left"), Input.KeyDictionary));
-                inputs.Add("move_jump", Input.GetKeyState(GameInput.Key("Jump"), Input.KeyDictionary));
 
-                
+                Dictionary<string, KeyStates> inputs = new Dictionary<string, KeyStates>
+                {
+                    { "move_forward", Input.GetKeyState(GameInput.Key("Forward"), Input.KeyDictionary) },
+                    { "move_backward", Input.GetKeyState(GameInput.Key("Backward"), Input.KeyDictionary) },
+                    { "move_right", Input.GetKeyState(GameInput.Key("Right"), Input.KeyDictionary) },
+                    { "move_left", Input.GetKeyState(GameInput.Key("Left"), Input.KeyDictionary) },
+                    { "move_jump", Input.GetKeyState(GameInput.Key("Jump"), Input.KeyDictionary) }
+                };
+
+
                 NetInput ninput = new NetInput(inputs, Input.MouseDelta * Time.DeltaTime * MouseSensivity);
+
+                if (Input.IsPressing(Keys.Delete))
+                {
+                    Player.NoClipping = !Player.NoClipping;
+
+                    if (Player.NoClipping)
+                    {
+                        Player.LocalPlayer.Entity.RigidBody.UseGravity = false;
+                        Player.LocalPlayer.Entity.RigidBody.Velocity = Vector3D.Zero;
+                    }
+                    else
+                    {
+                        Player.LocalPlayer.Entity.RigidBody.UseGravity = true;
+                        Player.LocalPlayer.Entity.RigidBody.Velocity = Vector3D.Zero;
+                    }
+                }
+                
                 Player.LocalPlayer.ParseNetInput(ninput);
 
                 if (Program.Client.Connected)

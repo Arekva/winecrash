@@ -17,5 +17,7 @@
                 _FixedRate = value;
             }
         }
+        
+        //public static 
     }
 }

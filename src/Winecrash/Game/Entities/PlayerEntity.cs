@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Policy;
+using System.Threading.Tasks;
 using WEngine;
 
 namespace Winecrash.Entities
@@ -22,7 +24,6 @@ namespace Winecrash.Entities
         public static double IdleAnimationSpeed { get; set; } = 1.1D;
         public static double CurrentIdleAnimationTime { get; set; } = 0.0D;
         
-        
         #endregion
         
         #region WObjects
@@ -33,6 +34,8 @@ namespace Winecrash.Entities
         public WObject PlayerLeftArm { get; set; }
         public WObject PlayerRightLeg { get; set; }
         public WObject PlayerLeftLeg { get; set; }
+        
+        public static WObject PlayerHandWobject { get; set; }
         #endregion
 
         #region Meshes
@@ -111,6 +114,8 @@ namespace Winecrash.Entities
             mr = PlayerLeftLeg.AddModule<MeshRenderer>();
             mr.Mesh = PlayerLeftLegMesh;
             mr.Material = SkinMaterial;
+
+            
             
             OnRotate += rotation => PlayerHead.LocalRotation = rotation;
         }
@@ -201,6 +206,26 @@ namespace Winecrash.Entities
             base.Creation();
 
             this.RigidBody.UseGravity = true;
+            //this.Collider.Extents = new Vector3D(0.6,1.8,0.6)/2.0D;
+            this.Collider.Offset = new Vector3D(0,1.8,0)/2.0D;
+            
+            this.OnChunkChange += (previous, current) =>
+            {
+                Task.Run(() =>
+                {
+                    Vector2I[] previousChunks = World.GetCoordsInRange(previous, Winecrash.RenderDistance);
+                    Vector2I[] currentChunks = World.GetCoordsInRange(current, Winecrash.RenderDistance);
+
+                    Vector2I[] toDelete = previousChunks.Except(currentChunks).ToArray();
+
+                    /*for (int i = 0; i < toDelete.Length; i++)
+                    {
+                        World.GetChunk(toDelete[i], "winecrash:overworld")?.Delete();
+                    }*/
+
+                    Parallel.ForEach(currentChunks, vec => { World.GetOrCreateChunk(vec, "winecrash:overworld"); });
+                });
+            };
 
             if (Engine.DoGUI)
             {
@@ -212,7 +237,26 @@ namespace Winecrash.Entities
         {
             base.Start();
 
-            ModelWObject.Enabled = !(Player.LocalPlayer != null && Player.LocalPlayer.Entity == this);
+            if (ModelWObject)
+            {
+                ModelWObject.Enabled = !(Player.LocalPlayer != null && Player.LocalPlayer.Entity == this);
+
+                if (!ModelWObject.Enabled && PlayerHandWobject == null) // local player
+                {
+                    PlayerHandWobject = new WObject("FPS Hand");
+                    PlayerHandWobject.Parent = Camera.Main.WObject;
+                    PlayerHandWobject.LocalPosition =
+                        Vector3D.Left * 0.4 + Vector3D.Forward * 0.4 + Vector3D.Down * 0.75;
+                    PlayerHandWobject.LocalRotation = new Quaternion(180 + 45, -20, 0);
+                    PlayerHandWobject.LocalRotation *= new Quaternion(0, -25, 0);
+                    MeshRenderer mr = PlayerHandWobject.AddModule<MeshRenderer>();
+                    mr.UseDepth = false;
+                    mr.DrawOrder = 1000;
+
+                    mr.Mesh = PlayerRightArmMesh;
+                    mr.Material = SkinMaterial;
+                }
+            }
         }
 
         protected override void Update()
@@ -234,7 +278,9 @@ namespace Winecrash.Entities
         {
             base.FixedUpdate();
 
-            if (this.RigidBody == null) return;
+            if (this.RigidBody == null || this.Collider == null) return;
+            
+            
 
             double xzVel = this.RigidBody.Velocity.XZ.Length;
 
@@ -242,20 +288,43 @@ namespace Winecrash.Entities
 
             uint currentHeight = 1+World.GetSurface(this.WObject.Position, "winecrash:overworld");
             
-            //Debug.Log(currentHeight);
-            
-            if (xzVel > Player.WalkSpeed)
+            if (!Player.NoClipping)
             {
-                this.RigidBody.Velocity *= new Vector3D(0, 1, 0);
-                
-                this.RigidBody.Velocity += new Vector3D(xzDir.X, 0, xzDir.Y) * Player.WalkSpeed;
-            }
+                if (xzVel > Player.WalkSpeed)
+                {
+                    this.RigidBody.Velocity *= new Vector3D(0, 1, 0);
 
-            if (this.WObject.Position.Y < currentHeight)
-            {
-                this.RigidBody.Velocity *= new Vector3D(1,0,1);
-                this.WObject.Position *= new Vector3D(1,0,1);
-                this.WObject.Position += new Vector3D(0,currentHeight,0);
+                    this.RigidBody.Velocity += new Vector3D(xzDir.X, 0, xzDir.Y) * Player.WalkSpeed;
+                }
+
+                Chunk c = World.GetChunk(this.ChunkCoordinates, "winecrash:overworld");
+
+                if (c != null)
+                {
+                    bool collision = new ChunkBoxCollisionProvider().Collide(
+                        c, this.Collider,
+                        out Vector3D debug);
+
+                    if (collision)
+                    {
+                        /*if (debug.Y != 0)
+                        {
+                            this.RigidBody.Velocity *= new Vector3D(1,0,1);
+                        }*/
+                        
+                        this.RigidBody.Velocity += debug;
+                    }
+
+                    Debug.Log("Collision with " + this.ChunkCoordinates + " ? => " + collision + " (debug: " + debug +
+                              ")");
+                }
+
+                /*if (this.WObject.Position.Y < currentHeight)
+                {
+                    this.RigidBody.Velocity *= new Vector3D(1, 0, 1);
+                    this.WObject.Position *= new Vector3D(1, 0, 1);
+                    this.WObject.Position += new Vector3D(0, currentHeight, 0);
+                }*/
             }
 
             if (AnyMoveInputOnFrame)

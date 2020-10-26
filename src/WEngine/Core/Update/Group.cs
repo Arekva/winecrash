@@ -65,8 +65,9 @@ namespace WEngine
 
         internal List<Module> _Modules { get; set; } = new List<Module>(1);
         internal readonly static object moduleLocker = new object();
-        internal readonly static object groupLocker = new object();
+        //internal readonly static object groupLocker = new object();
         internal static List<Group> _Groups { get; set; } = new List<Group>(1);
+        internal static object GroupsLocker { get; set; } = new object();
         internal int GroupCount
         {
             get
@@ -92,7 +93,7 @@ namespace WEngine
 
             this._Order = order;
 
-            lock(groupLocker)
+            lock(GroupsLocker)
                 _Groups.Add(this);
 
             WEngine.Layer.CreateOrGetLayer(layer, null, new[] { this });
@@ -257,22 +258,25 @@ namespace WEngine
                 lock (moduleLocker)
                     this._Modules = null;
 
-                lock (groupLocker)
+                lock (GroupsLocker)
                     _Groups.Remove(this);
 
                 foreach(Layer layer in WEngine.Layer._Layers)
                 {
-                    if(layer._Groups.Contains(this))
+                    lock (layer.GroupsLocker)
                     {
-                        layer._Groups.Remove(this);
-
-                        if(layer._Groups.Count == 0) //remove layer
+                        if (layer._Groups.Contains(this))
                         {
-                            WEngine.Layer.RemoveLayer(layer.Order);
+                            layer._Groups.Remove(this);
 
+                            if (layer._Groups.Count == 0) //remove layer
+                            {
+                                WEngine.Layer.RemoveLayer(layer.Order);
+
+                            }
+
+                            break;
                         }
-
-                        break;
                     }
                 }
 
@@ -300,7 +304,7 @@ namespace WEngine
 
                 group.Thread.Abort();
 
-                lock (groupLocker)
+                lock (GroupsLocker)
                     _Groups.Remove(group);
 
                 CreateOrGetGroup(0, null, group._Modules);
@@ -344,7 +348,7 @@ namespace WEngine
             second.Thread.Abort();
             second.Thread = null;
 
-            lock(groupLocker)
+            lock(GroupsLocker)
                 _Groups.Remove(second);
 
             return first;
@@ -354,7 +358,7 @@ namespace WEngine
         {
             List<Group> groups = null;
             //lock(moduleLocker)
-            lock (groupLocker)
+            lock (GroupsLocker)
                 groups = _Groups.ToList();
 
 
@@ -364,7 +368,7 @@ namespace WEngine
         public static Group GetGroup(string name)
         {
             List<Group> groups = null;
-            lock (groupLocker)
+            lock (GroupsLocker)
                 groups = _Groups.ToList();
 
             return groups.FirstOrDefault(g => g.Name == name);
@@ -372,7 +376,7 @@ namespace WEngine
 
         private static void SortByOrder()
         {
-            lock(groupLocker)
+            lock(GroupsLocker)
                 _Groups = _Groups.OrderBy(g => g.Order).ToList();
         }
 
@@ -395,18 +399,20 @@ namespace WEngine
                 for (int i = 0; i < layers.Length; i++)
                 {
                     //find the current layer of the group
-                    if (layers[i]._Groups.Contains(correspondingGroup))
+                    lock (layers[i].GroupsLocker)
                     {
-                        layers[i]._Groups.Remove(correspondingGroup);
-                        WEngine.Layer.CreateOrGetLayer(newLayer, null, new[] { correspondingGroup });
-
-                        if (layers[i]._Groups.Count == 0) //remove layer
+                        if (layers[i]._Groups.Contains(correspondingGroup))
                         {
-                            WEngine.Layer.RemoveLayer(layers[i].Order);
+                            layers[i]._Groups.Remove(correspondingGroup);
+                            WEngine.Layer.CreateOrGetLayer(newLayer, null, new[] {correspondingGroup});
+
+                            if (layers[i]._Groups.Count == 0) //remove layer
+                            {
+                                WEngine.Layer.RemoveLayer(layers[i].Order);
+                            }
+
+                            break;
                         }
-
-
-                        break;
                     }
                 }
             }

@@ -124,10 +124,7 @@ namespace WEngine
                         _PositionNeedsUpdate = false;
                         lock (ParentLocker)
                             //                                      first set to scale                                     then rotate                          then add parent's position
-                            this._Position = this._Parent
-                                ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3D.Zero,
-                                    this._Parent.Rotation) + this._Parent.Position
-                                : this.LocalPosition;
+                            this._Position = this._Parent ? (this.LocalPosition * this._Parent.Scale).RotateAround(Vector3D.Zero, this._Parent.Rotation) + this._Parent.Position : this.LocalPosition;
                     }
                 }
 

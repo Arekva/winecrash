@@ -35,6 +35,7 @@ namespace WEngine
         }
 
         internal List<Group> _Groups { get; set; } = new List<Group>(1);
+        internal object GroupsLocker { get; set; } = new object();
 
         internal bool Deleted { get; set; } = false;
 
@@ -69,7 +70,7 @@ namespace WEngine
                         if (layer.Deleted) continue;
 
                         Group[] groups;
-                        lock(Group.groupLocker)
+                        lock(layer.GroupsLocker)
                             groups = layer._Groups.ToArray();
 
                         if (groups == null) continue;
@@ -88,7 +89,7 @@ namespace WEngine
                         if (layer.Deleted) continue;
 
                         Group[] groups;
-                        lock (Group.groupLocker) 
+                        lock (layer.GroupsLocker) 
                             groups = layer._Groups.ToArray();
 
 
@@ -139,7 +140,8 @@ namespace WEngine
             this._Order = order;
 
             if(groups != null)
-                this._Groups = groups.ToList();
+                lock(GroupsLocker)
+                    this._Groups = groups.ToList();
 
             _Layers.Add(this);
 
@@ -265,8 +267,15 @@ namespace WEngine
                 return null;
             }
 
-            first._Groups.AddRange(second._Groups);
-            second._Groups = null;
+            
+            lock (second.GroupsLocker)
+            {
+                lock(first.GroupsLocker)
+                    first._Groups.AddRange(second._Groups);
+                
+                second._Groups = null;
+            }
+
             _Layers.Remove(second);
 
             return first;
@@ -350,7 +359,7 @@ namespace WEngine
                 if (layer.Deleted) continue;
 
                 Group[] groups = null;
-                lock (Group.groupLocker)
+                lock (layer.GroupsLocker)
                     groups = layer._Groups.ToArray();
 
                 List<ManualResetEvent> doneEvents = new List<ManualResetEvent>(groups.Length);

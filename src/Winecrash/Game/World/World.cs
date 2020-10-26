@@ -155,7 +155,8 @@ namespace Winecrash
         
         
         private static LibNoise.Primitive.ImprovedPerlin perlin = new ImprovedPerlin("lol".GetHashCode(), NoiseQuality.Fast);
-
+        
+        
         private static double size = 0.05D;
 
         private static ushort[] GenerateSimple(Vector2I chunkCoords)
@@ -174,28 +175,36 @@ namespace Winecrash
                         string id = airID;
 
 
-                        double sample = perlin.GetValue((float)((x + chunkCoords.X * Chunk.Width)*size), (float)((z + chunkCoords.Y * Chunk.Depth)*size), 0);
-                        double remapped = WMath.Remap(sample, -1, 1, 0, 64);
-
-                        int height = 64 + (int)remapped;
-
-                        int srfDelta = height - y;
-
-                        if (srfDelta == 0)
+                        double sample = perlin.GetValue((float)((x + chunkCoords.X * Chunk.Width)*size),  (float)(y * size), (float)((z + chunkCoords.Y * Chunk.Depth)*size));
+        
+                        double remapped = WMath.Remap(sample, -1, 1, 0, 1);
+                        
+                        if (y < 96)
                         {
-                            id = "winecrash:grass";
+                            double srfY = y - 64;
+                            double maxSrfY = 96 - 64;
+
+                            double pctY = srfY / maxSrfY;
+                            remapped *= 1-pctY;
+
+                            remapped = Math.Pow(remapped, 0.9);
+                            
+                            if (remapped > 0.4D)
+                            {
+                                id = "winecrash:grass";
+                            }
                         }
-                        else if (srfDelta > 0)
+                        
+                        
+                        
+                        if (y < 64)
                         {
-                            if (srfDelta < 3)
-                            {
-                                id = "winecrash:dirt";
-                            }
+                            id = "winecrash:stone";
+                        }
 
-                            else
-                            {
-                                id = "winecrash:stone";
-                            }
+                        if (y > 96)
+                        {
+                            id = "winecrash:air";
                         }
 
                         if (y == 0)
@@ -353,14 +362,14 @@ namespace Winecrash
         // Get the surface height at a certain position / dimension
         public static uint GetSurface(Vector3D position, string dimension)
         {
-            GlobalToLocal(position, out Vector3I cpos, out Vector3I bpos);
+            GlobalToLocal(position, out Vector2I cpos, out Vector3I bpos);
 
-            Chunk c = World.GetChunk(cpos.XY, dimension);
+            Chunk c = World.GetChunk(cpos, dimension);
 
             ushort[] blocks = null;
 
             if (c != null) blocks = c.Blocks;
-            else blocks = GenerateSimple(cpos.XY);
+            else blocks = GenerateSimple(cpos);
 
             for (int i = 255; i > -1 ; i--)
             {
@@ -371,12 +380,12 @@ namespace Winecrash
             return 0U;
         }
 
-        public static void GlobalToLocal(Vector3D global, out Vector3I ChunkPosition, out Vector3I LocalPosition)
+        public static void GlobalToLocal(Vector3D global, out Vector2I ChunkPosition, out Vector3I LocalPosition)
         {
-            ChunkPosition = new Vector3I(
-                ((int)global.X / Chunk.Width) + (global.X < 0.0F ? -1 : 0), //X position
-                ((int)global.Z / Chunk.Depth) + (global.Z < 0.0F ? -1 : 0), //Y position
-                0);                                                         //Z dimension
+            ChunkPosition = new Vector2I(
+                ((int) global.X / Chunk.Width) + (global.X < 0.0F ? -1 : 0), //X position
+                ((int) global.Z / Chunk.Depth) + (global.Z < 0.0F ? -1 : 0));//, //Y position
+                //0);                                                         //Z dimension
 
             double localX = global.X % Chunk.Width;
             if (localX < 0) localX += Chunk.Width;

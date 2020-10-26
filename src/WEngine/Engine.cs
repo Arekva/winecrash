@@ -137,18 +137,23 @@ namespace WEngine
 
             foreach (Layer layer in Layer._Layers)
             {
-                foreach (Group group in layer._Groups)
+                lock (layer._Groups)
                 {
-                    try
+                    foreach (Group group in layer._Groups)
                     {
-                        group.Thread.Abort();
-                    }
-                    catch (Exception e)
-                    {
+                        try
+                        {
+                            group.Thread.Abort();
+                        }
+                        catch (Exception e)
+                        {
 /*#IF DEBUG
                         Debug.LogException(e);
 #ENDIF*/
+                        }
                     }
+
+                    layer._Groups = null;
                 }
             }
 

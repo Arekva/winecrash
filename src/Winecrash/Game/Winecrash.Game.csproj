@@ -86,6 +86,7 @@
     <Compile Include="TickType.cs" />
     <Compile Include="Winecrash.cs" />
     <Compile Include="World\Chunk.cs" />
+    <Compile Include="World\ChunkCollisionProvider.cs" />
     <Compile Include="World\Generation\IDimensionGenerator.cs" />
     <Compile Include="World\Generation\IGenerator.cs" />
     <Compile Include="World\SaveChunk.cs" />

@@ -63,9 +63,10 @@ namespace Winecrash.Client
             Camera.Main = camW.AddModule<Camera>();
             Camera.Main.FOV = 80;
             Camera.Main.NearClip = 0.01D;
+            Camera.Main.FarClip = 4096.0D;
 
 
-            Canvas.Main.UICamera.FarClip = 4096.0D;
+            Canvas.Main.UICamera.FarClip = 1000.0D;
 
             EngineCore.Instance.WObject.AddModule<GameDebug>();
 
@@ -107,17 +108,8 @@ namespace Winecrash.Client
                 localPlayerWobj.Enabled = true;
                 Player.LocalPlayer.CreateEntity(localPlayerWobj);
                 
-                localPlayerWobj.Position = Vector3D.Up * 70;
-                
-                WObject debugW = new WObject("aaaa");
-                debugW.AddModule<RigidBody>();
-                MeshRenderer dmr = debugW.AddModule<MeshRenderer>();
-                dmr.Material = new Material(Shader.Find("Unlit"));
-                dmr.Material.SetData("color", Color256.White);
-                dmr.Mesh = Mesh.LoadFile("assets/models/Skycube.obj", MeshFormats.Wavefront);
+                localPlayerWobj.Position = Vector3D.Up * World.GetSurface(new Vector3D(0,0,0), "winecraft:dimension") + 1;
 
-                debugW.Position = Vector3D.Up * 70;// + Vector3D.Backward * 2;
-                
                 Player.LocalPlayer.Entity.OnRotate += rotation => 
                 {
                     if (!pc.CameraLocked)
@@ -128,7 +120,7 @@ namespace Winecrash.Client
                 {
                     Player.LocalPlayer.CameraAngles = Vector2I.Zero;
 
-                    Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, 2), vector =>
+                    Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, Winecrash.RenderDistance), vector =>
                     {
                         World.GetOrCreateChunk(vector, "winecrash:overworld");
                     });

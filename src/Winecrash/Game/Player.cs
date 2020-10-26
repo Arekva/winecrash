@@ -31,8 +31,6 @@ namespace Winecrash
         public static double WalkDeaccelerationFactor = 16.0D;
         public static double StopSpeed = 0.05D;
 
-        
-        
         public Vector2D CameraAngles
         {
             get
@@ -51,6 +49,8 @@ namespace Winecrash
                 }
             }
         }
+
+        public static bool NoClipping { get; set; } = false;
         
         public string Nickname { get; private set; }
         public Guid GUID { get; private set; }
@@ -224,8 +224,17 @@ namespace Winecrash
             }
 
             if(dir == Vector3D.Zero) Entity.AnyMoveInputOnFrame = false;
-            
-            Entity.RigidBody.Velocity += (new Quaternion(0,CameraAngles.X,0) * dir.Normalized) * Time.FixedDeltaTime * WalkAcceleration;
+
+            if (NoClipping)
+            {
+                Entity.WObject.Position +=
+                    this.Entity.Rotation * dir.Normalized * Time.FixedDeltaTime * WalkAcceleration;
+            }
+            else
+            {
+                Entity.RigidBody.Velocity += (new Quaternion(0, CameraAngles.X, 0) * dir.Normalized) *
+                                             Time.FixedDeltaTime * WalkAcceleration;
+            }
         }
         
         public PlayerEntity CreateEntity(WObject parent)

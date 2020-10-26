@@ -20,7 +20,10 @@ namespace WEngine
         internal static object MeshRenderersLocker { get; } = new object();
         
         public bool UseMask { get; set; } = true;
+        public bool UseDepth { get; set; } = true;
         public bool Wireframe { get; set; } = false;
+
+        public int DrawOrder { get; set; } = 0;
 
         public static bool Global_Wireframe { get; set; } = false;
 
@@ -54,6 +57,7 @@ namespace WEngine
                 lock (MeshLocker)
                 {
                     if (CheckValidity(sender)) return;
+                    
 
                     Matrix4D transform;
                     Matrix4D objTrans;
@@ -81,7 +85,10 @@ namespace WEngine
                     this.Material.Use();
 
 
+                    if(UseDepth)
                     GL.Enable(EnableCap.DepthTest);
+                    else
+                    GL.Disable(EnableCap.DepthTest);
                     GL.DepthMask(UseMask);
 
                     //OnRender?.Invoke();

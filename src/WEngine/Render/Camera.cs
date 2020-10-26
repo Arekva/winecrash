@@ -190,7 +190,7 @@ namespace WEngine
             lock(MeshRenderer.ActiveMeshRenderersLocker)
                 mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
             
-            mrs = mrs.Where(mr => mr != null && mr.WObject != null && (mr.WObject.Layer & this.RenderLayers) != 0).ToArray();
+            mrs = mrs.Where(mr => mr != null && mr.WObject != null && (mr.WObject.Layer & this.RenderLayers) != 0).OrderBy(mr => mr.DrawOrder).ToArray();
 
             for (int i = 0; i < mrs.Length; i++)
                 mrs[i].Use(this);

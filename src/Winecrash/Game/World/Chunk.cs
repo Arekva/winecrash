@@ -23,7 +23,7 @@ namespace Winecrash
 
     public delegate void ChunkDelegate(ChunkEventArgs args);
     
-    public class Chunk : Module
+    public class Chunk : Module, ICollider
     {
 
         static Chunk()
@@ -242,6 +242,24 @@ namespace Winecrash
             }
         }
 
+        protected override void Start()
+        {
+            base.Start();
+
+            this.NorthNeighbor = World.GetChunk(this.Coordinates + Vector2I.Up, this.Dimension.Identifier);
+            this.SouthNeighbor = World.GetChunk(this.Coordinates + Vector2I.Down, this.Dimension.Identifier);
+            this.WestNeighbor = World.GetChunk(this.Coordinates + Vector2I.Left, this.Dimension.Identifier);
+            this.EastNeighbor = World.GetChunk(this.Coordinates + Vector2I.Right, this.Dimension.Identifier);
+
+            if (Engine.DoGUI)
+            {
+                if(NorthNeighbor != null) NorthNeighbor.BuildEndFrame = true;
+                if(SouthNeighbor != null) SouthNeighbor.BuildEndFrame = true;
+                if(WestNeighbor != null) WestNeighbor.BuildEndFrame = true;
+                if(EastNeighbor != null) EastNeighbor.BuildEndFrame = true;
+            }
+        }
+
         private void CreateRenderer()
         {
             BlocksRenderer = this.WObject.AddModule<MeshRenderer>();
@@ -370,11 +388,6 @@ namespace Winecrash
             List<Vector3F> normals = new List<Vector3F>();
             List<uint> triangles = new List<uint>();
 
-            //No tangents yet
-            //Vector4 tangent = new Vector4(1f, 0f, 0f, -1f);
-            //Vector4[] tan = new Vector4[6] { tangent, tangent, tangent, tangent, tangent, tangent };
-
-
             Stack<BlockFaces> faces = new Stack<BlockFaces>(6);
             uint triangle = 0;
             Block block = null;
@@ -382,6 +395,8 @@ namespace Winecrash
 
             Dictionary<ushort, Block> blocks = new Dictionary<ushort, Block>();
 
+           // Stopwatch buildTime = new Stopwatch();
+            //buildTime.Start();
             for (int z = 0; z < Depth; z++)
             {
                 for (int y = 0; y < Height; y++)
@@ -389,7 +404,7 @@ namespace Winecrash
                     for (int x = 0; x < Width; x++)
                     {
                         index = this.Blocks[x + Width * y + Width * Height * z];
-
+                        
                         if (!blocks.TryGetValue(index, out block))
                         {
                             block = ItemCache.Get<Block>(index);
@@ -398,12 +413,12 @@ namespace Winecrash
 
                         if (block.Identifier == "winecrash:air") continue; // ignore if air
 
-                        if (IsTransparent(x, y + 1, z, blocks)) faces.Push(BlockFaces.Up);   // up
+                        if (IsTransparent(x, y + 1, z, blocks)) faces.Push(BlockFaces.Up); // up
                         if (IsTransparent(x, y - 1, z, blocks)) faces.Push(BlockFaces.Down); // down
                         if (IsTransparent(x - 1, y, z, blocks)) faces.Push(BlockFaces.West); // west
                         if (IsTransparent(x + 1, y, z, blocks)) faces.Push(BlockFaces.East); // east
-                        if (IsTransparent(x, y, z + 1, blocks)) faces.Push(BlockFaces.North);// north
-                        if (IsTransparent(x, y, z - 1, blocks)) faces.Push(BlockFaces.South);// south
+                        if (IsTransparent(x, y, z + 1, blocks)) faces.Push(BlockFaces.North); // north
+                        if (IsTransparent(x, y, z - 1, blocks)) faces.Push(BlockFaces.South); // south
 
                         foreach (BlockFaces face in faces)
                         {
@@ -413,15 +428,24 @@ namespace Winecrash
 
                             CreateNormalsCube(face, normals);
 
-                            triangles.AddRange(new uint[6] { triangle, triangle + 1, triangle + 2, triangle + 3, triangle + 4, triangle + 5 });
+                            triangles.AddRange(new uint[6]
+                                {triangle, triangle + 1, triangle + 2, triangle + 3, triangle + 4, triangle + 5});
                             triangle += 6;
                         }
 
                         faces.Clear();
                     }
                 }
-            }
+                
 
+                
+            }
+            
+            //buildTime.Stop();
+            //Debug.Log("Chunk face build time : " + buildTime.Elapsed.TotalMilliseconds.ToString("F2") + "ms");
+
+            //Stopwatch meshApply = new Stopwatch();
+            //meshApply.Start();
             if (vertices.Count != 0)
             {
                 //Debug.Log("vertices");
@@ -444,13 +468,13 @@ namespace Winecrash
                 uv = null;
                 normals = null;
             }
+            
+            //meshApply.Stop();
+            //Debug.Log("Mesh apply time : " + meshApply.Elapsed.TotalMilliseconds.ToString("F2") + "ms");
 
             cwest = ceast = cnorth = csouth = false;
 
-            if(!ConstructedOnce)
-            {
-                Graphics.Window.InvokeRender(() => ConstructedOnce = true);
-            }
+            ConstructedOnce = true;
         }
 
 
