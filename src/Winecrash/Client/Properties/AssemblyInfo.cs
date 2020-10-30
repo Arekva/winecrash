@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Winecrash")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Arekva.")]
+[assembly: AssemblyCompany("Arthur Carré \"Arekva\"")]
 [assembly: AssemblyProduct("Winecrash")]
 [assembly: AssemblyCopyright("Copyright © Arekva. 2020")]
 [assembly: AssemblyTrademark("")]

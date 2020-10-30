@@ -131,7 +131,7 @@ namespace WEngine.Networking
                         }
                         catch (System.IO.InvalidDataException e)
                         {
-                            
+
                         }
                         catch (AggregateException e)
                         {
@@ -149,6 +149,11 @@ namespace WEngine.Networking
                                 Debug.LogError("Multiple errors while receiving data: " + e);
                                 LoopResetEvent.Set();
                             }
+                        }
+                        catch (SocketException se)
+                        {
+                            Connected = false;
+                            LoopResetEvent.Set();
                         }
                         catch (Exception e)
                         {

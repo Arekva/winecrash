@@ -61,6 +61,27 @@ namespace WEngine
                     sw.Start();
 
                     Layer[] layers = _Layers.ToArray();
+                    
+                    
+                    for (int i = 0; i < layers.Length; i++)
+                    {
+                        Layer layer = layers[i];
+
+                        if (layer.Deleted) continue;
+
+                        Group[] groups;
+                        lock (layer.GroupsLocker) 
+                            groups = layer._Groups.ToArray();
+
+
+                        if (groups == null) continue;
+
+                        for (int j = 0; j < groups.Length; j++)
+                        {
+                            if (groups[j] == null || groups[j] != null && groups[j].Deleted) continue;
+                            groups[j].PreFixedUpdate();
+                        }
+                    }
 
                     //fixedupdate
                     for (int i = 0; i < layers.Length; i++)
@@ -97,28 +118,23 @@ namespace WEngine
 
                         for (int j = 0; j < groups.Length; j++)
                         {
-                            if (groups[j].Deleted) continue;
+                            if (groups[j] == null || groups[j] != null && groups[j].Deleted) continue;
                             groups[j].LateFixedUpdate();
                         }
                     }
+                    
+                    
 
                     sw.Stop();
-
                     double waitTime = (Physics.FixedRate * Time.FixedTimeScale) - sw.Elapsed.TotalSeconds;
-
+                    sw.Start();
                     if (waitTime > 0.0D)
                     {
                         Thread.Sleep((int)(waitTime * 1000));
                     }
 
-
-                    Time.FixedDeltaTime = waitTime;//Physics.FixedRate * Time.FixedTimeScale;
-
-                   /* else
-                    {
-                        Time.FixedDeltaTime = sw.Elapsed.TotalSeconds;
-                    }*/
-
+                    sw.Stop();
+                    Time.FixedDeltaTime = sw.Elapsed.TotalSeconds;
                     sw.Reset();
                 }
             })
@@ -318,7 +334,7 @@ namespace WEngine
 
                 for (int j = 0; j < layer._Groups.Count; j++)
                 {
-                    if (layer._Groups[j].Deleted) continue;
+                    if (layer._Groups[j] != null && layer._Groups[j].Deleted) continue;
 
                     layer._Groups[j].DoneEvent.Reset();
                     doneEvents.Add(layer._Groups[j].DoneEvent);
@@ -366,7 +382,7 @@ namespace WEngine
 
                 for (int j = 0; j < groups.Length; j++)
                 {
-                    if (groups[j].Deleted) continue;
+                    if (groups[j] == null || groups[j] != null && groups[j].Deleted) continue;
 
                     groups[j].DoneEvent.Reset();
                     doneEvents.Add(groups[j].DoneEvent);

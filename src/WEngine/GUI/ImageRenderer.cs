@@ -12,6 +12,7 @@ namespace WEngine.GUI
 		protected internal override void Creation()
 		{
 			this.UseMask = false;
+			this.UseDepth = false;
 
 			base.Creation();
 		}
@@ -56,8 +57,10 @@ namespace WEngine.GUI
 				};
 
 				_Panel.ApplySafe(true);
-			}
 
+			}
+			
+			
 			//if (!CheckValidity(sender)) return;
 			if (!this.Enabled || (this.WObject.Layer & sender.RenderLayers) == 0 || Deleted || Image == null || Material == null) return;
 
@@ -81,11 +84,15 @@ namespace WEngine.GUI
 			//this.Material.Shader.SetAttribute("normal", AttributeTypes.Normal);
 
 			this.Material.SetData<Matrix4>("transform", (Matrix4)transform);
+			
+			this.PassTransformMatrices(transform, sender.ViewMatrix, sender.ProjectionMatrix);
 			this.Material.Use();
 
 			GL.Disable(EnableCap.DepthTest);
 
 			GL.DrawElements((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)_Panel.Indices, DrawElementsType.UnsignedInt, 0);
+			
+			//base.Use(sender);
 		}
 		protected internal override void OnDelete()
 		{

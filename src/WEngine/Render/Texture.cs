@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 using OpenTK.Graphics.OpenGL4;
-
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 
 namespace WEngine
@@ -102,6 +103,8 @@ namespace WEngine
                         OpenTK.Graphics.OpenGL4.PixelFormat.Rgba,
                         PixelType.UnsignedByte,
                         this.Data);
+                    
+                    
                 });
             }
             else
@@ -110,7 +113,43 @@ namespace WEngine
             }
         }
 
+        public void WriteToStream(Stream saveStream)
+        {
+            if (this.Deleted) return;
+            
+            saveStream?.Write(this.Data, 0, this.Data.Length);
+        }
 
+        public unsafe void Save(string path)
+        {
+            if (this.Deleted || this.Data == null) return;
+
+            using (Bitmap bm = new Bitmap(this.Width, this.Height, PixelFormat.Format32bppArgb))
+            {
+                BitmapData bmpData = bm.LockBits(
+                    new Rectangle(0, 0, this.Width, this.Height),
+                    ImageLockMode.WriteOnly,
+                    bm.PixelFormat);
+
+                uint* byteData = (uint*) bmpData.Scan0;
+
+                fixed (byte* dataPtr = this.Data) //RGBA => ABGR
+                {
+                    uint* longDataPtr = (uint*) dataPtr;
+                    
+                    Parallel.For(0, this.Size.X * this.Size.Y, (i) =>
+                    {
+                        int j = (this.Size.X * this.Size.Y - 1) - i;
+                        //    alpha and green are ok                     blue and red have to be switched
+                        byteData[i] = longDataPtr[j] & 0xFF00FF00 | (longDataPtr[j] & 0x00FF0000) >> 16 | (longDataPtr[j] & 0x000000FF) << 16;
+                    });
+                }
+                
+                bm.UnlockBits(bmpData);
+                
+                bm.Save(path);
+            }
+        }
 
         public Vector2I Size { get; private set; }
         public int Width
@@ -179,6 +218,8 @@ namespace WEngine
 
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+                
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             }
 
             if (Thread.CurrentThread == Graphics.Window.Thread)

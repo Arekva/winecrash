@@ -130,19 +130,119 @@ namespace Winecrash
         /// <summary>
         /// Northern neighbor chunk
         /// </summary>
-        public Chunk NorthNeighbor { get; set; } = null;
+        private Chunk _NorthNeighbor = null;
+
+        public Chunk NorthNeighbor
+        {
+            get
+            {
+                if (this.Deleted) return null;
+                if (_NorthNeighbor == null)
+                {
+                    _NorthNeighbor = World.GetChunk(this.Coordinates + Vector2I.Up, this.Dimension.Identifier);
+                    if (_NorthNeighbor && _NorthNeighbor.SouthNeighbor == null)
+                    {
+                        _NorthNeighbor.SouthNeighbor = this;
+                        _NorthNeighbor.BuildEndFrame = true;
+                    }
+                }
+
+                return _NorthNeighbor;
+            }
+
+            set
+            {
+                if (this.Deleted) return;
+                this._NorthNeighbor = value;
+            }
+        }
         /// <summary>
         /// Southern neighbor chunk
         /// </summary>
-        public Chunk SouthNeighbor { get; set; } = null;
+        private Chunk _SouthNeighbor = null;
+
+        public Chunk SouthNeighbor
+        {
+            get
+            {
+                if (this.Deleted) return null;
+                if (_SouthNeighbor == null)
+                {
+                    _SouthNeighbor = World.GetChunk(this.Coordinates + Vector2I.Down, this.Dimension.Identifier);
+                    if (_SouthNeighbor && _SouthNeighbor.NorthNeighbor == null)
+                    {
+                        _SouthNeighbor.NorthNeighbor = this;
+                        _SouthNeighbor.BuildEndFrame = true;
+                    }
+                }
+
+                return _SouthNeighbor;
+            }
+
+            set
+            {
+                if (this.Deleted) return;
+                this._SouthNeighbor = value;
+            }
+        }
         /// <summary>
         /// Eastern neighbor chunk
         /// </summary>
-        public Chunk EastNeighbor { get; set; } = null;
+        private Chunk _EastNeighbor = null;
+
+        public Chunk EastNeighbor
+        {
+            get
+            {
+                if (this.Deleted) return null;
+                if (_EastNeighbor == null)
+                {
+                    _EastNeighbor = World.GetChunk(this.Coordinates + Vector2I.Right, this.Dimension.Identifier);
+                    if (_EastNeighbor && _EastNeighbor.WestNeighbor == null)
+                    {
+                        _EastNeighbor.WestNeighbor = this;
+                        _EastNeighbor.BuildEndFrame = true;
+                    }
+                }
+
+                return _EastNeighbor;
+            }
+
+            set
+            {
+                if (this.Deleted) return;
+                this._EastNeighbor = value;
+            }
+        }
+
         /// <summary>
         /// Western neighbor chunk
         /// </summary>
-        public Chunk WestNeighbor { get; set; } = null;
+        private Chunk _WestNeighbor = null;
+        public Chunk WestNeighbor
+        {
+            get
+            {
+                if (this.Deleted) return null;
+                if (_WestNeighbor == null)
+                {
+                    _WestNeighbor = World.GetChunk(this.Coordinates + Vector2I.Left, this.Dimension.Identifier);
+                    if (_WestNeighbor && _WestNeighbor.EastNeighbor == null)
+                    {
+                        _WestNeighbor.WestNeighbor = this;
+                        _WestNeighbor.BuildEndFrame = true;
+                    }
+                }
+
+                return _WestNeighbor;
+            }
+
+            set
+            {
+                if (this.Deleted) return;
+                this._WestNeighbor = value;
+            }
+        }
 #endregion
         public SaveChunk ToSave()
         {
@@ -203,17 +303,47 @@ namespace Winecrash
             return sc;
         }
 
+        
+        private static object SafeLogicLocker = new object();
         private void OnChunkLoadedDelegate(ChunkEventArgs args)
         {
-            Chunk c = args.Chunk;
+            return;
+                Chunk c = args.Chunk;
+
+                if (c == this) return;
+
+                if (c.Dimension.Equals(this.Dimension))
+                {
+                    if (!NorthNeighbor && c.Coordinates == this.Coordinates.XY + Vector2I.Up)
+                    {
+                        this.BuildEndFrame = true;
+                        c.BuildEndFrame = true;
+                        NorthNeighbor = c;
+                        c.SouthNeighbor = this;
+                    }
+                    else if (!SouthNeighbor && c.Coordinates == this.Coordinates.XY + Vector2I.Down)
+                    {
+                        this.BuildEndFrame = true;
+                        c.BuildEndFrame = true;
+                        SouthNeighbor = c;
+                        c.NorthNeighbor = this;
+                    }
+                    else if (!WestNeighbor && c.Coordinates == this.Coordinates.XY + Vector2I.Left)
+                    {
+                        this.BuildEndFrame = true;
+                        c.BuildEndFrame = true;
+                        WestNeighbor = c;
+                        c.EastNeighbor = this;
+                    }
+                    else if (!EastNeighbor && c.Coordinates == this.Coordinates.XY + Vector2I.Right)
+                    {
+                        this.BuildEndFrame = true;
+                        c.BuildEndFrame = true;
+                        EastNeighbor = c;
+                        c.WestNeighbor = this;
+                    }
+                }
             
-            if (c.Dimension.Equals(this.Dimension))
-            {
-                if (!NorthNeighbor && c.Coordinates == this.Coordinates.XY + Vector2I.Up) NorthNeighbor = c;
-                else if (!SouthNeighbor && c.Coordinates == this.Coordinates.XY + Vector2I.Down) SouthNeighbor = c;
-                else if (!WestNeighbor && c.Coordinates == this.Coordinates.XY + Vector2I.Left) WestNeighbor = c;
-                else if (!EastNeighbor && c.Coordinates == this.Coordinates.XY + Vector2I.Right) EastNeighbor = c;
-            }
         }
         private void OnChunkUnloadDelegate(ChunkEventArgs args)
         {
@@ -231,26 +361,29 @@ namespace Winecrash
 
         protected override void Creation()
         {
-            OnChunkLoad?.Invoke(new ChunkEventArgs(this));
-            
             OnChunkLoad += OnChunkLoadedDelegate;
+            //lock (SafeLogicLocker)
+            //{
+                OnChunkLoad?.Invoke(new ChunkEventArgs(this));
+            //}
+            
+            
             OnChunkUnload += OnChunkUnloadDelegate;
+
+            this.RunAsync = true;
 
             if (Engine.DoGUI)
             {
                 CreateRenderer();
             }
+            
+            
         }
 
         protected override void Start()
         {
             base.Start();
-
-            this.NorthNeighbor = World.GetChunk(this.Coordinates + Vector2I.Up, this.Dimension.Identifier);
-            this.SouthNeighbor = World.GetChunk(this.Coordinates + Vector2I.Down, this.Dimension.Identifier);
-            this.WestNeighbor = World.GetChunk(this.Coordinates + Vector2I.Left, this.Dimension.Identifier);
-            this.EastNeighbor = World.GetChunk(this.Coordinates + Vector2I.Right, this.Dimension.Identifier);
-
+            
             if (Engine.DoGUI)
             {
                 if(NorthNeighbor != null) NorthNeighbor.BuildEndFrame = true;
@@ -299,7 +432,7 @@ namespace Winecrash
                 {
                     BuildEndFrame = false;
 
-                    /*Task.Run(*/Construct()/*)*/;
+                    Task.Run(Construct);
                 }
             }
 
@@ -369,6 +502,10 @@ namespace Winecrash
 
             BuildEndFrame = true;
         }
+
+        internal static int ConstructingCounter = 0;
+        internal static object ConstructLogicLocker = new object();
+        public static int MaxConstructingAtOnce = 10;
         public void Construct()
         {
             if (this.Deleted) return;
@@ -378,6 +515,17 @@ namespace Winecrash
                 BuildEndFrame = true;
                 return;
             }
+
+            lock (ConstructLogicLocker)
+            {
+                if(ConstructingCounter < MaxConstructingAtOnce) ConstructingCounter++;
+                else
+                {
+                    BuildEndFrame = true;
+                    return;
+                }
+            }
+
             cwest = this.WestNeighbor != null;
             ceast = this.EastNeighbor != null;
             cnorth = this.NorthNeighbor != null;
@@ -475,6 +623,12 @@ namespace Winecrash
             cwest = ceast = cnorth = csouth = false;
 
             ConstructedOnce = true;
+
+
+            lock (ConstructLogicLocker)
+            {
+                ConstructingCounter--;
+            }
         }
 
 

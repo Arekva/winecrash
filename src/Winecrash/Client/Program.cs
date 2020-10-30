@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ using Winecrash;
 using Winecrash.Entities;
 using Winecrash.Net;
 using Debug = WEngine.Debug;
+using Graphics = WEngine.Graphics;
 using Label = WEngine.GUI.Label;
 
 namespace Winecrash.Client
@@ -42,6 +44,7 @@ namespace Winecrash.Client
             //MainLoadScreen.Show();
             
             new Sound(@"assets/sounds/button_click.mp3");
+            new Shader("assets/shaders/Debug/Volume/DebugVolume.vert", "assets/shaders/Debug/Volume/DebugVolume.frag");
             
             Tester = new WObject("tester") /*{ Enabled = false }*/.AddModule<ClientTester>();
 
@@ -80,7 +83,7 @@ namespace Winecrash.Client
 
             GameApplication app = (GameApplication)Graphics.Window;
             app.VSync = VSyncMode.On;
-
+            
             string title = $"Winecrash {Winecrash.Version} ({IntPtr.Size * 8}bits)";
 
 #if DEBUG
@@ -94,13 +97,19 @@ namespace Winecrash.Client
                 new Shader("assets/shaders/player/Player.vert", "assets/shaders/player/Player.frag");
                 new Shader("assets/shaders/Unlit/Unlit.vert", "assets/shaders/Unlit/Unlit.frag");
                 new Shader("assets/shaders/chunk/Chunk.vert", "assets/shaders/chunk/Chunk.frag");
+                new Shader("assets/shaders/skybox/Skybox.vert", "assets/shaders/skybox/Skybox.frag");
+                new Shader("assets/shaders/celestialbody/CelestialBody.vert", "assets/shaders/celestialbody/CelestialBody.frag");
                 Database.Load("assets/items/items.json").ParseItems();
                 Chunk.Texture = ItemCache.BuildChunkTexture(out int xsize, out int ysize);
+                Chunk.Texture.Save(Folders.UserData + "items_atlas.png");
+                
                 MainMenu.Show();
             };
 
             Game.OnPartyJoined += type =>
             {
+                
+                
                 Input.LockMode = CursorLockModes.Lock;
                 Input.CursorVisible = false;
                 MainMenu.Hide();
@@ -110,6 +119,15 @@ namespace Winecrash.Client
                 
                 localPlayerWobj.Position = Vector3D.Up * World.GetSurface(new Vector3D(0,0,0), "winecraft:dimension") + 1;
 
+                if (SkyboxController.Instance)
+                {
+                    SkyboxController.Instance.Show();
+                }
+                else
+                {
+                    new WObject("Skybox").AddModule<SkyboxController>();
+                }
+                
                 Player.LocalPlayer.Entity.OnRotate += rotation => 
                 {
                     if (!pc.CameraLocked)
@@ -135,6 +153,11 @@ namespace Winecrash.Client
                 localPlayerWobj.Enabled = false;
                 Player.LocalPlayer.Entity?.Delete();
                 Player.LocalPlayer.Entity = null;
+                
+                if (SkyboxController.Instance)
+                {
+                    SkyboxController.Instance.Hide();
+                }
 
                 MainMenu.Show();
 

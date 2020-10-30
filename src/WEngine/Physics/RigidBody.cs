@@ -1,19 +1,40 @@
-﻿namespace WEngine
+﻿using System.Diagnostics;
+
+namespace WEngine
 {
     public sealed class RigidBody : Module
     {
-        public Vector3D Velocity { get; set; } = Vector3D.Zero;
-        public bool UseGravity { get; set; } = true;
+        private static object _VelocityLocker = new object();
+        private Vector3D _Velocity = Vector3D.Zero;
 
-        protected internal override void FixedUpdate()
+        public Vector3D Velocity
+        {
+            get
+            {
+                lock (_VelocityLocker)
+                {
+                    return _Velocity;
+                }
+            }
+
+            set
+            {
+                lock (_VelocityLocker)
+                {
+                    _Velocity = value;
+                }
+            }
+        }
+        public bool UseGravity { get; set; } = true;
+        internal override void PreFixedUpdate()
         {
             if (UseGravity)
                 this.Velocity += Physics.Gravity * Time.FixedDeltaTime;
         }
 
-        internal override void LateFixedUpdate()
+        protected internal override void Update()
         {
-            this.WObject.Position += Velocity * Time.FixedDeltaTime;
+            this.WObject.Position += Velocity * Time.DeltaTime;
         }
     }
 }

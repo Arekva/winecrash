@@ -102,10 +102,10 @@ namespace Winecrash.Entities
             OnChunkChange = null;
             OnDimensionChange = null;
 
-            RigidBody.Delete();
+            RigidBody?.Delete();
             RigidBody = null;
 
-            Collider.Delete();
+            Collider?.Delete();
             Collider = null;
         }
 

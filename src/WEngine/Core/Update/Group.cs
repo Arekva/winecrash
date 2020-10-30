@@ -159,6 +159,28 @@ namespace WEngine
                 }
             }
         }
+        internal void PreFixedUpdate()
+        {
+            if(this._Modules != null)
+            {
+                List<Module> modules = null;
+
+                lock(moduleLocker)
+                    modules = this._Modules.ToList();
+
+                foreach (Module mod in modules)
+                {
+                    try
+                    {
+                        mod?.PreFixedUpdate();
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
+                }
+            }
+        }
         private void Update()
         {
             while (true)

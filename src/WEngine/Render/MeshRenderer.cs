@@ -18,13 +18,11 @@ namespace WEngine
         internal static List<MeshRenderer> ActiveMeshRenderers { get; set; } = new List<MeshRenderer>();
         internal static List<MeshRenderer> MeshRenderers { get; set; } = new List<MeshRenderer>();
         internal static object MeshRenderersLocker { get; } = new object();
-        
+        public Culling Culling { get; set; } = Culling.Front;
         public bool UseMask { get; set; } = true;
         public bool UseDepth { get; set; } = true;
         public bool Wireframe { get; set; } = false;
-
         public int DrawOrder { get; set; } = 0;
-
         public static bool Global_Wireframe { get; set; } = false;
 
         protected bool CheckValidity(Camera sender)
@@ -81,21 +79,30 @@ namespace WEngine
                     GL.BindBuffer(BufferTarget.ArrayBuffer, Mesh.VertexBufferObject);
 
                     this.Material.SetData<Matrix4>("transform", (Matrix4)finalTransform);
+                    this.Material.SetData<Vector2D>("resolution", Graphics.Window.SurfaceResolution);
 
                     this.Material.Use();
-
-
+                    
                     if(UseDepth)
                     GL.Enable(EnableCap.DepthTest);
                     else
                     GL.Disable(EnableCap.DepthTest);
                     GL.DepthMask(UseMask);
+                    
+                    GL.CullFace((CullFaceMode)Culling);
 
                     //OnRender?.Invoke();
 
                     GL.DrawElements((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)Mesh.Indices, DrawElementsType.UnsignedInt, 0);
                 }
             }
+        }
+
+        protected internal virtual void PassTransformMatrices(Matrix4D model, Matrix4D view, Matrix4D projection)
+        {
+            this.Material.SetData("model", model);
+            this.Material.SetData("view", view);
+            this.Material.SetData("projection", projection);
         }
 
         protected internal override void Creation()

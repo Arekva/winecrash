@@ -1,4 +1,6 @@
-﻿namespace WEngine
+﻿using System;
+
+namespace WEngine
 {
     public class Module : BaseObject
     {
@@ -62,6 +64,7 @@
         internal protected virtual void Creation() { }
         internal protected virtual void Start() { }
 
+        internal virtual void PreFixedUpdate() { }
         internal protected virtual void FixedUpdate() { }
         internal virtual void LateFixedUpdate() { }
 
@@ -123,7 +126,14 @@
 
         private void InternalDelete()
         {
-            this.OnDelete();
+            try
+            {
+                this.OnDelete();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
 
             this.WObject?._Modules.Remove(this);
             this.WObject = null;

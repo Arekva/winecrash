@@ -94,6 +94,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Input\KeysModifiers.cs" />
+    <Compile Include="Debugging\BoxDebugVolume.cs" />
+    <Compile Include="Debugging\DebugVolume.cs" />
     <Compile Include="EngineException.cs" />
     <Compile Include="Extentions\EGuid.cs" />
     <Compile Include="GUI\TextInputField.cs" />
@@ -118,6 +120,7 @@
     <Compile Include="Networking\PendingData.cs" />
     <Compile Include="Physics\ICollider.cs" />
     <Compile Include="Physics\ICollisionProvider.cs" />
+    <Compile Include="Render\Culling.cs" />
     <Compile Include="Render\Graphics.cs" />
     <Compile Include="Core\WRandom.cs" />
     <Compile Include="GUI\Anchor.cs" />

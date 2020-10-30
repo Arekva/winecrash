@@ -117,7 +117,10 @@ namespace Winecrash.Entities
 
             
             
-            OnRotate += rotation => PlayerHead.LocalRotation = rotation;
+            OnRotate += rotation =>
+            {
+                if (PlayerHead) PlayerHead.LocalRotation = rotation;
+            };
         }
         
         public void AnimateIdle()
@@ -206,7 +209,8 @@ namespace Winecrash.Entities
             base.Creation();
 
             this.RigidBody.UseGravity = true;
-            //this.Collider.Extents = new Vector3D(0.6,1.8,0.6)/2.0D;
+            //this.RigidBody.Velocity += new Vector3D(0, -0.5, 0);
+            this.Collider.Extents = new Vector3D(0.6,1.8,0.6)/2.0D;
             this.Collider.Offset = new Vector3D(0,1.8,0)/2.0D;
             
             this.OnChunkChange += (previous, current) =>
@@ -214,7 +218,7 @@ namespace Winecrash.Entities
                 Task.Run(() =>
                 {
                     Vector2I[] previousChunks = World.GetCoordsInRange(previous, Winecrash.RenderDistance);
-                    Vector2I[] currentChunks = World.GetCoordsInRange(current, Winecrash.RenderDistance);
+                    Vector2I[] currentChunks = World.GetCoordsInRange(current, Winecrash.RenderDistance).OrderBy(c => Vector2I.Distance(c, current)).ToArray();
 
                     Vector2I[] toDelete = previousChunks.Except(currentChunks).ToArray();
 
@@ -274,6 +278,7 @@ namespace Winecrash.Entities
             }
         }
 
+        private int debug = 0;
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
@@ -283,6 +288,8 @@ namespace Winecrash.Entities
             
 
             double xzVel = this.RigidBody.Velocity.XZ.Length;
+            
+            //Debug.Log(xzVel);
 
             Vector2D xzDir = this.RigidBody.Velocity.Normalized.XZ;
 
@@ -292,6 +299,7 @@ namespace Winecrash.Entities
             {
                 if (xzVel > Player.WalkSpeed)
                 {
+                    
                     this.RigidBody.Velocity *= new Vector3D(0, 1, 0);
 
                     this.RigidBody.Velocity += new Vector3D(xzDir.X, 0, xzDir.Y) * Player.WalkSpeed;
@@ -303,20 +311,15 @@ namespace Winecrash.Entities
                 {
                     bool collision = new ChunkBoxCollisionProvider().Collide(
                         c, this.Collider,
-                        out Vector3D debug);
+                        out Vector3D translation,
+                        out Vector3D force);
 
                     if (collision)
                     {
-                        /*if (debug.Y != 0)
-                        {
-                            this.RigidBody.Velocity *= new Vector3D(1,0,1);
-                        }*/
-                        
-                        this.RigidBody.Velocity += debug;
-                    }
 
-                    Debug.Log("Collision with " + this.ChunkCoordinates + " ? => " + collision + " (debug: " + debug +
-                              ")");
+                        this.WObject.Position += translation;
+                        this.RigidBody.Velocity += force;
+                    }
                 }
 
                 /*if (this.WObject.Position.Y < currentHeight)

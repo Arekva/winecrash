@@ -8,14 +8,9 @@ uniform mat4 transform;
 out vec2 texCoord;
 out vec3 Normal;
 
-out vec3 dir;
-
 void main(void)
 {
-    
     gl_Position = vec4(position, 1.0) * transform;
-
-    dir = normalize(position);
     texCoord = uv;
     Normal = normalize(normal);
 }

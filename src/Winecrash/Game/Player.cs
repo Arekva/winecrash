@@ -212,31 +212,28 @@ namespace Winecrash
                 }
             }
 
-            if (ks.TryGetValue("move_jump", out state))
+            /*if (ks.TryGetValue("move_jump", out state))
             {
-                if (state == KeyStates.Pressing || state == KeyStates.Pressed && Entity.JumpCD <= 0.0D)
+                if (state == KeyStates.Pressing)
                 {
-                    //Debug.Log("jump key");
-                    Entity.JumpCD = JumpTimer;
-                    
-                   // Jump(JumpForce);
+                    this.Entity.RigidBody.Velocity += Vector3D.Up * 8.75;
                 }
-            }
+            }*/
 
             if(dir == Vector3D.Zero) Entity.AnyMoveInputOnFrame = false;
 
             if (NoClipping)
             {
                 Entity.WObject.Position +=
-                    this.Entity.Rotation * dir.Normalized * Time.FixedDeltaTime * WalkAcceleration;
+                    this.Entity.Rotation * dir.Normalized * Time.DeltaTime * WalkAcceleration;
             }
             else
             {
                 Entity.RigidBody.Velocity += (new Quaternion(0, CameraAngles.X, 0) * dir.Normalized) *
-                                             Time.FixedDeltaTime * WalkAcceleration;
+                                             Time.DeltaTime * WalkAcceleration * 50;
             }
         }
-        
+
         public PlayerEntity CreateEntity(WObject parent)
         {
             if (Entity != null) return Entity;

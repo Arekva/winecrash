@@ -294,6 +294,10 @@ namespace WEngine
             {
                 usedData = new Vector4(v4f.X, v4f.Y, v4f.Z, v4f.W);
             }
+            else if (data is Vector3D v3d)
+            {
+                usedData = new Vector3((float)v3d.X, (float)v3d.Y, (float)v3d.Z);
+            }
             else if(data is Vector3F v3f)
             {
                 usedData = new Vector3(v3f.X, v3f.Y, v3f.Z);
@@ -306,13 +310,17 @@ namespace WEngine
             {
                 usedData = new Vector2(v2f.X, v2f.Y);
             }
-            else if (data is Color256 col256)
-            {
-                usedData = new Vector4((float)col256.R, (float)col256.B, (float)col256.B, (float)col256.A);
-            }
             else if (data is Vector2D vec2d)
             {
                 usedData = new Vector2((float)vec2d.X, (float)vec2d.Y);
+            }
+            else if (data is Color256 col256)
+            {
+                usedData = new Vector4((float)col256.R, (float)col256.G, (float)col256.B, (float)col256.A);
+            }
+            else if (data is Color32 col32)
+            {
+                usedData = new Vector4(((float)col32.R)/Color32.MaxValue, ((float)col32.G)/Color32.MaxValue, ((float)col32.B)/Color32.MaxValue, ((float)col32.A)/Color32.MaxValue);
             }
 
             if (matdata != null && usedData.GetType() == matdata.Data.GetType())

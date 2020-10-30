@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using WEngine.Debugging;
 
 namespace WEngine
 {
@@ -9,9 +10,44 @@ namespace WEngine
         internal static List<BoxCollider> ActiveBoxColliders = new List<BoxCollider>();
         internal static object ActiveBoxCollidersLocker { get; private set; } = new object();
 
-        public Vector3D Extents { get; set; } = Vector3D.One / 2.0D;
+        private Vector3D _Extents = Vector3D.One / 2.0D;
+        public Vector3D Extents
+        {
+            get
+            {
+                return _Extents;
+            }
+
+            set
+            {
+                _Extents = value;
+#if DEBUG
+                if(DebugVolumeWobject) DebugVolumeWobject.LocalScale = value * 2;
+#endif
+            }
+        }
         
-        public Vector3D Offset { get; set; } = Vector3D.Zero;
+        
+        private Vector3D _Offset = Vector3D.Zero;
+        public Vector3D Offset
+        {
+            get
+            {
+                return _Offset;
+            }
+
+            set
+            {
+                _Offset = value;
+#if DEBUG
+                if(DebugVolumeWobject) DebugVolumeWobject.LocalPosition = value;
+#endif
+            }
+        }
+
+#if DEBUG
+        private WObject DebugVolumeWobject;
+#endif
 
         public Vector3D Center
         {
@@ -25,6 +61,23 @@ namespace WEngine
         {
             lock(BoxCollidersLocker)
             { BoxColliders.Add(this); }
+            
+            
+#if DEBUG
+            if (Engine.DoGUI)
+            {
+
+                DebugVolumeWobject = new WObject("Debug Volume") {Enabled = true};
+                DebugVolumeWobject.Parent = this.WObject;
+
+
+                BoxDebugVolume debugVolume = DebugVolumeWobject.AddModule<BoxDebugVolume>();
+                debugVolume.Extents = this.Extents;
+                debugVolume.Offset = this.Offset;
+            }
+
+#endif
+            
             base.Creation();
         }
 
@@ -49,6 +102,11 @@ namespace WEngine
             { ActiveBoxColliders.Remove(this); }
             lock(BoxCollidersLocker)
             { BoxColliders.Remove(this); }
+            
+#if DEBUG
+            DebugVolumeWobject?.Delete();
+            DebugVolumeWobject = null;
+#endif
             base.OnDelete();
         }
     }

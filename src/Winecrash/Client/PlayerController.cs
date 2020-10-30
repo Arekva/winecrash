@@ -114,7 +114,7 @@ namespace Winecrash.Client
                     { "move_backward", Input.GetKeyState(GameInput.Key("Backward"), Input.KeyDictionary) },
                     { "move_right", Input.GetKeyState(GameInput.Key("Right"), Input.KeyDictionary) },
                     { "move_left", Input.GetKeyState(GameInput.Key("Left"), Input.KeyDictionary) },
-                    { "move_jump", Input.GetKeyState(GameInput.Key("Jump"), Input.KeyDictionary) }
+                    { "move_jump", Input.GetKeyState(GameInput.Key("Jump"), Input.KeyDictionary) },
                 };
 
 
@@ -135,8 +135,34 @@ namespace Winecrash.Client
                         Player.LocalPlayer.Entity.RigidBody.Velocity = Vector3D.Zero;
                     }
                 }
+
+                lock (_FixedInputsLockers)
+                {
+                    _FixedInputs = inputs;
+                }
                 
-                Player.LocalPlayer.ParseNetInput(ninput);
+                Player.LocalPlayer.ParseMouse(Input.MouseDelta * Time.DeltaTime * MouseSensivity);
+                
+                if (inputs.TryGetValue("move_jump", out KeyStates state))
+                {
+                    if (state == KeyStates.Pressing)
+                    {
+                        jump = true;
+                    }
+                }
+                
+                #if DEBUG
+                if (Input.IsPressing(Keys.NumPadAdd))
+                {
+                    //this place is meant to add a breakpoint in editors to see the current state of the game.
+                    Debug.Log("Breaking program...");
+                }
+
+                if (Input.IsPressing(Keys.V))
+                {
+                    Graphics.Window.VSync = Graphics.Window.VSync == VSyncMode.Off ? VSyncMode.On : VSyncMode.Off;
+                }
+                #endif
 
                 if (Program.Client.Connected)
                 {
@@ -152,6 +178,24 @@ namespace Winecrash.Client
                 //ne.Send(Program.Client.Client.Client);
                 //Debug.Log(Player.LocalPlayer.Entity.WObject.Position);
                 //Program.Client.SendObject(ne);
+            }
+        }
+
+        private object _FixedInputsLockers = new object();
+        private Dictionary<string, KeyStates> _FixedInputs;
+        private bool jump = false;
+
+        protected override void FixedUpdate()
+        {
+            lock (_FixedInputsLockers)
+            {
+                if (_FixedInputs != null) Player.LocalPlayer.ParseInputs(_FixedInputs);
+                if (jump)
+                {
+                    Player.LocalPlayer.Entity.RigidBody.Velocity += Vector3D.Up * 8.75;
+                    jump = false;
+                }
+                //_FixedInputs = null;
             }
         }
 
