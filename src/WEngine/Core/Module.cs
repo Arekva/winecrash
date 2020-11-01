@@ -64,9 +64,9 @@ namespace WEngine
         internal protected virtual void Creation() { }
         internal protected virtual void Start() { }
 
-        internal virtual void PreFixedUpdate() { }
+        internal protected virtual void PreFixedUpdate() { }
         internal protected virtual void FixedUpdate() { }
-        internal virtual void LateFixedUpdate() { }
+        internal protected virtual void LateFixedUpdate() { }
 
         internal protected virtual void PreUpdate() { }
         internal protected virtual void Update() { }

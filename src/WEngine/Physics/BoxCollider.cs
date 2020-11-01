@@ -3,7 +3,7 @@ using WEngine.Debugging;
 
 namespace WEngine
 {
-    public sealed class BoxCollider : Module, ICollider
+    public class BoxCollider : AABBCollider
     {
         internal static List<BoxCollider> BoxColliders = new List<BoxCollider>();
         internal static object BoxCollidersLocker { get; private set; } = new object();
@@ -11,7 +11,7 @@ namespace WEngine
         internal static object ActiveBoxCollidersLocker { get; private set; } = new object();
 
         private Vector3D _Extents = Vector3D.One / 2.0D;
-        public Vector3D Extents
+        public override Vector3D Extents
         {
             get
             {
@@ -49,11 +49,29 @@ namespace WEngine
         private WObject DebugVolumeWobject;
 #endif
 
-        public Vector3D Center
+        public override Vector3D Center
         {
             get
             {
                 return this.WObject.Position + Offset;
+            }
+            set
+            {
+                this.WObject.Position = value - Offset;
+            }
+        }
+
+        public override AABB AABB
+        {
+            get
+            {
+                return new AABB(this.Center, this.Extents);
+            }
+
+            set
+            {
+                this.Extents = value.Extents;
+                this.Center = value.Position;
             }
         }
 
@@ -109,5 +127,7 @@ namespace WEngine
 #endif
             base.OnDelete();
         }
+
+        
     }
 }

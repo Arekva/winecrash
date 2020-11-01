@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace WEngine
 {
@@ -45,6 +46,9 @@ namespace WEngine
         /// </summary>
         public UInt64 Layer { get; set; } = 1; // Default layer = 1;
 
+
+
+        internal static ManualResetEvent GlobalTransformLocker = new ManualResetEvent(true);
         
 
         private WObject _Parent = null;
@@ -224,6 +228,7 @@ namespace WEngine
         }
         
         private object _ScaleLocker = new object();
+        
         private Vector3D _Scale;
         public Vector3D Scale
         {

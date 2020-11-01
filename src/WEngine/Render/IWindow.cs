@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Threading;
 
 namespace WEngine
@@ -92,5 +93,7 @@ namespace WEngine
         /// <param name="point">The screen point coordinates</param>
         /// <returns>The window space coordinates</returns>
         public Vector2I ScreenToWindow(Vector2I point);
+
+        public Bitmap Screenshot();
     }
 }

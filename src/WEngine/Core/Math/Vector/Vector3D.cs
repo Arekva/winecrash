@@ -8,7 +8,7 @@ namespace WEngine
     /// A three dimensional <see cref="double"/> vector.
     /// </summary>
     [Serializable]
-    public struct Vector3D : IVectorable, IComparable, IComparable<Vector3D>, IEquatable<Vector3D>, IFormattable
+    public struct Vector3D : IVectorable, ICollider, IComparable, IComparable<Vector3D>, IEquatable<Vector3D>, IFormattable
     {
         [JsonIgnore]
         public int Dimensions { get; }

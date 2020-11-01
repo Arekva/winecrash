@@ -118,8 +118,15 @@
     <Compile Include="Networking\NetObjects\NetPing.cs" />
     <Compile Include="Networking\Networking.cs" />
     <Compile Include="Networking\PendingData.cs" />
+    <Compile Include="Physics\AABBCollider.cs" />
+    <Compile Include="Physics\Axis.cs" />
+    <Compile Include="Physics\BoxBoxCollisionProvider.cs" />
+    <Compile Include="Physics\FreeBoxCollider.cs" />
     <Compile Include="Physics\ICollider.cs" />
     <Compile Include="Physics\ICollisionProvider.cs" />
+    <Compile Include="Physics\PointBoxCollisionProvider.cs" />
+    <Compile Include="Physics\RayBoxCollisionProvider.cs" />
+    <Compile Include="Physics\Sweep.cs" />
     <Compile Include="Render\Culling.cs" />
     <Compile Include="Render\Graphics.cs" />
     <Compile Include="Core\WRandom.cs" />
@@ -177,7 +184,7 @@
     <Compile Include="Render\MeshRenderer.cs" />
     <Compile Include="Physics\BoxCollider.cs" />
     <Compile Include="GUI\ModelRenderer.cs" />
-    <Compile Include="Physics\HitInfo.cs" />
+    <Compile Include="Physics\Hit.cs" />
     <Compile Include="Physics\Physics.cs" />
     <Compile Include="Physics\Ray.cs" />
     <Compile Include="Physics\RigidBody.cs" />

@@ -1,4 +1,6 @@
-﻿namespace WEngine
+﻿using System.Drawing;
+
+namespace WEngine
 {
     public sealed class EngineCore : Module
     {
@@ -36,6 +38,8 @@
             {
                 Graphics.Window.WindowState = Graphics.Window.WindowState == WindowState.Fullscreen ? WindowState.Normal : WindowState.Fullscreen;
             }
+            
+            
         }
 
         protected internal override void OnDelete()

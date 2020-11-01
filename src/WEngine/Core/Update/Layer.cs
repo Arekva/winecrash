@@ -126,7 +126,7 @@ namespace WEngine
                     
 
                     sw.Stop();
-                    double waitTime = (Physics.FixedRate * Time.FixedTimeScale) - sw.Elapsed.TotalSeconds;
+                    double waitTime = Physics.FixedRate - sw.Elapsed.TotalSeconds;
                     sw.Start();
                     if (waitTime > 0.0D)
                     {
@@ -134,12 +134,13 @@ namespace WEngine
                     }
 
                     sw.Stop();
-                    Time.FixedDeltaTime = sw.Elapsed.TotalSeconds;
+                    Time.FixedDeltaTime = sw.Elapsed.TotalSeconds * Time.FixedTimeScale;
                     sw.Reset();
                 }
             })
             {
-                Priority = ThreadPriority.Highest
+                Priority = ThreadPriority.Highest,
+                Name = "Fixed"
             };
 
             if (Engine.DoGUI)

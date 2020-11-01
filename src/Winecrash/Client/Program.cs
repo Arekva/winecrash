@@ -44,10 +44,11 @@ namespace Winecrash.Client
             //MainLoadScreen.Show();
             
             new Sound(@"assets/sounds/button_click.mp3");
-            new Shader("assets/shaders/Debug/Volume/DebugVolume.vert", "assets/shaders/Debug/Volume/DebugVolume.frag");
+            new Shader("assets/shaders/Debuging/Volume/DebugVolume.vert", "assets/shaders/Debuging/Volume/DebugVolume.frag");
             
             Tester = new WObject("tester") /*{ Enabled = false }*/.AddModule<ClientTester>();
 
+                                                /* ego mode enabled */
             Player.LocalPlayer = new Player("Arthur_" + new Random().Next(1000, 10000));
 
             Camera.Main.WObject.Delete();
@@ -67,19 +68,9 @@ namespace Winecrash.Client
             Camera.Main.FOV = 80;
             Camera.Main.NearClip = 0.01D;
             Camera.Main.FarClip = 4096.0D;
-
-
-            Canvas.Main.UICamera.FarClip = 1000.0D;
-
-            EngineCore.Instance.WObject.AddModule<GameDebug>();
-
             
-
-            Client = new GameClient();
-            Client.OnDisconnected += client =>
-            {
-                Game.InvokePartyLeft(PartyType.Multiplayer);
-            };
+            
+            
 
             GameApplication app = (GameApplication)Graphics.Window;
             app.VSync = VSyncMode.On;
@@ -101,7 +92,22 @@ namespace Winecrash.Client
                 new Shader("assets/shaders/celestialbody/CelestialBody.vert", "assets/shaders/celestialbody/CelestialBody.frag");
                 Database.Load("assets/items/items.json").ParseItems();
                 Chunk.Texture = ItemCache.BuildChunkTexture(out int xsize, out int ysize);
-                Chunk.Texture.Save(Folders.UserData + "items_atlas.png");
+                //Chunk.Texture.Save(Folders.UserData + "items_atlas.png");
+                
+                
+                
+
+                Canvas.Main.UICamera.FarClip = 1000.0D;
+
+                EngineCore.Instance.WObject.AddModule<GameDebug>();
+
+            
+
+                Client = new GameClient();
+                Client.OnDisconnected += client =>
+                {
+                    Game.InvokePartyLeft(PartyType.Multiplayer);
+                };
                 
                 MainMenu.Show();
             };

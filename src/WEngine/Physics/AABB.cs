@@ -1,6 +1,6 @@
 ﻿namespace WEngine
 {
-    internal struct AABB
+    public struct AABB
     {
         public Vector3D Position { get; }
 
@@ -11,5 +11,7 @@
             this.Position = position;
             this.Extents = extents;
         }
+
+        public AABB(BoxCollider collider) => this = collider?.AABB ?? default;
     }
 }

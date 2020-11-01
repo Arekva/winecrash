@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using WEngine.Networking;
 using Winecrash.Entities;
 using Winecrash.Net;
 using WinecrashCore.Net;
+using Graphics = WEngine.Graphics;
 
 namespace Winecrash.Client
 {
@@ -135,6 +137,8 @@ namespace Winecrash.Client
                         Player.LocalPlayer.Entity.RigidBody.Velocity = Vector3D.Zero;
                     }
                 }
+                
+                
 
                 lock (_FixedInputsLockers)
                 {
@@ -185,7 +189,7 @@ namespace Winecrash.Client
         private Dictionary<string, KeyStates> _FixedInputs;
         private bool jump = false;
 
-        protected override void FixedUpdate()
+        protected override void PreFixedUpdate()
         {
             lock (_FixedInputsLockers)
             {

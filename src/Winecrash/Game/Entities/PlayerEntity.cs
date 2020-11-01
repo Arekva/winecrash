@@ -276,6 +276,17 @@ namespace Winecrash.Entities
                     AnimateWalk(this.RigidBody.Velocity);
                 }
             }
+
+            Hit hit = new BoxBoxCollisionProvider().Collide(this.Collider,
+                new FreeBoxCollider()
+                {
+                    AABB = new AABB(new Vector3D(8, 128, 8), new Vector3D(8,128,8))
+                });
+            //Debug.Log(this.WObject.Position);
+            if (hit.HasHit)
+            {
+                //Debug.Log("Hit delta: " + hit.Delta);
+            }
         }
 
         private int debug = 0;
@@ -305,22 +316,7 @@ namespace Winecrash.Entities
                     this.RigidBody.Velocity += new Vector3D(xzDir.X, 0, xzDir.Y) * Player.WalkSpeed;
                 }
 
-                Chunk c = World.GetChunk(this.ChunkCoordinates, "winecrash:overworld");
-
-                if (c != null)
-                {
-                    bool collision = new ChunkBoxCollisionProvider().Collide(
-                        c, this.Collider,
-                        out Vector3D translation,
-                        out Vector3D force);
-
-                    if (collision)
-                    {
-
-                        this.WObject.Position += translation;
-                        this.RigidBody.Velocity += force;
-                    }
-                }
+                
 
                 /*if (this.WObject.Position.Y < currentHeight)
                 {
@@ -346,9 +342,13 @@ namespace Winecrash.Entities
                     Vector2D xySpeedDecay = xzDir * xzVel * Player.WalkDeaccelerationFactor * Time.FixedDeltaTime;
 
                     Vector2D newSpeed = (xzDir * xzVel) - xySpeedDecay;
+                    
                     this.RigidBody.Velocity = new Vector3D(newSpeed.X, this.RigidBody.Velocity.Y, newSpeed.Y);
                 }
             }
+            
+            Hit h = ChunkBoxCollisionProvider.CollideWorld(Collider);
+            
         }
 
         protected override void OnDelete()

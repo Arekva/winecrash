@@ -57,7 +57,7 @@
     <Compile Include="CameraMode.cs" />
     <Compile Include="ClientTester.cs" />
     <Compile Include="Configs\GameConfig.cs" />
-    <Compile Include="GameDebug.cs" />
+    <Compile Include="GameController.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameClient.cs" />
     <Compile Include="GameInput.cs" />

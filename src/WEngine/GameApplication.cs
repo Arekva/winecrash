@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -6,7 +7,10 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using NAudio.Dsp;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace WEngine
 {
@@ -228,7 +232,6 @@ namespace WEngine
 
             GL.Enable(EnableCap.DepthTest); // enable depth test
             GL.DepthFunc(DepthFunction.Lequal); // set anything less or equal to current depth being drawn onto screen
-
             
             GL.Enable(EnableCap.Blend); // transparency. further modes are available into shaders. or material, I don't remember
 
@@ -240,6 +243,30 @@ namespace WEngine
 
             new GUI.Font("assets/fonts/pixelized.json", "Pixelized");
 
+        }
+
+        public Bitmap Screenshot()
+        {
+            Process proc = Process.GetCurrentProcess();
+
+            Bitmap bmp = new Bitmap(this.Width, this.Height, PixelFormat.Format32bppArgb);
+
+            Rectangle winBounds = this.Bounds;
+            Rectangle rect = ClientRectangle;
+
+            Vector2I shift = Vector2I.Zero;
+
+            if (Engine.OS.Platform == OSPlatform.Windows && this.WindowState == WindowState.Normal)
+            {
+                shift -= new Vector2I(8, 8);
+            }
+
+            using (System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage(bmp))
+            {
+                graphics.CopyFromScreen(SurfacePosition.X + shift.X, SurfacePosition.Y + shift.Y, 0, 0, new Size(SurfaceResolution.X, SurfaceResolution.Y), CopyPixelOperation.SourceCopy);
+            }
+
+            return bmp;
         }
 
         public Vector2I ScreenToWindow(Vector2I point)
