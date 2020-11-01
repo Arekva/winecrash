@@ -346,9 +346,12 @@ namespace Winecrash.Entities
                     this.RigidBody.Velocity = new Vector3D(newSpeed.X, this.RigidBody.Velocity.Y, newSpeed.Y);
                 }
             }
-            
-            Hit h = ChunkBoxCollisionProvider.CollideWorld(Collider);
-            
+
+            if (!Player.NoClipping)
+            {
+                ChunkBoxCollisionProvider.RaycastChunkHit h = ChunkBoxCollisionProvider.CollideWorld(Collider);
+            }
+
         }
 
         protected override void OnDelete()

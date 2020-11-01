@@ -89,7 +89,7 @@ namespace WEngine
         public BlendingFactorSrc SourceAlphaBlending { get; set; } = BlendingFactorSrc.SrcAlpha;
         public BlendingFactorDest DestinationAlphaBlending { get; set; } = BlendingFactorDest.OneMinusSrcAlpha;
 
-        public BlendingFactorSrc SourceColorBlending { get; set; } = BlendingFactorSrc.SrcAlpha;
+        public WEngine.BlendingFactorSrc SourceColorBlending { get; set; } = WEngine.BlendingFactorSrc.SrcAlpha;
         public BlendingFactorDest DestinationColorBlending { get; set; } = BlendingFactorDest.OneMinusSrcAlpha;
 
         internal void Use()
@@ -98,7 +98,7 @@ namespace WEngine
             lock (DataLocker)
             {
                 Shader.Use();
-                GL.BlendFuncSeparate(SourceColorBlending, DestinationColorBlending, SourceAlphaBlending, DestinationAlphaBlending);
+                GL.BlendFuncSeparate((OpenTK.Graphics.OpenGL4.BlendingFactorSrc)SourceColorBlending, DestinationColorBlending, (OpenTK.Graphics.OpenGL4.BlendingFactorSrc)SourceAlphaBlending, DestinationAlphaBlending);
 
                 //set the lights
                 DirectionalLight main = DirectionalLight.Main;

@@ -15,7 +15,7 @@ namespace WEngine.GUI
         public Vector2D MinScreenPercent { get; set; } = Vector2D.One * double.NegativeInfinity;
         public Vector2D MaxScreenPercent { get; set; } = Vector2D.One * double.PositiveInfinity;
         
-        internal virtual Vector3D GlobalPosition
+        public virtual Vector3D GlobalPosition
         {
             get
             {
@@ -38,11 +38,11 @@ namespace WEngine.GUI
 
                 Vector2D shift = new Vector2D(horizontalShift, verticalShift);
 
-                return new Vector3D(Canvas.ScreenToUISpace(screenSpacePosition) + shift, Depth);
+                return new Vector3D(Canvas.ScreenToUISpace(screenSpacePosition) + shift, Depth) + Shift;
             }
         }
 
-        internal double GlobalRight
+        public double GlobalRight
         {
             get
             {
@@ -50,7 +50,7 @@ namespace WEngine.GUI
             }
         }
 
-        internal double GlobalLeft
+        public double GlobalLeft
         {
             get
             {
@@ -58,7 +58,7 @@ namespace WEngine.GUI
             }
         }
 
-        internal double GlobalTop
+        public double GlobalTop
         {
             get
             {
@@ -66,15 +66,17 @@ namespace WEngine.GUI
             }
         }
 
-        internal double GlobalBottom
+        public double GlobalBottom
         {
             get
             {
                 return this.ParentGUI == null ? this.Bottom : this.ParentGUI.GlobalBottom + this.Bottom;
             }
         }
+        
+        public Vector3D Shift { get; set; }
 
-        internal virtual Vector3D GlobalScale
+        public virtual Vector3D GlobalScale
         {
             get//GlobalScreenAnchors
             {
@@ -103,7 +105,7 @@ namespace WEngine.GUI
         /// <summary>
         /// Get the global anchor position of the object, depending of the parents. Indices of the arary => xmin[0], ymin[1], xmax[2], ymax[3]
         /// </summary>
-        internal virtual double[] GlobalScreenAnchors
+        public virtual double[] GlobalScreenAnchors
         {
             get
             {

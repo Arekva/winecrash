@@ -101,7 +101,8 @@ namespace Winecrash.Client
 
                 EngineCore.Instance.WObject.AddModule<GameDebug>();
 
-            
+                GameUI gui = Canvas.Main.WObject.AddModule<GameUI>();
+                gui.Enabled = false;
 
                 Client = new GameClient();
                 Client.OnDisconnected += client =>
@@ -114,8 +115,8 @@ namespace Winecrash.Client
 
             Game.OnPartyJoined += type =>
             {
-                
-                
+
+                GameUI.Instance.Enabled = true;
                 Input.LockMode = CursorLockModes.Lock;
                 Input.CursorVisible = false;
                 MainMenu.Hide();
@@ -152,6 +153,7 @@ namespace Winecrash.Client
             };
             Game.OnPartyLeft += type =>
             {
+                GameUI.Instance.Enabled = false;
                 Input.LockMode = CursorLockModes.Free;
                 Input.CursorVisible = true;
                 World.Unload();

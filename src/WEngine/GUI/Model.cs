@@ -11,7 +11,7 @@
         public double SizeY => 1.0D;
 
 
-        internal override Vector3D GlobalScale
+        public override Vector3D GlobalScale
         {
             get//GlobalScreenAnchors
             {

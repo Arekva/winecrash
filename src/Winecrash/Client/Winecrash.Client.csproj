@@ -61,6 +61,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameClient.cs" />
     <Compile Include="GameInput.cs" />
+    <Compile Include="GameUI.cs" />
     <Compile Include="GUI\GameButton.cs" />
     <Compile Include="GUI\LargeButton.cs" />
     <Compile Include="GUI\LargeTextField.cs" />

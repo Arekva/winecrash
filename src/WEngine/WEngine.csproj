@@ -127,6 +127,7 @@
     <Compile Include="Physics\PointBoxCollisionProvider.cs" />
     <Compile Include="Physics\RayBoxCollisionProvider.cs" />
     <Compile Include="Physics\Sweep.cs" />
+    <Compile Include="Render\BlendingFactorSrc.cs" />
     <Compile Include="Render\Culling.cs" />
     <Compile Include="Render\Graphics.cs" />
     <Compile Include="Core\WRandom.cs" />
