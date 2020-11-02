@@ -20,6 +20,18 @@ namespace WEngine
 
         internal byte[] Data { get; set; }
 
+        public Color32 this[int x, int y]
+        {
+            get
+            {
+                return GetPixel(x, y);
+            }
+            set
+            {
+                SetPixel(x,y, value);
+            }
+        }
+
         public void SetPixel(int x, int y, Color32 color)
         {
             int i = (x + Size.X * y) * 4;

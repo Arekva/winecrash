@@ -22,18 +22,26 @@ namespace Winecrash
         public Item[] ParseItems(bool addToCache = true)
         {
             Item[] parsedItems = new Item[Items.Length];
+            
+            
 
             for (short i = 0; i < Items.Length; i++)
             {
                 parsedItems[i] = JsonConvert.DeserializeObject(File.ReadAllText(Items[i].Path), Items[i].RuntimeType) as Item;
                 parsedItems[i].Identifier = Items[i].Identifier;
-                parsedItems[i].OnDeserialize();
+                
             }
 
             if (addToCache)
             {
                 ItemCache.AddItems(parsedItems);
             }
+
+            for (short i = 0; i < Items.Length; i++)
+            {
+                parsedItems[i].OnDeserialize();
+            }
+            
 
             return parsedItems;
         }

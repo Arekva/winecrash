@@ -45,6 +45,11 @@
             "Identifier": "winecrash:log",
             "RuntimeType": "Winecrash.Cube, WinecrashCore",
             "Path": "assets/items/log.json"
+        },
+        {
+            "Identifier": "winecrash:diamond_pickaxe",
+            "RuntimeType": "Winecrash.Tool, WinecrashCore",
+            "Path": "assets/items/diamond_pickaxe.json"
         }
     ]
 }

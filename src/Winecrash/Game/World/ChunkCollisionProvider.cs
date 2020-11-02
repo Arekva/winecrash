@@ -330,7 +330,7 @@ namespace Winecrash
                     double remainingZDelta = hit.GlobalBlockPosition.Z - hit.GlobalPosition.Z + 1.0D;
 
                     //c.Z += remainingZDelta;
-                    Debug.Log(remainingZDelta);
+                    //Debug.Log(remainingZDelta);
                     
                     v *= new Vector3D(1, 1, 0);
                 }
@@ -469,7 +469,7 @@ namespace Winecrash
 
             b.Center = c;
 
-            Debug.Log(originalVelocity);
+            //Debug.Log(originalVelocity);
             Vector3D finalVelocity = Vector3D.Zero;
 
 

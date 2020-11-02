@@ -9,7 +9,7 @@ namespace Winecrash.Client
         public Image HotbarImage;
         public WObject Hotbar;
 
-        public static double UIScale { get; } = -0.0D;
+        public static double UIScale { get; } = -0.05D;
         
         public static GameUI Instance { get; private set; }
         
@@ -43,6 +43,30 @@ namespace Winecrash.Client
             img.Picture = new Texture("assets/textures/hotbar.png");
             img.KeepRatio = true;
 
+            
+            
+            
+            itemPreview = new WObject("item debug preview")
+            {
+                Position = Vector3D.Up * 80
+                //Parent = Camera.Main.WObject,
+                //LocalPosition = Vector3D.Forward * 10
+            };
+
+            MeshRenderer meshr = itemPreview.AddModule<MeshRenderer>();
+            meshr.Material = ItemCache.AtlasMaterial;
+            meshr.Mesh = ItemCache.Get<Item>("winecrash:diamond_pickaxe").Model;
+
+        }
+        
+        private WObject itemPreview;
+
+        protected override void Update()
+        { 
+            if (itemPreview)
+            {
+                itemPreview.LocalRotation *= new Quaternion(0, Time.DeltaTime * 10, 0);
+            }
         }
 
         protected override void OnRender()

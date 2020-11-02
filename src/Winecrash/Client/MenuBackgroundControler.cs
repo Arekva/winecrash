@@ -107,10 +107,14 @@ namespace Winecrash.Client
             });
         }
 
+        
+
         protected override void Update()
         {
             Rotation += Time.DeltaTime * RotationSpeed;
             this.WObject.LocalRotation = new Quaternion(RotationAxis, Rotation);
+
+            
         }
 
         protected override void OnEnable()

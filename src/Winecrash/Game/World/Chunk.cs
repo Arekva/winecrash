@@ -604,11 +604,13 @@ namespace Winecrash
 
                 this.BlocksRenderer.Mesh.Apply(true);
 
-                vertices = null;
-                triangles = null;
-                uv = null;
-                normals = null;
+                
             }
+            
+            vertices = null;
+            triangles = null;
+            uv = null;
+            normals = null;
             
             //meshApply.Stop();
             //Debug.Log("Mesh apply time : " + meshApply.Elapsed.TotalMilliseconds.ToString("F2") + "ms");
