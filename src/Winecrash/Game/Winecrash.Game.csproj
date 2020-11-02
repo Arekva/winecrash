@@ -63,6 +63,7 @@
     <Compile Include="Items\Item.cs" />
     <Compile Include="Items\ItemCache.cs" />
     <Compile Include="Items\ItemDB.cs" />
+    <Compile Include="Items\Tool.cs" />
     <Compile Include="Net\NetCamera.cs" />
     <Compile Include="Net\NetChunk.cs" />
     <Compile Include="Net\NetEdit.cs" />

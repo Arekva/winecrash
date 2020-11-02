@@ -114,8 +114,6 @@ namespace Winecrash
         
         public MeshRenderer BlocksRenderer { get; private set; }
 
-        public static Texture Texture { get; set; }
-
         public bool BuildEndFrame { get; set; } = false;
 
         public bool ConstructedOnce { get; private set; } = false;
@@ -396,15 +394,10 @@ namespace Winecrash
         private void CreateRenderer()
         {
             BlocksRenderer = this.WObject.AddModule<MeshRenderer>();
-
-            Material m = BlocksRenderer.Material = new Material(Shader.Find("Chunk"));
-            m.SetData("albedo", Chunk.Texture);
-            m.SetData("color", new Color256(1, 1, 1, 0));
-            m.SetData("minLight", 0.1F);
-            m.SetData("maxLight", 1.0F);
+            BlocksRenderer.Material = ItemCache.AtlasMaterial;
         }
 
-        private double _TimeSinceAnimate = 0.0D;
+        /*private double _TimeSinceAnimate = 0.0D;
         private double _AnimationTime = 0.5D;
         protected override void Update()
         {
@@ -412,9 +405,9 @@ namespace Winecrash
             {
                 UpdateMaterial();
             }
-        }
+        }*/
 
-        private void UpdateMaterial()
+        /*private void UpdateMaterial()
         {
             if (ConstructedOnce && _TimeSinceAnimate <= _AnimationTime)
             {
@@ -422,7 +415,7 @@ namespace Winecrash
                 BlocksRenderer.Material.SetData("color",
                     new Color256(1, 1, 1, WMath.Clamp(_TimeSinceAnimate / _AnimationTime, 0.0D, 1.0D)));
             }
-        }
+        }*/
 
         protected override void LateUpdate()
         {
@@ -672,8 +665,8 @@ namespace Winecrash
 
             float idx = (float)cubeIdx;
 
-            float w = ItemCache.TextureSize / (float)Texture.Width;
-            float h = ItemCache.TextureSize / (float)Texture.Height;
+            float w = ItemCache.TextureSize / (float)ItemCache.Atlas.Width;
+            float h = ItemCache.TextureSize / (float)ItemCache.Atlas.Height;
             const int incr = 1;
 
             switch (face)

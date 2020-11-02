@@ -9,7 +9,9 @@ namespace Winecrash
 {
     public class Block : Item
     {
+        //-- set in item config --//
         public bool Transparent { get; set; } = false;
+        //-- set in item config --//
 
         public double DigTime { get; set; } = 1.0D;
 

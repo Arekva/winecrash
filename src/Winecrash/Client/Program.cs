@@ -44,7 +44,7 @@ namespace Winecrash.Client
             //MainLoadScreen.Show();
             
             new Sound(@"assets/sounds/button_click.mp3");
-            new Shader("assets/shaders/Debuging/Volume/DebugVolume.vert", "assets/shaders/Debuging/Volume/DebugVolume.frag");
+            //new Shader("assets/shaders/Debug/Volume/DebugVolume.vert", "assets/shaders/Debug/Volume/DebugVolume.frag");
             
             Tester = new WObject("tester") /*{ Enabled = false }*/.AddModule<ClientTester>();
 
@@ -91,7 +91,7 @@ namespace Winecrash.Client
                 new Shader("assets/shaders/skybox/Skybox.vert", "assets/shaders/skybox/Skybox.frag");
                 new Shader("assets/shaders/celestialbody/CelestialBody.vert", "assets/shaders/celestialbody/CelestialBody.frag");
                 Database.Load("assets/items/items.json").ParseItems();
-                Chunk.Texture = ItemCache.BuildChunkTexture(out int xsize, out int ysize);
+                ItemCache.BuildChunkTexture(out int xsize, out int ysize);
                 //Chunk.Texture.Save(Folders.UserData + "items_atlas.png");
                 
                 

@@ -82,7 +82,7 @@ namespace WEngine
             
             
 #if DEBUG
-            if (Engine.DoGUI)
+            /*if (Engine.DoGUI)
             {
 
                 DebugVolumeWobject = new WObject("Debug Volume") {Enabled = true};
@@ -92,7 +92,7 @@ namespace WEngine
                 BoxDebugVolume debugVolume = DebugVolumeWobject.AddModule<BoxDebugVolume>();
                 debugVolume.Extents = this.Extents;
                 debugVolume.Offset = this.Offset;
-            }
+            }*/
 
 #endif
             

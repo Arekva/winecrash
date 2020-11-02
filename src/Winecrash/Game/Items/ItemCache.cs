@@ -15,6 +15,12 @@ namespace Winecrash
         private static readonly Dictionary<string, ushort> _ItemIdentifiersIndexes = new Dictionary<string, ushort>();
         private static readonly Dictionary<ushort, string> _ItemIndexesIdentifiers = new Dictionary<ushort, string>();
         private static readonly List<Item> _ItemsList = new List<Item>();
+        
+        
+        public static Texture Atlas { get; set; }
+        public static Material AtlasMaterial { get; private set; }
+        
+        
         public static ushort TotalItems
         {
             get
@@ -45,8 +51,7 @@ namespace Winecrash
         {
             return _ItemIndexesIdentifiers[index];
         }
-
-
+        
         public static bool TryGet<T>(string identifier, out T item) where T : Item
         {
             Item dbItem = _ItemsIdentifiers[identifier];
@@ -104,15 +109,18 @@ namespace Winecrash
             xSize = totalWidth;
             ySize = totalHeight;
 
-            Texture tex = new Texture(totalWidth, totalHeight)
+            Texture tex = Atlas = new Texture(totalWidth, totalHeight)
             {
-                Name = "Cache"
+                Name = "ItemAtlas"
             };
 
             //for (int y = 0; y < (int)TotalItems; y++)
             Parallel.For(0, (int) TotalItems, y =>
             {
-                if (ItemCache.TryGet<Cube>(y, out Cube c))
+                Item item = Get<Item>(y);
+                
+                
+                if (item is Cube c)
                 {
                     //East
                     tex.SetPixels(texsize * 0, y * texsize, texsize, texsize,
@@ -136,10 +144,21 @@ namespace Winecrash
                     tex.SetPixels(texsize * 5, y * texsize, texsize, texsize,
                         c.SouthTexture.GetPixels(0, 0, texsize, texsize));
                 }
+                else if(item.Texture != null)
+                {
+                    tex.SetPixels(texsize * 0, y * texsize, texsize, texsize,
+                        item.Texture.GetPixels(0,0,texsize,texsize));
+                }
             });
 
 
             tex.Apply();
+            
+            Material m = AtlasMaterial = new Material(Shader.Find("Chunk"));
+            m.SetData("albedo", tex);
+            m.SetData("color", new Color256(1, 1, 1, 1));
+            m.SetData("minLight", 0.1F);
+            m.SetData("maxLight", 1.0F);
             
             return tex;
         }

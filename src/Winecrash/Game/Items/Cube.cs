@@ -3,21 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using WEngine;
 
 namespace Winecrash
 {
     public class Cube : Block
     {
+        //-- set in item config --//
         public CubeTexturePaths Textures { get; set; }
 
+        [JsonIgnore]
         public Texture UpTexture { get; private set; }
+        [JsonIgnore]
         public Texture DownTexture { get; private set; }
-
+        [JsonIgnore]
         public Texture EastTexture { get; private set; }
+        [JsonIgnore]
         public Texture WestTexture { get; private set; }
-
+        [JsonIgnore]
         public Texture NorthTexture { get; private set; }
+        [JsonIgnore]
         public Texture SouthTexture { get; private set; }
 
         public override void OnDeserialize()
