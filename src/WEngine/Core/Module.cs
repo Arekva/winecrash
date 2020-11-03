@@ -2,7 +2,7 @@
 
 namespace WEngine
 {
-    public class Module : BaseObject
+    public abstract class Module : BaseObject
     {
         public bool RunAsync { get; set; } = false;
 
@@ -70,8 +70,8 @@ namespace WEngine
 
         internal protected virtual void PreUpdate() { }
         internal protected virtual void Update() { }
-
         internal protected virtual void LateUpdate() { }
+        
         internal protected virtual void OnDelete() { }
         internal protected virtual void OnEnable() { }
         internal protected virtual void OnDisable() { }

@@ -9,11 +9,11 @@ namespace WEngine.GUI
 
         public GUIModule ParentGUI { get; set; } = null;
 
-        public Vector3D MinSize { get; set; } = Vector3D.One * Single.NegativeInfinity;
-        public Vector3D MaxSize { get; set; } = Vector3D.One * Single.PositiveInfinity;
+        public Vector3D MinSize { get; set; } = Vector3D.One * Double.NegativeInfinity;
+        public Vector3D MaxSize { get; set; } = Vector3D.One * Double.PositiveInfinity;
 
-        public Vector2D MinScreenPercent { get; set; } = Vector2D.One * double.NegativeInfinity;
-        public Vector2D MaxScreenPercent { get; set; } = Vector2D.One * double.PositiveInfinity;
+        public Vector2D MinScreenPercent { get; set; } = Vector2D.One * Double.NegativeInfinity;
+        public Vector2D MaxScreenPercent { get; set; } = Vector2D.One * Double.PositiveInfinity;
         
         public virtual Vector3D GlobalPosition
         {

@@ -86,6 +86,8 @@ namespace Winecrash.Client
                 else if (nobj is NetEntity nent)
                 {
                     Entity ent = nent.Parse();
+                    
+                    //todo if not netplayer....
                 }
 
                 else if (nobj is NetCamera ncam)

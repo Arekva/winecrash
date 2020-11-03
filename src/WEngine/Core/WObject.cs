@@ -539,7 +539,7 @@ namespace WEngine
         }
         public T AddModule<T>() where T : Module
         {
-            T mod = (T)Activator.CreateInstance(typeof(T));
+            T mod = Activator.CreateInstance<T>();
 
             if(mod.Undeletable && !this.Undeletable)
             {

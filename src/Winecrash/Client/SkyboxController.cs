@@ -127,6 +127,10 @@ namespace Winecrash.Client
             //double sunAtmoPow = Vector3D.Dot(Vector3D.Up, SunWobject.LocalPosition.Normalized).Length;
             
             SunWobject?.GetModule<MeshRenderer>().Material.SetData("colorMult", new Color256(122/255.0D, 168/255.0D, 255/255.0D, 255/255.0D) * 1.0D);
+            
+            
+            
+            
             MoonWobject?.GetModule<MeshRenderer>().Material.SetData("colorMult", new Color256(122/255.0D, 168/255.0D, 255/255.0D, 255/255.0D) * 1.0D);
         }
 
