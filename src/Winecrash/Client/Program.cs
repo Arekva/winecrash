@@ -93,11 +93,12 @@ namespace Winecrash.Client
                 Database.Load("assets/items/items.json").ParseItems();
                 ItemCache.BuildChunkTexture(out int xsize, out int ysize);
                 //Chunk.Texture.Save(Folders.UserData + "items_atlas.png");
-                
-                
-                
 
-                Canvas.Main.UICamera.FarClip = 1000.0D;
+
+
+
+                Canvas.Main.UICamera.NearClip = -8192.0D;
+                Canvas.Main.UICamera.FarClip = 8192.0D;
 
                 EngineCore.Instance.WObject.AddModule<GameDebug>();
 

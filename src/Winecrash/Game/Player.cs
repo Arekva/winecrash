@@ -219,6 +219,8 @@ namespace Winecrash
                     this.Entity.RigidBody.Velocity += Vector3D.Up * 8.75;
                 }
             }*/
+            
+            
 
             if(dir == Vector3D.Zero) Entity.AnyMoveInputOnFrame = false;
 
@@ -232,6 +234,8 @@ namespace Winecrash
                 Entity.RigidBody.Velocity += (new Quaternion(0, CameraAngles.X, 0) * dir.Normalized) *
                                              Time.DeltaTime * WalkAcceleration * 50;
             }
+            
+            Debug.Log(Entity.RigidBody.Velocity);
         }
 
         public PlayerEntity CreateEntity(WObject parent)

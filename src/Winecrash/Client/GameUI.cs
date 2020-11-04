@@ -1,5 +1,7 @@
-﻿using WEngine;
+﻿using System.Threading.Tasks;
+using WEngine;
 using WEngine.GUI;
+using Winecrash.Entities;
 
 namespace Winecrash.Client
 {
@@ -35,7 +37,7 @@ namespace Winecrash.Client
             img.Material.SourceColorBlending = BlendingFactorSrc.OneMinusDstColor;
             
             
-            Hotbar = new WObject("Crosshair")
+            Hotbar = new WObject("Hotbar")
             {
                 Parent = Canvas.Main.WObject
             }; 
@@ -43,30 +45,67 @@ namespace Winecrash.Client
             img.Picture = new Texture("assets/textures/hotbar.png");
             img.KeepRatio = true;
 
-            
-            
-            
-            itemPreview = new WObject("item debug preview")
-            {
-                Position = Vector3D.Up * 80
-                //Parent = Camera.Main.WObject,
-                //LocalPosition = Vector3D.Forward * 10
-            };
 
-            MeshRenderer meshr = itemPreview.AddModule<MeshRenderer>();
-            meshr.Material = ItemCache.AtlasMaterial;
-            meshr.Mesh = ItemCache.Get<Item>("winecrash:diamond_pickaxe").Model;
+            WObject rTester = new WObject("Render Tester")
+            {
+                Parent = Hotbar,
+                LocalScale = Vector3D.One * 1.175D
+            };
+            Model mod = rTester.AddModule<Model>();
+            mod.Renderer.Material = ItemCache.AtlasMaterial;
+            mod.Renderer.Mesh = ItemCache.Get<Item>("winecrash:diamond_pickaxe").Model;
+            mod.KeepRatio = true;
+            mod.Depth = 1000;
+            mod.MinAnchor = new Vector2D(3/182.0D,19/22.0D);
+            mod.MaxAnchor = new Vector2D(19/182.0D,3/22.0D);
+
+
+            
+            WObject rTester2 = new WObject("Render Tester 2")
+            {
+                Parent = Hotbar,
+                LocalScale = Vector3D.One * 1.175D
+            };
+            mod = rTester2.AddModule<Model>();
+            mod.Renderer.Material = ItemCache.AtlasMaterial;
+            mod.Renderer.Mesh = ItemCache.Get<Item>("winecrash:grass").Model;
+            mod.KeepRatio = true;
+            mod.Depth = 1000;
+            mod.MinAnchor = new Vector2D(23/182.0D,19/22.0D);
+            mod.MaxAnchor = new Vector2D(39/182.0D,3/22.0D);
+
+            WObject rTester2TXT = new WObject("Amount")
+            {
+                Parent = rTester2
+            };
+            Label lb = rTester2TXT.AddModule<Label>();
+            lb.Text = "64";
+            lb.AutoSize = true;
+            lb.Aligns = TextAligns.Down | TextAligns.Right;
+            lb.MinAnchor = new Vector2D(0.05,-0.3);
+            lb.MaxAnchor = new Vector2D(1.05,0.5);
+
 
         }
         
         private WObject itemPreview;
+        protected override void Start()
+        {
+            Task.Run(() =>
+            {
+                Task.Delay(100).Wait();
+                WObject handWobj = PlayerEntity.PlayerHandWobject;
+                handWobj.LocalRotation = new Quaternion(0,90,0);
+                handWobj.LocalRotation *= new Quaternion(0,0,-65);
+                handWobj.LocalPosition = Vector3D.Forward * 0.9 + Vector3D.Left + Vector3D.Down * 0.6;
+                MeshRenderer mr = handWobj.GetModule<MeshRenderer>();
+                mr.Material = ItemCache.AtlasMaterial;
+                mr.Mesh = ItemCache.Get<Item>("winecrash:diamond_pickaxe").Model;
+            });
+        }
 
         protected override void Update()
-        { 
-            if (itemPreview)
-            {
-                itemPreview.LocalRotation *= new Quaternion(0, Time.DeltaTime * 10, 0);
-            }
+        {
         }
 
         protected override void OnRender()

@@ -167,18 +167,20 @@ namespace Winecrash
                 float maxYPos = minYPos + deltas.Y;
                 float halfZdelta = deltas.Z / 2.0F;
 
+                const float scaleFactor = 1.5F;
+
                 switch (face)
                 {
                     case BlockFaces.Up:
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(minXPos - 0.5F, maxYPos, -halfZdelta),
-                            new Vector3F(minXPos - 0.5F, maxYPos, halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, maxYPos, -halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, maxYPos, -halfZdelta),
-                            new Vector3F(minXPos - 0.5F, maxYPos, halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, maxYPos, halfZdelta)
+                            new Vector3F(minXPos - 0.5F, maxYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, maxYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, maxYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, maxYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, maxYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, maxYPos - 0.5F, halfZdelta) * scaleFactor
                         });
                     }
                         break;
@@ -187,12 +189,12 @@ namespace Winecrash
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(minXPos - 0.5F, minYPos, halfZdelta),
-                            new Vector3F(minXPos - 0.5F, minYPos, -halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, minYPos, halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, minYPos, halfZdelta),
-                            new Vector3F(minXPos - 0.5F, minYPos, -halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, minYPos, -halfZdelta)
+                            new Vector3F(minXPos - 0.5F, minYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, minYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, minYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, minYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, minYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, minYPos - 0.5F, -halfZdelta) * scaleFactor
                         });
                     }
                         break;
@@ -201,12 +203,12 @@ namespace Winecrash
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(minXPos - 0.5F, minYPos, -halfZdelta),
-                            new Vector3F(minXPos - 0.5F, minYPos, halfZdelta),
-                            new Vector3F(minXPos - 0.5F, maxYPos, -halfZdelta),
-                            new Vector3F(minXPos - 0.5F, maxYPos, -halfZdelta),
-                            new Vector3F(minXPos - 0.5F, minYPos, halfZdelta),
-                            new Vector3F(minXPos - 0.5F, maxYPos, halfZdelta)
+                            new Vector3F(minXPos - 0.5F, minYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, minYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, maxYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, maxYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, minYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, maxYPos - 0.5F, halfZdelta) * scaleFactor
                         });
                     }
                         break;
@@ -215,12 +217,12 @@ namespace Winecrash
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(maxXPos - 0.5F, maxYPos, halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, minYPos, halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, maxYPos, -halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, maxYPos, -halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, minYPos, halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, minYPos, -halfZdelta)
+                            new Vector3F(maxXPos - 0.5F, maxYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, minYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, maxYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, maxYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, minYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, minYPos - 0.5F, -halfZdelta) * scaleFactor
                         });
                     }
                         break;
@@ -229,12 +231,12 @@ namespace Winecrash
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(minXPos - 0.5F, minYPos, halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, minYPos, halfZdelta),
-                            new Vector3F(minXPos - 0.5F, maxYPos, halfZdelta),
-                            new Vector3F(minXPos - 0.5F, maxYPos, halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, minYPos, halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, maxYPos, halfZdelta)
+                            new Vector3F(minXPos - 0.5F, minYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, minYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, maxYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, maxYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, minYPos - 0.5F, halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, maxYPos - 0.5F, halfZdelta) * scaleFactor
                         });
                     }
                         break;
@@ -243,12 +245,12 @@ namespace Winecrash
                     {
                         vertices.AddRange(new[]
                         {
-                            new Vector3F(maxXPos - 0.5F, maxYPos, -halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, minYPos, -halfZdelta),
-                            new Vector3F(minXPos - 0.5F, maxYPos, -halfZdelta),
-                            new Vector3F(minXPos - 0.5F, maxYPos, -halfZdelta),
-                            new Vector3F(maxXPos - 0.5F, minYPos, -halfZdelta),
-                            new Vector3F(minXPos - 0.5F, minYPos, -halfZdelta)
+                            new Vector3F(maxXPos - 0.5F, maxYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, minYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, maxYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, maxYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(maxXPos - 0.5F, minYPos - 0.5F, -halfZdelta) * scaleFactor,
+                            new Vector3F(minXPos - 0.5F, minYPos - 0.5F, -halfZdelta) * scaleFactor
                         });
                     }
                         break;
@@ -354,7 +356,7 @@ namespace Winecrash
 
             if (vertices.Count != 0)
             {
-                mesh = new Mesh(this.Identifier + " 3D Render")
+                mesh = new Mesh(this.Identifier + " 3D Render [Standard]")
                 {
                     Vertices = vertices.ToArray(),
                     Triangles = triangles.ToArray(),

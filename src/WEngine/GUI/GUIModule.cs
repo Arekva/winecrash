@@ -38,7 +38,7 @@ namespace WEngine.GUI
 
                 Vector2D shift = new Vector2D(horizontalShift, verticalShift);
 
-                return new Vector3D(Canvas.ScreenToUISpace(screenSpacePosition) + shift, Depth) + Shift;
+                return new Vector3D(Canvas.ScreenToUISpace(screenSpacePosition) + shift, Depth) + GlobalShift;
             }
         }
 
@@ -75,6 +75,14 @@ namespace WEngine.GUI
         }
         
         public Vector3D Shift { get; set; }
+
+        public Vector3D GlobalShift
+        {
+            get
+            {
+                return this.ParentGUI == null ? this.Shift : this.ParentGUI.GlobalShift + this.Shift;
+            }
+        }
 
         public virtual Vector3D GlobalScale
         {
