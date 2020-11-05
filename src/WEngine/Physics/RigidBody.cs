@@ -26,7 +26,14 @@ namespace WEngine
                 }
             }
         }
-        public bool UseGravity { get; set; } = true; 
+        public bool UseGravity { get; set; } = true;
+
+
+        protected internal override void Creation()
+        {
+            this.FixedExecutionOrder = -1000;
+        }
+
         protected internal override void PreFixedUpdate()
         {
             

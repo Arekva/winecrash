@@ -46,7 +46,7 @@ namespace Winecrash.GUI
             Game.OnLanguageChanged += (lang) => this.Localization = Localization;
             
             this.KeepRatio = true;
-            this.Background.Picture = Texture.GetOrCreate("assets/textures/text_field.png");
+            this.Background.Picture = Texture.GetOrCreate("assets/textures/gui/text_field.png");
             this.Label.MinAnchor = new Vector2D(0.02, 0.12);
             this.Label.MaxAnchor = new Vector2D(0.98, 0.88);
             this.Label.Color = new Color256(1.0, 1.0, 1.0, 1.0);

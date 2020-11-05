@@ -117,7 +117,7 @@ namespace WEngine
             Module[] modules = null;
 
             lock (moduleLocker)
-                modules = this._Modules?.ToArray();
+                modules = this._Modules.OrderBy(m => m?.FixedExecutionOrder ?? int.MinValue).ToArray();
 
             if (modules != null)
             {
@@ -144,7 +144,7 @@ namespace WEngine
                 List<Module> modules = null;
 
                 lock(moduleLocker)
-                    modules = this._Modules.ToList();
+                    modules = this._Modules.OrderBy(m => m?.FixedExecutionOrder ?? int.MinValue).ToList();
 
                 foreach (Module mod in modules)
                 {
@@ -166,7 +166,7 @@ namespace WEngine
                 List<Module> modules = null;
 
                 lock(moduleLocker)
-                    modules = this._Modules.ToList();
+                    modules = this._Modules.OrderBy(m => m?.FixedExecutionOrder ?? int.MinValue).ToList();
 
                 foreach (Module mod in modules)
                 {

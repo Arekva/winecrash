@@ -68,6 +68,8 @@ namespace Winecrash.Client
             Camera.Main.FOV = 80;
             Camera.Main.NearClip = 0.01D;
             Camera.Main.FarClip = 4096.0D;
+            Camera.Main.RenderLayers &= ~(ulong)Layers.UI;
+            //Camera.Main.RenderLayers &= ~(1UL << 32);
             
             
             
@@ -90,6 +92,9 @@ namespace Winecrash.Client
                 new Shader("assets/shaders/chunk/Chunk.vert", "assets/shaders/chunk/Chunk.frag");
                 new Shader("assets/shaders/skybox/Skybox.vert", "assets/shaders/skybox/Skybox.frag");
                 new Shader("assets/shaders/celestialbody/CelestialBody.vert", "assets/shaders/celestialbody/CelestialBody.frag");
+                new Shader("assets/shaders/item/Item.vert", "assets/shaders/item/Item.frag");
+
+
                 Database.Load("assets/items/items.json").ParseItems();
                 ItemCache.BuildChunkTexture(out int xsize, out int ysize);
                 //Chunk.Texture.Save(Folders.UserData + "items_atlas.png");

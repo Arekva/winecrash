@@ -9,7 +9,9 @@ namespace Winecrash.Client
     {
         public WObject Crosshair;
         public Image HotbarImage;
+        public Image HotbarSelectorImage;
         public WObject Hotbar;
+        public WObject HotbarSelector;
 
         public static double UIScale { get; } = -0.05D;
         
@@ -27,10 +29,11 @@ namespace Winecrash.Client
             
             Crosshair = new WObject("Crosshair")
             {
-                Parent = Canvas.Main.WObject
+                Parent = Canvas.Main.WObject,
+                Layer = (ulong)Layers.UI
             };
             Image img = Crosshair.AddModule<Image>();
-            img.Picture = new Texture("assets/textures/crosshair.png");
+            img.Picture = new Texture("assets/textures/gui/crosshair.png");
             img.KeepRatio = true;
             img.MinAnchor = new Vector2D(0.49D, 0.49D);
             img.MaxAnchor = new Vector2D(0.51D, 0.51D);
@@ -39,23 +42,36 @@ namespace Winecrash.Client
             
             Hotbar = new WObject("Hotbar")
             {
-                Parent = Canvas.Main.WObject
+                Parent = Canvas.Main.WObject,
+                Layer = (ulong)Layers.UI
             }; 
             HotbarImage = img = Hotbar.AddModule<Image>();
-            img.Picture = new Texture("assets/textures/hotbar.png");
+            img.Picture = new Texture("assets/textures/gui/hotbar.png");
             img.KeepRatio = true;
+            HotbarSelector = new WObject("Hotbar Selector")
+            {
+                Parent = Hotbar,
+                Layer = (ulong)Layers.UI
+            }; 
+            HotbarSelectorImage = img = HotbarSelector.AddModule<Image>();
+            img.Picture = new Texture("assets/textures/gui/hotbar_selector.png");
+            img.KeepRatio = true;
+            img.MinAnchor = new Vector2D(-0.0055D, 0.01D);
+            img.MaxAnchor = new Vector2D(0.1265, 1.0725D);
+            
 
 
             WObject rTester = new WObject("Render Tester")
             {
                 Parent = Hotbar,
-                LocalScale = Vector3D.One * 1.175D
+                LocalScale = Vector3D.One * 1.175D,
+                Layer = (ulong)Layers.UI
             };
             Model mod = rTester.AddModule<Model>();
             mod.Renderer.Material = ItemCache.AtlasMaterial;
             mod.Renderer.Mesh = ItemCache.Get<Item>("winecrash:diamond_pickaxe").Model;
             mod.KeepRatio = true;
-            mod.Depth = 1000;
+            mod.Depth = 0;
             mod.MinAnchor = new Vector2D(3/182.0D,19/22.0D);
             mod.MaxAnchor = new Vector2D(19/182.0D,3/22.0D);
 
@@ -64,19 +80,21 @@ namespace Winecrash.Client
             WObject rTester2 = new WObject("Render Tester 2")
             {
                 Parent = Hotbar,
-                LocalScale = Vector3D.One * 1.175D
+                LocalScale = Vector3D.One * 1.175D,
+                Layer = (ulong)Layers.UI
             };
             mod = rTester2.AddModule<Model>();
             mod.Renderer.Material = ItemCache.AtlasMaterial;
             mod.Renderer.Mesh = ItemCache.Get<Item>("winecrash:grass").Model;
             mod.KeepRatio = true;
-            mod.Depth = 1000;
+            mod.Depth = 0;
             mod.MinAnchor = new Vector2D(23/182.0D,19/22.0D);
             mod.MaxAnchor = new Vector2D(39/182.0D,3/22.0D);
 
             WObject rTester2TXT = new WObject("Amount")
             {
-                Parent = rTester2
+                Parent = rTester2,
+                Layer = (ulong)Layers.UI
             };
             Label lb = rTester2TXT.AddModule<Label>();
             lb.Text = "64";
@@ -84,8 +102,6 @@ namespace Winecrash.Client
             lb.Aligns = TextAligns.Down | TextAligns.Right;
             lb.MinAnchor = new Vector2D(0.05,-0.3);
             lb.MaxAnchor = new Vector2D(1.05,0.5);
-
-
         }
         
         private WObject itemPreview;
@@ -106,6 +122,7 @@ namespace Winecrash.Client
 
         protected override void Update()
         {
+            
         }
 
         protected override void OnRender()
@@ -134,8 +151,13 @@ namespace Winecrash.Client
             Crosshair = null;
 
             HotbarImage = null;
+            HotbarSelector?.Delete();
+            HotbarSelector = null;
+
+            HotbarImage = null;
             Hotbar?.Delete();
             Hotbar = null;
+            
         }
     }
 }

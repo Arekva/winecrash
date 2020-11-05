@@ -13,6 +13,7 @@ namespace WEngine
         public static Camera Main { get; set; }
 
         public UInt64 RenderLayers { get; set; } = UInt64.MaxValue;
+        
 
         public double Depth { get; set; } = 0.0D;
 
@@ -168,6 +169,7 @@ namespace WEngine
         internal Matrix4D _RenderProjectionMatrix;
         internal Vector3D _RenderUp;
         internal Vector3D _RenderForward;
+        internal Matrix4D _RenderView;
 
 
         internal void PrepareForRender()
@@ -178,6 +180,7 @@ namespace WEngine
             _RenderProjectionMatrix = this.ProjectionMatrix;
             _RenderUp = this.WObject.Up;
             _RenderForward = this.WObject.Forward;
+            _RenderView = new Matrix4D(Vector3D.Zero, this._RenderForward, this._RenderUp);
         }
 
         protected internal override void OnRender()

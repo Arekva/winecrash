@@ -55,17 +55,19 @@ namespace Winecrash.Client
 
             Instance = this;
 
-            this.WObject.Layer = 1UL << 32;
+            this.WObject.Layer = (ulong)Layers.Sky;
             
             WObject camWobj = new WObject("Skybox Camera Wobject");
             Camera = camWobj.AddModule<Camera>();
             Camera.Depth = -100;
-            Camera.RenderLayers = 1UL << 32;
+            Camera.RenderLayers = (ulong)Layers.Sky;
+            Camera.Name = "Skybox";
 
-            Camera.Main.RenderLayers &= ~(1UL << 32);
+            Camera.Main.RenderLayers &= ~(ulong)Layers.Sky;
 
-            SkyWobjet = new WObject("Sky") { Parent = this.WObject, Layer = 1UL << 32};
+            SkyWobjet = new WObject("Sky") { Parent = this.WObject, Layer = (ulong)Layers.Sky };
 
+            
             MainRenderer = SkyWobjet.AddModule<MeshRenderer>();
             MainRenderer.UseDepth = false;
             MainRenderer.DrawOrder = 10000;
@@ -79,7 +81,7 @@ namespace Winecrash.Client
             SunWobject = new WObject("Sun")
             {
                 Parent = SkyWobjet,
-                Layer = 1UL << 32,
+                Layer = (ulong)Layers.Sky,
                 LocalScale = Vector3D.One / 2.0D,
                 LocalPosition = Vector3D.Up,
                 LocalRotation = new Quaternion(0, 0, 270)
@@ -99,7 +101,7 @@ namespace Winecrash.Client
             MoonWobject = new WObject("Moon")
             {
                 Parent = SkyWobjet,
-                Layer = 1UL << 32,
+                Layer = (ulong)Layers.Sky,
                 LocalScale = Vector3D.One / 2.0D,
                 LocalPosition = Vector3D.Down,
                 LocalRotation = new Quaternion(0, 0, 90)
@@ -109,7 +111,7 @@ namespace Winecrash.Client
             mr.Material.SetData("albedo", MoonTexture);
             mr.Material.SetData("tiling", Vector2D.One);
             mr.Material.SetData("color", Color256.White);
-            
+
             mr.Mesh = Mesh.LoadFile("assets/models/Quad.obj", MeshFormats.Wavefront);
             mr.UseDepth = false;
             mr.DrawOrder = 10001;
@@ -145,7 +147,6 @@ namespace Winecrash.Client
 
         protected override void OnDelete()
         {
-            Debug.Log("deleting :(");
             MainRenderer?.Delete();
             MainRenderer = null;
             

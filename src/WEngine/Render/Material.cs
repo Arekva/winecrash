@@ -290,7 +290,15 @@ namespace WEngine
             }
 
             object usedData = data as object;
-            if (data is Vector4F v4f)
+            if (data is Matrix4D m4d)
+            {
+                usedData = (Matrix4)m4d;
+            }
+            else if (data is Quaternion q)
+            {
+                usedData = new Vector4((float)q.X, (float)q.Y, (float)q.Z, (float)q.W);
+            }
+            else if (data is Vector4F v4f)
             {
                 usedData = new Vector4(v4f.X, v4f.Y, v4f.Z, v4f.W);
             }

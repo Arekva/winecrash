@@ -15,7 +15,7 @@ namespace Winecrash.GUI
         {
             if(!Texture.Find("button"))
             {
-                new Texture("assets/textures/button.png");
+                new Texture("assets/textures/gui/button.png");
             }
         }
 

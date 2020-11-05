@@ -33,6 +33,8 @@ namespace WEngine
             }
         }
 
+        public int FixedExecutionOrder { get; set; } = 0;
+
         private void SetOrder(int newOrder)
         {
             this._ExecutionOrder = newOrder;

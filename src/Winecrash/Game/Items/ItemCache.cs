@@ -154,10 +154,10 @@ namespace Winecrash
 
             tex.Apply();
             
-            Material m = AtlasMaterial = new Material(Shader.Find("Chunk"));
+            Material m = AtlasMaterial = new Material(Shader.Find("Item"));
             m.SetData("albedo", tex);
             m.SetData("color", new Color256(1, 1, 1, 1));
-            m.SetData("minLight", 0.1F);
+            m.SetData("minLight", 0.8F);
             m.SetData("maxLight", 1.0F);
             
             return tex;

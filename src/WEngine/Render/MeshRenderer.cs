@@ -8,11 +8,11 @@ namespace WEngine
     
     public class MeshRenderer : Module
     {
-        public Mesh Mesh { get; set; } = null;
-        private object MeshLocker = new object();
+        public virtual Mesh Mesh { get; set; } = null;
+        protected object MeshLocker = new object();
 
         public Material Material { get; set; } = Material.Find("Error");
-        private object MaterialLocker = new object();
+        protected object MaterialLocker = new object();
 
         internal static object ActiveMeshRenderersLocker = new object();
         internal static List<MeshRenderer> ActiveMeshRenderers { get; set; } = new List<MeshRenderer>();
@@ -31,11 +31,11 @@ namespace WEngine
         }
 
 
-        private Vector3D _RenderPosition;
-        private Vector3D _RenderForward;
-        private Vector3D _RenderUp;
-        private Vector3D _RenderScale;
-        private Quaternion _RenderRotation;
+        protected Vector3D _RenderPosition;
+        protected Vector3D _RenderForward;
+        protected Vector3D _RenderUp;
+        protected Vector3D _RenderScale;
+        protected Quaternion _RenderRotation;
 
         internal virtual void PrepareForRender()
         {
@@ -56,53 +56,78 @@ namespace WEngine
                 {
                     if (CheckValidity(sender)) return;
                     
-
-                    Matrix4D transform;
-                    Matrix4D objTrans;
-                    Matrix4D finalTransform;
-
-                    // object transform
-                    Matrix4D scaD = new Matrix4D(_RenderScale, true);
-                    Matrix4D rotD = new Matrix4D(_RenderRotation);
-                    Matrix4D posD = new Matrix4D(_RenderPosition - sender._RenderPosition, false);
-                    Matrix4D.Mult(in scaD, in rotD, out objTrans);
-                    Matrix4D.Mult(in objTrans, in posD, out objTrans);
-                    Matrix4D.Mult(in objTrans, Matrix4D.Identity, out objTrans);
-
-                    // camera view relative to object
-                    Matrix4D vmat = new Matrix4D(Vector3D.Zero, sender._RenderForward, sender._RenderUp);
-
-                    Matrix4D.Mult(in objTrans, in vmat, out transform);
-                    Matrix4D.Mult(in transform, sender._RenderProjectionMatrix, out finalTransform);
-
-                    GL.BindVertexArray(Mesh.VertexArrayObject);
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, Mesh.VertexBufferObject);
-
-                    this.Material.SetData<Matrix4>("transform", (Matrix4)finalTransform);
-                    this.Material.SetData<Vector2D>("resolution", Graphics.Window.SurfaceResolution);
-
+                    BindBuffers();
+                    ComputeMatricesGPU(sender);
+                    
                     this.Material.Use();
-                    
-                    if(UseDepth)
-                    GL.Enable(EnableCap.DepthTest);
-                    else
-                    GL.Disable(EnableCap.DepthTest);
-                    GL.DepthMask(UseMask);
-                    
-                    GL.CullFace((CullFaceMode)Culling);
 
-                    //OnRender?.Invoke();
+                    SetGLProperties();
 
-                    GL.DrawElements((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)Mesh.Indices, DrawElementsType.UnsignedInt, 0);
+                    DrawModel();
                 }
             }
         }
 
-        protected internal virtual void PassTransformMatrices(Matrix4D model, Matrix4D view, Matrix4D projection)
+        protected internal virtual void BindBuffers()
         {
-            this.Material.SetData("model", model);
-            this.Material.SetData("view", view);
-            this.Material.SetData("projection", projection);
+            GL.BindVertexArray(Mesh.VertexArrayObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, Mesh.VertexBufferObject);
+        }
+
+        protected internal virtual void DrawModel()
+        {
+            GL.DrawElements((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, (int)Mesh.Indices, DrawElementsType.UnsignedInt, 0);
+        }
+
+        protected internal virtual void ComputeMatricesCPU(Camera sender)
+        {
+            Matrix4D transform;
+            Matrix4D objTrans;
+            Matrix4D finalTransform;
+            
+            // object transform
+            Matrix4D scaD = new Matrix4D(_RenderScale, true);
+            Matrix4D rotD = new Matrix4D(_RenderRotation);
+            Matrix4D posD = new Matrix4D(_RenderPosition - sender._RenderPosition, false);
+            Matrix4D.Mult(in scaD, in rotD, out objTrans);
+            Matrix4D.Mult(in objTrans, in posD, out objTrans);
+            Matrix4D.Mult(in objTrans, Matrix4D.Identity, out objTrans);
+
+            // camera view relative to object
+            Matrix4D vmat = sender._RenderView;//new Matrix4D(Vector3D.Zero, sender._RenderForward, sender._RenderUp);
+
+            Matrix4D.Mult(in objTrans, in vmat, out transform);
+            Matrix4D.Mult(in transform, sender._RenderProjectionMatrix, out finalTransform);
+            
+            this.Material.SetData("transform", finalTransform);
+            this.Material.SetData("rotation", _RenderRotation);
+        }
+
+        protected internal virtual void SetGLProperties()
+        {
+            if(UseDepth)
+                GL.Enable(EnableCap.DepthTest);
+            else
+                GL.Disable(EnableCap.DepthTest);
+            GL.DepthMask(UseMask);
+                    
+            GL.CullFace((CullFaceMode)Culling);
+        }
+
+        protected internal virtual void ComputeMatricesGPU(Camera sender)
+        {
+            Matrix4D objTrans;
+            Matrix4D scaD = new Matrix4D(_RenderScale, true);
+            Matrix4D rotD = new Matrix4D(_RenderRotation);
+            Matrix4D posD = new Matrix4D(_RenderPosition - sender._RenderPosition, false);
+            Matrix4D.Mult(in scaD, in rotD, out objTrans);
+            Matrix4D.Mult(in objTrans, in posD, out objTrans);
+            Matrix4D.Mult(in objTrans, Matrix4D.Identity, out objTrans);
+            
+            this.Material.SetData("model", objTrans);
+            this.Material.SetData("view", sender._RenderView);
+            this.Material.SetData("projection", sender._RenderProjectionMatrix);
+            this.Material.SetData("rotation", _RenderRotation);
         }
 
         protected internal override void Creation()
