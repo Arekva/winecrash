@@ -10,6 +10,9 @@ using Winecrash.Entities;
 using Winecrash.Net;
 
 using LibNoise;
+using LibNoise.Combiner;
+using LibNoise.Filter;
+using LibNoise.Modifier;
 using LibNoise.Primitive;
 
 namespace Winecrash
@@ -22,6 +25,8 @@ namespace Winecrash
         internal static object ChunksLocker { get; } = new object();
         public static List<Dimension> Dimensions { get; } = new List<Dimension>(1);
         internal static object DimensionLocker { get; } = new object();
+
+        public static int? Seed { get; set; } = "arekva".GetHashCode();
 
         public static WObject WorldWObject { get; set; }
 
@@ -58,6 +63,13 @@ namespace Winecrash
             
             return WorldWObject.FindChild(dimension.Identifier) ??
                    new WObject(dimension.Identifier) {Parent = WorldWObject};
+        }
+
+        public static Chunk[] GetChunks(string dimension)
+        {
+            int dimIndex = Dimensions.IndexOf(GetOrCreateDimension(dimension));
+
+            return Chunks[Dimensions.IndexOf(GetOrCreateDimension(dimension))].ToArray();
         }
 
         public static Chunk GetChunk(Vector2I coordinates, string dimension)
@@ -159,74 +171,132 @@ namespace Winecrash
         
         private static double size = 0.05D;
 
-        private static ushort[] GenerateSimple(Vector2I chunkCoords)
+        private static ushort[] GenerateLandmass(Vector2I chunkCoords)
         {
-            Dictionary<string, ushort> idsCache = new Dictionary<string, ushort>();
+            float globalScale = 1.0F;
             
-            ushort[] blocks = new ushort[Chunk.TotalBlocks];
-            const string airID = "winecrash:air";
+            float baseLandmassScale = 0.005F; // lower => wider. yeah ik.
+            float detailBias = 0.0F;
+
+            float oceanLevel = 63;
+            float landDeformity = 40;
+            float oceanDeformity = 20;
+            float landMaxHeight = oceanLevel + landDeformity;
+            float oceanMaxDepth = oceanLevel - oceanDeformity;
+            float mountainsDeformity = 20;
+            float moutainsScale = 0.01F;
             
-            for (int z = 0; z < Chunk.Depth; z++)
+            // this is meant to be used as a 2D base for continents     apparently unused \/
+            IModule3D baseLandmass = new ImprovedPerlin(World.Seed.Value, NoiseQuality.Best);
+            var billow = new Billow
             {
-                for (int y = 0; y < Chunk.Height; y++)
+                Primitive3D = baseLandmass,
+                OctaveCount = 5.0F,
+                Frequency = 0.9F
+            };
+            IModule3D detailsLandmass = new ImprovedPerlin(World.Seed.Value * 123456, NoiseQuality.Best);
+            detailsLandmass = new ScaleBias(detailsLandmass, .2F, detailBias);
+            baseLandmass = new Add(billow, detailsLandmass);
+            //LibNoise.Modifier.Exponent baseLandExp = new Exponent(baseLandmass, 1.0F);
+
+            //var combiner = new LibNoise.Combiner.Add(baseLandmass1, baseLandmass1);
+            float oceanCoverage = 0.5F;
+            
+
+            ushort airID = ItemCache.GetIndex("winecrash:air");
+            ushort stoneID = ItemCache.GetIndex("winecrash:stone");
+            ushort sandID = ItemCache.GetIndex("winecrash:sand");
+            ushort grassID = ItemCache.GetIndex("winecrash:grass");
+            ushort debugID = ItemCache.GetIndex("winecrash:direction");
+            ushort waterID = ItemCache.GetIndex("winecrash:water");
+
+            ushort[] indices = new ushort[Chunk.Width * Chunk.Height * Chunk.Depth];
+            
+            Vector3F shift = Vector3F.Zero;
+            
+            Vector3F basePos = new Vector3F((chunkCoords.X * Chunk.Width) + shift.X, shift.Y, (chunkCoords.Y * Chunk.Depth) + shift.Z);
+
+            Parallel.For(0, Chunk.Width * Chunk.Height * Chunk.Depth, i =>
+            {
+                indices[i] = airID;
+                
+                // get, from index, the x,y,z coordinates of the block. Then move it from the basePos x scale.
+                WMath.FlatTo3D(i, Chunk.Width, Chunk.Height, out int x, out int y, out int z);
+                Vector3F finalPos = new Vector3F((basePos.X + x) * baseLandmassScale, basePos.Y + y, (basePos.Z + z) * baseLandmassScale) * globalScale;
+
+                float landMassPct = baseLandmass.GetValue(finalPos.X, 0, finalPos.Z);
+                // retreive the 2D base land value (as seen from top). If under land cap, it's ocean.
+                bool isLand = landMassPct > oceanCoverage;
+
+                float landPct =  (float)Math.Pow(WMath.Remap(landMassPct, oceanCoverage, 1.0F, 0.0F, 1.0F), 2F);
+                float waterPct = WMath.Remap(landMassPct, 0.0F, oceanCoverage, 0.0F, 1.0F);
+
+                float landMassHeight = oceanLevel + (landPct * landDeformity);
+                int finalLandMassHeight = (int)landMassHeight;
+
+                float waterHeight = oceanMaxDepth + (waterPct * oceanDeformity);
+                int finalWaterHeight = (int) waterHeight;
+
+                if (isLand)
                 {
-                    for (int x = 0; x < Chunk.Width; x++)
+                    if (y < finalLandMassHeight)
                     {
-                        string id = airID;
-
-
-                        double sample = perlin.GetValue((float)((x + chunkCoords.X * Chunk.Width)*size),  (float)(y * size), (float)((z + chunkCoords.Y * Chunk.Depth)*size));
-        
-                        double remapped = WMath.Remap(sample, -1, 1, 0, 1);
-                        
-                        if (y < 96)
-                        {
-                            double srfY = y - 64;
-                            double maxSrfY = 96 - 64;
-
-                            double pctY = srfY / maxSrfY;
-                            remapped *= 1-pctY;
-
-                            remapped = Math.Pow(remapped, 0.9);
-                            
-                            if (remapped > 0.4D)
-                            {
-                                id = "winecrash:grass";
-                            }
-                        }
-                        
-                        
-                        
-                        if (y < 64)
-                        {
-                            id = "winecrash:stone";
-                        }
-
-                        if (y > 96)
-                        {
-                            id = "winecrash:air";
-                        }
-
-                        if (y == 0)
-                        {
-                            id = "winecrash:bedrock";
-                        }
-                        
-                        int idx = x + Chunk.Width * y + Chunk.Width * Chunk.Height * z;
-                        
-
-                        if(!idsCache.TryGetValue(id, out ushort cacheindex))
-                        {
-                            cacheindex = ItemCache.GetIndex(id);
-                            idsCache.Add(id, cacheindex);
-                        }
-                        
-                        blocks[idx] = cacheindex;
+                        indices[i] = grassID;
                     }
                 }
+                else if (y == oceanLevel - 1)
+                {
+                    indices[i] = waterID;
+                }
+                else if (y < oceanLevel - 1)
+                {
+                    if (y > finalWaterHeight)
+                    {
+                        indices[i] = waterID;
+                    }
+                    else
+                    {
+                        indices[i] = sandID;
+                    }
+                }
+
+
+                // debug: display this as grass / sand.
+
+
+                //indices[i] = y == 63 ? (isLand ? grassID : sandID) : (y > 63 ? airID : debugID);//debug.GetValue(finalPos.X, finalPos.Y, finalPos.Z) < cap ? stoneID : airID;
+            });
+
+            return indices;
+        }
+
+        private static ushort[] GenerateSimple(Vector2I chunkCoords)
+        {
+            /*Dictionary<string, ushort> idsCache = new Dictionary<string, ushort>();
+            
+            ushort[] blocks = new ushort[Chunk.TotalBlocks];
+            const string airID = "winecrash:air";*/
+            
+            
+            return GenerateLandmass(chunkCoords);
+        }
+
+        public static void RebuildDimension(string dimension)
+        {
+            Chunk[] chunks = null;
+            lock (ChunksLocker)
+            {
+                chunks = Chunks[Dimensions.IndexOf(GetOrCreateDimension(dimension))].ToArray();
             }
 
-            return blocks;
+            Task.Run(() =>
+            {
+                Parallel.For(0, chunks.Length, i =>
+                {
+                    chunks[i].Blocks = GenerateSimple(chunks[i].Coordinates);
+                    chunks[i].BuildEndFrame = true;
+                });
+            });
         }
         
         private static Chunk CreateChunk(Vector2I coordinates, int dimension, ushort[] blocks, bool build = true)
@@ -353,7 +423,7 @@ namespace Winecrash
         {
             if (!c) return;
             
-            c.Delete();
+            c.WObject.Delete();
             
             lock(ChunksLocker)
                 Chunks[Dimensions.IndexOf(c.Dimension)].Remove(c);
@@ -379,7 +449,6 @@ namespace Winecrash
 
             return 0U;
         }
-
         public static void GlobalToLocal(Vector3D global, out Vector2I ChunkPosition, out Vector3I LocalPosition)
         {
             ChunkPosition = new Vector2I(
@@ -396,9 +465,51 @@ namespace Winecrash
             LocalPosition = new Vector3I((int)localX, (int)global.Y, (int)localZ);
         }
 
+        public static Vector3I RelativePositionToChunk(Vector3I globalBlockPosition, Vector2I chunk)
+        {
+            Vector3I chunkPos = new Vector3I(chunk.X * Chunk.Width, 0, chunk.Y * Chunk.Depth);
+            
+            return new Vector3I(globalBlockPosition.X - chunkPos.X, globalBlockPosition.Y, globalBlockPosition.Z - chunkPos.Z);
+        }
         public static Vector3I LocalToGlobal(Vector2I chunk, Vector3I block)
         {
             return new Vector3I(chunk.X * Chunk.Width, 0, chunk.Y * Chunk.Depth) + block;
+        }
+
+        public static RaycastChunkHit RaycastWorld(Ray ray)
+        {
+            GlobalToLocal(ray.Origin, out Vector2I minCPos, out _);
+            GlobalToLocal(ray.Origin + ray.Direction * ray.Length, out Vector2I maxCPos, out _);
+            
+            var provider = new ChunkRayCollisionProvider();
+            
+            List<RaycastChunkHit> hits = new List<RaycastChunkHit>();
+            
+            // all the chunks to test raycast to
+            for (int y = Math.Min(minCPos.Y, maxCPos.Y); y <= Math.Max(minCPos.Y, maxCPos.Y); y++)
+            {
+                for (int x = Math.Min(minCPos.X, maxCPos.X); x <= Math.Max(minCPos.X, maxCPos.X); x++)
+                {
+                    Vector2I pos = new Vector2I(x,y);
+                    
+                    Chunk c = GetChunk(pos, "winecrash:overworld");
+
+                    if (c)
+                    {
+                        RaycastChunkHit hit = provider.Raycast(c, ray);
+                        
+                        if (hit.HasHit) hits.Add(hit);
+                    }
+                }
+            }
+
+
+            if (hits.Count != 0)
+            {
+                return hits.OrderBy(h => h.Distance).First();
+            }
+            
+            return new RaycastChunkHit();
         }
     }
 }

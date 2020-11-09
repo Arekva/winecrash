@@ -94,6 +94,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Input\KeysModifiers.cs" />
+    <Compile Include="Dab\Compiler\Processor.cs" />
+    <Compile Include="Dab\Compiler\CompilerToken.cs" />
+    <Compile Include="Dab\Compiler\ITokenProvider.cs" />
+    <Compile Include="Dab\Compiler\SourceReader.cs" />
+    <Compile Include="Dab\Compiler\Token.cs" />
+    <Compile Include="Dab\Compiler\TokenNode.cs" />
+    <Compile Include="Dab\ShaderException.cs" />
+    <Compile Include="Dab\ShaderSourceLoadException.cs" />
+    <Compile Include="Dab\Shader\Capabilities.cs" />
+    <Compile Include="Dab\Source.cs" />
     <Compile Include="Debugging\BoxDebugVolume.cs" />
     <Compile Include="Debugging\DebugVolume.cs" />
     <Compile Include="EngineException.cs" />

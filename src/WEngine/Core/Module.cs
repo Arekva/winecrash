@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace WEngine
 {
@@ -139,8 +141,8 @@ namespace WEngine
 
             this.WObject?._Modules.Remove(this);
             this.WObject = null;
+            
             WEngine.Group.GetGroup(this.Group)?.RemoveModule(this);
-
             base.Delete();
         }
     }

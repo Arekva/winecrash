@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="ConsoleUtils.cs" />
     <Compile Include="Dimension.cs" />
+    <Compile Include="Entities\ItemEntity.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\PlayerEntity.cs" />
     <Compile Include="Folders.cs" />
@@ -88,9 +89,11 @@
     <Compile Include="TickType.cs" />
     <Compile Include="Winecrash.cs" />
     <Compile Include="World\Chunk.cs" />
-    <Compile Include="World\ChunkCollisionProvider.cs" />
-    <Compile Include="World\Generation\IDimensionGenerator.cs" />
-    <Compile Include="World\Generation\IGenerator.cs" />
+    <Compile Include="World\ChunkBoxCollisionProvider.cs" />
+    <Compile Include="World\ChunkRayCollisionProvider.cs" />
+    <Compile Include="World\Generator\IDimensionGenerator.cs" />
+    <Compile Include="World\Generator\IGenerator.cs" />
+    <Compile Include="World\RaycastChunkHit.cs" />
     <Compile Include="World\SaveChunk.cs" />
     <Compile Include="World\World.cs" />
   </ItemGroup>

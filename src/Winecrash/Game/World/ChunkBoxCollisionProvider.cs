@@ -94,6 +94,14 @@ namespace Winecrash
                     new BoxBoxCollisionProvider().SweepCollideInto(b, rb.Velocity * Time.FixedDeltaTime,
                         colliders.ToArray());
 
+                for (int i = 0; i < colliders.Count; i++)
+                {
+                    colliders[i].Delete();
+                }
+
+                colliders.Clear();
+                colliders = null;
+
                 return resultingSweep;
             }
         }
@@ -105,6 +113,8 @@ namespace Winecrash
             // moins ça fonctionne bordel de merde.
 
             if (!b || !b.Enabled) return new RaycastChunkHit();
+            
+            
 
             RigidBody rb = b.WObject.GetModule<RigidBody>();
             if (!rb)
@@ -113,6 +123,7 @@ namespace Winecrash
                     "No collision possible between a chunk and a box collider with no RigidBody. Please add a Rigidbody module.");
                 return new RaycastChunkHit();
             }
+            //Debug.Log("IN: " + rb.Velocity);
 
             RaycastChunkHit hit = new RaycastChunkHit();
 
@@ -480,6 +491,8 @@ namespace Winecrash
 
 
             rb.Velocity = finalVelocity;
+            
+            //Debug.Log("OUT: " + rb.Velocity);
 
             return hit;
         }
@@ -669,6 +682,8 @@ namespace Winecrash
                                 };
 
                                 Hit h = colliderchecker.Collide(b, collider);
+                                collider.Delete();
+                                
 
                                 if (h.HasHit)
                                 {
@@ -696,38 +711,6 @@ namespace Winecrash
                 }
 
                 return translation != Vector3D.Zero;*/
-            }
-        }
-
-        public struct RaycastChunkHit
-        {
-            public Block Block { get; }
-            public Chunk Chunk { get; }
-
-            public Vector3I LocalPosition { get; }
-
-            public Vector3F GlobalPosition { get; }
-
-            public Vector3F Normal { get; }
-
-            public double Distance { get; }
-
-            public bool HasHit { get; }
-
-            public Vector3I GlobalBlockPosition { get; }
-
-
-            public RaycastChunkHit(Vector3F position, Vector3F normal, double distance, Block block, Chunk chunk,
-                Vector3I localPosition, bool hasHit)
-            {
-                this.Block = block;
-                this.Chunk = chunk;
-                this.LocalPosition = localPosition;
-                this.GlobalPosition = position;
-                this.Normal = normal;
-                this.Distance = distance;
-                this.HasHit = hasHit;
-                this.GlobalBlockPosition = World.LocalToGlobal(chunk.Coordinates, localPosition);
             }
         }
     }

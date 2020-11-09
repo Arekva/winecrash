@@ -69,11 +69,9 @@ namespace Winecrash.Client
             Camera.Main.NearClip = 0.01D;
             Camera.Main.FarClip = 4096.0D;
             Camera.Main.RenderLayers &= ~(ulong)Layers.UI;
-            //Camera.Main.RenderLayers &= ~(1UL << 32);
-            
-            
-            
 
+            Winecrash.RenderDistance = 2;
+            
             GameApplication app = (GameApplication)Graphics.Window;
             app.VSync = VSyncMode.On;
             
@@ -121,7 +119,6 @@ namespace Winecrash.Client
 
             Game.OnPartyJoined += type =>
             {
-
                 GameUI.Instance.Enabled = true;
                 Input.LockMode = CursorLockModes.Lock;
                 Input.CursorVisible = false;
@@ -151,9 +148,10 @@ namespace Winecrash.Client
                 {
                     Player.LocalPlayer.CameraAngles = Vector2I.Zero;
 
-                    Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, Winecrash.RenderDistance), vector =>
+                    Task.Run(() =>
                     {
-                        World.GetOrCreateChunk(vector, "winecrash:overworld");
+                        Parallel.ForEach(World.GetCoordsInRange(Vector2I.Zero, Winecrash.RenderDistance),
+                            vector => { World.GetOrCreateChunk(vector, "winecrash:overworld"); });
                     });
                 }
             };

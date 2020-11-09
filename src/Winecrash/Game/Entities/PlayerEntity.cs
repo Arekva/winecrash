@@ -204,6 +204,7 @@ namespace Winecrash.Entities
             }
         }
 
+        private int aa = 0;
         protected override void Creation()
         {
             base.Creation();
@@ -217,16 +218,24 @@ namespace Winecrash.Entities
             {
                 Task.Run(() =>
                 {
-                    Vector2I[] previousChunks = World.GetCoordsInRange(previous, Winecrash.RenderDistance);
-                    Vector2I[] currentChunks = World.GetCoordsInRange(current, Winecrash.RenderDistance).OrderBy(c => Vector2I.Distance(c, current)).ToArray();
-
-                    Vector2I[] toDelete = previousChunks.Except(currentChunks).ToArray();
-
-                    /*for (int i = 0; i < toDelete.Length; i++)
+                    Chunk[] chunks = World.GetChunks("winecrash:overworld");
+                    Vector2I[] previousChunks = new Vector2I[chunks.Length];//World.GetCoordsInRange(previous, Winecrash.RenderDistance);
+                    for (int i = 0; i < chunks.Length; i++)
                     {
-                        World.GetChunk(toDelete[i], "winecrash:overworld")?.Delete();
-                    }*/
+                        previousChunks[i] = chunks[i].Coordinates;
+                    }
+                    Vector2I[] currentChunks = World.GetCoordsInRange(current, Winecrash.RenderDistance);//.OrderBy(c => Vector2I.Distance(c, current)).ToArray();
 
+                    /*Vector2I[] toDelete = previousChunks.Except(currentChunks).ToArray();
+
+                    for (int i = 0; i < toDelete.Length; i++)
+                    {
+                        World.UnloadChunk(World.GetChunk(toDelete[i], "winecrash:overworld"));
+                        //World.GetChunk(toDelete[i], "winecrash:overworld")?.Delete();
+                    }
+                    
+                    Debug.Log("AAA " + ++aa);
+*/
                     Parallel.ForEach(currentChunks, vec => { World.GetOrCreateChunk(vec, "winecrash:overworld"); });
                 });
             };
@@ -276,12 +285,16 @@ namespace Winecrash.Entities
                     AnimateWalk(this.RigidBody.Velocity);
                 }
             }
+            
+            FreeBoxCollider collider = new FreeBoxCollider()
+            {
+                AABB = new AABB(new Vector3D(8, 128, 8), new Vector3D(8,128,8))
+            };
 
-            Hit hit = new BoxBoxCollisionProvider().Collide(this.Collider,
-                new FreeBoxCollider()
-                {
-                    AABB = new AABB(new Vector3D(8, 128, 8), new Vector3D(8,128,8))
-                });
+            Hit hit = new BoxBoxCollisionProvider().Collide(this.Collider, collider);
+            
+            collider.Delete();
+            
             //Debug.Log(this.WObject.Position);
             if (hit.HasHit)
             {
@@ -295,8 +308,6 @@ namespace Winecrash.Entities
             base.FixedUpdate();
 
             if (this.RigidBody == null || this.Collider == null) return;
-            
-            
 
             double xzVel = this.RigidBody.Velocity.XZ.Length;
             
@@ -328,7 +339,7 @@ namespace Winecrash.Entities
 
             if (AnyMoveInputOnFrame)
             {
-                //AnimateWalk();
+                
             }
             else
             {
@@ -349,9 +360,8 @@ namespace Winecrash.Entities
 
             if (!Player.NoClipping)
             {
-                ChunkBoxCollisionProvider.RaycastChunkHit h = ChunkBoxCollisionProvider.CollideWorld(Collider);
+                RaycastChunkHit h = ChunkBoxCollisionProvider.CollideWorld(Collider);
             }
-
         }
 
         protected override void OnDelete()

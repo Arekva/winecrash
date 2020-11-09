@@ -136,7 +136,6 @@ namespace WEngine
                 }
             }
         }
-
         internal void LateFixedUpdate()
         {
             if(this._Modules != null)
@@ -183,7 +182,7 @@ namespace WEngine
         }
         private void Update()
         {
-            while (true)
+            while (!this.Deleted)
             {
                 UpdateTypes ut = UpdateType;
                 this.ResetEvent.WaitOne(); //wait for reset event
@@ -301,42 +300,13 @@ namespace WEngine
                         }
                     }
                 }
-
-                this.Thread.Abort();
+                
                 this.Deleted = true;
-
+                this.Thread = null;
+                
                 this.DoneEvent.Set();
             }
         }
-
-        private void RemoveGroup(int order)
-        {
-            if (order == 0)
-            {
-                Debug.LogWarning($"Group.cs: unable to remove group 0.");
-
-                return;
-            }
-            Group group = GetGroup(order);
-
-            if (group != null)
-            {
-                group.Thread.Abort();
-                group.Thread = null;
-
-                group.Thread.Abort();
-
-                lock (GroupsLocker)
-                    _Groups.Remove(group);
-
-                CreateOrGetGroup(0, null, group._Modules);
-            }
-            else
-            {
-                Debug.LogWarning($"Layer.cs: tried to remove layer {order}, but it is not existing.");
-            }
-        }
-
         private void SetOrder(int newOrder)
         {
             if (this._Order == 0) return;
@@ -367,11 +337,11 @@ namespace WEngine
             lock (moduleLocker)
                 second._Modules = null;
 
-            second.Thread.Abort();
-            second.Thread = null;
-
             lock(GroupsLocker)
                 _Groups.Remove(second);
+            
+            second.Deleted = true;
+            second.Thread = null;
 
             return first;
         }

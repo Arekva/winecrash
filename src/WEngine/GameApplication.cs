@@ -377,6 +377,8 @@ namespace WEngine
             }
             onRenderOnce?.Invoke();
 
+            Layer.PhysicsThreadLocker.Reset();
+            Layer.RenderThreadLocker.WaitOne();
             lock(MeshRenderer.ActiveMeshRenderersLocker)
             {
                 Parallel.ForEach(MeshRenderer.ActiveMeshRenderers, mr =>
@@ -384,12 +386,14 @@ namespace WEngine
                     mr.PrepareForRender();
                 });
             }
+            Layer.PhysicsThreadLocker.Set();
 
 
             Time.ResetRender();
             Time.BeginRender();
             OnRender?.Invoke(new UpdateEventArgs(e.Time));
             Time.EndRender();
+            
 
             SwapBuffers();
 

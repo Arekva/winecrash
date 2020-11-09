@@ -7,7 +7,7 @@ namespace Winecrash
         Nothing = 0UL,
         Default = 1UL,
         Sky = 1UL << 32,
-        UI = 1UL << 42,
+        UI = 1UL << 48,
         Everything = UInt64.MaxValue,
         
         

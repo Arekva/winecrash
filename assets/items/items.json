@@ -50,6 +50,11 @@
             "Identifier": "winecrash:diamond_pickaxe",
             "RuntimeType": "Winecrash.Tool, WinecrashCore",
             "Path": "assets/items/diamond_pickaxe.json"
+        },
+        {
+            "Identifier": "winecrash:water",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
+            "Path": "assets/items/water.json"
         }
     ]
 }

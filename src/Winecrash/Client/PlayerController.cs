@@ -154,8 +154,67 @@ namespace Winecrash.Client
                         jump = true;
                     }
                 }
-                
-                #if DEBUG
+
+
+                RaycastChunkHit hit = World.RaycastWorld(new Ray(Camera.Main.WObject.Position, Camera.Main.WObject.Forward, 5.0D));
+
+                if (hit.HasHit)
+                {
+                    if (Input.IsPressing(Keys.MouseLeftButton))
+                    {
+                        Vector3I b = hit.LocalPosition;
+                        hit.Chunk.Edit(b.X, b.Y, b.Z);
+                        //Debug.Log(hit.Block.Identifier + " (Distance: " + hit.Distance + ")");
+                    }
+                    else if (Input.IsPressing(Keys.MouseRightButton))
+                    {
+                        Vector3D bg = hit.LocalPosition;
+                        bg += (Vector3D)hit.Normal;
+                        Vector3I b = bg;
+
+                        Vector3I relb = World.RelativePositionToChunk(hit.LocalPosition, hit.Chunk.Coordinates);
+                        
+                        Debug.Log(relb + " / " + hit.Normal);
+
+                        Chunk ec = hit.Chunk;
+                        if (relb.Y < 0 || relb.Y > Chunk.Height - 1) // not in chunk ...
+                        {
+                            ec = null;
+                        }
+
+                        // x - z
+                        if (ec != null)
+                        {
+                            if (relb.X < 0)
+                            {
+                                ec = World.GetChunk(ec.Coordinates + Vector2I.Left, "winecrash:overworld");
+                                b.X = Chunk.Width - 1;
+                            }
+
+                            else if (relb.X > Chunk.Width - 1)
+                            {
+                                ec = World.GetChunk(ec.Coordinates + Vector2I.Right, "winecrash:overworld");
+                                b.X = 0;
+                            }
+                            
+                            if (relb.Z < 0)
+                            {
+                                ec = World.GetChunk(ec.Coordinates + Vector2I.Down, "winecrash:overworld");
+                                b.Z = Chunk.Depth - 1;
+                            }
+
+                            else if (relb.Z > Chunk.Depth - 1)
+                            {
+                                ec = World.GetChunk(ec.Coordinates + Vector2I.Up, "winecrash:overworld");
+                                b.Z = 0;
+                            }
+                        }
+
+                        ec?.Edit(b.X, b.Y, b.Z, ItemCache.Get<Block>("winecrash:direction"));
+                    }
+                }
+
+                //#if DEBUG
                 if (Input.IsPressing(Keys.NumPadAdd))
                 {
                     //this place is meant to add a breakpoint in editors to see the current state of the game.
@@ -166,7 +225,20 @@ namespace Winecrash.Client
                 {
                     Graphics.Window.VSync = Graphics.Window.VSync == VSyncMode.Off ? VSyncMode.On : VSyncMode.Off;
                 }
-                #endif
+
+                if (Input.IsPressing(Keys.G))
+                {
+                    World.RebuildDimension("winecrash:overworld");
+                }
+                if (Input.IsPressing(Keys.O))
+                {
+                    Winecrash.RenderDistance--;
+                }
+                if (Input.IsPressing(Keys.P))
+                {
+                    Winecrash.RenderDistance++;
+                }
+                //#endif
 
                 if (Program.Client.Connected)
                 {

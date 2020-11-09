@@ -1,5 +1,6 @@
 {
     "Transparent": true,
+    "DrawInternalFaces": true,
     
     "Textures": {
       "Up": "assets/textures/blocks/leaves.png",

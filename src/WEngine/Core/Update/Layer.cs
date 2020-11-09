@@ -36,6 +36,9 @@ namespace WEngine
 
         internal List<Group> _Groups { get; set; } = new List<Group>(1);
         internal object GroupsLocker { get; set; } = new object();
+        
+        internal static ManualResetEvent PhysicsThreadLocker { get; set; } = new ManualResetEvent(true);
+        internal static ManualResetEvent RenderThreadLocker { get; set; } = new ManualResetEvent(true);
 
         internal bool Deleted { get; set; } = false;
 
@@ -58,6 +61,8 @@ namespace WEngine
                 Stopwatch sw = new Stopwatch();
                 while (true)
                 {
+                    PhysicsThreadLocker.WaitOne();
+                    RenderThreadLocker.Reset();
                     sw.Start();
 
                     Layer[] layers = _Layers.ToArray();
@@ -126,6 +131,7 @@ namespace WEngine
                     
 
                     sw.Stop();
+                    RenderThreadLocker.Set();
                     double waitTime = Physics.FixedRate - sw.Elapsed.TotalSeconds;
                     sw.Start();
                     if (waitTime > 0.0D)
@@ -335,7 +341,7 @@ namespace WEngine
 
                 for (int j = 0; j < layer._Groups.Count; j++)
                 {
-                    if (layer._Groups[j] == null && layer._Groups[j].Deleted) continue;
+                    if (layer._Groups[j] == null || layer._Groups[j].Deleted) continue;
 
                     layer._Groups[j].DoneEvent.Reset();
                     doneEvents.Add(layer._Groups[j].DoneEvent);

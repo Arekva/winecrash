@@ -25,7 +25,8 @@ namespace Winecrash
             if (!string.IsNullOrEmpty(TexturePath))
                 Texture = WEngine.Texture.GetOrCreate(TexturePath);
 
-            this.Model = this.BuildModel();
+            if(Engine.DoGUI)
+                this.Model = this.BuildModel();
         }
 
         internal virtual Mesh BuildModel()

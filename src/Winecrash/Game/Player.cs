@@ -27,7 +27,7 @@ namespace Winecrash
         public static double JumpForce = 5.0D;
 
         public static double WalkSpeed = 4.3D;
-        public static double WalkAcceleration = 50.0D/2.0D;
+        public static double WalkAcceleration = 50.0D*25;
         public static double WalkDeaccelerationFactor = 16.0D;
         public static double StopSpeed = 0.05D;
 
@@ -227,15 +227,15 @@ namespace Winecrash
             if (NoClipping)
             {
                 Entity.WObject.Position +=
-                    this.Entity.Rotation * dir.Normalized * Time.DeltaTime * WalkAcceleration;
+                    this.Entity.Rotation * dir.Normalized * Time.DeltaTime * WalkAcceleration * 0.1;
             }
             else
             {
                 Entity.RigidBody.Velocity += (new Quaternion(0, CameraAngles.X, 0) * dir.Normalized) *
-                                             Time.DeltaTime * WalkAcceleration * 50;
+                                             Time.DeltaTime * WalkAcceleration;
             }
             
-            Debug.Log(Entity.RigidBody.Velocity);
+            //Debug.Log(Entity.RigidBody.Velocity);
         }
 
         public PlayerEntity CreateEntity(WObject parent)

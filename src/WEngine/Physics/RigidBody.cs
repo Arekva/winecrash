@@ -31,7 +31,7 @@ namespace WEngine
 
         protected internal override void Creation()
         {
-            this.FixedExecutionOrder = -1000;
+            //this.FixedExecutionOrder = -1000;
         }
 
         protected internal override void PreFixedUpdate()

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WEngine;
+using Winecrash.Entities;
 using Debug = WEngine.Debug;
 
 namespace Winecrash
@@ -25,6 +26,10 @@ namespace Winecrash
     
     public class Chunk : Module, ICollider
     {
+        public override string ToString()
+        {
+            return $"Chunk[{Coordinates.X};{Coordinates.Y}/ {Dimension.Identifier}]";
+        }
 
         static Chunk()
         {
@@ -99,6 +104,9 @@ namespace Winecrash
                 this.InterdimensionalCoordinates = new Vector3I(value.XY, this.InterdimensionalCoordinates.Z);
             }
         }
+        
+        public object EntityLocker = new object();
+        public List<Entity> Entities { get; set; } = new List<Entity>();
 
         public Dimension Dimension
         {
@@ -359,6 +367,7 @@ namespace Winecrash
 
         protected override void Creation()
         {
+            
             OnChunkLoad += OnChunkLoadedDelegate;
             //lock (SafeLogicLocker)
             //{
@@ -384,10 +393,11 @@ namespace Winecrash
             
             if (Engine.DoGUI)
             {
-                if(NorthNeighbor != null) NorthNeighbor.BuildEndFrame = true;
+                // FAST DEBUG - FLAT WORLD -
+                /*if(NorthNeighbor != null) NorthNeighbor.BuildEndFrame = true;
                 if(SouthNeighbor != null) SouthNeighbor.BuildEndFrame = true;
                 if(WestNeighbor != null) WestNeighbor.BuildEndFrame = true;
-                if(EastNeighbor != null) EastNeighbor.BuildEndFrame = true;
+                if(EastNeighbor != null) EastNeighbor.BuildEndFrame = true;*/
             }
         }
 
@@ -428,6 +438,20 @@ namespace Winecrash
                     Task.Run(Construct);
                 }
             }
+            
+            // if local, delete unnecessary chunks
+            /*if (Player.LocalPlayer != null)
+            {
+                Vector2I pcords = Player.LocalPlayer.Entity.ChunkCoordinates;
+
+                double dist = Vector2I.Distance(pcords, this.Coordinates);
+
+                if (dist > Winecrash.RenderDistance + 2)
+                {
+                    World.UnloadChunk(this);
+                    return;
+                }
+            }*/
 
             base.LateUpdate();
         }
@@ -438,6 +462,17 @@ namespace Winecrash
             OnChunkUnload -= OnChunkUnloadDelegate;
             
             OnChunkUnload?.Invoke(new ChunkEventArgs(this));
+
+            lock (EntityLocker)
+            {
+                foreach (Entity ent in this.Entities)
+                {
+                    ent.Delete();
+                }
+                
+                this.Entities.Clear();
+                this.Entities = null;
+            }
             
             this.NorthNeighbor = null;
             this.SouthNeighbor = null;
@@ -447,8 +482,8 @@ namespace Winecrash
 
             if (Engine.DoGUI && this.BlocksRenderer)
             {
-                this.BlocksRenderer.Mesh?.Delete();
-                this.BlocksRenderer.Material?.Delete();
+                //this.BlocksRenderer.Mesh?.Delete();
+                //this.BlocksRenderer.Material?.Delete();
                 this.BlocksRenderer.Delete();
                 this.BlocksRenderer = null;
             }
@@ -501,6 +536,7 @@ namespace Winecrash
         public static int MaxConstructingAtOnce = 10;
         public void Construct()
         {
+            //Debug.Log("Constructing " + this.Coordinates);
             if (this.Deleted) return;
 
             if (this.Blocks == null) 
@@ -554,12 +590,12 @@ namespace Winecrash
 
                         if (block.Identifier == "winecrash:air") continue; // ignore if air
 
-                        if (IsTransparent(x, y + 1, z, blocks)) faces.Push(BlockFaces.Up); // up
-                        if (IsTransparent(x, y - 1, z, blocks)) faces.Push(BlockFaces.Down); // down
-                        if (IsTransparent(x - 1, y, z, blocks)) faces.Push(BlockFaces.West); // west
-                        if (IsTransparent(x + 1, y, z, blocks)) faces.Push(BlockFaces.East); // east
-                        if (IsTransparent(x, y, z + 1, blocks)) faces.Push(BlockFaces.North); // north
-                        if (IsTransparent(x, y, z - 1, blocks)) faces.Push(BlockFaces.South); // south
+                        if (IsTransparent(block, x, y + 1, z, blocks)) faces.Push(BlockFaces.Up); // up
+                        if (IsTransparent(block, x, y - 1, z, blocks)) faces.Push(BlockFaces.Down); // down
+                        if (IsTransparent(block, x - 1, y, z, blocks)) faces.Push(BlockFaces.West); // west
+                        if (IsTransparent(block, x + 1, y, z, blocks)) faces.Push(BlockFaces.East); // east
+                        if (IsTransparent(block, x, y, z + 1, blocks)) faces.Push(BlockFaces.North); // north
+                        if (IsTransparent(block, x, y, z - 1, blocks)) faces.Push(BlockFaces.South); // south
 
                         foreach (BlockFaces face in faces)
                         {
@@ -931,7 +967,7 @@ namespace Winecrash
 
         ushort transpid;
         Block transblock;
-        private bool IsTransparent(int x, int y, int z, Dictionary<ushort, Block> cache)
+        private bool IsTransparent(Block currentBlock, int x, int y, int z, Dictionary<ushort, Block> cache)
         {
             //if outside world, yes
             if (y < 0 || y > 255) return true;
@@ -979,7 +1015,15 @@ namespace Winecrash
                    cache.Add(transpid, transblock);
             }
 
-            return transblock.Transparent;
+
+            if (currentBlock == transblock)
+            {
+                return transblock.Transparent && transblock.DrawInternalFaces;
+            }
+            else
+            {
+                return transblock.Transparent;
+            }
         }
 
 #endregion

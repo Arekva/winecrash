@@ -12,8 +12,10 @@ namespace Winecrash
         //-- set in item config --//
         public bool Transparent { get; set; } = false;
         //-- set in item config --//
-
         public double DigTime { get; set; } = 1.0D;
+
+        //-- set in item config --//
+        public bool DrawInternalFaces { get; set; } = false;
 
         public void Tick(TickType type, Chunk chunk, Vector3I position) 
         {
