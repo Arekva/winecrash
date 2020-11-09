@@ -51,6 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleUtils.cs" />
+    <Compile Include="Container\ContainerItem.cs" />
+    <Compile Include="Container\IContainer.cs" />
     <Compile Include="Dimension.cs" />
     <Compile Include="Entities\ItemEntity.cs" />
     <Compile Include="Entities\Entity.cs" />
@@ -65,6 +67,7 @@
     <Compile Include="Items\ItemCache.cs" />
     <Compile Include="Items\ItemDB.cs" />
     <Compile Include="Items\Tool.cs" />
+    <Compile Include="Items\Workbench.cs" />
     <Compile Include="Layers.cs" />
     <Compile Include="Net\NetCamera.cs" />
     <Compile Include="Net\NetChunk.cs" />
