@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Management.Instrumentation;
 using System.Runtime.CompilerServices;
 using System.Security.AccessControl;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using WEngine;
 using Winecrash.Entities;
@@ -163,13 +166,6 @@ namespace Winecrash
 
             return chunk;
         }
-        
-        
-        
-        private static LibNoise.Primitive.ImprovedPerlin perlin = new ImprovedPerlin("lol".GetHashCode(), NoiseQuality.Fast);
-        
-        
-        private static double size = 0.05D;
 
         private static ushort[] GenerateLandmass(Vector2I chunkCoords)
         {
@@ -202,13 +198,8 @@ namespace Winecrash
             //var combiner = new LibNoise.Combiner.Add(baseLandmass1, baseLandmass1);
             float oceanCoverage = 0.5F;
             
-
             ushort airID = ItemCache.GetIndex("winecrash:air");
             ushort stoneID = ItemCache.GetIndex("winecrash:stone");
-            ushort sandID = ItemCache.GetIndex("winecrash:sand");
-            ushort grassID = ItemCache.GetIndex("winecrash:grass");
-            ushort debugID = ItemCache.GetIndex("winecrash:direction");
-            ushort waterID = ItemCache.GetIndex("winecrash:water");
 
             ushort[] indices = new ushort[Chunk.Width * Chunk.Height * Chunk.Depth];
             
@@ -241,22 +232,22 @@ namespace Winecrash
                 {
                     if (y < finalLandMassHeight)
                     {
-                        indices[i] = grassID;
+                        indices[i] = stoneID;
                     }
                 }
                 else if (y == oceanLevel - 1)
                 {
-                    indices[i] = waterID;
+                    //indices[i] = waterID;
                 }
                 else if (y < oceanLevel - 1)
                 {
                     if (y > finalWaterHeight)
                     {
-                        indices[i] = waterID;
+                        //indices[i] = waterID;
                     }
                     else
                     {
-                        indices[i] = sandID;
+                        indices[i] = stoneID;
                     }
                 }
 
@@ -270,6 +261,84 @@ namespace Winecrash
             return indices;
         }
 
+        private static ushort[] PaintLandmass(Vector2I chunkCoords, ushort[] indices)
+        {
+            ushort airID = ItemCache.GetIndex("winecrash:air");
+            ushort stoneID = ItemCache.GetIndex("winecrash:stone");
+            ushort grassID = ItemCache.GetIndex("winecrash:grass");
+            ushort dirtID = ItemCache.GetIndex("winecrash:dirt");
+            ushort sandID = ItemCache.GetIndex("winecrash:sand");
+            ushort waterID = ItemCache.GetIndex("winecrash:water");
+
+            //ushort[] indices = new ushort[Chunk.Width * Chunk.Height * Chunk.Depth];
+            
+            Vector3F shift = Vector3F.Zero;
+            
+            Vector3F basePos = new Vector3F((chunkCoords.X * Chunk.Width) + shift.X, shift.Y, (chunkCoords.Y * Chunk.Depth) + shift.Z);
+
+            // for each x and z, for y from top to bottom:
+            Parallel.For(0, Chunk.Width /** Chunk.Height*/ * Chunk.Depth, i =>
+            {
+                // get the x / z position
+                WMath.FlatTo2D(i, Chunk.Width, out int x, out int z);
+
+                int surfaceHeight = Chunk.Height - 1;
+                bool heightFound = false;
+                for (int y = Chunk.Height - 1; y > -1; y--)
+                {
+                    int idx = WMath.Flatten3D(x, y, z, Chunk.Width, Chunk.Height);
+
+
+                    // if height already have been found, check back if
+                    // there is a surface or not (3D terrain, like grass under arches or so)
+                    if (heightFound)
+                    {
+                        if (indices[idx] == airID) // if air found, reset height 
+                        {
+                            surfaceHeight = y;
+                            heightFound = false;
+                        }
+                    }
+                    else
+                    {
+                        surfaceHeight = y;
+                        if (indices[idx] != airID)
+                        {
+                            heightFound = true;
+                        }
+                    }
+                    
+                    // second pass: check the difference between surface and
+                    // the current block height.
+                    if (heightFound)
+                    {
+                        int deltaHeight = surfaceHeight - y;
+
+                        bool ocean = surfaceHeight < 64;
+                        
+                        // surface => grass
+                        if (deltaHeight == 0)
+                        {
+                            indices[idx] = ocean ? sandID : grassID;
+                        }
+                        // dirt, under the grass
+                        else if (deltaHeight < 3)
+                        {
+                            indices[idx] = ocean ? sandID : dirtID;
+                        }
+                    }
+
+                    if (y < 64 && indices[idx] == airID)
+                    {
+                        indices[idx] = waterID;
+                    }
+                }
+                //Vector3F finalPos = new Vector3F((basePos.X + x) * baseLandmassScale, basePos.Y + y,
+                //    (basePos.Z + z) * baseLandmassScale) * globalScale;
+            });
+
+            return indices;
+        }
         private static ushort[] GenerateSimple(Vector2I chunkCoords)
         {
             /*Dictionary<string, ushort> idsCache = new Dictionary<string, ushort>();
@@ -278,7 +347,53 @@ namespace Winecrash
             const string airID = "winecrash:air";*/
             
             
-            return GenerateLandmass(chunkCoords);
+            return PaintLandmass(chunkCoords, GenerateLandmass(chunkCoords));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="structure"></param>
+        /// <param name="position"></param>
+        /// <param name="eraseSolid">Erase solid blocks, like for underground structures</param>
+        public static void PlaceStructure(Structure structure, Vector3I position, bool eraseSolid = false)
+        {
+            Vector3I shift = -structure.Root;
+            Vector3I origin = position + shift;
+            Vector3I extents = structure.Size;
+            
+            ConcurrentDictionary<Vector2I, Chunk> chunkCache = new ConcurrentDictionary<Vector2I, Chunk>();
+
+            ushort[] blocks = structure.Blocks;
+
+            ushort airID = ItemCache.GetIndex("winecrash:air");
+
+            Parallel.For(0, blocks.Length, i =>
+            {
+                WMath.FlatTo3D(i, extents.X, extents.Y, out int localX, out int localY, out int localZ);
+                
+                Vector3I globalBpos = new Vector3I(localX, localY, localZ) + origin;
+                
+                GlobalToLocal(globalBpos, out Vector2I cpos, out Vector3I bpos);
+
+                Chunk c;
+                if (!chunkCache.TryGetValue(cpos, out c))
+                {
+                    c = GetChunk(cpos, "winecrash:overworld");
+                    chunkCache.TryAdd(cpos,c);
+                }
+
+                if (c && (eraseSolid || c.GetBlockIndex(bpos.X, bpos.Y, bpos.Z) == airID))
+                {
+                    c.SetBlock(bpos.X, bpos.Y, bpos.Z, blocks[i]);
+                }
+            });
+
+            if (Engine.DoGUI) foreach (Chunk chunk in chunkCache.Values) if (chunk) chunk.BuildEndFrame = true;
+
+            chunkCache.Clear();
+            chunkCache = null;
+
         }
 
         public static void RebuildDimension(string dimension)

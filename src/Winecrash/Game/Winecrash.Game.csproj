@@ -86,6 +86,7 @@
     <Compile Include="Save\SaveInfoConfig.cs" />
     <Compile Include="Save\SaveStatus.cs" />
     <Compile Include="StringMethods.cs" />
+    <Compile Include="Structure.cs" />
     <Compile Include="Sync\Config.cs" />
     <Compile Include="Sync\SynchronizeAttribute.cs" />
     <Compile Include="Sync\SyncMode.cs" />
