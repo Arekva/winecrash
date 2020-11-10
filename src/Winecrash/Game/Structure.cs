@@ -13,7 +13,8 @@ namespace Winecrash
     {
         static Structure()
         {
-            Structure.Load("/assets/structures/tree.json");
+            Structure.Load("assets/structures/tree.json");
+            Structure.Load("assets/structures/debug.json");
         }
         private static List<Structure> _Cache = new List<Structure>();
         public Vector3I Size { get; set; }

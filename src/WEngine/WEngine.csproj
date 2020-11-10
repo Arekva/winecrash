@@ -107,6 +107,7 @@
     <Compile Include="Debugging\BoxDebugVolume.cs" />
     <Compile Include="Debugging\DebugVolume.cs" />
     <Compile Include="EngineException.cs" />
+    <Compile Include="Extentions\EConcurrentBag.cs" />
     <Compile Include="Extentions\EGuid.cs" />
     <Compile Include="GUI\TextInputField.cs" />
     <Compile Include="JSON\Config.cs" />

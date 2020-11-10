@@ -363,7 +363,7 @@ namespace WEngine
 
                 for (int j = 0; j < layer._Groups.Count; j++)
                 {
-                    if (layer._Groups[j].Deleted) continue;
+                    if (layer._Groups[j] == null ||layer._Groups[j].Deleted) continue;
 
                     layer._Groups[j].DoneEvent.Reset();
                     doneEvents.Add(layer._Groups[j].DoneEvent);

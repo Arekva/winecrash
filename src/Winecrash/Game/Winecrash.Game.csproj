@@ -94,6 +94,7 @@
     <Compile Include="Winecrash.cs" />
     <Compile Include="World\Chunk.cs" />
     <Compile Include="World\ChunkBoxCollisionProvider.cs" />
+    <Compile Include="World\ChunkBuilding.cs" />
     <Compile Include="World\ChunkRayCollisionProvider.cs" />
     <Compile Include="World\Generator\IDimensionGenerator.cs" />
     <Compile Include="World\Generator\IGenerator.cs" />

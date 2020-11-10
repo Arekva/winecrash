@@ -45,7 +45,7 @@ namespace WEngine
             set
             {
                 this._Name = value;
-                this.Thread.Name = value + " Thread";
+                this.Thread.Name = value;
             }
         }
 

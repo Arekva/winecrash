@@ -214,6 +214,10 @@ namespace Winecrash.Client
                     }
                 }
 
+                World.GlobalToLocal(this.WObject.Position, out Vector2I global, out Vector3I local);
+
+                Debug.Log("world: " + this.WObject.Position.ToString("F2") + "       / " + "chunk: " + global + " / local: " + local);
+
                 //#if DEBUG
                 if (Input.IsPressing(Keys.NumPadAdd))
                 {
@@ -226,10 +230,10 @@ namespace Winecrash.Client
                     Graphics.Window.VSync = Graphics.Window.VSync == VSyncMode.Off ? VSyncMode.On : VSyncMode.Off;
                 }
 
-                if (Input.IsPressing(Keys.G))
+                /*if (Input.IsPressing(Keys.G))
                 {
                     World.RebuildDimension("winecrash:overworld");
-                }
+                }*/
                 if (Input.IsPressing(Keys.O))
                 {
                     Winecrash.RenderDistance--;
@@ -255,6 +259,10 @@ namespace Winecrash.Client
                 //Debug.Log(Player.LocalPlayer.Entity.WObject.Position);
                 //Program.Client.SendObject(ne);
             }
+        }
+
+        protected override void FixedUpdate()
+        {
         }
 
         private object _FixedInputsLockers = new object();

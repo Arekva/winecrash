@@ -224,7 +224,7 @@ namespace Winecrash.Entities
                     {
                         previousChunks[i] = chunks[i].Coordinates;
                     }
-                    Vector2I[] currentChunks = World.GetCoordsInRange(current, Winecrash.RenderDistance);//.OrderBy(c => Vector2I.Distance(c, current)).ToArray();
+                    Vector2I[] currentChunks = World.GetCoordsInRange(current, Winecrash.RenderDistance).OrderBy(c => Vector2I.Distance(c, current)).ToArray();
 
                     /*Vector2I[] toDelete = previousChunks.Except(currentChunks).ToArray();
 
@@ -236,7 +236,15 @@ namespace Winecrash.Entities
                     
                     Debug.Log("AAA " + ++aa);
 */
-                    Parallel.ForEach(currentChunks, vec => { World.GetOrCreateChunk(vec, "winecrash:overworld"); });
+                    for (int i = 0; i < currentChunks.Length; i++)
+                    {
+                        World.GetOrCreateChunk(currentChunks[i], "winecrash:overworld");
+                    }
+
+                    currentChunks = null;
+                    previousChunks = null;
+
+                    //Parallel.ForEach(currentChunks, vec => { World.GetOrCreateChunk(vec, "winecrash:overworld"); });
                 });
             };
 

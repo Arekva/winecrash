@@ -161,7 +161,7 @@ namespace Winecrash
             {
                 //Debug.Log(dimChunks.Length);
                 //Debug.Log("CREATING CHUNK");
-                chunk = CreateChunk(coordinates, dimIndex, GenerateSimple(coordinates));
+                chunk = CreateChunk(coordinates, dimIndex, null);
             }
 
             return chunk;
@@ -261,7 +261,7 @@ namespace Winecrash
             return indices;
         }
 
-        private static ushort[] PaintLandmass(Vector2I chunkCoords, ushort[] indices)
+        private static ushort[] PaintLandmass(Vector2I chunkCoords, ushort[] indices, out Vector3I[] surfaces)
         {
             ushort airID = ItemCache.GetIndex("winecrash:air");
             ushort stoneID = ItemCache.GetIndex("winecrash:stone");
@@ -275,6 +275,8 @@ namespace Winecrash
             Vector3F shift = Vector3F.Zero;
             
             Vector3F basePos = new Vector3F((chunkCoords.X * Chunk.Width) + shift.X, shift.Y, (chunkCoords.Y * Chunk.Depth) + shift.Z);
+            
+            ConcurrentBag<Vector3I> allSurfaces = new ConcurrentBag<Vector3I>();
 
             // for each x and z, for y from top to bottom:
             Parallel.For(0, Chunk.Width /** Chunk.Height*/ * Chunk.Depth, i =>
@@ -305,6 +307,7 @@ namespace Winecrash
                         if (indices[idx] != airID)
                         {
                             heightFound = true;
+                            allSurfaces.Add(new Vector3I(x,y,z));
                         }
                     }
                     
@@ -337,25 +340,55 @@ namespace Winecrash
                 //    (basePos.Z + z) * baseLandmassScale) * globalScale;
             });
 
+            surfaces = allSurfaces.ToArray();
+
             return indices;
         }
-        private static ushort[] GenerateSimple(Vector2I chunkCoords)
+
+        private static ushort[] Populate(Vector2I chunkCoords, ushort[] indices, Vector3I[] surfaces)
+        {
+            double treeDensity = 0.005D;
+
+            int chunkHash = chunkCoords.GetHashCode() * Seed.Value;
+            
+            Random treeRandom = new Random(chunkHash);
+            Structure tree = Structure.Get("Debug");
+
+            ushort dirtID = ItemCache.GetIndex("winecrash:dirt");
+            ushort grassID = ItemCache.GetIndex("winecrash:grass");
+            ushort debugID = ItemCache.GetIndex("winecrash:direction");
+            
+            // do trees
+            for (int i = 0; i < surfaces.Length; i++)
+            {
+                int flatten = WMath.Flatten3D(surfaces[i].X, surfaces[i].Y, surfaces[i].Z, Chunk.Width, Chunk.Height);
+                bool doTree = treeRandom.NextDouble() < treeDensity;
+                
+                if ((indices[flatten] == dirtID || indices[flatten] == grassID) && doTree)
+                {
+                    indices[flatten] = debugID;
+                    
+                    PlaceStructure(tree, LocalToGlobal(chunkCoords, new Vector3D(surfaces[i].X, surfaces[i].Y + 1, surfaces[i].Z)), false);
+                }
+            }
+
+            return indices;
+        }
+        private static ushort[] GenerateSimple(Vector2I chunkCoords, out Vector3I[] surfaces)
         {
             /*Dictionary<string, ushort> idsCache = new Dictionary<string, ushort>();
             
             ushort[] blocks = new ushort[Chunk.TotalBlocks];
             const string airID = "winecrash:air";*/
+
+
+            ushort[] indices = GenerateLandmass(chunkCoords);
             
-            
-            return PaintLandmass(chunkCoords, GenerateLandmass(chunkCoords));
+            PaintLandmass(chunkCoords, indices, out surfaces);
+
+            return indices;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="structure"></param>
-        /// <param name="position"></param>
-        /// <param name="eraseSolid">Erase solid blocks, like for underground structures</param>
         public static void PlaceStructure(Structure structure, Vector3I position, bool eraseSolid = false)
         {
             Vector3I shift = -structure.Root;
@@ -371,16 +404,16 @@ namespace Winecrash
             Parallel.For(0, blocks.Length, i =>
             {
                 WMath.FlatTo3D(i, extents.X, extents.Y, out int localX, out int localY, out int localZ);
-                
+
                 Vector3I globalBpos = new Vector3I(localX, localY, localZ) + origin;
-                
+
                 GlobalToLocal(globalBpos, out Vector2I cpos, out Vector3I bpos);
 
                 Chunk c;
                 if (!chunkCache.TryGetValue(cpos, out c))
                 {
                     c = GetChunk(cpos, "winecrash:overworld");
-                    chunkCache.TryAdd(cpos,c);
+                    chunkCache.TryAdd(cpos, c);
                 }
 
                 if (c && (eraseSolid || c.GetBlockIndex(bpos.X, bpos.Y, bpos.Z) == airID))
@@ -396,7 +429,7 @@ namespace Winecrash
 
         }
 
-        public static void RebuildDimension(string dimension)
+        /*public static void RebuildDimension(string dimension)
         {
             Chunk[] chunks = null;
             lock (ChunksLocker)
@@ -412,11 +445,17 @@ namespace Winecrash
                     chunks[i].BuildEndFrame = true;
                 });
             });
-        }
-        
-        private static Chunk CreateChunk(Vector2I coordinates, int dimension, ushort[] blocks, bool build = true)
+        }*/
+
+        private static Chunk CreateChunk(Vector2I coordinates, int dimension, ushort[] blocks = null, bool build = true)
         {
             Chunk chunk = null;
+            Vector3I[] surfaces = null;
+            
+            if (blocks == null)
+            {
+                blocks = GenerateSimple(coordinates, out surfaces);
+            }
 
             WObject wobj = new WObject($"Chunk [{coordinates.X};{coordinates.Y}]")
             {
@@ -427,16 +466,27 @@ namespace Winecrash
             chunk = wobj.AddModule<Chunk>();
             chunk.InterdimensionalCoordinates = new Vector3I(coordinates, dimension);
             chunk.Blocks = blocks;
+            
+            Dimension dim = Dimensions.ElementAt(dimension);
+            
+            Vector2I region = coordinates / 8;
 
-
-            chunk.Group = int.Parse(dimension.ToString() + Math.Abs(((coordinates.X) / 4) + Math.Abs(((coordinates.Y) / 4))));
-
-            //chunk.RunAsync = true;
+            string groupName = $"Region [{region.X};{region.Y} / {dim.Identifier}]";
+            
+            chunk.Group = groupName.GetHashCode();
+            
+            //ugh it doesn't work..?
+            //Group.GetGroup(groupName.GetHashCode()).Name = groupName;
 
 
             lock (ChunksLocker)
             {
                 Chunks[dimension].Add(chunk);
+            }
+
+            if (surfaces != null)
+            {
+                Populate(coordinates, blocks, surfaces);
             }
 
             if(Engine.DoGUI && build)
@@ -554,7 +604,7 @@ namespace Winecrash
             ushort[] blocks = null;
 
             if (c != null) blocks = c.Blocks;
-            else blocks = GenerateSimple(cpos);
+            else blocks = GenerateSimple(cpos, out _);
 
             for (int i = 255; i > -1 ; i--)
             {

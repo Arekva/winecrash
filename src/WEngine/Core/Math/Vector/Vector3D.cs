@@ -408,7 +408,7 @@ namespace WEngine
         }
         public string ToString(string format)
         {
-            return $"Vector3D({this.X.ToString(format)};{this.ToString(format)};{this.Z.ToString(format)})";
+            return $"Vector3D({this.X.ToString(format)};{this.Y.ToString(format)};{this.Z.ToString(format)})";
         }
         public string ToString(string format, IFormatProvider provider)
         {

@@ -227,7 +227,7 @@ namespace Winecrash
             if (NoClipping)
             {
                 Entity.WObject.Position +=
-                    this.Entity.Rotation * dir.Normalized * Time.DeltaTime * WalkAcceleration * 0.1;
+                    this.Entity.Rotation * dir.Normalized * Time.FixedDeltaTime * WalkAcceleration * 0.1;
             }
             else
             {
