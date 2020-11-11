@@ -17,6 +17,9 @@ namespace Winecrash
         //-- set in item config --//
         public bool DrawInternalFaces { get; set; } = false;
         
+        //-- set in item config --//
+        public bool DrawAllSides { get; set; } = false;
+        
         public virtual void MainInteraction() {}
 
         public virtual void SecondaryInteraction() {}

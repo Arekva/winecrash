@@ -366,7 +366,7 @@ namespace Winecrash
                 
                 if ((indices[flatten] == dirtID || indices[flatten] == grassID) && doTree)
                 {
-                    indices[flatten] = debugID;
+                    indices[flatten] = dirtID;
                     
                     PlaceStructure(tree, LocalToGlobal(chunkCoords, new Vector3D(surfaces[i].X, surfaces[i].Y + 1, surfaces[i].Z)), false);
                 }
@@ -391,8 +391,8 @@ namespace Winecrash
 
         public static void PlaceStructure(Structure structure, Vector3I position, bool eraseSolid = false)
         {
-            Vector3I shift = -structure.Root;
-            Vector3I origin = position + shift;
+            Vector3I shift = structure.Root;
+            Vector3I origin = position - shift;
             Vector3I extents = structure.Size;
             
             ConcurrentDictionary<Vector2I, Chunk> chunkCache = new ConcurrentDictionary<Vector2I, Chunk>();

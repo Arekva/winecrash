@@ -12,8 +12,8 @@ namespace Winecrash
     {
         //-- set in item config --//
         public CubeTexturePaths Textures { get; set; }
-        
-        
+
+
 
         private static Vector3F[] _CubeVertices = new Vector3F[36]
         {

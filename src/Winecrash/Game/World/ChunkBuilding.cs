@@ -133,13 +133,25 @@ namespace Winecrash
 
                         bool transparent = block.Transparent;
 
-                        if (IsTransparent(block, x, y + 1, z, blocks)) faces.Push(BlockFaces.Up); // up
-                        if (IsTransparent(block, x, y - 1, z, blocks)) faces.Push(BlockFaces.Down); // down
-                        if (IsTransparent(block, x - 1, y, z, blocks)) faces.Push(BlockFaces.West); // west
-                        if (IsTransparent(block, x + 1, y, z, blocks)) faces.Push(BlockFaces.East); // east
-                        if (IsTransparent(block, x, y, z + 1, blocks)) faces.Push(BlockFaces.North); // north
-                        if (IsTransparent(block, x, y, z - 1, blocks)) faces.Push(BlockFaces.South); // south
-                        
+                        if (block.DrawAllSides)
+                        {
+                            faces.Push(BlockFaces.Up); // up
+                            faces.Push(BlockFaces.Down); // down
+                            faces.Push(BlockFaces.West); // west
+                            faces.Push(BlockFaces.East); // east
+                            faces.Push(BlockFaces.North); // north
+                            faces.Push(BlockFaces.South); // south
+                        }
+                        else
+                        {
+                            if (IsTransparent(block, x, y + 1, z, blocks)) faces.Push(BlockFaces.Up); // up
+                            if (IsTransparent(block, x, y - 1, z, blocks)) faces.Push(BlockFaces.Down); // down
+                            if (IsTransparent(block, x - 1, y, z, blocks)) faces.Push(BlockFaces.West); // west
+                            if (IsTransparent(block, x + 1, y, z, blocks)) faces.Push(BlockFaces.East); // east
+                            if (IsTransparent(block, x, y, z + 1, blocks)) faces.Push(BlockFaces.North); // north
+                            if (IsTransparent(block, x, y, z - 1, blocks)) faces.Push(BlockFaces.South); // south
+                        }
+
                         foreach (BlockFaces face in faces)
                         {
                             CreateVerticesCube(x, y, z, face, transparent ? tvertices : svertices);
@@ -228,6 +240,7 @@ namespace Winecrash
         private static Vector3F forward = Vector3F.Forward;
         private static Vector3F south = Vector3F.Backward;
 
+        private const float AntiShitCoef = 0.999999F;
         private static void CreateUVsCube(BlockFaces face, List<Vector2F> uvs, int cubeIdx)
         {
             float faceIDX = 0;
@@ -271,13 +284,13 @@ namespace Winecrash
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F(faceIDX * w, idx * h), //0
-                            new Vector2F(faceIDX * w, (idx + incr) * h), //incr
-                            new Vector2F((faceIDX + incr) * w, idx * h), //2
+                            new Vector2F(faceIDX * w, idx * h) * AntiShitCoef, //0
+                            new Vector2F(faceIDX * w, (idx + incr) * h) * AntiShitCoef, //incr
+                            new Vector2F((faceIDX + incr) * w, idx * h) * AntiShitCoef, //2
                             
-                            new Vector2F((faceIDX + incr) * w, idx * h), //3
-                            new Vector2F(faceIDX * w, (idx + incr) * h), //4
-                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //5
+                            new Vector2F((faceIDX + incr) * w, idx * h) * AntiShitCoef, //3
+                            new Vector2F(faceIDX * w, (idx + incr) * h) * AntiShitCoef, //4
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h) * AntiShitCoef, //5
                         });
                     }
                     break;
@@ -286,13 +299,13 @@ namespace Winecrash
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F((faceIDX + incr) * w, (idx + incr)* h), //top left
-                            new Vector2F((faceIDX + incr) * w, idx * h), //bottom left
-                            new Vector2F(faceIDX * w, (idx + incr) * h), //top right
+                            new Vector2F((faceIDX + incr) * w, (idx + incr)* h) * AntiShitCoef, //top left
+                            new Vector2F((faceIDX + incr) * w, idx * h) * AntiShitCoef, //bottom left
+                            new Vector2F(faceIDX * w, (idx + incr) * h) * AntiShitCoef, //top right
 
-                            new Vector2F(faceIDX * w, (idx + incr) * h), //top right
-                            new Vector2F((faceIDX + incr) * w, idx * h), //bottom left
-                            new Vector2F((faceIDX ) * w, (idx)* h), //top left
+                            new Vector2F(faceIDX * w, (idx + incr) * h) * AntiShitCoef, //top right
+                            new Vector2F((faceIDX + incr) * w, idx * h) * AntiShitCoef, //bottom left
+                            new Vector2F((faceIDX ) * w, (idx)* h) * AntiShitCoef, //top left
                         });
                     }
                     break;
@@ -301,13 +314,13 @@ namespace Winecrash
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F((faceIDX + incr) * w, idx * h), //5
-                            new Vector2F(faceIDX * w, idx * h), //4
-                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //3
+                            new Vector2F((faceIDX + incr) * w, idx * h) * AntiShitCoef, //5
+                            new Vector2F(faceIDX * w, idx * h) * AntiShitCoef, //4
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h) * AntiShitCoef, //3
 
-                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //2
-                            new Vector2F(faceIDX * w, idx * h), //incr
-                            new Vector2F(faceIDX * w, (idx + incr) * h), //0
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h) * AntiShitCoef, //2
+                            new Vector2F(faceIDX * w, idx * h) * AntiShitCoef, //incr
+                            new Vector2F(faceIDX * w, (idx + incr) * h) * AntiShitCoef, //0
                         });
                     }
                     break;
@@ -316,13 +329,13 @@ namespace Winecrash
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //0 topleft
-                            new Vector2F((faceIDX + incr) * w, idx * h), //2 bottom left
-                            new Vector2F(faceIDX * w, (idx + incr) * h), //incr top right
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h) * AntiShitCoef, //0 topleft
+                            new Vector2F((faceIDX + incr) * w, idx * h) * AntiShitCoef, //2 bottom left
+                            new Vector2F(faceIDX * w, (idx + incr) * h) * AntiShitCoef, //incr top right
                             
-                            new Vector2F(faceIDX * w, (idx + incr) * h), // 4 top right
-                            new Vector2F((faceIDX + incr) * w, idx * h), //3 bottom left
-                            new Vector2F(faceIDX * w, idx * h), //5 bottom right
+                            new Vector2F(faceIDX * w, (idx + incr) * h) * AntiShitCoef, // 4 top right
+                            new Vector2F((faceIDX + incr) * w, idx * h) * AntiShitCoef, //3 bottom left
+                            new Vector2F(faceIDX * w, idx * h) * AntiShitCoef, //5 bottom right
                         });
                     }
                     break;
@@ -332,13 +345,13 @@ namespace Winecrash
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F((faceIDX + incr) * w, idx * h), //5
-                            new Vector2F(faceIDX * w, idx * h), //4
-                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //3
+                            new Vector2F((faceIDX + incr) * w, idx * h) * AntiShitCoef, //5
+                            new Vector2F(faceIDX * w, idx * h) * AntiShitCoef, //4
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h) * AntiShitCoef, //3
 
-                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //2
-                            new Vector2F(faceIDX * w, idx * h), //incr
-                            new Vector2F(faceIDX * w, (idx + incr) * h), //0
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h) * AntiShitCoef, //2
+                            new Vector2F(faceIDX * w, idx * h) * AntiShitCoef, //incr
+                            new Vector2F(faceIDX * w, (idx + incr) * h) * AntiShitCoef, //0
                         });
                     }
                     break;
@@ -347,13 +360,13 @@ namespace Winecrash
                     {
                         uvs.AddRange(new[]
                         {
-                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h), //5
-                            new Vector2F((faceIDX + incr) * w, idx * h), //3
-                            new Vector2F(faceIDX * w, (idx + incr) * h), //4
+                            new Vector2F((faceIDX + incr) * w, (idx + incr) * h) * AntiShitCoef, //5
+                            new Vector2F((faceIDX + incr) * w, idx * h) * AntiShitCoef, //3
+                            new Vector2F(faceIDX * w, (idx + incr) * h) * AntiShitCoef, //4
                             
-                            new Vector2F(faceIDX * w, (idx + incr) * h), //incr
-                            new Vector2F((faceIDX + incr) * w, idx * h), //2
-                            new Vector2F(faceIDX * w, idx * h), //0
+                            new Vector2F(faceIDX * w, (idx + incr) * h) * AntiShitCoef, //incr
+                            new Vector2F((faceIDX + incr) * w, idx * h) * AntiShitCoef, //2
+                            new Vector2F(faceIDX * w, idx * h) * AntiShitCoef, //0
                         });
                     }
                     break;
