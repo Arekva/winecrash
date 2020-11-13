@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Drawing;
 using System.IO;
-using System.Numerics;
 using JCS;
 
 namespace WEngine
