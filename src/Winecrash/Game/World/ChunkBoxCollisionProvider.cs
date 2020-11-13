@@ -180,7 +180,7 @@ namespace Winecrash
                     //actualCenter *= new Vector3D(0, 1, 1);
                     //actualCenter += Vector3D.Right * (hit.GlobalBlockPosition.X + b.Extents.X + 1D );
                     c *= new Vector3D(0, 1, 1);
-                    c += Vector3D.Right * (hit.GlobalPosition.X + b.Extents.X - v.X * Time.FixedDeltaTime);
+                    c += Vector3D.Right * (hit.GlobalBlockPosition.X + 1.0 + b.Extents.X);
                     v *= new Vector3D(0, 1, 1);
                 }
 
@@ -333,16 +333,9 @@ namespace Winecrash
 
                 if (hit.HasHit)
                 {
-                    //actualCenter *= new Vector3D(1, 1, 0);
                     c *= new Vector3D(1, 1, 0);
-                    //actualCenter -= Vector3D.Backward * (hit.GlobalPosition.Z + b.Extents.Z );
-                    c -= Vector3D.Backward * (hit.GlobalPosition.Z + b.Extents.Z);
+                    c -= Vector3D.Backward * (hit.GlobalBlockPosition.Z - b.Extents.Z + 1.5);
 
-                    double remainingZDelta = hit.GlobalBlockPosition.Z - hit.GlobalPosition.Z + 1.0D;
-
-                    //c.Z += remainingZDelta;
-                    //Debug.Log(remainingZDelta);
-                    
                     v *= new Vector3D(1, 1, 0);
                 }
 
@@ -450,7 +443,7 @@ namespace Winecrash
                     //actualCenter *= new Vector3D(1, 0, 1);
                     c *= new Vector3D(1, 0, 1);
                     //actualCenter += Vector3D.Up * (hit.LocalPosition.Y - b.Extents.Y);
-                    c += Vector3D.Up * (hit.LocalPosition.Y - b.Extents.Y - 0.505D);
+                    c += Vector3D.Up * (hit.LocalPosition.Y - b.Extents.Y - 0.005D);
 
 
                     v *= new Vector3D(1, 0, 1);
@@ -460,7 +453,7 @@ namespace Winecrash
             }
             
 
-            
+            CheckCeiling();
             
             CheckRight();
             CheckLeft();
@@ -470,8 +463,8 @@ namespace Winecrash
             
             CheckGrounded();
             
-            if(!hit.HasHit)
-            CheckCeiling();
+            //if(!hit.HasHit)
+            
             
             
             

@@ -80,6 +80,8 @@
     <Compile Include="Net\NetUser.cs" />
     <Compile Include="PartyType.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="PlayerContainer.cs" />
+    <Compile Include="PlayerContainerTypes.cs" />
     <Compile Include="Save\Save.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Save\SaveException.cs" />

@@ -40,7 +40,7 @@ namespace Winecrash.Client
 
             Debug.Log("\n\n");
             
-            Vector3D soloPlayerSpawnpoint = new Vector3D(572, 66, 459);
+            Vector3D soloPlayerSpawnpoint = /*new Vector3D(32_000_000D, 0, 32_000_000D);//*/new Vector3D(572, 66, 459);
 
 
             //MainLoadScreen.Show();
@@ -128,7 +128,7 @@ namespace Winecrash.Client
 
                 localPlayerWobj.Enabled = true;
                 Player.LocalPlayer.CreateEntity(localPlayerWobj);
-                
+
                 localPlayerWobj.Position = new Vector3D(soloPlayerSpawnpoint.X, 0, soloPlayerSpawnpoint.Z)+ Vector3D.Up * World.GetSurface(soloPlayerSpawnpoint, "winecraft:dimension") + 1;
 
                 if (SkyboxController.Instance)

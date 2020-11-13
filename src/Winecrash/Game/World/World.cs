@@ -179,7 +179,7 @@ namespace Winecrash
             float oceanDeformity = 20;
             float landMaxHeight = oceanLevel + landDeformity;
             float oceanMaxDepth = oceanLevel - oceanDeformity;
-            float mountainsDeformity = 20;
+            float mountainsDeformity = 10;
             float moutainsScale = 0.01F;
             
             // this is meant to be used as a 2D base for continents     apparently unused \/
@@ -188,7 +188,7 @@ namespace Winecrash
             {
                 Primitive3D = baseLandmass,
                 OctaveCount = 5.0F,
-                Frequency = 0.9F
+                Frequency = 0.9F,
             };
             IModule3D detailsLandmass = new ImprovedPerlin(World.Seed.Value * 123456, NoiseQuality.Best);
             detailsLandmass = new ScaleBias(detailsLandmass, .2F, detailBias);
@@ -352,7 +352,7 @@ namespace Winecrash
             int chunkHash = chunkCoords.GetHashCode() * Seed.Value;
             
             Random treeRandom = new Random(chunkHash);
-            Structure tree = Structure.Get("Debug");
+            Structure tree = Structure.Get("Tree");
 
             ushort dirtID = ItemCache.GetIndex("winecrash:dirt");
             ushort grassID = ItemCache.GetIndex("winecrash:grass");
@@ -429,7 +429,7 @@ namespace Winecrash
 
         }
 
-        /*public static void RebuildDimension(string dimension)
+        public static void RebuildDimension(string dimension)
         {
             Chunk[] chunks = null;
             lock (ChunksLocker)
@@ -441,11 +441,14 @@ namespace Winecrash
             {
                 Parallel.For(0, chunks.Length, i =>
                 {
-                    chunks[i].Blocks = GenerateSimple(chunks[i].Coordinates);
+                    ushort[] blocks = GenerateSimple(chunks[i].Coordinates, out Vector3I[] surfaces);
+                    chunks[i].Blocks = blocks;
+                    Populate(chunks[i].Coordinates, blocks, surfaces);
+                    
                     chunks[i].BuildEndFrame = true;
                 });
             });
-        }*/
+        }
 
         private static Chunk CreateChunk(Vector2I coordinates, int dimension, ushort[] blocks = null, bool build = true)
         {

@@ -1,8 +1,9 @@
 {
-  "Transparent": true,
+	"Transparent": true,
 
-  "TexturePath": "assets/textures/items/diamond_pickaxe.png",
+	"TexturePath": "assets/textures/items/diamond_pickaxe.png",
 
-  "Durability": 1561
-  
+	"Durability": 1561,
+
+	"Stack": 1
 }

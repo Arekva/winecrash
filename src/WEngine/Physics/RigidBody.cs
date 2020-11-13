@@ -36,15 +36,15 @@ namespace WEngine
 
         protected internal override void PreFixedUpdate()
         {
-            
-        }
-
-        protected internal override void LateFixedUpdate()
-        {
             if (UseGravity)
                 this.Velocity += Physics.Gravity * Time.FixedDeltaTime;
             
             this.WObject.Position += Velocity * Time.FixedDeltaTime;
+        }
+
+        protected internal override void LateFixedUpdate()
+        {
+            
         }
     }
 }

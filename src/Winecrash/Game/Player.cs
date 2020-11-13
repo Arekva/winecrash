@@ -13,7 +13,7 @@ using WinecrashCore.Net;
 
 namespace Winecrash
 {
-    public class Player : BaseObject
+    public partial class Player : BaseObject, IContainer
     {
         public static List<Player> Players { get; set; } = new List<Player>();
         public static object PlayersLocker { get; private set; } = new object();
@@ -147,6 +147,19 @@ namespace Winecrash
 
             if(Engine.DoGUI)
                 this.Skin?.Delete();
+            
+            OnItemAdd = null;
+            OnItemRemove = null;
+            OnItemUpdate = null;   
+            OnHotbarUpdate = null;
+            OnStorageUpdate = null;
+            OnBagUpdate = null;
+            OnArmorUpdate = null;
+            OnCraftUpdate = null;
+            OnCraftOutputUpdate = null;
+            OnHotbarSelectedChange = null;
+
+            
             base.Delete();
         }
 
@@ -154,7 +167,6 @@ namespace Winecrash
         {
             this._CameraAngles = angles;
         }
-
         public void CreateNonLocalElements()
         {
             MeshRenderer mr = this.Entity.WObject.AddModule<MeshRenderer>();

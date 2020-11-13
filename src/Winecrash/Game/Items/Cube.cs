@@ -13,7 +13,12 @@ namespace Winecrash
         //-- set in item config --//
         public CubeTexturePaths Textures { get; set; }
 
-
+        public override Quaternion InventoryRotation { get; set; } = new Quaternion(-15, 47, -15.4);
+        
+        
+        public override Vector3D HandPosition { get; set; } = Vector3D.Forward * 1.25D + Vector3D.Left * 1.25 + Vector3D.Down * 1D;
+        public override Quaternion HandRotation { get; set; } = new Quaternion(0, -55, 0);
+        public override Vector3D HandScale { get; set; } = Vector3D.One * 0.75;
 
         private static Vector3F[] _CubeVertices = new Vector3F[36]
         {
@@ -91,10 +96,10 @@ namespace Winecrash
 
         static Cube()
         {
-            for (int i = 0; i < _CubeVertices.Length; i++)
+            /*for (int i = 0; i < _CubeVertices.Length; i++)
             {
                 _CubeVertices[i] = new Quaternion(-15,47,-15.4) * _CubeVertices[i];
-            }
+            }*/
         }
         
         [JsonIgnore] public Texture UpTexture { get; private set; }

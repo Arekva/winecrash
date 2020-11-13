@@ -213,6 +213,8 @@ namespace Winecrash.Entities
             //this.RigidBody.Velocity += new Vector3D(0, -0.5, 0);
             this.Collider.Extents = new Vector3D(0.6,1.8,0.6)/2.0D;
             this.Collider.Offset = new Vector3D(0,1.8,0)/2.0D;
+
+            this.FixedExecutionOrder = -1;
             
             this.OnChunkChange += (previous, current) =>
             {
@@ -311,9 +313,9 @@ namespace Winecrash.Entities
         }
 
         private int debug = 0;
-        protected override void FixedUpdate()
+        protected override void LateFixedUpdate()
         {
-            base.FixedUpdate();
+            base.LateFixedUpdate();
 
             if (this.RigidBody == null || this.Collider == null) return;
 
@@ -322,6 +324,8 @@ namespace Winecrash.Entities
             //Debug.Log(xzVel);
 
             Vector2D xzDir = this.RigidBody.Velocity.Normalized.XZ;
+            
+            
 
             uint currentHeight = 1+World.GetSurface(this.WObject.Position, "winecrash:overworld");
             
@@ -344,6 +348,7 @@ namespace Winecrash.Entities
                     this.WObject.Position += new Vector3D(0, currentHeight, 0);
                 }*/
             }
+
 
             if (AnyMoveInputOnFrame)
             {

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using WEngine;
+using Winecrash.Entities;
 
 namespace Winecrash
 {
@@ -15,6 +16,22 @@ namespace Winecrash
 
         //-- set in item config --//
         public string TexturePath { get; set; } = null;
+
+        //-- set in item config --//
+        public byte Stack { get; set; } = 64;
+
+        //-- set in item config --//
+        public virtual Vector3D HandPosition { get; set; } = Vector3D.Forward * 0.9 + Vector3D.Left + Vector3D.Down * 0.6;
+        
+        //-- set in item config --//
+        public virtual Quaternion HandRotation { get; set; } = new Quaternion(0,90,0) *  new Quaternion(0,0,-65);
+        
+        //-- set in item config --//
+        public virtual Vector3D HandScale { get; set; } = Vector3D.One;
+        
+        //-- set in item config --//
+        public virtual Quaternion InventoryRotation { get; set; } = Quaternion.Identity;
+        
 
         [JsonIgnore] public Mesh Model { get; set; } = null;
         [JsonIgnore] public Texture Texture { get; set; } = null;
@@ -31,6 +48,11 @@ namespace Winecrash
 
         internal virtual Mesh BuildModel()
         {
+            if (this.Identifier == "winecrash:air")
+            {
+                return PlayerEntity.PlayerRightArmMesh;
+            }
+            
             Texture texture = this.Texture ?? Texture.Blank;
 
             List<Vector3F> vertices = new List<Vector3F>();
