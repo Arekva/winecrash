@@ -1,5 +1,8 @@
 {
+    "DisplayName": "#winecrash:block.bedrock",
+
     "Transparent": false,
+    
     
     "Textures": {
       "Up": "assets/textures/blocks/bedrock.png",

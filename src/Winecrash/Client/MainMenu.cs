@@ -47,7 +47,7 @@ namespace Winecrash.Client
 
             LocalizedLabel lbVersion = bgPanel.AddModule<LocalizedLabel>();
             lbVersion.LocalizationArgs = new object[] { Winecrash.Version };
-            lbVersion.Localization = "#menu_game_version";          
+            lbVersion.Localization = "#winecrash:ui.mainmenu.gameversion";          
             lbVersion.Aligns = TextAligns.Down | TextAligns.Left;
             lbVersion.AutoSize = true;
             lbVersion.MinAnchor = new Vector2F(0.0F, 0.0F);
@@ -114,7 +114,7 @@ namespace Winecrash.Client
             GUI.LargeButton btnSingle = single.AddModule<GUI.LargeButton>();
             btnSingle.Button.MinAnchor = new Vector2F(0.0F, 0.9F);
             btnSingle.Button.MaxAnchor = new Vector2F(1.0F, 1.0F);
-            btnSingle.Label.Localization = "#menu_singleplayer";
+            btnSingle.Label.Localization = "#winecrash:ui.mainmenu.singleplayer";
             btnSingle.Button.Locked = false;
             //btnSingle.Button.OnClick += () => { Graphics.Window.InvokeUpdate(() => Program.RunGameDebug()); };
             btnSingle.Button.OnClick += () =>
@@ -132,7 +132,7 @@ namespace Winecrash.Client
             GUI.LargeButton btnMult = mult.AddModule<GUI.LargeButton>();
             btnMult.Button.MinAnchor = new Vector2F(0.0F, 0.7F);
             btnMult.Button.MaxAnchor = new Vector2F(1.0F, 0.8F);
-            btnMult.Label.Localization = "#menu_multiplayer";
+            btnMult.Label.Localization = "#winecrash:ui.mainmenu.multiplayer";
             btnMult.Button.Locked = false;
             btnMult.Button.OnClick += () =>
             {
@@ -143,14 +143,14 @@ namespace Winecrash.Client
             GUI.LargeButton btnMods = mods.AddModule<GUI.LargeButton>();
             btnMods.Button.MinAnchor = new Vector2F(0.0F, 0.5F);
             btnMods.Button.MaxAnchor = new Vector2F(1.0F, 0.6F);
-            btnMods.Label.Localization = "#menu_mods";
+            btnMods.Label.Localization = "#winecrash:ui.mainmenu.addons";
             btnMods.Button.Locked = true;
 
             WObject options = new WObject("Options Button") { Parent = btnPanel };
             GUI.SmallButton btnOptions = options.AddModule<GUI.SmallButton>();
             btnOptions.Button.MinAnchor = new Vector2F(0.0F, 0.2F);
             btnOptions.Button.MaxAnchor = new Vector2F(0.45F, 0.3F);
-            btnOptions.Label.Localization = "#menu_settings";
+            btnOptions.Label.Localization = "#winecrash:ui.mainmenu.settings";
             btnOptions.Button.OnClick += () => ShowOptions();
             btnOptions.Button.Locked = false;
             
@@ -158,7 +158,7 @@ namespace Winecrash.Client
             GUI.SmallButton btnQuit = quit.AddModule<GUI.SmallButton>();
             btnQuit.Button.MinAnchor = new Vector2F(0.55F, 0.2F);
             btnQuit.Button.MaxAnchor = new Vector2F(1.0F, 0.3F);
-            btnQuit.Label.Localization = "#menu_quit_game";
+            btnQuit.Label.Localization = "#winecrash:ui.mainmenu.quit";
             btnQuit.Button.OnClick += () => Engine.Stop();
         }
 
@@ -199,7 +199,7 @@ namespace Winecrash.Client
             GUI.SmallButton btnGame = gameOptionsTab.AddModule<GUI.SmallButton>();
             btnGame.Button.MinAnchor = new Vector2D(WMath.Remap(0.00, 0.0, 1.0, 0.1, 1.0), 0.0);
             btnGame.Button.MaxAnchor = new Vector2D(WMath.Remap(0.30, 0.0, 1.0, 0.1, 1.0), 1.0);
-            btnGame.Button.Label.Text = "Game";
+            btnGame.Button.Label.Text = "#winecrash:ui.settings.game";
             btnGame.Button.OnClick += () =>
             {
                 gameOptions.Enabled = true;
@@ -211,13 +211,13 @@ namespace Winecrash.Client
             GUI.SmallButton btnCtrls = controlsOptionsTab.AddModule<GUI.SmallButton>();
             btnCtrls.Button.MinAnchor = new Vector2D(WMath.Remap(0.35, 0.0, 1.0, 0.1, 1.0), 0.0);
             btnCtrls.Button.MaxAnchor = new Vector2D(WMath.Remap(0.65, 0.0, 1.0, 0.1, 1.0), 1.0);
-            btnCtrls.Button.Label.Text = "Controls";
+            btnCtrls.Button.Label.Text = "#winecrash:ui.settings.inputs";
 
             WObject videoOptionsTab = new WObject("Controls Options Button") { Parent = tabsPanelWobj };
             GUI.SmallButton btnVideo = videoOptionsTab.AddModule<GUI.SmallButton>();
             btnVideo.Button.MinAnchor = new Vector2D(WMath.Remap(0.70, 0.0, 1.0, 0.1, 1.0), 0.0);
             btnVideo.Button.MaxAnchor = new Vector2D(WMath.Remap(1.00, 0.0, 1.0, 0.1, 1.0), 1.0);
-            btnVideo.Button.Label.Text = "Video";
+            btnVideo.Button.Label.Text = "#winecrash:ui.settings.video";
         }
         
         public static void CreateMultiplayer()
@@ -239,7 +239,7 @@ namespace Winecrash.Client
             
             WObject multiTitle = new WObject("Multi Main Label") { Parent = btnPanel };
             LocalizedLabel mainLb = multiTitle.AddModule<LocalizedLabel>();
-            mainLb.Localization = "#multiplayer_menu_title";
+            mainLb.Localization = "#winecrash:ui.mutliplayer.title";
             mainLb.MinAnchor = new Vector2F(0.0F, 1.0F);
             mainLb.MaxAnchor = new Vector2F(1.0F, 1.1F);
             mainLb.AutoSize = true;
@@ -247,7 +247,7 @@ namespace Winecrash.Client
             
             WObject error = new WObject("Multi Error Label") {Parent = btnPanel };
             LocalizedLabel errLb = MultiErrorLabel = error.AddModule<LocalizedLabel>();
-            errLb.Localization = "#server_connection_error";
+            errLb.Localization = "#winecrash:error";
             errLb.MinAnchor = new Vector2F(0.0F, 0.82F);
             errLb.MaxAnchor = new Vector2F(1.0F, 0.88F);
             errLb.AutoSize = true;
@@ -258,7 +258,7 @@ namespace Winecrash.Client
             GUI.LargeTextField taddress = addressTif.AddModule<LargeTextField>();
             taddress.MinAnchor = new Vector2F(0.0F, 0.7F);
             taddress.MaxAnchor = new Vector2F(1.0F, 0.8F);
-            taddress.Localization = "#enter_server_address";
+            taddress.Localization = "#winecrash:ui.multiplayer.address";
             taddress.Text = Game.LastAddress;
 
 
@@ -266,7 +266,7 @@ namespace Winecrash.Client
             GUI.SmallButton btnBack = back.AddModule<GUI.SmallButton>();
             btnBack.Button.MinAnchor = new Vector2F(0.0F, 0.5F);
             btnBack.Button.MaxAnchor = new Vector2F(0.45F, 0.6F);
-            btnBack.Label.Localization = "#menu_back";
+            btnBack.Label.Localization = "#winecrash:ui.back";
             btnBack.Button.OnClick += () =>
             { 
                 HideMulti();
@@ -277,12 +277,12 @@ namespace Winecrash.Client
             GUI.SmallButton btnConnect = connect.AddModule<GUI.SmallButton>();
             btnConnect.Button.MinAnchor = new Vector2F(0.55F, 0.5F);
             btnConnect.Button.MaxAnchor = new Vector2F(1.0F, 0.6F);
-            btnConnect.Label.Localization = "#connect_to_server";
+            btnConnect.Label.Localization = "#winecrash:ui.multiplayer.connect";
 
             void ShowConnectError(string reason)
             {
                 errLb.LocalizationArgs = new[] { reason };
-                errLb.Localization = "#server_connection_error";
+                errLb.Localization = "#winecrash:error";
                 errLb.Enabled = true;
             }
             
@@ -301,7 +301,7 @@ namespace Winecrash.Client
 
                     if (string.IsNullOrEmpty(input) | string.IsNullOrWhiteSpace(input))
                     {
-                        ShowConnectError(Game.Language.GetText("#error_no_address_entered"));
+                        ShowConnectError(Game.Language.GetText("#winecrash:error.noaddress"));
                         return;
                     }
 
@@ -314,13 +314,13 @@ namespace Winecrash.Client
                         {
                             if (port < 0 || port > Networking.MaxPort)
                             {
-                                ShowConnectError(Game.Language.GetText("#error_invalid_port"));
+                                ShowConnectError(Game.Language.GetText("#winecrash:error.invalidport"));
                                 return;
                             }
                         }
                         else
                         {
-                            ShowConnectError(Game.Language.GetText("#error_invalid_port"));
+                            ShowConnectError(Game.Language.GetText("#winecrash:error.invalidport"));
                             return;
                         }
                     }
@@ -332,7 +332,7 @@ namespace Winecrash.Client
                     btnConnect.Button.Locked = true;
                     btnBack.Button.Locked = true;
                     taddress.Locked = true;
-                    btnConnect.Label.Localization = "#connecting_to_server";
+                    btnConnect.Label.Localization = "#winecrash:ui.multiplayer.connecting";
 
                     try
                     {
@@ -345,13 +345,13 @@ namespace Winecrash.Client
                         switch (e.SocketErrorCode)
                         {
                             case SocketError.HostNotFound:
-                                ShowConnectError(Game.Language.GetText("#error_socket_host_not_found"));
+                                ShowConnectError(Game.Language.GetText("#winecrash:error.socket.hostnotfound"));
                                 break;
                             case SocketError.ConnectionRefused:
-                                ShowConnectError(Game.Language.GetText("#error_socket_connection_refused"));
+                                ShowConnectError(Game.Language.GetText("#winecrash:error.socket.connectionrefused"));
                                 break;
                             case SocketError.TryAgain:
-                                ShowConnectError(Game.Language.GetText(("#error_socket_try_again")));
+                                ShowConnectError(Game.Language.GetText(("#winecrash:error.socket.tryagain")));
                                 break;
                             default:
                                 ShowConnectError(e.Message);
@@ -364,7 +364,7 @@ namespace Winecrash.Client
                         btnConnect.Button.Locked = false;
                         btnBack.Button.Locked = false;
                         taddress.Locked = false;
-                        btnConnect.Label.Localization = "#connect_to_server";
+                        btnConnect.Label.Localization = "#winecrash:ui.multiplayer.connect";
                     }
                 });
             };
@@ -389,7 +389,7 @@ namespace Winecrash.Client
             
             WObject multiTitle = new WObject("Multi Main Label") { Parent = btnPanel };
             LocalizedLabel mainLb = multiTitle.AddModule<LocalizedLabel>();
-            mainLb.Localization = "#multiplayer_disconnected";
+            mainLb.Localization = "#winecrash:ui.multiplayer.disconnected";
             mainLb.MinAnchor = new Vector2F(0.0F, 1.0F);
             mainLb.MaxAnchor = new Vector2F(1.0F, 1.1F);
             mainLb.AutoSize = true;
@@ -407,7 +407,7 @@ namespace Winecrash.Client
             GUI.LargeButton btnBack = back.AddModule<GUI.LargeButton>();
             btnBack.Button.MinAnchor = new Vector2F(0.0F, 0.6F);
             btnBack.Button.MaxAnchor = new Vector2F(1.0F, 0.7F);
-            btnBack.Label.Localization = "#menu_back";
+            btnBack.Label.Localization = "#winecrash:ui.back";
             btnBack.Button.OnClick += () =>
             {
                 HideDisconnection();
@@ -415,7 +415,7 @@ namespace Winecrash.Client
             };
         }
 
-         public static void ShowDisconnection(string reasonLoc = "#server_disconnection_unspecified")
+         public static void ShowDisconnection(string reasonLoc = "#winecrash:error.unspecified")
          {
              if (!MultiDisconnectionPanel) CreateDisconnection();
              

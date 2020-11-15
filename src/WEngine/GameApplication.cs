@@ -343,7 +343,10 @@ namespace WEngine
             }
             doUpdateOnce?.Invoke();
 
-            Input.SetMouseScroll(Mouse.GetState().WheelPrecise);
+            MouseState state = Mouse.GetState();
+            Input.SetMouseScroll(state.WheelPrecise, state.Wheel);
+
+
 
             Time.FrameTimer.Stop();
             Time.DeltaTime = Time.FrameTimer.Elapsed.TotalSeconds * Time.TimeScale;//e.Time * Time.TimeScale; 

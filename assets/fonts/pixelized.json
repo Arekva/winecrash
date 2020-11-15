@@ -714,21 +714,21 @@
         {
             "Character": "0",
             "X" : 319,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 52,
             "Height" : 123
         },
         {
             "Character": "1",
             "X" : 371,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 53,
             "Height" : 123
         },
         {
             "Character": "2",
             "X" : 423,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 53,
             "Height" : 123
         },
@@ -742,63 +742,63 @@
         {
             "Character": "4",
             "X" : 530,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 53,
             "Height" : 123
         },
         {
             "Character": "5",
             "X" : 583,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 53,
             "Height" : 123
         },
         {
             "Character": "6",
             "X" : 636,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 53,
             "Height" : 123
         },
         {
             "Character": "7",
             "X" : 689,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 53,
             "Height" : 123
         },
         {
             "Character": "8",
             "X" : 742,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 53,
             "Height" : 123
         },
         {
             "Character": "9",
             "X" : 795,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 53,
             "Height" : 123
         },
         {
             "Character": "$",
             "X" : 848,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 53,
             "Height" : 123
         },
         {
             "Character": "¢",
             "X" : 901,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 53,
             "Height" : 123
         },
         {
             "Character": "€",
             "X" : 945,
-            "Y" : 737,
+            "Y" : 738,
             "Width" : 53,
             "Height" : 123
         },
@@ -1115,6 +1115,104 @@
             "X" : 918,
             "Y" : 984,
             "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Í",
+            "X" : 0,
+            "Y" : 1107,
+            "Width" : 35,
+            "Height" : 123
+        },
+        {
+            "Character": "í",
+            "X" : 35,
+            "Y" : 1107,
+            "Width" : 27,
+            "Height" : 123
+        },
+        {
+            "Character": "Ì",
+            "X" : 62,
+            "Y" : 1107,
+            "Width" : 35,
+            "Height" : 123
+        },
+        {
+            "Character": "ì",
+            "X" : 97,
+            "Y" : 1107,
+            "Width" : 27,
+            "Height" : 123
+        },
+        {
+            "Character": "Î",
+            "X" : 124,
+            "Y" : 1107,
+            "Width" : 35,
+            "Height" : 123
+        },
+        {
+            "Character": "î",
+            "X" : 158,
+            "Y" : 1107,
+            "Width" : 35,
+            "Height" : 123
+        },
+        {
+            "Character": "Ï",
+            "X" : 195,
+            "Y" : 1107,
+            "Width" : 35,
+            "Height" : 123
+        },
+        {
+            "Character": "ï",
+            "X" : 230,
+            "Y" : 1107,
+            "Width" : 35,
+            "Height" : 123
+        },
+        {
+            "Character": "¨",
+            "X" : 266,
+            "Y" : 1107,
+            "Width" : 35,
+            "Height" : 123
+        },
+        {
+            "Character": "Ő",
+            "X" : 301,
+            "Y" : 1107,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ő",
+            "X" : 354,
+            "Y" : 1107,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "Ű",
+            "X" : 407,
+            "Y" : 1107,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "ű",
+            "X" : 460,
+            "Y" : 1107,
+            "Width" : 53,
+            "Height" : 123
+        },
+        {
+            "Character": "˝",
+            "X" : 513,
+            "Y" : 1107,
+            "Width" : 45,
             "Height" : 123
         }
     ]

@@ -6,6 +6,7 @@ using WEngine;
 
 namespace Winecrash
 {
+    public delegate void ContainerDelegate(IContainer container);
     public partial class Player
     {
         public event ItemChangeDelegate OnItemAdd;
@@ -21,23 +22,64 @@ namespace Winecrash
 
         public event ItemChangeDelegate OnHotbarSelectedChange;
 
+        public event ContainerDelegate OnContainerOpen;
+        public event ContainerDelegate OnContainerClose;
+        public event ContainerDelegate OnContainerToggle;
+
+        public bool ContainerOpened => OpenedContainer != null;
+        public IContainer OpenedContainer { get; private set; } = null;
+
         private int _HotbarSelectedIndex = 0;
         public int HotbarSelectedIndex
         {
             get => _HotbarSelectedIndex;
             set
             {
-                while (value < 0)
+                if (!ContainerOpened)
                 {
-                    value += 9;
-                }
-                int newValue = value % 9;
-                if (newValue != _HotbarSelectedIndex)
-                {
-                    _HotbarSelectedIndex = newValue;
-                    OnHotbarSelectedChange?.Invoke(Hotbar[newValue], newValue);
+                    while (value < 0)
+                    {
+                        value += 9;
+                    }
+
+                    int newValue = value % 9;
+                    if (newValue != _HotbarSelectedIndex)
+                    {
+                        _HotbarSelectedIndex = newValue;
+                        OnHotbarSelectedChange?.Invoke(Hotbar[newValue], newValue);
+                    }
                 }
             }
+        }
+
+        public void OpenContainer(IContainer container)
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container), "Cannot open null container !");
+
+            IContainer previousContainer = OpenedContainer;
+            IContainer newContainer = OpenedContainer = container;
+            
+            if (previousContainer != null)
+            {
+                OnContainerClose?.Invoke(previousContainer);
+            }
+            else
+            {
+                OnContainerToggle?.Invoke(newContainer);
+            }
+            
+            OnContainerOpen?.Invoke(newContainer);
+        }
+
+        public void CloseContainer()
+        {
+            if (OpenedContainer != null)
+            {
+                OnContainerToggle?.Invoke(OpenedContainer);
+                OnContainerClose?.Invoke(OpenedContainer);
+            }
+
+            OpenedContainer = null;
         }
 
         public ContainerItem[] Hotbar

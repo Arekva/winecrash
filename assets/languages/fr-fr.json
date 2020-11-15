@@ -1,30 +1,57 @@
 {
-    "Name": "Français (France)",
+    "Name": "Français",
 
     "Icon" : "assets/textures/flags/france.png",
 
     "Localizations":
     {
-        "#menu_singleplayer": "Solo",
-        "#menu_multiplayer": "Multijoueur",
-        "#menu_mods": "Mods et packs de Textures",
-        "#menu_settings": "Paramètres",
-        "#menu_quit_game": "Quitter",
-        "#menu_game_version": "Winecrash {0}",
-        "#error_undefined_text": "Aucun texte défini",
-        "#menu_back": "Retour",
-        "#connect_to_server": "Se connecter",
-        "#enter_server_address": "Entrez l'adresse du serveur",
-        "#server_connection_error": "Erreur: {0}",
-        "#multiplayer_menu_title": "Jouer en multijoueur",
-        "#connecting_to_server": "Connexion...",
-        "#error_invalid_port": "Port invalide",
-        "#error_no_address_entered": "Veuillez entrer une adresse",
-        "#error_socket_host_not_found": "Aucun hôte existant à cette adresse",
-        "#error_socket_connection_refused": "Connexion refusée",
-        "#error_socket_try_again": "Veuillez réessayer (erreur temporaire / domaine non valide)",
-        "#multiplayer_disconnected": "Déconnecté du serveur",
-        "#server_disconnection_timeout": "La connexion à été intérrompue",
-        "#server_disconnection_unspecified": "Aucune raison spécifiée"
+        "#winecrash:error": "Erreur: {0}",
+        "#winecrash:error.invalidport": "Port invalide",
+        "#winecrash:error.noaddress": "Veuillez entrer une adresse",
+        "#winecrash:error.socket.hostnotfound": "Aucun hôte existant à cette adresse",
+        "#winecrash:error.socket.connectionrefused": "Connexion refusée",
+        "#winecrash:error.socket.tryagain": "Veuillez réessayer (erreur temporaire ou domaine non valide)",
+        "#winecrash:error.timeout": "La connexion à été intérrompue",
+        "#winecrash:error.unspecified": "Aucune raison spécifiée",
+        "#winecrash:error.notext": "Aucun texte défini",
+        "#winecrash:error.noname": "Aucun nom défini",
+
+
+        "#winecrash:ui.back": "Retour",
+
+        "#winecrash:ui.multiplayer.connect": "Se connecter",
+        "#winecrash:ui.multiplayer.address": "Entrez l'adresse du serveur",
+        "#winecrash:ui.mutliplayer.title": "Jouer en multijoueur",
+        "#winecrash:ui.multiplayer.connecting": "Connexion...",
+        "#winecrash:ui.multiplayer.disconnected": "Déconnecté du serveur",
+
+        "#winecrash:ui.mainmenu.singleplayer": "Solo",
+        "#winecrash:ui.mainmenu.multiplayer": "Multijoueur",
+        "#winecrash:ui.mainmenu.addons": "Mods et packs de Textures",
+        "#winecrash:ui.mainmenu.settings": "Paramètres",
+        "#winecrash:ui.mainmenu.quit": "Quitter",
+        "#winecrash:ui.mainmenu.gameversion": "Winecrash {0}",
+
+        "#winecrash:ui.settings.game": "Jeu",
+        "#winecrash:ui.settings.inputs": "Contrôles",
+        "#winecrash:ui.settings.video": "Vidéo",
+        "#winecrash:ui.settings.graphics": "Graphismes",
+
+        "#winecrash:ui.inventory.crafting": "Fabrication",
+        
+
+        "#winecrash:block.air": "Air",
+        "#winecrash:block.dirt": "Terre",
+        "#winecrash:block.grass": "Herbe",
+        "#winecrash:block.water": "Eau",
+        "#winecrash:block.bedrock": "Roche incassable",
+        "#winecrash:block.direction": "Direction",
+        "#winecrash:block.leaves": "Feuillage",
+        "#winecrash:block.log": "Bûche",
+        "#winecrash:block.sand": "Sable",
+        "#winecrash:block.stone": "Roche",
+        "#winecrash:item.nord": "Vépéaine",
+        "#winecrash:tool.diamond_pickaxe": "Pioche en diamant"
+        
     }
 }

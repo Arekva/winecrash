@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using WEngine.Core.Input;
 
 namespace WEngine
@@ -51,11 +52,32 @@ namespace WEngine
         public override bool Undeletable { get; internal set; } = true;
 
         private static double _PreviousScroll = 0.0D;
-        internal static void SetMouseScroll(double scroll)
-        {
-            MouseScrollDelta = scroll - _PreviousScroll;
 
-            _PreviousScroll = scroll;
+        public static int MouseScrollDeltaStep { get; private set; } = 0;
+        private static int _PreviousScrollStep = 0;
+
+        private static bool _WasFocused = false;
+        
+        internal static void SetMouseScroll(double scroll, int scrollStep)
+        {
+            if (Graphics.Window.Focused)
+            {
+                MouseScrollDelta = scroll - _PreviousScroll;
+                _PreviousScroll = scroll;
+
+                MouseScrollDeltaStep = scrollStep - _PreviousScrollStep;
+                _PreviousScrollStep = scrollStep;
+            }
+
+            else
+            {
+                MouseScrollDeltaStep = 0;
+                MouseScrollDelta = 0;
+                _PreviousScrollStep = scrollStep;
+                _PreviousScroll = scroll;
+            }
+            
+            _WasFocused = Graphics.Window.Focused;
         }
 
         protected internal override void Creation()
@@ -80,7 +102,7 @@ namespace WEngine
 
         private double timeSinceMouseRefresh = 0.0D;
         private bool firstTime = true;
-        private bool ignoreNextFocusFrame = true;
+        public static bool IgnoreNextFocusFrame { get; set; } = true;
         protected internal override void Update()
         {
             timeSinceMouseRefresh += Time.DeltaTime;
@@ -103,13 +125,13 @@ namespace WEngine
 
                     if (!Graphics.Window.Focused)
                     {
-                        ignoreNextFocusFrame = true;
+                        IgnoreNextFocusFrame = true;
                     }
 
                     if (!firstTime)
                     {
-                        MouseDelta = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Lock ? (ignoreNextFocusFrame ? Vector2D.Zero : centre - (Vector2D)pos) : Vector2D.Zero;
-                        if (Graphics.Window.Focused && ignoreNextFocusFrame) ignoreNextFocusFrame = false;
+                        MouseDelta = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Lock ? (IgnoreNextFocusFrame ? Vector2D.Zero : centre - (Vector2D)pos) : Vector2D.Zero;
+                        if (Graphics.Window.Focused && IgnoreNextFocusFrame) IgnoreNextFocusFrame = false;
 
                         MousePosition = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Free ? /*centre - pos*/Graphics.Window.ScreenToWindow(pos) : Vector2I.Zero;
                     }

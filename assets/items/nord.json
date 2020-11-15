@@ -1,0 +1,15 @@
+{
+	"DisplayName": "#winecrash:item.nord",
+	"DisplayColor": {
+		"R": 0.314, 
+		"G": 0.541, 
+		"B": 1.0, 
+		"A": 1.0
+	},
+
+	"Transparent": true,
+
+	"TexturePath": "assets/textures/items/nord.png",
+
+	"Stack": 64
+}

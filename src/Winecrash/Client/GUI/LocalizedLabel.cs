@@ -43,11 +43,21 @@ namespace Winecrash.GUI
 
         protected override void Creation()
         {
-            this.Localization = "#error_undefined_text";
+            this.Localization = "#winecrash:error.notext";
 
-            Game.OnLanguageChanged += (lang) => this.Localization = Localization;
+            Game.OnLanguageChanged += ChangeLanguage;
 
             base.Creation();      
+        }
+
+        private void ChangeLanguage(Language lang)
+        {
+            this.Localization = Localization;
+        }
+
+        protected override void OnDelete()
+        {
+            Game.OnLanguageChanged -= ChangeLanguage;
         }
     }
 }

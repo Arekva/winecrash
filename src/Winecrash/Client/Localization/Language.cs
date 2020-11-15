@@ -145,7 +145,7 @@ namespace Winecrash
                 //FRENCH
                 case "fr":
                 {
-                    return "Français (France)";
+                    return "Français"; //"Français (France)";
                     //TODO: canadian french
                     //if(specName == "fr-CA") return "Français (Canadien)";
                 }

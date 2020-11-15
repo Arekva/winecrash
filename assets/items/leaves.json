@@ -1,4 +1,6 @@
 {
+  	"DisplayName": "#winecrash:block.leaves",
+
     "Transparent": true,
     "DrawInternalFaces": true,
     "DrawAllSides": true,

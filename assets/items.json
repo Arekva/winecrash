@@ -55,6 +55,11 @@
             "Identifier": "winecrash:water",
             "RuntimeType": "Winecrash.Cube, WinecrashCore",
             "Path": "assets/items/water.json"
-        }
+        },
+        {
+            "Identifier": "winecrash:nord",
+            "RuntimeType": "Winecrash.Item, WinecrashCore",
+            "Path": "assets/items/nord.json"
+        },
     ]
 }

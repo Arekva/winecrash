@@ -19,7 +19,8 @@ namespace Winecrash
         
         //-- set in item config --//
         public bool DrawAllSides { get; set; } = false;
-        
+
+        //public override Vector3D InventoryScale { get; set; } = Vector3D.One * 1.175D;
         public virtual void MainInteraction() {}
 
         public virtual void SecondaryInteraction() {}

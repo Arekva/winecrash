@@ -1,8 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using WEngine;
 using WEngine.GUI;
 using Winecrash.Entities;
+using Winecrash.GUI;
+using Keys = WEngine.Keys;
+using Label = WEngine.GUI.Label;
 
 namespace Winecrash.Client
 {
@@ -15,6 +20,9 @@ namespace Winecrash.Client
         public WObject HotbarSelector;
         public WObject DebugPanel;
         public Label DebugPosition;
+        public WObject Inventory;
+        public WObject GlobalInventoryBackground;
+        public Label ItemNameLabel;
 
         public static double UIScale { get; } = -0.05D;
         
@@ -41,29 +49,7 @@ namespace Winecrash.Client
             //8
             new Vector2D[2] { new Vector2D(163/182.0D,19/22.0D), new Vector2D(179/182.0D,3/22.0D) },
         };
-        
-        private static readonly Vector2D[][] _SelectorHotbarAnchors = new Vector2D[9][]
-        {
-            // 0
-            new Vector2D[2] { new Vector2D(3/182.0D,19/22.0D), new Vector2D(19/182.0D,3/22.0D) },
-            //1
-            new Vector2D[2] { new Vector2D(23/182.0D,19/22.0D), new Vector2D(39/182.0D,3/22.0D) },
-            //2
-            new Vector2D[2] { new Vector2D(43/182.0D,19/22.0D), new Vector2D(59/182.0D,3/22.0D) },
-            //3
-            new Vector2D[2] { new Vector2D(63/182.0D,19/22.0D), new Vector2D(79/182.0D,3/22.0D) },
-            //4
-            new Vector2D[2] { new Vector2D(83/182.0D,19/22.0D), new Vector2D(99/182.0D,3/22.0D) },
-            //5
-            new Vector2D[2] { new Vector2D(103/182.0D,19/22.0D), new Vector2D(119/182.0D,3/22.0D) },
-            //6
-            new Vector2D[2] { new Vector2D(123/182.0D,19/22.0D), new Vector2D(139/182.0D,3/22.0D) },
-            //7
-            new Vector2D[2] { new Vector2D(143/182.0D,19/22.0D), new Vector2D(159/182.0D,3/22.0D) },
-            //8
-            new Vector2D[2] { new Vector2D(163/182.0D,19/22.0D), new Vector2D(179/182.0D,3/22.0D) },
-        };
-        
+
         private WObject[] HotbarItemsRenders { get; set; } = new WObject[9];
         private Label[] HotbarItemsAmount { get; set; } = new Label[9];
         
@@ -77,8 +63,7 @@ namespace Winecrash.Client
 
             Instance = this;
 
-            Player.LocalPlayer.OnHotbarUpdate += UpdateHotbarItem;
-            Player.LocalPlayer.OnHotbarSelectedChange += UpdateHotbarSelected;
+            
             
             Crosshair = new WObject("Crosshair")
             {
@@ -111,20 +96,7 @@ namespace Winecrash.Client
             img.KeepRatio = true;
             img.MinAnchor = new Vector2D(-0.0055D, 0.01D);
             img.MaxAnchor = new Vector2D(0.1265, 1.0725D);
-            /*
 
-            WObject rTester2TXT = new WObject("Amount")
-            {
-                Parent = rTester2,
-                Layer = (ulong)Layers.UI
-            };
-            Label lb = rTester2TXT.AddModule<Label>();
-            lb.Text = "64";
-            lb.AutoSize = true;
-            lb.Aligns = TextAligns.Down | TextAligns.Right;
-            lb.MinAnchor = new Vector2D(0.05,-0.3);
-            lb.MaxAnchor = new Vector2D(1.05,0.5);*/
-            
             DebugPanel = new WObject("Debug Panel")
             {
                 Parent = Canvas.Main.WObject,
@@ -132,6 +104,19 @@ namespace Winecrash.Client
             };
             img = DebugPanel.AddModule<Image>();
             img.Color = Color256.Transparent;
+
+            WObject inamewobj = new WObject("Item Name Display")
+            {
+                Parent = Canvas.Main.WObject,
+                Layer = (ulong) Layers.UI
+            };
+
+            ItemNameLabel = inamewobj.AddModule<LocalizedLabel>();
+            ItemNameLabel.AutoSize = true;
+            ItemNameLabel.MinAnchor = new Vector2D(0.33, 0.15);
+            ItemNameLabel.MaxAnchor = new Vector2D(0.66, 0.20);
+            ItemNameLabel.Aligns = TextAligns.Middle;
+            ItemNameLabel.Enabled = false;
             
             WObject positionTextObj = new WObject("Global Position")
             {
@@ -144,6 +129,86 @@ namespace Winecrash.Client
             DebugPosition.Aligns = TextAligns.Up | TextAligns.Middle;
             DebugPosition.Color = Color256.White;
             DebugPosition.Text = "XYZ: ?/?/?";
+
+            CreateInventoryFocus();
+            CreatePlayerInventory();
+
+            Player.LocalPlayer.OnHotbarUpdate += UpdateHotbarItem;
+            Player.LocalPlayer.OnHotbarSelectedChange += UpdateHotbarSelected;
+            Player.LocalPlayer.OnContainerToggle += TogglePlayerInventory;
+            Player.LocalPlayer.OnContainerClose += PlayerCloseInventory;
+            Player.LocalPlayer.OnContainerOpen += PlayerOpenInventory;
+        }
+
+        private void CreateInventoryFocus()
+        {
+            GlobalInventoryBackground = new WObject("Inventory Background")
+            {
+                Parent = Canvas.Main.WObject,
+                Layer = (ulong) Layers.UI
+            };
+
+            Image img = GlobalInventoryBackground.AddModule<Image>();
+            img.Picture = Texture.Blank;
+            img.Color = new Color256(0.2,0.2,0.2,0.75);
+            GlobalInventoryBackground.GetModule<ImageRenderer>().DrawOrder = 1000;
+            GlobalInventoryBackground.Enabled = false;
+        }
+        private void CreatePlayerInventory()
+        {
+            Inventory = new WObject("Player Inventory")
+            {
+                Parent = Canvas.Main.WObject,
+                Layer = (ulong) Layers.UI
+            };
+            
+            Image img = Inventory.AddModule<Image>();
+            img.KeepRatio = true;
+            img.Picture = new Texture("assets/textures/gui/inventory.png", "Player Inventory", true);
+            img.MinAnchor = new Vector2D(0.33, 0.0);
+            img.MaxAnchor = new Vector2D(0.66, 1.0);
+            Inventory.GetModule<ImageRenderer>().DrawOrder = 1000;
+
+            WObject wobj = new WObject("Crafting Label")
+            {
+                Parent = Inventory,
+                Layer = (ulong) Layers.UI
+            };
+
+            LocalizedLabel lb = wobj.AddModule<LocalizedLabel>();
+            lb.Localization = "#winecrash:ui.inventory.crafting";
+            lb.AutoSize = true;
+            lb.Aligns = TextAligns.Left;
+            lb.MinAnchor = new Vector2D(0.5, 0.90);
+            lb.MaxAnchor = new Vector2D(0.95, 0.965);
+            lb.Color = new Color256(0.35,0.35,0.35,1.0);
+            lb.Shadows = false;
+            lb.Renderer.DrawOrder = 1000;
+            
+            Inventory.Enabled = false;
+        }
+
+        private void PlayerOpenInventory(IContainer container)
+        {
+            Input.LockMode = CursorLockModes.Free;
+            Input.CursorVisible = true;
+
+            if (container is Player player && player == Player.LocalPlayer) // if player inventory
+            {
+                Inventory.Enabled = true;
+            }
+        }
+        private void PlayerCloseInventory(IContainer container)
+        {
+            Input.IgnoreNextFocusFrame = true;
+            Input.LockMode = CursorLockModes.Lock;
+            Input.CursorVisible = false;
+            Inventory.Enabled = false;
+        }
+
+        private void TogglePlayerInventory(IContainer container)
+        {
+            GlobalInventoryBackground.Enabled = !GlobalInventoryBackground.Enabled;
         }
         
         private WObject itemPreview;
@@ -151,6 +216,37 @@ namespace Winecrash.Client
         {
 
         }
+
+        private static double ItemNameCooldown = 0.0D;
+        public static double ItemNameTime = 2.0D;
+        public static double ItemNameDisappearTime = 1.0D;
+        
+
+        private void ItemDisplayName(Item item)
+        {
+            if (item == null || item.Identifier == "winecrash:air") return;
+
+            ItemNameLabel.Enabled = true;
+            ItemNameLabel.Text = Game.Language.GetText(item.DisplayName);
+            ItemNameLabel.Color = item.DisplayColor;
+            ItemNameCooldown = ItemNameDisappearTime + ItemNameTime;
+        }
+
+        private void AnimateDisplayName()
+        {
+            ItemNameCooldown -= Time.DeltaTime;
+            
+            if(ItemNameCooldown < 0.0)
+                ItemNameLabel.Enabled = false;
+            else if (ItemNameCooldown < ItemNameTime)
+            {
+                Color256 col = ItemNameLabel.Color;
+                col.A = WMath.Clamp(ItemNameCooldown / ItemNameDisappearTime,0,1);
+                ItemNameLabel.Color = col;
+            }
+        }
+        
+        //private void UpdateInventoryItems(ContainerItem)
 
         private void UpdateHotbarItem(ContainerItem item, int index)
         { 
@@ -164,7 +260,6 @@ namespace Winecrash.Client
                 itemRenderer = HotbarItemsRenders[index] = new WObject("Item")
                 {
                     Parent = Hotbar,
-                    LocalScale = Vector3D.One * 1.175D,
                     Layer = (ulong) Layers.UI,
                 };
                 
@@ -182,7 +277,7 @@ namespace Winecrash.Client
                 amount.AutoSize = true;
                 amount.Aligns = TextAligns.Down | TextAligns.Right;
                 amount.MinAnchor = new Vector2D(0.05,-0.3);
-                amount.MaxAnchor = new Vector2D(1.05,0.5);
+                amount.MaxAnchor = new Vector2D(1.0,0.3);
             }
             else
             {
@@ -191,12 +286,24 @@ namespace Winecrash.Client
             }
 
             itemRenderer.LocalRotation = aitem.InventoryRotation;
+            itemRenderer.LocalScale = aitem.InventoryScale;
+
+            if (aitem.Identifier == "winecrash:air")
+            {
+                mod.Renderer.Mesh = null;
+                amount.Text = "";
+            }
+            else
+            {
+                mod.Renderer.Mesh = aitem.Model;
+                amount.Text = item.Amount > 1 ? item.Amount.ToString() : "";
+            }
+
             
-            mod.Renderer.Mesh = aitem.Model;
             mod.MinAnchor = _ItemHotbarAnchors[index][0];
             mod.MaxAnchor = _ItemHotbarAnchors[index][1];
 
-            amount.Text = item.Amount > 1 ? item.Amount.ToString() : "";
+            
             amount.WObject.Rotation = Quaternion.Identity;
 
             if(index == Player.LocalPlayer.HotbarSelectedIndex)
@@ -228,6 +335,7 @@ namespace Winecrash.Client
             else
             {
                 mesh = aitem.Model;
+                ItemDisplayName(aitem);
             }
 
             wobj.LocalPosition = aitem.HandPosition;
@@ -254,15 +362,28 @@ namespace Winecrash.Client
         private Random r = new Random();
         protected override void Update()
         {
+            if (Input.IsPressing(Keys.E))
+            {
+                if (Player.LocalPlayer.ContainerOpened)
+                {
+                    Player.LocalPlayer.CloseContainer();
+                }
+                else
+                {
+                    Player.LocalPlayer.OpenContainer(Player.LocalPlayer);
+                }
+            }
+
+            if (Input.IsPressing(Keys.Escape))
+            {
+                Player.LocalPlayer.CloseContainer();
+            }
             if(Input.IsPressing(Keys.R))
                 Player.LocalPlayer.AddItemFast(new ContainerItem(ItemCache.GetIdentifier((ushort)r.Next((int)ItemCache.TotalItems))));
 
-            if (Input.IsPressing(Keys.NumPad1))
-                Player.LocalPlayer.HotbarSelectedIndex--;
-            if (Input.IsPressing(Keys.NumPad2))
-                Player.LocalPlayer.HotbarSelectedIndex++;
+            AnimateDisplayName();
 
-            //Debug.Log(new Quaternion(180 + 45, -20, 0) * new Quaternion(0, -25, 0));
+            Player.LocalPlayer.HotbarSelectedIndex -= Input.MouseScrollDeltaStep;
         }
 
         protected override void LateUpdate()
@@ -305,12 +426,24 @@ namespace Winecrash.Client
             HotbarImage = null;
             Hotbar?.Delete();
             Hotbar = null;
+            
+            Inventory?.Delete();
+            Inventory = null;
+            
+            GlobalInventoryBackground?.Delete();
+            GlobalInventoryBackground = null;
 
+            ItemNameLabel.WObject.Delete();
+            ItemNameLabel = null;
+            
             HotbarItemsAmount = null;
             HotbarItemsRenders = null;
 
             Player.LocalPlayer.OnHotbarUpdate -= UpdateHotbarItem;
             Player.LocalPlayer.OnHotbarSelectedChange -= UpdateHotbarSelected;
+            Player.LocalPlayer.OnContainerToggle -= TogglePlayerInventory;
+            Player.LocalPlayer.OnContainerClose -= PlayerCloseInventory;
+            Player.LocalPlayer.OnContainerOpen -= PlayerOpenInventory;
         }
     }
 }

@@ -1,18 +1,21 @@
 {
-  "Transparent": true,
-  "DrawInternalFaces": true,
+	"DisplayName": "#winecrash:block.air",
+	
+	"Transparent": true,
+	"DrawInternalFaces": true,
+	
 
-  "HandPosition":
-  {
-    "X": -0.4,
-    "Y": -0.75,
-    "Z": 0.4
-  },
-  "HandRotation":
-  {
-    "X": 0.923,
-    "Y": 0.1464,
-    "Z": -0.0403,
-    "W": -0.3536
-  }
+	"HandPosition":
+	{
+		"X": -0.4,
+		"Y": -0.75,
+		"Z": 0.4
+	},
+	"HandRotation":
+	{
+		"X": 0.923,
+		"Y": 0.1464,
+		"Z": -0.0403,
+		"W": -0.3536
+	}
 }

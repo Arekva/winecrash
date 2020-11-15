@@ -158,6 +158,9 @@ namespace Winecrash
             OnCraftUpdate = null;
             OnCraftOutputUpdate = null;
             OnHotbarSelectedChange = null;
+            OnContainerClose = null;
+            OnContainerOpen = null;
+            OnContainerToggle = null;
 
             
             base.Delete();
@@ -183,44 +186,53 @@ namespace Winecrash
         }
         public void ParseMouse(Vector2D deltas)
         {
-            this.CameraAngles += deltas;
+            if (!ContainerOpened)
+            {
+                this.CameraAngles += deltas;
+            }
         }
         public void ParseInputs(Dictionary<string, KeyStates> ks)
         {
             Vector3D dir = new Vector3D();
 
             Entity.AnyMoveInputOnFrame = false;
-            if(ks.TryGetValue("move_forward", out KeyStates state))
+            if (!ContainerOpened)
             {
-                if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+                if (ks.TryGetValue("move_forward", out KeyStates state))
                 {
-                    dir += Vector3D.Forward;
-                    Entity.AnyMoveInputOnFrame = true;
+                    if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+                    {
+                        dir += Vector3D.Forward;
+                        Entity.AnyMoveInputOnFrame = true;
+                    }
+
                 }
 
-            }
-            if (ks.TryGetValue("move_backward", out state))
-            {
-                if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+                if (ks.TryGetValue("move_backward", out state))
                 {
-                    dir += Vector3D.Backward;
-                    Entity.AnyMoveInputOnFrame = true;
+                    if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+                    {
+                        dir += Vector3D.Backward;
+                        Entity.AnyMoveInputOnFrame = true;
+                    }
                 }
-            }
-            if (ks.TryGetValue("move_left", out state))
-            {
-                if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+
+                if (ks.TryGetValue("move_left", out state))
                 {
-                    dir -= Vector3D.Left;
-                    Entity.AnyMoveInputOnFrame = true;
+                    if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+                    {
+                        dir -= Vector3D.Left;
+                        Entity.AnyMoveInputOnFrame = true;
+                    }
                 }
-            }
-            if (ks.TryGetValue("move_right", out state))
-            {
-                if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+
+                if (ks.TryGetValue("move_right", out state))
                 {
-                    dir -= Vector3D.Right;
-                    Entity.AnyMoveInputOnFrame = true;
+                    if (state == KeyStates.Pressing || state == KeyStates.Pressed)
+                    {
+                        dir -= Vector3D.Right;
+                        Entity.AnyMoveInputOnFrame = true;
+                    }
                 }
             }
 

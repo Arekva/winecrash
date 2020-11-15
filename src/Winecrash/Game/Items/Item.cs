@@ -9,10 +9,16 @@ using Winecrash.Entities;
 
 namespace Winecrash
 {
-    public abstract class Item : IEquatable<Item>
+    public class Item : IEquatable<Item>
     {
         //-- set in database config --//
         [JsonIgnore] public string Identifier { get; internal set; } = "winecrash:air";
+        
+        //-- set in item config --//
+        public string DisplayName { get; set; } = "#winecrash:error.noname";
+        
+        //-- set in item config --//
+        public Color256 DisplayColor { get; set; } = Color256.White;
 
         //-- set in item config --//
         public string TexturePath { get; set; } = null;
@@ -24,10 +30,13 @@ namespace Winecrash
         public virtual Vector3D HandPosition { get; set; } = Vector3D.Forward * 0.9 + Vector3D.Left + Vector3D.Down * 0.6;
         
         //-- set in item config --//
-        public virtual Quaternion HandRotation { get; set; } = new Quaternion(0,90,0) *  new Quaternion(0,0,-65);
+        public virtual Quaternion HandRotation { get; set; } = new Quaternion(0,90,0) *  new Quaternion(0,180,0);
         
         //-- set in item config --//
         public virtual Vector3D HandScale { get; set; } = Vector3D.One;
+        
+        //-- set in item config --//
+        public virtual Vector3D InventoryScale { get; set; } = Vector3D.One * 1.1;
         
         //-- set in item config --//
         public virtual Quaternion InventoryRotation { get; set; } = Quaternion.Identity;

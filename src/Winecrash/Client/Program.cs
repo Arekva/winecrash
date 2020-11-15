@@ -95,7 +95,7 @@ namespace Winecrash.Client
                 new Shader("assets/shaders/item/Item.vert", "assets/shaders/item/Item.frag");
 
 
-                Database.Load("assets/items/items.json").ParseItems();
+                Database.Load("assets/items.json").ParseItems();
                 ItemCache.BuildChunkTexture(out int xsize, out int ysize);
                 //Chunk.Texture.Save(Folders.UserData + "items_atlas.png");
 

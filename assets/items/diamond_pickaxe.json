@@ -1,4 +1,6 @@
 {
+	"DisplayName": "#winecrash:tool.diamond_pickaxe",
+
 	"Transparent": true,
 
 	"TexturePath": "assets/textures/items/diamond_pickaxe.png",
