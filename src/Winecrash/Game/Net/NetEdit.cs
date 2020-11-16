@@ -1,6 +1,6 @@
 ﻿using WEngine.Networking;
 
-namespace WinecrashCore.Net
+namespace Winecrash.Net
 {
     public class NetEdit : NetObject
     {

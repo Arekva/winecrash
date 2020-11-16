@@ -5,22 +5,24 @@ namespace Winecrash.Entities
 {
     public class ItemEntity : Entity
     {
-
+        public ContainerItem Item { get; set; }
+        
         protected override void Creation()
         {
             Collider.Extents = Vector3D.One * 0.1D;
         }
 
-        protected override void FixedUpdate()
+        protected override void Start()
         {
-            base.FixedUpdate();
+            base.Start();
             
             
         }
 
         protected override void OnDelete()
         {
-            
+            Item = null;
+            //Item?.Delete();
         }
     }
 }

@@ -6,11 +6,25 @@ namespace WEngine
     public static class Time
     {
         // Defaults the delta time to the fixed time before updating.
-        public static double DeltaTime { get; internal set; } = FixedDeltaTime;
+        private static double _DeltaTime = 1 / 60D;
+
+        public static double DeltaTime
+        {
+            get
+            {
+                return _DeltaTime;
+            }
+            internal set
+            {
+                _DeltaTime = value;
+                PhysicsDeltaTime = Math.Min(value, 1 / 60D);
+            }
+        }
+        public static double PhysicsDeltaTime { get; private set; } = 1 / 60D;
         public static double TimeScale { get; set; } = 1D;
 
-        public static double FixedDeltaTime {get; internal set; } = 1D / 60;
-        public static double FixedTimeScale { get; set; } = 1D;
+        /*public static double FixedDeltaTime {get; internal set; } = 1D / 60;
+        public static double FixedTimeScale { get; set; } = 1D;*/
         
         internal static Stopwatch FrameTimer { get; set; } = new Stopwatch();
         

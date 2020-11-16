@@ -313,9 +313,9 @@ namespace Winecrash.Entities
         }
 
         private int debug = 0;
-        protected override void LateFixedUpdate()
+        protected override void LateUpdate()
         {
-            base.LateFixedUpdate();
+            base.LateUpdate();
 
             if (this.RigidBody == null || this.Collider == null) return;
 
@@ -363,7 +363,7 @@ namespace Winecrash.Entities
 
                 else
                 {
-                    Vector2D xySpeedDecay = xzDir * xzVel * Player.WalkDeaccelerationFactor * Time.FixedDeltaTime;
+                    Vector2D xySpeedDecay = xzDir * xzVel * Player.WalkDeaccelerationFactor * Time.PhysicsDeltaTime;
 
                     Vector2D newSpeed = (xzDir * xzVel) - xySpeedDecay;
                     
@@ -371,8 +371,28 @@ namespace Winecrash.Entities
                 }
             }
 
-            if (!Player.NoClipping)
+            if (!Player.NoClipping/* && Chunk != null*/)
             {
+                /*Sweep sw = new ChunkBoxCollisionProvider().SweepCollide(Chunk, Collider);
+
+                
+                if (sw.Hit.HasHit)
+                {
+                    if ((int)sw.Hit.Normal.Y == 1)
+                    {
+                        
+                        Vector3D newP = sw.Hit.Position;
+                        newP.Y += this.Collider.Extents.Y - this.RigidBody.Velocity.Y * Time.PhysicsDeltaTime;
+                        this.Collider.Center = newP;
+                        
+                        this.RigidBody.Velocity *= new Vector3D(1,0,1);
+                    }
+                    else
+                    {
+                        
+                    }
+                }*/
+                //this.Collider.Center = sw.Position;
                 RaycastChunkHit h = ChunkBoxCollisionProvider.CollideWorld(Collider);
             }
         }

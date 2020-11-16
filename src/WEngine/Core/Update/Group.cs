@@ -112,7 +112,7 @@ namespace WEngine
 
         internal static UpdateTypes UpdateType = UpdateTypes.PreUpdate;
 
-        internal void FixedUpdate()
+        /*internal void FixedUpdate()
         {
             Module[] modules = null;
 
@@ -179,7 +179,7 @@ namespace WEngine
                     }
                 }
             }
-        }
+        }*/
         private void Update()
         {
             while (!this.Deleted)

@@ -9,7 +9,6 @@ using WEngine.GUI;
 using WEngine.Networking;
 using Winecrash.Entities;
 using Winecrash.Net;
-using WinecrashCore.Net;
 using Graphics = WEngine.Graphics;
 
 namespace Winecrash.Client
@@ -138,22 +137,9 @@ namespace Winecrash.Client
                     }
                 }
                 
-                
 
-                lock (_FixedInputsLockers)
-                {
-                    _FixedInputs = inputs;
-                }
-                
+                Player.LocalPlayer.ParseInputs(inputs);
                 Player.LocalPlayer.ParseMouse(Input.MouseDelta * Time.DeltaTime * MouseSensivity);
-                
-                if (inputs.TryGetValue("move_jump", out KeyStates state))
-                {
-                    if (state == KeyStates.Pressing)
-                    {
-                        jump = true;
-                    }
-                }
 
 
                 RaycastChunkHit hit = World.RaycastWorld(new Ray(Camera.Main.WObject.Position, Camera.Main.WObject.Forward, 5.0D));
@@ -261,11 +247,11 @@ namespace Winecrash.Client
             }
         }
         
-        private object _FixedInputsLockers = new object();
-        private Dictionary<string, KeyStates> _FixedInputs;
-        private bool jump = false;
+        //private object _FixedInputsLockers = new object();
+        //private Dictionary<string, KeyStates> _FixedInputs;
+        /*private bool jump = false;
 
-        protected override void FixedUpdate()
+        protected override void Update()
         {
             lock (_FixedInputsLockers)
             {
@@ -277,7 +263,7 @@ namespace Winecrash.Client
                 }
                 //_FixedInputs = null;
             }
-        }
+        }*/
 
         protected override void OnDelete()
         {

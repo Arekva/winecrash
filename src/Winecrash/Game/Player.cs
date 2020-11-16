@@ -9,7 +9,6 @@ using WEngine;
 using WEngine.Networking;
 using Winecrash.Entities;
 using Winecrash.Net;
-using WinecrashCore.Net;
 
 namespace Winecrash
 {
@@ -234,6 +233,14 @@ namespace Winecrash
                         Entity.AnyMoveInputOnFrame = true;
                     }
                 }
+
+                if (ks.TryGetValue("move_jump", out state))
+                {
+                    if (state == KeyStates.Pressing)
+                    {
+                        Entity.RigidBody.Velocity += Vector3D.Up * 8.75;
+                    }
+                }
             }
 
             /*if (ks.TryGetValue("move_jump", out state))
@@ -251,12 +258,12 @@ namespace Winecrash
             if (NoClipping)
             {
                 Entity.WObject.Position +=
-                    this.Entity.Rotation * dir.Normalized * Time.FixedDeltaTime * WalkAcceleration * 0.1;
+                    this.Entity.Rotation * dir.Normalized * Time.PhysicsDeltaTime * WalkAcceleration * 0.1;
             }
             else
             {
                 Entity.RigidBody.Velocity += (new Quaternion(0, CameraAngles.X, 0) * dir.Normalized) *
-                                             Time.DeltaTime * WalkAcceleration;
+                                             Time.PhysicsDeltaTime * WalkAcceleration;
             }
             
             //Debug.Log(Entity.RigidBody.Velocity);

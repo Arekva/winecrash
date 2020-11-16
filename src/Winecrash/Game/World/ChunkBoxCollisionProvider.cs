@@ -91,7 +91,7 @@ namespace Winecrash
                 }
 
                 Sweep resultingSweep =
-                    new BoxBoxCollisionProvider().SweepCollideInto(b, rb.Velocity * Time.FixedDeltaTime,
+                    new BoxBoxCollisionProvider().SweepCollideInto(b, rb.Velocity * Time.PhysicsDeltaTime,
                         colliders.ToArray());
 
                 for (int i = 0; i < colliders.Count; i++)
@@ -453,16 +453,18 @@ namespace Winecrash
             }
             
 
+            
+            
             CheckCeiling();
+            
+            CheckGrounded();
             
             CheckRight();
             CheckLeft();
 
             CheckForward();
             CheckBackward();
-            
-            CheckGrounded();
-            
+
             //if(!hit.HasHit)
             
             
@@ -484,8 +486,6 @@ namespace Winecrash
 
 
             rb.Velocity = finalVelocity;
-            
-            //Debug.Log("OUT: " + rb.Velocity);
 
             return hit;
         }
@@ -517,12 +517,16 @@ namespace Winecrash
 
                 chunk = World.GetChunk(cpos, "winecrash:overworld");
 
-                if (chunk != null)
+                if (chunk != null 
+                    && bpos.X > -1 && bpos.X < Chunk.Width
+                    && bpos.Y > -1 && bpos.Y < Chunk.Height
+                    && bpos.Z > -1 && bpos.Z < Chunk.Depth)
                 {
-                    bpos.X = WMath.Clamp(bpos.X, 0, 15);
-                    bpos.Y = WMath.Clamp(bpos.Y, 0, 255);
-                    bpos.Z = WMath.Clamp(bpos.Z, 0, 15);
+                    //bpos.X = WMath.Clamp(bpos.X, 0, 15);
+                    //bpos.Y = WMath.Clamp(bpos.Y, 0, 255);
+                    //bpos.Z = WMath.Clamp(bpos.Z, 0, 15);
 
+                    
                     block = chunk[bpos.X, bpos.Y, bpos.Z];
 
                     if (!block.Transparent)

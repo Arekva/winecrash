@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using OpenTK.Graphics.OpenGL;
 
 namespace WEngine
@@ -127,6 +128,8 @@ namespace WEngine
             //AABB box = collider.AABB;
             AABB col = colliding.AABB;
             Vector3D delta = collidingVelocity;
+
+            colliders = colliders.OrderBy(c => Vector3D.Distance(col.Position, c.Center)).ToArray();
 
             Sweep nearest = new Sweep();
             nearest.Time = 1.0D;

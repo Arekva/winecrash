@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace WEngine
 {
@@ -37,7 +39,7 @@ namespace WEngine
         internal List<Group> _Groups { get; set; } = new List<Group>(1);
         internal object GroupsLocker { get; set; } = new object();
         
-        internal static ManualResetEvent PhysicsThreadLocker { get; set; } = new ManualResetEvent(true);
+        internal static ManualResetEvent PhysicsThreadLocker { get; set; } = new ManualResetEvent(false);
         internal static ManualResetEvent RenderThreadLocker { get; set; } = new ManualResetEvent(true);
 
         internal bool Deleted { get; set; } = false;
@@ -56,13 +58,15 @@ namespace WEngine
                 Graphics.Window.OnRender += new UpdateEventHandler(Render);
             }
 
-            FixedThread = new Thread(() =>
+            /*FixedThread = new Thread(() =>
             {
                 Stopwatch sw = new Stopwatch();
                 while (true)
                 {
                     PhysicsThreadLocker.WaitOne();
                     RenderThreadLocker.Reset();
+                    //Task.Delay(1).Wait();
+                    //Debug.Log("PHY START");
                     sw.Start();
 
                     Layer[] layers = _Layers.ToArray();
@@ -131,6 +135,7 @@ namespace WEngine
                     
 
                     sw.Stop();
+                    //Debug.Log("PHY STOP");
                     RenderThreadLocker.Set();
                     double waitTime = Physics.FixedRate - sw.Elapsed.TotalSeconds;
                     sw.Start();
@@ -152,7 +157,7 @@ namespace WEngine
             if (Engine.DoGUI)
                 Graphics.Window.OnLoaded += FixedThread.Start;
             else 
-                FixedThread.Start();
+                FixedThread.Start();*/
         }
 
         private Layer(string name, int order, IEnumerable<Group> groups)

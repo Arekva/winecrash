@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WinecrashCore.Net
+namespace Winecrash.Net
 {
     public class NetEntityDeletion
     {

@@ -1,4 +1,4 @@
-﻿namespace WinecrashCore.Net
+﻿namespace Winecrash.Net
 {
     public class NetUser
     {

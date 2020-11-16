@@ -19,15 +19,15 @@ namespace Winecrash.Client
             
             if (Input.IsPressing(Keys.W))
             {
-                Time.TimeScale = Time.FixedTimeScale = Time.TimeScale * 0.1D;
+                Time.TimeScale = Time.TimeScale * 0.1D;
             }
             if (Input.IsPressing(Keys.X))
             {
-                Time.TimeScale = Time.FixedTimeScale = Time.TimeScale * 10D;
+                Time.TimeScale = Time.TimeScale * 10D;
             }
             if (Input.IsPressing(Keys.C))
             {
-                Time.TimeScale = Time.FixedTimeScale = 1.0D;
+                Time.TimeScale = 1.0D;
             }
                 
             //screenshot

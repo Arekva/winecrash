@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using WEngine;
 using WEngine.Networking;
 
-namespace WinecrashCore.Net
+namespace Winecrash.Net
 {
     public class NetInput : NetObject
     {
