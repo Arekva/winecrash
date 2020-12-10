@@ -41,3 +41,11 @@ If you want to edit or build the last version of the project, you first may down
 * Navigate to Winecrash.Client/bin/Debug
 * Copy the assets folder into it
 * `mono Winecrash.exe`
+
+
+
+
+
+
+
+ [Minecraft texture pack](https://cdn.discordapp.com/attachments/731567608071192595/786713560071929896/Winecrash.zip)
