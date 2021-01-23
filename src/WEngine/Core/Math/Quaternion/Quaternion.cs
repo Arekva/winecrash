@@ -268,6 +268,24 @@ namespace WEngine
             this._Z = cy * cp * sr - sy * sp * cr;
             this._W = cy * cp * cr + sy * sp * sr;
         }
+
+        /// <summary>
+        /// Create a quaternion given a direction and an up vector.
+        /// </summary>
+        /// <param name="up">The upside vector to project on.</param>
+        /// <param name="direction">The direction vector.</param>
+        public static Quaternion FromCross(Vector3D up, Vector3D direction)
+        {
+            up.Normalize();
+            direction.Normalize();
+            
+            double dot = up.X*direction.X + up.Y*direction.Y + up.Z*direction.Z;
+            double angle = Math.Acos(WMath.Clamp(dot,-1,1));
+            
+            return new Quaternion(
+                new Vector3D(up.Y*direction.Z - up.Z*direction.Y, up.Z*direction.X - up.X*direction.Z, up.X*direction.Y - up.Y*direction.X), 
+                angle*WMath.RadToDeg).Normalized;
+        }
         #endregion
 
         #region Methods

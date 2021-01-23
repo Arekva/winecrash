@@ -207,23 +207,28 @@ namespace Winecrash
             
             Vector3F basePos = new Vector3F((chunkCoords.X * Chunk.Width) + shift.X, shift.Y, (chunkCoords.Y * Chunk.Depth) + shift.Z);
 
-            Parallel.For(0, Chunk.Width * Chunk.Height * Chunk.Depth, i =>
+            for (int i = 0; i < Chunk.Width * Chunk.Height * Chunk.Depth; i++)
             {
+
+
+                //Parallel.For(0, Chunk.Width * Chunk.Height * Chunk.Depth, i =>
+                //{
                 indices[i] = airID;
-                
+
                 // get, from index, the x,y,z coordinates of the block. Then move it from the basePos x scale.
                 WMath.FlatTo3D(i, Chunk.Width, Chunk.Height, out int x, out int y, out int z);
-                Vector3F finalPos = new Vector3F((basePos.X + x) * baseLandmassScale, basePos.Y + y, (basePos.Z + z) * baseLandmassScale) * globalScale;
+                Vector3F finalPos = new Vector3F((basePos.X + x) * baseLandmassScale, basePos.Y + y,
+                    (basePos.Z + z) * baseLandmassScale) * globalScale;
 
                 float landMassPct = baseLandmass.GetValue(finalPos.X, 0, finalPos.Z);
                 // retreive the 2D base land value (as seen from top). If under land cap, it's ocean.
                 bool isLand = landMassPct > oceanCoverage;
 
-                float landPct =  (float)Math.Pow(WMath.Remap(landMassPct, oceanCoverage, 1.0F, 0.0F, 1.0F), 2F);
+                float landPct = (float) Math.Pow(WMath.Remap(landMassPct, oceanCoverage, 1.0F, 0.0F, 1.0F), 2F);
                 float waterPct = WMath.Remap(landMassPct, 0.0F, oceanCoverage, 0.0F, 1.0F);
 
                 float landMassHeight = oceanLevel + (landPct * landDeformity);
-                int finalLandMassHeight = (int)landMassHeight;
+                int finalLandMassHeight = (int) landMassHeight;
 
                 float waterHeight = oceanMaxDepth + (waterPct * oceanDeformity);
                 int finalWaterHeight = (int) waterHeight;
@@ -256,7 +261,8 @@ namespace Winecrash
 
 
                 //indices[i] = y == 63 ? (isLand ? grassID : sandID) : (y > 63 ? airID : debugID);//debug.GetValue(finalPos.X, finalPos.Y, finalPos.Z) < cap ? stoneID : airID;
-            });
+                //});
+            }
 
             return indices;
         }
@@ -279,8 +285,10 @@ namespace Winecrash
             ConcurrentBag<Vector3I> allSurfaces = new ConcurrentBag<Vector3I>();
 
             // for each x and z, for y from top to bottom:
-            Parallel.For(0, Chunk.Width /** Chunk.Height*/ * Chunk.Depth, i =>
-            {
+            for (int i = 0; i < Chunk.Width*Chunk.Depth; i++)
+            { 
+            //Parallel.For(0, Chunk.Width /** Chunk.Height*/ * Chunk.Depth, i =>
+            //{
                 // get the x / z position
                 WMath.FlatTo2D(i, Chunk.Width, out int x, out int z);
 
@@ -338,7 +346,8 @@ namespace Winecrash
                 }
                 //Vector3F finalPos = new Vector3F((basePos.X + x) * baseLandmassScale, basePos.Y + y,
                 //    (basePos.Z + z) * baseLandmassScale) * globalScale;
-            });
+            //});
+            }
 
             surfaces = allSurfaces.ToArray();
 

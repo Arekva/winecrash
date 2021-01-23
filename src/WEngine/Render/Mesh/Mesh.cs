@@ -244,7 +244,7 @@ namespace WEngine
             });
         }
 
-        public static Mesh LoadFile(string path, MeshFormats format)
+        public static Mesh LoadFile(string path, MeshFormats format = MeshFormats.Wavefront)
         {
             return format switch
             {

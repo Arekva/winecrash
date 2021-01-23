@@ -48,11 +48,13 @@ namespace Winecrash
 
         public virtual void OnDeserialize()
         {
-            if (!string.IsNullOrEmpty(TexturePath))
-                Texture = WEngine.Texture.GetOrCreate(TexturePath);
+            if (Engine.DoGUI)
+            {
+                if (!string.IsNullOrEmpty(TexturePath))
+                    Texture = WEngine.Texture.GetOrCreate(TexturePath);
 
-            if(Engine.DoGUI)
                 this.Model = this.BuildModel();
+            }
         }
 
         internal virtual Mesh BuildModel()

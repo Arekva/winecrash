@@ -388,12 +388,17 @@ namespace Winecrash.Client
 
         protected override void LateUpdate()
         {
-            Vector3D pos = Player.LocalPlayer.Entity.WObject.Position;
-            DebugPosition.Text = $"XYZ: {pos.X:#.###} / {pos.Y:#.###} / {pos.Z:#.###}";
+            
         }
 
         protected override void OnRender()
         {
+            if (Player.LocalPlayer && Player.LocalPlayer.Entity)
+            {
+                Vector3D pos = Player.LocalPlayer.Entity.WObject.Position;
+                DebugPosition.Text = $"XYZ: {pos.X:F3} / {pos.Y:F3} / {pos.Z:F3}";
+            }
+
             HotbarImage.MinAnchor = new Vector2D(0.25D - UIScale, 0.0D);
             HotbarImage.MaxAnchor = new Vector2D(0.75D + UIScale, 1.0D);
             HotbarImage.Shift = Vector3D.Down * ((Graphics.Window.SurfaceResolution.Y / 2.0D) - HotbarImage.GlobalScale.Y / 2.0D);

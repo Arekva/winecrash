@@ -133,7 +133,7 @@ namespace Winecrash.Client
             btnMult.Button.MinAnchor = new Vector2F(0.0F, 0.7F);
             btnMult.Button.MaxAnchor = new Vector2F(1.0F, 0.8F);
             btnMult.Label.Localization = "#winecrash:ui.mainmenu.multiplayer";
-            btnMult.Button.Locked = false;
+            btnMult.Button.Locked = true;
             btnMult.Button.OnClick += () =>
             {
                 ShowMulti();

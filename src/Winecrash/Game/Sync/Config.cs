@@ -85,7 +85,7 @@ namespace Winecrash
                     SyncWrite();
                     break;
                 default:
-                    throw new InvalidEnumArgumentException("Unvalid synchronisation mode for Config synchronisation.", new ArgumentException("Unvalid argument.", "mode"));
+                    throw new InvalidEnumArgumentException("Invalid synchronisation mode for Config synchronisation.", new ArgumentException());
             }
         }
         private void SyncRead()

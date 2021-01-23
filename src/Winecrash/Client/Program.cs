@@ -34,7 +34,7 @@ namespace Winecrash.Client
         {
             CreateDebugWindow();
 
-            Engine.Run(true).Wait();
+            Engine.Run(true, args).Wait();
 
             Engine.OnStop += () => End.Set();
 
@@ -48,7 +48,7 @@ namespace Winecrash.Client
             new Sound(@"assets/sounds/button_click.mp3");
             //new Shader("assets/shaders/Debug/Volume/DebugVolume.vert", "assets/shaders/Debug/Volume/DebugVolume.frag");
             
-            Tester = new WObject("tester") /*{ Enabled = false }*/.AddModule<ClientTester>();
+            Tester = new WObject("tester").AddModule<ClientTester>();
 
                                                 /* ego mode enabled */
             Player.LocalPlayer = new Player("Arthur_" + new Random().Next(1000, 10000));
@@ -129,7 +129,7 @@ namespace Winecrash.Client
                 localPlayerWobj.Enabled = true;
                 Player.LocalPlayer.CreateEntity(localPlayerWobj);
 
-                localPlayerWobj.Position = new Vector3D(soloPlayerSpawnpoint.X, 0, soloPlayerSpawnpoint.Z)+ Vector3D.Up * World.GetSurface(soloPlayerSpawnpoint, "winecraft:dimension") + 1;
+                localPlayerWobj.Position = new Vector3D(soloPlayerSpawnpoint.X, 0, soloPlayerSpawnpoint.Z)+ Vector3D.Up * (World.GetSurface(soloPlayerSpawnpoint, "winecraft:dimension") + 1);
 
                 if (SkyboxController.Instance)
                 {
@@ -149,6 +149,8 @@ namespace Winecrash.Client
                 if (type == PartyType.Singleplayer)
                 {
                     Player.LocalPlayer.CameraAngles = Vector2I.Zero;
+
+                    Player.LocalPlayer.Entity.WObject.AddModule<DebugArrow>();
 
                     Task.Run(() =>
                     {

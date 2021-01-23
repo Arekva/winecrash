@@ -27,8 +27,8 @@ namespace WEngine
         public static double FixedTimeScale { get; set; } = 1D;*/
         
         internal static Stopwatch FrameTimer { get; set; } = new Stopwatch();
-        
-        
+
+        public static ulong Frame { get; internal set; } = 0UL;
 
 
         internal static double TimeSinceRenderBegan

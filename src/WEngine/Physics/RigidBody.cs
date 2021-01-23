@@ -27,19 +27,13 @@ namespace WEngine
             }
         }*/
         public bool UseGravity { get; set; } = true;
-
-
-        protected internal override void Creation()
-        {
-            //this.FixedExecutionOrder = -1000;
-        }
-
+        
         protected internal override void PreUpdate()
         {
             if (UseGravity)
-                this.Velocity += Physics.Gravity * Time.PhysicsDeltaTime;
+                this.Velocity += Physics.Gravity * Time.DeltaTime;
             
-            this.WObject.Position += Velocity * Time.PhysicsDeltaTime;
+            this.WObject.Position += Velocity * Time.DeltaTime;
         }
 
         /*protected internal override void LateFixedUpdate()

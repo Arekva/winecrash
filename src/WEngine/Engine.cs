@@ -22,6 +22,8 @@ namespace WEngine
         public static Version Version { get; } = new Version(0, 0, 1, "Stève");
 
         public const string SourceLink = "https://github.com/breaks-and-continues/winecrash";
+        
+        public static string[] Arguments { get; internal set; }
 
         /// <summary>
         /// The OS running the engine.
@@ -64,9 +66,11 @@ namespace WEngine
             Debug.Log(Layer.GetTrace());
         }
 
-        public async static Task Run(bool gui)
+        public async static Task Run(bool gui, string[] args)
         {
             DoGUI = gui;
+
+            Arguments = args;
 
             System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 

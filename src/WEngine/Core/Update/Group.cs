@@ -110,137 +110,77 @@ namespace WEngine
             Thread.Start();
         }
 
-        internal static UpdateTypes UpdateType = UpdateTypes.PreUpdate;
-
-        /*internal void FixedUpdate()
-        {
-            Module[] modules = null;
-
-            lock (moduleLocker)
-                modules = this._Modules.OrderBy(m => m?.FixedExecutionOrder ?? int.MinValue).ToArray();
-
-            if (modules != null)
-            {
-                for (int i = 0; i < modules.Length; i++)
-                {
-                    if (modules[i] == null || !modules[i].Enabled || modules[i].Deleted) continue;
-                    
-                    try
-                    {
-                        modules[i]?.FixedUpdate();
-                    }
-                    catch(Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
-                }
-            }
-        }
-        internal void LateFixedUpdate()
-        {
-            if(this._Modules != null)
-            {
-                List<Module> modules = null;
-
-                lock(moduleLocker)
-                    modules = this._Modules.OrderBy(m => m?.FixedExecutionOrder ?? int.MinValue).ToList();
-
-                foreach (Module mod in modules)
-                {
-                    try
-                    {
-                        mod?.LateFixedUpdate();
-                    }
-                    catch(Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
-                }
-            }
-        }
-        internal void PreFixedUpdate()
-        {
-            if(this._Modules != null)
-            {
-                List<Module> modules = null;
-
-                lock(moduleLocker)
-                    modules = this._Modules.OrderBy(m => m?.FixedExecutionOrder ?? int.MinValue).ToList();
-
-                foreach (Module mod in modules)
-                {
-                    try
-                    {
-                        mod?.PreFixedUpdate();
-                    }
-                    catch(Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
-                }
-            }
-        }*/
+        internal static volatile UpdateTypes UpdateType = UpdateTypes.PreUpdate;
+        
         private void Update()
         {
             while (!this.Deleted)
             {
-                UpdateTypes ut = UpdateType;
                 this.ResetEvent.WaitOne(); //wait for reset event
                 this.ResetEvent.Reset(); //set reset event to false
+                
+                UpdateTypes ut = UpdateType;
 
                 List<Module> modules = null;
 
-                lock(moduleLocker)
-                    modules = _Modules?.ToList();
+                lock(moduleLocker) modules = _Modules?.ToList();
 
                 if (modules != null)
-                {
-                    foreach (Module mod in modules)
+                    switch (ut)
                     {
-                        if (mod == null || !mod.Enabled || mod.Deleted) continue;
-                        
-                        try
-                        {
-                            switch (ut)
-                            {
-                                case UpdateTypes.PreUpdate:
+                        case UpdateTypes.PreUpdate:
+                            foreach (Module mod in modules) if (mod != null && mod.Enabled && !mod.Deleted)
+                                {
+                                    // Invoke Start()
+                                    try
                                     {
                                         if (mod.StartDone == false)
                                         {
                                             mod.StartDone = true;
-                                            if (mod.RunAsync)
-                                            {
-                                                Task.Run(mod.Start);
-                                            }
-                                            else
-                                            {
-                                                mod.Start();
-                                            }
+                                            if (mod.RunAsync) Task.Run(mod.Start);
+                                            else mod.Start();
                                         }
-            
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Debug.LogException(e);
+                                    }
+
+                                    try
+                                    {
                                         mod.PreUpdate();
                                     }
-                                    break;
-
-                                case UpdateTypes.Update:
+                                    catch (Exception e)
+                                    {
+                                        Debug.LogException(e);
+                                    }
+                                }
+                            break;
+                            
+                        case UpdateTypes.Update:
+                            foreach (Module mod in modules) if (mod != null && mod.Enabled && !mod.Deleted)
+                                    try
                                     {
                                         mod.Update();
                                     }
-                                    break;
-
-                                case UpdateTypes.LateUpdate:
+                                    catch (Exception e)
                                     {
-                                        mod.LateUpdate();
+                                        Debug.LogException(e);
                                     }
-                                    break;
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            Debug.LogException(e);
-                        }
+                            break;
+                    
+                        case UpdateTypes.LateUpdate: 
+                            foreach (Module mod in modules) if (mod != null && mod.Enabled && !mod.Deleted)
+                                try
+                                {
+                                    mod.LateUpdate();
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.LogException(e);
+                                }
+                            break;
                     }
-                }
 
                 this.DoneEvent.Set(); //says the thread is done.      
             }  

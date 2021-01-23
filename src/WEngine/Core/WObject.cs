@@ -305,22 +305,11 @@ namespace WEngine
             lock (_ChildrenLocker)
                 children = (WObject[])this.Children.Clone();
 
-            for (int i = 0; i < children.Length; i++)
-            {
-                children[i].FlagTransformUpdatesRecursive(value, false, doPosition, doRotation, doScale);
-            }
+            for (int i = 0; i < children.Length; i++) children[i].FlagTransformUpdatesRecursive(value, false, doPosition, doRotation, doScale);
         }
 
-        private void FlagTransformUpdates(bool value)
-        {
-            _PositionNeedsUpdate = _RotationNeedsUpdate = _ScaleNeedsUpdate = value;
-        }
-
-        private void FlagDirectionUpdates(bool value)
-        {
-            _RightNeedsUpdate = _LeftNeedsUpdate = _UpNeedsUpdate = _DownNeedsUpdate = _ForwardNeedsUpdate = _BackwardNeedsUpdate = value;
-        }
-
+        private void FlagTransformUpdates(bool value) => _PositionNeedsUpdate = _RotationNeedsUpdate = _ScaleNeedsUpdate = value;
+        private void FlagDirectionUpdates(bool value) => _RightNeedsUpdate = _LeftNeedsUpdate = _UpNeedsUpdate = _DownNeedsUpdate = _ForwardNeedsUpdate = _BackwardNeedsUpdate = value;
 
         private Vector3D _Right;
         public Vector3D Right
@@ -334,6 +323,8 @@ namespace WEngine
                 }
                 return _Right;
             }
+            
+            set => Rotation = Quaternion.FromCross(Vector3D.Right, value.Normalized);
         }
 
         private Vector3D _Left;
@@ -348,6 +339,8 @@ namespace WEngine
                 }
                 return _Left;
             }
+
+            set => this.Right = -value;
         }
 
         private Vector3D _Up;
@@ -363,18 +356,7 @@ namespace WEngine
                 return _Up;
             }
 
-            set
-            {
-                Quaternion quat = Quaternion.Identity;
-
-                quat *= new Quaternion(Vector3D.Up, Vector2D.Angle(Vector2D.Right, value.XZ) * WMath.RadToDeg);
-
-                quat *= new Quaternion(Vector3D.Right, Vector2D.Angle(Vector2D.Up, value.YZ) * WMath.RadToDeg);
-
-                quat *= new Quaternion(Vector3D.Forward, Vector2D.Angle(Vector2D.Up, value.XY) * WMath.RadToDeg);
-
-                this.Rotation = quat;
-            }
+            set => Rotation = Quaternion.FromCross(Vector3D.Up, value.Normalized);
         }
 
         private Vector3D _Down;
@@ -389,7 +371,10 @@ namespace WEngine
                 }
                 return _Down;
             }
+
+            set => this.Up = -value;
         }
+        
         private Vector3D _Forward;
         public Vector3D Forward
         {
@@ -402,6 +387,8 @@ namespace WEngine
                 }
                 return _Forward;
             }
+            
+            set => Rotation = Quaternion.FromCross(Vector3D.Forward, value.Normalized);
         }
 
 
@@ -417,6 +404,8 @@ namespace WEngine
                 }
                 return _Backward;
             }
+
+            set => this.Forward = -value;
         }
 
 

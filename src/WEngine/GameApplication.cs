@@ -242,6 +242,9 @@ namespace WEngine
             new Shader("assets/shaders/Text/Text.vert", "assets/shaders/Text/Text.frag");
 
             new GUI.Font("assets/fonts/pixelized.json", "Pixelized");
+            
+            if(Engine.Arguments != null && Engine.Arguments.Contains("-safe"))
+                Thread.Sleep(1000);
 
         }
 
@@ -364,6 +367,8 @@ namespace WEngine
             OnUpdate?.Invoke(new UpdateEventArgs(e.Time));
 
             base.OnUpdateFrame(e);
+
+            ++Time.Frame;
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

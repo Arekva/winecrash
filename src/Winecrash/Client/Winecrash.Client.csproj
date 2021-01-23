@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugArrow.cs" />
     <Compile Include="CameraMode.cs" />
     <Compile Include="ClientTester.cs" />
     <Compile Include="Configs\GameConfig.cs" />

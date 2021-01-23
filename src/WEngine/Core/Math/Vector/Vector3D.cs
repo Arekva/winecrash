@@ -254,38 +254,17 @@ namespace WEngine
         /// <summary>
         /// All postive
         /// </summary>
-        public static Vector3D One
-        {
-            get
-            {
-                return new Vector3D(1.0D);
-            }
-        }
+        public static Vector3D One => new Vector3D(1.0D);
 
         [JsonIgnore]
-        public double SquaredLength
-        {
-            get
-            {
-                return this.X * this.X + this.Y * this.Y + this.Z * this.Z;
-            }
-        }
+        public double SquaredLength => X*X + Y*Y + Z*Z;
+
         [JsonIgnore]
-        public double Length
-        {
-            get
-            {
-                return Math.Sqrt(this.SquaredLength);
-            }
-        }
+        public double Length => Math.Sqrt(SquaredLength);
+
         [JsonIgnore]
-        public Vector3D Normalized
-        {
-            get
-            {
-                return NormalizeVector3D(this);
-            }
-        }
+        public Vector3D Normalized => NormalizeVector3D(this);
+
         #endregion
 
         #region Constructors
@@ -450,10 +429,10 @@ namespace WEngine
         {
             return v1.X != v2.X || v1.Y != v2.Y || v1.Z != v2.Z;
         }
-        public static Vector3D operator +(Vector3D v, double n)
+        /*public static Vector3D operator +(Vector3D v, double n)
         {
             return new Vector3D(v.X + n, v.Y + n, v.Z + n);
-        }
+        }*/
         public static Vector3D operator +(Vector3D v1, Vector3D v2)
         {
             return new Vector3D(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);

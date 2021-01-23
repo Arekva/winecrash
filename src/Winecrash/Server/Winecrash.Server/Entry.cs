@@ -32,7 +32,7 @@ namespace Winecrash.Server
 
 
 
-            Engine.Run(false).Wait();
+            Engine.Run(false, args).Wait();
             
             Database.Load("assets/items.json").ParseItems();
 

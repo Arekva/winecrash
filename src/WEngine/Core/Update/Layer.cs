@@ -332,77 +332,45 @@ namespace WEngine
 
         public static void Update(UpdateEventArgs args)
         {
-            Layer[] layers = _Layers.ToArray();
+            Layer[] layers = null;
+            lock(LayerLocker)
+                layers = _Layers.ToArray();
 
-            //preupdate
             for (int i = 0; i < layers.Length; i++)
             {
-                Group.UpdateType = UpdateTypes.PreUpdate;
-                Layer layer = layers[i];
-
-                if (layer.Deleted) continue;
-
-                List<ManualResetEvent> doneEvents = new List<ManualResetEvent>(layer._Groups.Count);
-
-                for (int j = 0; j < layer._Groups.Count; j++)
-                {
-                    if (layer._Groups[j] == null || layer._Groups[j].Deleted) continue;
-
-                    layer._Groups[j].DoneEvent.Reset();
-                    doneEvents.Add(layer._Groups[j].DoneEvent);
-                    layer._Groups[j].ResetEvent.Set(); //unlock thread
-                }
-
-                WaitHandle.WaitAll(doneEvents.ToArray()); //wait for all the threads of the group
+                UpdateGroups(layers[i], UpdateTypes.PreUpdate);
+                UpdateGroups(layers[i], UpdateTypes.Update);
+                UpdateGroups(layers[i], UpdateTypes.LateUpdate);
             }
+        }
+        
+        private static void UpdateGroups(Layer layer, UpdateTypes updateType)
+        {
+            Group.UpdateType = updateType;
+            
+            if (layer == null || layer.Deleted) return;
 
-            //update
-            for (int i = 0; i < layers.Length; i++)
+            Group[] groups = null;
+            lock (layer.GroupsLocker)
+                groups = layer._Groups.ToArray();
+
+            int n = groups.Length;
+
+            List<ManualResetEvent> doneEvents = new List<ManualResetEvent>(n);
+
+            for (int i = 0; i < n; i++)
             {
-                Group.UpdateType = UpdateTypes.Update;
-                Layer layer = layers[i];
+                Group group = groups[i];
 
-                if (layer.Deleted) continue;
+                if (group == null || group.Deleted) continue;
 
-                List<ManualResetEvent> doneEvents = new List<ManualResetEvent>(layer._Groups.Count);
-
-                for (int j = 0; j < layer._Groups.Count; j++)
-                {
-                    if (layer._Groups[j] == null ||layer._Groups[j].Deleted) continue;
-
-                    layer._Groups[j].DoneEvent.Reset();
-                    doneEvents.Add(layer._Groups[j].DoneEvent);
-                    layer._Groups[j].ResetEvent.Set(); //unlock thread
-                }
-
-                WaitHandle.WaitAll(doneEvents.ToArray()); //wait for all the threads of the group
+                group.DoneEvent.Reset();
+                doneEvents.Add(group.DoneEvent);
+                group.ResetEvent.Set(); //unlock thread
             }
 
-            //late update
-            for (int i = 0; i < layers.Length; i++)
-            {
-                Group.UpdateType = UpdateTypes.LateUpdate;
-                Layer layer = layers[i];
-
-                if (layer.Deleted) continue;
-
-                Group[] groups = null;
-                lock (layer.GroupsLocker)
-                    groups = layer._Groups.ToArray();
-
-                List<ManualResetEvent> doneEvents = new List<ManualResetEvent>(groups.Length);
-
-                for (int j = 0; j < groups.Length; j++)
-                {
-                    if (groups[j] == null || groups[j] != null && groups[j].Deleted) continue;
-
-                    groups[j].DoneEvent.Reset();
-                    doneEvents.Add(groups[j].DoneEvent);
-                    groups[j].ResetEvent.Set(); //unlock thread
-                }
-
-                WaitHandle.WaitAll(doneEvents.ToArray()); //wait for all the threads of the group
-            }
+            //wait for all the threads of the group
+            WaitHandle.WaitAll(doneEvents.ToArray());
         }
 
         public static string GetTrace()

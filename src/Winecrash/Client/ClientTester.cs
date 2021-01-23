@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WEngine;
+using WEngine.GUI;
 using WEngine.Networking;
+using Winecrash.Entities;
 
 namespace Winecrash.Client
 {

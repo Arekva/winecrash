@@ -76,17 +76,15 @@ namespace WEngine.Networking
 
                 if (!_GenericConstructors.TryGetValue(type, out ConstructorInfo ctor))
                 {
-                    ctor = typeof(NetData<>).MakeGenericType(type).GetConstructor(new Type[] { type });
+                    ctor = typeof(NetData<>).MakeGenericType(type).GetConstructor(new [] { type });
                     _GenericConstructors.TryAdd(type, ctor);
                 }
 
                 OnSend?.BeginInvoke(this, type, socket, null, null);
-                //Task.Run(() =>
-                //{
+
                 ((ISendible)ctor.Invoke(new object[] { this })).Send(socket);
                 if (deleteOnSend) this.Delete();
             });
-            //});
         }
 
         public void Send(Socket[] sockets, bool deleteOnSend = true)
