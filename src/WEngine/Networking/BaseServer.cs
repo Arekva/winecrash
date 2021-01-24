@@ -288,12 +288,12 @@ namespace WEngine.Networking
                 TickLoopTimer.Reset();
                 if (waitTime > 0.0D)
                 {
-                    Time.DeltaTime = waitTime;
+                    Time.DeltaUnscaled = waitTime;
                     Thread.Sleep((int)(waitTime * 1000.0D));
                 }
                 else
                 {
-                    Time.DeltaTime = 1.0D / (double)TPS;
+                    Time.DeltaUnscaled = 1.0D / (double)TPS;
                 }
             }
         }

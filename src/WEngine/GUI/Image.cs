@@ -4,7 +4,7 @@ namespace WEngine.GUI
 {
     public sealed class Image : GUIModule, IRatioKeeper
     {
-        private ImageRenderer Renderer;
+        public ImageRenderer Renderer { get; private set; }
 
         private Texture _Picture = Texture.Blank;
 

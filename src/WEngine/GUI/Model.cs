@@ -2,7 +2,7 @@
 {
     public class Model : GUIModule, IRatioKeeper
     {
-        public ModelRenderer Renderer;
+        public ModelRenderer Renderer { get; set; }
 
         public bool KeepRatio { get; set; } = false;
         public double Ratio { get; set; } = 1.0D;

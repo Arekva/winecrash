@@ -72,7 +72,7 @@ namespace Winecrash
                     {
                         for (int x = minBpos.X; x <= maxBpos.X; x++)
                         {
-                            if (!c[x, y, z].Transparent)
+                            if (c[x, y, z].Collides)
                             {
                                 Vector3D blockExtents = new Vector3D(0.5D);
                                 Vector3D blockCenter = new Vector3D(x + c.Coordinates.X * Chunk.Width, y,
@@ -91,7 +91,7 @@ namespace Winecrash
                 }
 
                 Sweep resultingSweep =
-                    new BoxBoxCollisionProvider().SweepCollideInto(b, rb.Velocity * Time.PhysicsDeltaTime,
+                    new BoxBoxCollisionProvider().SweepCollideInto(b, rb.Velocity * Time.PhysicsDelta,
                         colliders.ToArray());
 
                 for (int i = 0; i < colliders.Count; i++)
@@ -127,6 +127,9 @@ namespace Winecrash
             Vector3D v = rb.Velocity;
             Vector3D originalVelocity = v;
             Vector3D c = b.Center;
+
+            const double castExtents = 0.9D;
+            const double castLength = 0.05D;
             
             RaycastChunkHit CheckRight()
             {
@@ -135,35 +138,35 @@ namespace Winecrash
                 //front up
                 hit = RaycastChunk(
                     new Ray(
-                        c + Vector3D.Up * b.Extents.Y * 0.8D +
+                        c + Vector3D.Up * b.Extents.Y * castExtents +
                         Vector3D.Left * b.Extents.X +
-                        Vector3D.Forward * b.Extents.Z * 0.8D,
-                        Vector3D.Right, 0.05D), 0.05D);
+                        Vector3D.Forward * b.Extents.Z * castExtents,
+                        Vector3D.Right, castLength), castLength);
 
                 if (!hit.HasHit)
                     //front down
                     hit = RaycastChunk(
                         new Ray(
-                            c + Vector3D.Down * b.Extents.Y * 0.8D +
+                            c + Vector3D.Down * b.Extents.Y * castExtents +
                             Vector3D.Left * b.Extents.X +
-                            Vector3D.Forward * b.Extents.Z * 0.8D,
-                            Vector3D.Right, 0.05D), 0.05D);
+                            Vector3D.Forward * b.Extents.Z * castExtents,
+                            Vector3D.Right, castLength), castLength);
                 if (!hit.HasHit)
                     //back down
                     hit = RaycastChunk(
                         new Ray(
-                            c + Vector3D.Down * b.Extents.Y * 0.8D +
+                            c + Vector3D.Down * b.Extents.Y * castExtents +
                             Vector3D.Left * b.Extents.X +
-                            Vector3D.Backward * b.Extents.Z * 0.8D,
-                            Vector3D.Right, 0.05D), 0.05D);
+                            Vector3D.Backward * b.Extents.Z * castExtents,
+                            Vector3D.Right, castLength), castLength);
                 if (!hit.HasHit)
                     //back up
                     hit = RaycastChunk(
                         new Ray(
-                            c + Vector3D.Up * b.Extents.Y * 0.8D +
+                            c + Vector3D.Up * b.Extents.Y * castExtents +
                             Vector3D.Left * b.Extents.X +
-                            Vector3D.Backward * b.Extents.Z * 0.8D,
-                            Vector3D.Right, 0.05D), 0.05D);
+                            Vector3D.Backward * b.Extents.Z * castExtents,
+                            Vector3D.Right, castLength), castLength);
 
                 if (hit.HasHit)
                 {
@@ -183,35 +186,35 @@ namespace Winecrash
                 //front up
                 hit = RaycastChunk(
                     new Ray(
-                        c + Vector3D.Up * b.Extents.Y * 0.8D +
+                        c + Vector3D.Up * b.Extents.Y * castExtents +
                         Vector3D.Right * b.Extents.X +
-                        Vector3D.Forward * b.Extents.Z * 0.8D,
-                        Vector3D.Left, 0.05D), 0.05D);
+                        Vector3D.Forward * b.Extents.Z * castExtents,
+                        Vector3D.Left, castLength), castLength);
 
                 if (!hit.HasHit)
                     //front down
                     hit = RaycastChunk(
                         new Ray(
-                            c + Vector3D.Down * b.Extents.Y * 0.8D +
+                            c + Vector3D.Down * b.Extents.Y * castExtents +
                             Vector3D.Right * b.Extents.X +
-                            Vector3D.Forward * b.Extents.Z * 0.8D,
-                            Vector3D.Left, 0.05D), 0.05D);
+                            Vector3D.Forward * b.Extents.Z * castExtents,
+                            Vector3D.Left, castLength), castLength);
                 if (!hit.HasHit)
                     //back down
                     hit = RaycastChunk(
                         new Ray(
-                            c + Vector3D.Down * b.Extents.Y * 0.8D +
+                            c + Vector3D.Down * b.Extents.Y * castExtents +
                             Vector3D.Right * b.Extents.X +
-                            Vector3D.Backward * b.Extents.Z * 0.8D,
-                            Vector3D.Left, 0.05D), 0.05D);
+                            Vector3D.Backward * b.Extents.Z * castExtents,
+                            Vector3D.Left, castLength), castLength);
                 if (!hit.HasHit)
                     //back up
                     hit = RaycastChunk(
                         new Ray(
-                            c + Vector3D.Up * b.Extents.Y * 0.8D +
+                            c + Vector3D.Up * b.Extents.Y * castExtents +
                             Vector3D.Right * b.Extents.X +
-                            Vector3D.Backward * b.Extents.Z * 0.8D,
-                            Vector3D.Left, 0.05D), 0.05D);
+                            Vector3D.Backward * b.Extents.Z * castExtents,
+                            Vector3D.Left, castLength), castLength);
 
                 if (hit.HasHit)
                 {
@@ -229,34 +232,34 @@ namespace Winecrash
                 if (v.Z < 0.0D) return new RaycastChunkHit();
                 //front up
                 hit = RaycastChunk(
-                    new Ray(c + Vector3D.Up * b.Extents.Y * 0.8D + 
-                            Vector3D.Right * b.Extents.X * 0.8D + 
+                    new Ray(c + Vector3D.Up * b.Extents.Y * castExtents + 
+                            Vector3D.Right * b.Extents.X * castExtents + 
                             Vector3D.Forward * b.Extents.Z, 
-                        Vector3D.Forward, 0.05D), 0.05D);
+                        Vector3D.Forward, castLength), castLength);
                 
                 // front down
                 if (!hit.HasHit)
                     hit = RaycastChunk(
-                        new Ray(c + Vector3D.Down * b.Extents.Y * 0.8D +
-                                Vector3D.Right * b.Extents.X * 0.8D + 
+                        new Ray(c + Vector3D.Down * b.Extents.Y * castExtents +
+                                Vector3D.Right * b.Extents.X * castExtents + 
                                 Vector3D.Forward * b.Extents.Z, 
-                                Vector3D.Forward, 0.05D), 0.05D);
+                                Vector3D.Forward, castLength), castLength);
                 //back down
                 if (!hit.HasHit)
                     hit = RaycastChunk(
                         new Ray(
-                            c + Vector3D.Down * b.Extents.Y * 0.8D +
-                            Vector3D.Left * b.Extents.X * 0.8D +
+                            c + Vector3D.Down * b.Extents.Y * castExtents +
+                            Vector3D.Left * b.Extents.X * castExtents +
                             Vector3D.Forward * b.Extents.Z,
-                            Vector3D.Forward, 0.05D), 0.05D);
+                            Vector3D.Forward, castLength), castLength);
                 if (!hit.HasHit)
                     //back up
                     hit = RaycastChunk(
                         new Ray(
-                            c + Vector3D.Up * b.Extents.Y * 0.8D +
-                            Vector3D.Left * b.Extents.X * 0.8D +
+                            c + Vector3D.Up * b.Extents.Y * castExtents +
+                            Vector3D.Left * b.Extents.X * castExtents +
                             Vector3D.Forward * b.Extents.Z,
-                            Vector3D.Forward, 0.05D), 0.05D);
+                            Vector3D.Forward, castLength), castLength);
 
                 if (hit.HasHit)
                 {
@@ -274,35 +277,35 @@ namespace Winecrash
                 //front up
                 hit = RaycastChunk(
                     new Ray(
-                        c + Vector3D.Up * b.Extents.Y * 0.8D +
-                        Vector3D.Right * b.Extents.X * 0.8D +
+                        c + Vector3D.Up * b.Extents.Y * castExtents +
+                        Vector3D.Right * b.Extents.X * castExtents +
                         Vector3D.Backward * b.Extents.Z,
-                        Vector3D.Backward, 0.05D), 0.05D);
+                        Vector3D.Backward, castLength), castLength);
 
                 if (!hit.HasHit)
                     //front down
                     hit = RaycastChunk(
                         new Ray(
-                            c + Vector3D.Down * b.Extents.Y * 0.8D +
-                            Vector3D.Right * b.Extents.X * 0.8D +
+                            c + Vector3D.Down * b.Extents.Y * castExtents +
+                            Vector3D.Right * b.Extents.X * castExtents +
                             Vector3D.Backward * b.Extents.Z,
-                            Vector3D.Backward, 0.05D), 0.05D);
+                            Vector3D.Backward, castLength), castLength);
                 if (!hit.HasHit)
                     //back down
                     hit = RaycastChunk(
                         new Ray(
-                            c + Vector3D.Down * b.Extents.Y * 0.8D +
-                            Vector3D.Left * b.Extents.X * 0.8D +
+                            c + Vector3D.Down * b.Extents.Y * castExtents +
+                            Vector3D.Left * b.Extents.X * castExtents +
                             Vector3D.Backward * b.Extents.Z,
-                            Vector3D.Backward, 0.05D), 0.05D);
+                            Vector3D.Backward, castLength), castLength);
                 if (!hit.HasHit)
                     //back up
                     hit = RaycastChunk(
                         new Ray(
-                            c + Vector3D.Up * b.Extents.Y * 0.8D +
-                            Vector3D.Left * b.Extents.X * 0.8D +
+                            c + Vector3D.Up * b.Extents.Y * castExtents +
+                            Vector3D.Left * b.Extents.X * castExtents +
                             Vector3D.Backward * b.Extents.Z,
-                            Vector3D.Backward, 0.05D), 0.05D);
+                            Vector3D.Backward, castLength), castLength);
 
                 if (hit.HasHit)
                 {
@@ -320,19 +323,19 @@ namespace Winecrash
                 if (v.Y > 0) return new RaycastChunkHit();
 
                 //front right
-                    hit = RaycastChunk(new Ray(c + Vector3D.Down * b.Extents.Y + Vector3D.Right * b.Extents.X * 0.8D + Vector3D.Forward * b.Extents.Z * 0.8D, Vector3D.Down, 0.05D), 0.05D);
+                    hit = RaycastChunk(new Ray(c + Vector3D.Down * b.Extents.Y + Vector3D.Right * b.Extents.X * castExtents + Vector3D.Forward * b.Extents.Z * castExtents, Vector3D.Down, castLength), castLength);
 
                 //front left
                 if (!hit.HasHit) 
-                    hit = RaycastChunk(new Ray(c + Vector3D.Down * b.Extents.Y + Vector3D.Left * b.Extents.X * 0.8D + Vector3D.Forward * b.Extents.Z * 0.8D, Vector3D.Down, 0.05D),0.05D);
+                    hit = RaycastChunk(new Ray(c + Vector3D.Down * b.Extents.Y + Vector3D.Left * b.Extents.X * castExtents + Vector3D.Forward * b.Extents.Z * castExtents, Vector3D.Down, castLength),castLength);
 
                 //back left
                 if (!hit.HasHit) 
-                    hit = RaycastChunk(new Ray(c + Vector3D.Down * b.Extents.Y + Vector3D.Left * b.Extents.X * 0.8D + Vector3D.Backward * b.Extents.Z * 0.8D, Vector3D.Down, 0.05D), 0.05D);
+                    hit = RaycastChunk(new Ray(c + Vector3D.Down * b.Extents.Y + Vector3D.Left * b.Extents.X * castExtents + Vector3D.Backward * b.Extents.Z * castExtents, Vector3D.Down, castLength), castLength);
 
                 //back right
                 if (!hit.HasHit) 
-                    hit = RaycastChunk(new Ray(c + Vector3D.Down * b.Extents.Y + Vector3D.Right * b.Extents.X * 0.8D + Vector3D.Backward * b.Extents.Z * 0.8D, Vector3D.Down, 0.05D), 0.05D);
+                    hit = RaycastChunk(new Ray(c + Vector3D.Down * b.Extents.Y + Vector3D.Right * b.Extents.X * castExtents + Vector3D.Backward * b.Extents.Z * castExtents, Vector3D.Down, castLength), castLength);
 
 
                 if (hit.HasHit)
@@ -355,9 +358,9 @@ namespace Winecrash
                 hit = RaycastChunk(
                     new Ray(
                         c + Vector3D.Up * b.Extents.Y +
-                        Vector3D.Right * b.Extents.X * 0.8D +
-                        Vector3D.Forward * b.Extents.Z * 0.8D,
-                        Vector3D.Up, 0.05D), 0.05D);
+                        Vector3D.Right * b.Extents.X * castExtents +
+                        Vector3D.Forward * b.Extents.Z * castExtents,
+                        Vector3D.Up, castLength), castLength);
 
 
                 //front left
@@ -365,27 +368,27 @@ namespace Winecrash
                     hit = RaycastChunk(
                         new Ray(
                             c + Vector3D.Up * b.Extents.Y +
-                            Vector3D.Left * b.Extents.X * 0.8D +
-                            Vector3D.Forward * b.Extents.Z * 0.8D,
-                            Vector3D.Up, 0.05D), 0.05D);
+                            Vector3D.Left * b.Extents.X * castExtents +
+                            Vector3D.Forward * b.Extents.Z * castExtents,
+                            Vector3D.Up, castLength), castLength);
 
                 //back left
                 if (!hit.HasHit)
                     hit = RaycastChunk(
                         new Ray(
                             c + Vector3D.Up * b.Extents.Y +
-                            Vector3D.Left * b.Extents.X * 0.8D +
-                            Vector3D.Backward * b.Extents.Z * 0.8D,
-                            Vector3D.Up, 0.05D), 0.05D);
+                            Vector3D.Left * b.Extents.X * castExtents +
+                            Vector3D.Backward * b.Extents.Z * castExtents,
+                            Vector3D.Up, castLength), castLength);
 
                 //back right
                 if (!hit.HasHit)
                     hit = RaycastChunk(
                         new Ray(
                             c + Vector3D.Up * b.Extents.Y +
-                            Vector3D.Right * b.Extents.X * 0.8D +
-                            Vector3D.Backward * b.Extents.Z * 0.8D,
-                            Vector3D.Up, 0.05D), 0.05D);
+                            Vector3D.Right * b.Extents.X * castExtents +
+                            Vector3D.Backward * b.Extents.Z * castExtents,
+                            Vector3D.Up, castLength), castLength);
 
 
                 if (hit.HasHit)
@@ -452,14 +455,9 @@ namespace Winecrash
                     && bpos.Y > -1 && bpos.Y < Chunk.Height
                     && bpos.Z > -1 && bpos.Z < Chunk.Depth)
                 {
-                    //bpos.X = WMath.Clamp(bpos.X, 0, 15);
-                    //bpos.Y = WMath.Clamp(bpos.Y, 0, 255);
-                    //bpos.Z = WMath.Clamp(bpos.Z, 0, 15);
-
-                    
                     block = chunk[bpos.X, bpos.Y, bpos.Z];
 
-                    if (!block.Transparent)
+                    if (block.Collides)
                     {
                         Vector3I blockGlobalUnitPosition =
                             new Vector3I(bpos.X + cpos.X * 16, bpos.Y, bpos.Z + cpos.Y * 16);
@@ -530,115 +528,6 @@ namespace Winecrash
         }
 
 
-        public Hit Collide(Chunk c, BoxCollider b)
-        {
-            throw new NotImplementedException();
-            //force = Vector3D.Zero;
-            //translation = Vector3D.Zero;
-
-            RigidBody rb = b.WObject.GetModule<RigidBody>();
-
-            Vector3D bc = b.Center;
-            Vector3D be = b.Extents;
-
-
-            Vector3D cc = c.WObject.Position +
-                          Vector3D.Up * Chunk.Height / 2.0D +
-                          Vector3D.Right * Chunk.Width / 2.0D +
-                          Vector3D.Forward * Chunk.Depth / 2.0D;
-            Vector3D ce = Vector3D.One * new Vector3D(Chunk.Width, Chunk.Height, Chunk.Depth) / 2.0D;
-
-            // if outside of chunk, no collision.
-            if ( //Y
-                cc.Y - ce.Y > bc.Y + be.Y || // if too low
-                cc.Y + ce.Y < bc.Y - be.Y || // if too high
-
-                //X
-                cc.X - ce.X > bc.X + be.X || // if too much left
-                cc.X + ce.X < bc.X - be.X || // if too much right
-
-                //Z
-                cc.Z - ce.Z > bc.Z + be.Z || // if too much behind
-                cc.Z + ce.Z < bc.Z - be.Z // if too much forward
-            )
-            {
-                return new Hit();
-            }
-            else // the box collider is within the chunk
-            {
-                // max coords
-
-                Vector3D max = bc + be;
-                Vector3D min = bc - be;
-
-                Vector3D cmax = new Vector3D(
-                    WMath.Clamp(max.X, c.Coordinates.X * Chunk.Width,
-                        c.Coordinates.X * Chunk.Width + (Chunk.Width - 1)),
-                    WMath.Clamp(max.Y, 0, 255),
-                    WMath.Clamp(max.Z, c.Coordinates.Y * Chunk.Depth, c.Coordinates.Y * Chunk.Depth + (Chunk.Depth - 1))
-                );
-
-                Vector3D cmin = new Vector3D(
-                    WMath.Clamp(min.X, c.Coordinates.X * Chunk.Width,
-                        c.Coordinates.X * Chunk.Width + (Chunk.Width - 1)),
-                    WMath.Clamp(min.Y, 0, 255),
-                    WMath.Clamp(min.Z, c.Coordinates.Y * Chunk.Depth, c.Coordinates.Y * Chunk.Depth + (Chunk.Depth - 1))
-                );
-
-                World.GlobalToLocal(cmax, out _, out Vector3I maxBpos);
-                World.GlobalToLocal(cmin, out _, out Vector3I minBpos);
-
-                var colliderchecker = new BoxBoxCollisionProvider();
-
-                for (int z = minBpos.Z; z <= maxBpos.Z; z++)
-                {
-                    for (int y = minBpos.Y; y <= maxBpos.Y; y++)
-                    {
-                        for (int x = minBpos.X; x <= maxBpos.X; x++)
-                        {
-                            if (!c[x, y, z].Transparent)
-                            {
-                                Vector3D blockExtends = new Vector3D(0.5D);
-                                Vector3D blockCenter = new Vector3D(x + c.Coordinates.X * Chunk.Width, y,
-                                    z + c.Coordinates.Y * Chunk.Depth) + blockExtends;
-
-                                FreeBoxCollider collider = new FreeBoxCollider()
-                                {
-                                    Center = blockCenter,
-                                    Extents = blockExtends
-                                };
-
-                                Hit h = colliderchecker.Collide(b, collider);
-                                collider.Delete();
-                                
-
-                                if (h.HasHit)
-                                {
-                                }
-                            }
-                        }
-                    }
-                }
-
-                throw new NotImplementedException();
-
-                /*if (translation.X != 0)
-                {
-                    force += new Vector3D(-rb.Velocity.X, 0, 0);
-                }
-
-                if (translation.Y != 0)
-                {
-                    force += new Vector3D(0, -rb.Velocity.Y, 0);
-                }
-                
-                if (translation.Z != 0)
-                {
-                    force += new Vector3D(0, 0, -rb.Velocity.Z);
-                }
-
-                return translation != Vector3D.Zero;*/
-            }
-        }
+        public Hit Collide(Chunk c, BoxCollider b) => throw new NotImplementedException();
     }
 }

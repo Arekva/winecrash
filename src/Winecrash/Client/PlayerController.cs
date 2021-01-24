@@ -19,7 +19,7 @@ namespace Winecrash.Client
 
         private CameraMode _CameraMode { get; set; } = CameraMode.FPS;
 
-        public bool CameraLocked { get; set; } = false;
+        public static bool CameraLocked { get; set; } = false;
 
 
         public CameraMode CameraMode
@@ -80,9 +80,9 @@ namespace Winecrash.Client
             base.Creation();
         }
 
-        protected override void Start()
+        protected override void FirstFrame()
         {
-            base.Start();
+            base.FirstFrame();
 
             CameraMode = CameraMode.FPS;
         }
@@ -119,7 +119,7 @@ namespace Winecrash.Client
                 };
 
 
-                NetInput ninput = new NetInput(inputs, Input.MouseDelta * Time.DeltaTime * MouseSensivity);
+                NetInput ninput = new NetInput(inputs, Input.MouseDelta * Time.Delta * MouseSensivity);
 
                 if (Input.IsPressing(Keys.Delete))
                 {
@@ -139,7 +139,7 @@ namespace Winecrash.Client
                 
 
                 Player.LocalPlayer.ParseInputs(inputs);
-                Player.LocalPlayer.ParseMouse(Input.MouseDelta * Time.DeltaTime * MouseSensivity);
+                Player.LocalPlayer.ParseMouse(Input.MouseDelta * Time.Delta * MouseSensivity);
 
 
                 RaycastChunkHit hit = World.RaycastWorld(new Ray(Camera.Main.WObject.Position, Camera.Main.WObject.Forward, 5.0D));
@@ -149,7 +149,7 @@ namespace Winecrash.Client
                     if (Input.IsPressing(Keys.MouseLeftButton))
                     {
                         Vector3I b = hit.LocalPosition;
-                        hit.Chunk.Edit(b.X, b.Y, b.Z);
+                        hit.Chunk.Dig(b.X, b.Y, b.Z);
                         //Debug.Log(hit.Block.Identifier + " (Distance: " + hit.Distance + ")");
                     }
                     else if (Input.IsPressing(Keys.MouseRightButton))
@@ -159,9 +159,7 @@ namespace Winecrash.Client
                         Vector3I b = bg;
 
                         Vector3I relb = World.RelativePositionToChunk(hit.LocalPosition, hit.Chunk.Coordinates);
-
-                        Debug.Log(hit.GlobalBlockPosition);//relb + " / " + hit.Normal);
-
+                        
                         /*Chunk ec = hit.Chunk;
                         if (relb.Y < 0 || relb.Y > Chunk.Height - 1) // not in chunk ...
                         {
@@ -195,8 +193,6 @@ namespace Winecrash.Client
                                 b.Z = 0;
                             }
                         }*/
-                        
-                        Debug.Log(hit.Normal);
 
                         World.GlobalToLocal(hit.GlobalBlockPosition + (Vector3I)hit.Normal, out Vector2I cp, out Vector3I bp);
 

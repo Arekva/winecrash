@@ -113,7 +113,7 @@ namespace Winecrash.Server
 
         public override void Tick()
         {
-            PlayerSelfSyncCD -= Time.DeltaTime;
+            PlayerSelfSyncCD -= Time.Delta;
             
             
             PendingData[] data;
@@ -190,7 +190,7 @@ namespace Winecrash.Server
 
             for(int i = 0; i < rauths.Length; i++)
             {
-                rauths[i].CooldownTimeout -= Time.DeltaTime;
+                rauths[i].CooldownTimeout -= Time.Delta;
                 if (rauths[i].CooldownTimeout < 0.0)
                 {
                     DisconnectClient(rauths[i].Client, "Failed to auth to the server");

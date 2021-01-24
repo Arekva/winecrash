@@ -19,10 +19,8 @@ namespace WEngine
             Instance = this;
         }
 
-        protected internal override void Start()
-        {
-            this.WObject.Position = Vector3F.Left * 5.0F;
-        }
+        protected internal override void FirstFrame() => WObject.Position = Vector3F.Left * 5.0F;
+        
 
         protected internal override void Update()
         {
@@ -34,7 +32,7 @@ namespace WEngine
             }
 
             // fullscreen
-            if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressing(Keys.Enter) || Input.IsPressing(Keys.F11))
+            if (Input.IsPressed(Keys.LeftAlt) && Input.IsPressing(Keys.Enter) || Input.IsPressing(Keys.F11) && !Input.IsPressed(Keys.LeftControl))
             {
                 Graphics.Window.WindowState = Graphics.Window.WindowState == WindowState.Fullscreen ? WindowState.Normal : WindowState.Fullscreen;
             }

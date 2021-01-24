@@ -2,6 +2,8 @@
 	"DisplayName": "#winecrash:block.direction",
 
     "Transparent": false,
+
+    "Collides": true,
     
     "Textures": {
       "Up": "assets/textures/blocks/direction/dir_up.png",

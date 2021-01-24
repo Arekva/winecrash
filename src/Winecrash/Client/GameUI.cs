@@ -87,6 +87,8 @@ namespace Winecrash.Client
             HotbarImage = img = Hotbar.AddModule<Image>();
             img.Picture = new Texture("assets/textures/gui/hotbar.png");
             img.KeepRatio = true;
+            img.Renderer.Material.RenderOrder = -10;
+            
             HotbarSelector = new WObject("Hotbar Selector")
             {
                 Parent = Hotbar,
@@ -213,10 +215,6 @@ namespace Winecrash.Client
         }
         
         private WObject itemPreview;
-        protected override void Start()
-        {
-
-        }
 
         private static double ItemNameCooldown = 0.0D;
         public static double ItemNameTime = 2.0D;
@@ -235,7 +233,7 @@ namespace Winecrash.Client
 
         private void AnimateDisplayName()
         {
-            ItemNameCooldown -= Time.DeltaTime;
+            ItemNameCooldown -= Time.Delta;
             
             if(ItemNameCooldown < 0.0)
                 ItemNameLabel.Enabled = false;
@@ -267,7 +265,7 @@ namespace Winecrash.Client
                 mod = itemRenderer.AddModule<Model>();
                 mod.Renderer.Material = ItemCache.AtlasMaterial;
                 mod.KeepRatio = true;
-                
+
                 WObject labelRender = new WObject("Amount")
                 {
                     Parent = itemRenderer,

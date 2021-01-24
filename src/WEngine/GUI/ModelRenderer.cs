@@ -9,9 +9,9 @@ namespace WEngine.GUI
 
 		internal override void PrepareForRender()
 		{
-			_RenderPosition = this.Model.GlobalPosition;
-			_RenderRotation = this.Model.WObject.Rotation;
-			_RenderScale = this.Model.GlobalScale;
+			_renderPosition = this.Model.GlobalPosition;
+			_renderRotation = this.Model.WObject.Rotation;
+			_renderScale = this.Model.GlobalScale;
 			
 			base.PrepareForRender();
 		}

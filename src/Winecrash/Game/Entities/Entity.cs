@@ -11,7 +11,7 @@ namespace Winecrash.Entities
         
     public delegate void EntityRotationUpdate(Quaternion quaternion);
     
-    public abstract class Entity : Module
+    public abstract class Entity : Module, ICollider
     {
         public static List<Entity> Entities { get; private set; } = new List<Entity>();
         public static object EntitiesLocker { get; } = new object();
@@ -83,9 +83,9 @@ namespace Winecrash.Entities
             RigidBody.UseGravity = false;
         }
 
-        protected override void Start()
+        protected override void FirstFrame()
         {
-            base.Start();
+            base.FirstFrame();
 
             this.Chunk = World.GetChunk(this.ChunkCoordinates, this.Dimension);
         }
@@ -139,10 +139,13 @@ namespace Winecrash.Entities
             // todo: if chunk is null, save entity into chunk file and delete.
             // this will for sure throw a nullref if an entity tried to go
             // into an unloaded chunk.
-            
-            if(c != null)
-                lock(c.Entities)
+
+            if (c != null)
+            {
+                lock (c.Entities)
                     c.Entities.Add(this);
+                this.WObject.Parent = c.WObject;
+            }
         }
 
         public static Entity Get(Guid guid)

@@ -1,9 +1,13 @@
 ﻿namespace WEngine
 {
-    public enum UpdateTypes
+    internal enum UpdateTypes
     {
-        PreUpdate,
+        EarlyUpdate,
         Update,
-        LateUpdate
+        LateUpdate,
+        
+        EarlyPhysics,
+        Physics,
+        LatePhysics
     }
 }

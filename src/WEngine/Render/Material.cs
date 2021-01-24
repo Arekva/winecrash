@@ -25,6 +25,8 @@ namespace WEngine
             }
         }
 
+        public int RenderOrder { get; set; } = 0;
+
         private List<MeshRenderer> _renderers = new List<MeshRenderer>();
         private object _renderersLocker = new object();
 
@@ -138,15 +140,19 @@ namespace WEngine
                 }
             }
         }
+        
 
         public void Draw(Camera sender)
         {
             this.Use();
             
-            MeshRenderer[] mrs = RenderersGetAll().Where(mr => mr != null && mr.WObject != null && (mr.WObject.Layer & sender.RenderLayers) != 0).OrderBy(mr => mr.DrawOrder).ToArray();
+            MeshRenderer[] mrs = 
+                RenderersGetAll().
+                    Where(mr => (mr.WObject.Layer & sender.RenderLayers) != 0 && mr.CamerasDistances.ContainsKey(sender)).
+                    OrderBy(mr => mr.DrawOrder).
+                    ThenByDescending(mr => mr.CamerasDistances[sender]).ToArray();
             
-            for (int i = 0; i < mrs.Length; i++)
-                mrs[i].Use(sender);
+            for (int i = 0; i < mrs.Length; i++) mrs[i].Use(sender);
         }
         
         internal void SetGLData(ref MaterialData data, ref int texCount)

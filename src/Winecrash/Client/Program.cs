@@ -71,6 +71,7 @@ namespace Winecrash.Client
             Camera.Main.NearClip = 0.01D;
             Camera.Main.FarClip = 4096.0D;
             Camera.Main.RenderLayers &= ~(ulong)Layers.UI;
+            Camera.Main.WObject.AddModule<PanoramicPhotographer>();
 
             Winecrash.RenderDistance = 2;
             
@@ -142,7 +143,7 @@ namespace Winecrash.Client
                 
                 Player.LocalPlayer.Entity.OnRotate += rotation => 
                 {
-                    if (!pc.CameraLocked)
+                    if (!PlayerController.CameraLocked)
                         Camera.Main.WObject.Rotation = rotation;
                 };
 

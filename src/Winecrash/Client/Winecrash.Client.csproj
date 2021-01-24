@@ -74,6 +74,7 @@
     <Compile Include="MainMenu.cs" />
     <Compile Include="MenuBackgroundControler.cs" />
     <Compile Include="MenuTip.cs" />
+    <Compile Include="PanoramicPhotographer.cs" />
     <Compile Include="PlayerController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -169,5 +169,5 @@ void main()
     vec4 chunkCol = vec4(diffuse.xyz, 1.0) * color * remap(light, 0.0, LIGHT_MAX_LEVEL, minLight, maxLight);//getLight(0,0,0);
     chunkCol.a = alpha;
 
-    outputColor = chunkCol;//lerp(gl_FrontColor, chunkCol, showPercent);
+    outputColor = chunkCol;
 }

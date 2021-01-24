@@ -12,6 +12,8 @@ namespace Winecrash
         //-- set in item config --//
         public bool Transparent { get; set; } = false;
         //-- set in item config --//
+        public bool Collides { get; set; } = false;
+        //-- set in item config --//
         public double DigTime { get; set; } = 1.0D;
 
         //-- set in item config --//

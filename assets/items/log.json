@@ -2,6 +2,7 @@
   	"DisplayName": "#winecrash:block.log",
 
     "Transparent": false,
+    "Collides": true,
     
     "Textures": {
       "Up": "assets/textures/blocks/log.png",

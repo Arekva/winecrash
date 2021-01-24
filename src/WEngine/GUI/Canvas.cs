@@ -25,10 +25,9 @@
             cam.Name = "Canvas Camera";
             cam.ProjectionType = CameraProjectionType.Orthographic;
 
-            cam._FarClip = 200.0F;
-            cam.NearClip = 0.0F;
-            this.WObject.Position -= Vector3D.Forward * 100.0D;
-
+            cam._FarClip = 10000.0F;
+            cam._NearClip = 0.0F;
+            this.WObject.Position += Vector3D.Backward * cam._FarClip / 2.0F;
             //UI Layer: 48;
             cam.RenderLayers = 1L << 48;
 
@@ -37,7 +36,7 @@
 
         }
 
-        protected internal override void PreUpdate()
+        protected internal override void EarlyUpdate()
         {
             this.Size = Graphics.Window.SurfaceResolution;
 

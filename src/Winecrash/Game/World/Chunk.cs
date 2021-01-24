@@ -46,43 +46,18 @@ namespace Winecrash
 #region Block Getters/Setters
         public Block this[int x, int y, int z]
         {
-            get
-            {
-                return this.GetBlock(x, y, z);
-            }
-
-            set
-            {
-                this.SetBlock(x, y, z, value);
-            }
+            get => this.GetBlock(x, y, z);
+            set => this.SetBlock(x, y, z, value);
         }
 
-        public void SetBlock(int x, int y, int z, Block b)
-        {
-            this.Blocks[x + Width * y + Width * Height * z] = ItemCache.GetIndex(b);
-        }
-        public void SetBlock(int x, int y, int z, string identifier)
-        {
-            this.Blocks[x + Width * y + Width * Height * z] = ItemCache.GetIndex(identifier);
-        }
-        public void SetBlock(int x, int y, int z, ushort cacheIndex)
-        {
-            this.Blocks[x + Width * y + Width * Height * z] = cacheIndex;
-        }
-
-        public string GetBlockIdentifier(int x, int y, int z)
-        {
-            return ItemCache.GetIdentifier(this.Blocks[x + Width * y + Width * Height * z]);
-        }
-        public ushort GetBlockIndex(int x, int y, int z)
-        {
-            return this.Blocks[x + Width * y + Width * Height * z];
-        }
+        public void SetBlock(int x, int y, int z, Block b) => this.Blocks[x + Width * y + Width * Height * z] = ItemCache.GetIndex(b);
+        public void SetBlock(int x, int y, int z, string identifier) => this.Blocks[x + Width * y + Width * Height * z] = ItemCache.GetIndex(identifier);
+        public void SetBlock(int x, int y, int z, ushort cacheIndex) =>this.Blocks[x + Width * y + Width * Height * z] = cacheIndex;
+        public string GetBlockIdentifier(int x, int y, int z) => ItemCache.GetIdentifier(this.Blocks[x + Width * y + Width * Height * z]);
+        public ushort GetBlockIndex(int x, int y, int z) => this.Blocks[x + Width * y + Width * Height * z];
+        public Block GetBlock(int x, int y, int z) => ItemCache.Get<Block>(this.Blocks[x + Width * y + Width * Height * z]);
         
-        public Block GetBlock(int x, int y, int z)
-        {
-            return ItemCache.Get<Block>(this.Blocks[x + Width * y + Width * Height * z]);
-        }
+        
 #endregion
 
 #region Fields and Properties
@@ -95,14 +70,8 @@ namespace Winecrash
 
         public Vector2I Coordinates
         {
-            get
-            {
-                return this.InterdimensionalCoordinates.XY;
-            }
-            set
-            {
-                this.InterdimensionalCoordinates = new Vector3I(value.XY, this.InterdimensionalCoordinates.Z);
-            }
+            get => this.InterdimensionalCoordinates.XY;
+            set => this.InterdimensionalCoordinates = new Vector3I(value.XY, this.InterdimensionalCoordinates.Z);
         }
         
         public object EntityLocker = new object();
@@ -110,14 +79,9 @@ namespace Winecrash
 
         public Dimension Dimension
         {
-            get
-            {
-                return World.Dimensions[this.InterdimensionalCoordinates.Z];
-            }
-            set
-            {
-                this.InterdimensionalCoordinates = new Vector3I(this.InterdimensionalCoordinates.XZ, World.Dimensions.IndexOf(value));
-            }
+            get => World.Dimensions[this.InterdimensionalCoordinates.Z];
+            
+            set => this.InterdimensionalCoordinates = new Vector3I(this.InterdimensionalCoordinates.XZ, World.Dimensions.IndexOf(value));
         }
 
         public volatile MeshRenderer SolidRenderer;
@@ -388,13 +352,12 @@ namespace Winecrash
             
         }
 
-        protected override void Start()
+        protected override void FirstFrame()
         {
-            base.Start();
+            base.FirstFrame();
             
             if (Engine.DoGUI)
             {
-                // FAST DEBUG - FLAT WORLD -
                 if(NorthNeighbor != null) NorthNeighbor.BuildEndFrame = true;
                 if(SouthNeighbor != null) SouthNeighbor.BuildEndFrame = true;
                 if(WestNeighbor != null) WestNeighbor.BuildEndFrame = true;
@@ -484,10 +447,18 @@ namespace Winecrash
         }
 #endregion
 
-        public void Edit(int x, int y, int z, Block b = null)
+        public void Dig(int x, int y, int z)
         {
-            PrivateEdit(x,y,z,b);
+            Block b = this[x, y, z];
+            if (b.Identifier == "winecrash:air") return;
+            
+            this.Edit(x,y,z);
+            ItemEntity item = ItemEntity.FromItem(b, 1);
+            item.WObject.Position = (Vector3D)World.LocalToGlobal(this.Coordinates, new Vector3I(x, y, z)) + Vector3D.One * 0.5D;
+            //item.WObject.LocalPosition = 
         }
+
+        public void Edit(int x, int y, int z, Block b = null) => PrivateEdit(x,y,z,b);
 
         private void PrivateEdit(int x, int y, int z, Block b = null)
         {

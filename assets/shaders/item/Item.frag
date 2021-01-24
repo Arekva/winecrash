@@ -14,6 +14,8 @@ uniform float showPercent;
 uniform float minLight;
 uniform float maxLight;
 
+uniform float renderDistance;
+
 #define LIGHT_MAX_LEVEL 15.0
 
 // the number of light data is packed into a single uint. a light data is 4 bits
@@ -135,11 +137,17 @@ void main()
     vec3 spotDir = normalize(vec3(1.0));
 
     float light = dot(worldNormal, spotDir);
-    
-
 
     vec4 chunkCol = vec4(diffuse.xyz, 1.0) * color * remap(light, 0.0, 1.0, minLight, maxLight);//getLight(0,0,0);
     chunkCol.a = alpha;
 
-    outputColor = chunkCol;
+    float originalZ = gl_FragCoord.z / gl_FragCoord.w;
+    float pct = pow(originalZ/((renderDistance-1)*16),2);
+
+    vec4 horizonColor = vec4(0.788, 0.862, 0.956, 1.0);
+
+    vec4 finalColor = lerp(chunkCol, horizonColor, min(pct,1.0));
+    finalColor.a = chunkCol.a;
+
+    outputColor = finalColor;
 }

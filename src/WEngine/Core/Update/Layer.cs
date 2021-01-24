@@ -86,6 +86,11 @@ namespace WEngine
                 Graphics.Window.OnUpdate += new UpdateEventHandler(Update);
                 Graphics.Window.OnRender += new UpdateEventHandler(Render);
             }
+            
+            FixedThread = new Thread(() =>
+            {
+                
+            });
 
             /*FixedThread = new Thread(() =>
             {
@@ -367,10 +372,53 @@ namespace WEngine
 
             for (int i = 0; i < layers.Length; i++)
             {
-                UpdateGroups(layers[i], UpdateTypes.PreUpdate);
+                UpdateGroups(layers[i], UpdateTypes.EarlyUpdate);
                 UpdateGroups(layers[i], UpdateTypes.Update);
                 UpdateGroups(layers[i], UpdateTypes.LateUpdate);
             }
+        }
+        
+        public static void PhysicsUpdate(UpdateEventArgs args)
+        {
+            Layer[] layers = null;
+            lock(LayerLocker)
+                layers = _Layers.ToArray();
+
+            for (int i = 0; i < layers.Length; i++)
+            {
+                PhysicsUpdateGroups(layers[i], UpdateTypes.EarlyPhysics);
+                PhysicsUpdateGroups(layers[i], UpdateTypes.Physics);
+                PhysicsUpdateGroups(layers[i], UpdateTypes.LatePhysics);
+            }
+        }
+        
+        private static void PhysicsUpdateGroups(Layer layer, UpdateTypes updateType)
+        {
+            Group.PhysicsUpdateType = updateType;
+            
+            if (layer == null || layer.Deleted) return;
+
+            Group[] groups = null;
+            lock (layer.GroupsLocker)
+                groups = layer.Groups.ToArray();
+
+            int n = groups.Length;
+
+            List<ManualResetEvent> doneEvents = new List<ManualResetEvent>(n);
+
+            for (int i = 0; i < n; i++)
+            {
+                Group group = groups[i];
+
+                if (group == null || group.Deleted) continue;
+
+                group.DoneEventPhysics.Reset();
+                doneEvents.Add(group.DoneEventPhysics);
+                group.ResetEventPhysics.Set(); //unlock thread
+            }
+
+            //wait for all the threads of the group
+            WaitHandle.WaitAll(doneEvents.ToArray());
         }
         
         private static void UpdateGroups(Layer layer, UpdateTypes updateType)

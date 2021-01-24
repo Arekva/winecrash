@@ -28,12 +28,12 @@ namespace WEngine
         }*/
         public bool UseGravity { get; set; } = true;
         
-        protected internal override void PreUpdate()
+        protected internal override void EarlyUpdate()
         {
             if (UseGravity)
-                this.Velocity += Physics.Gravity * Time.DeltaTime;
+                this.Velocity += Physics.Gravity * Time.PhysicsDelta;
             
-            this.WObject.Position += Velocity * Time.DeltaTime;
+            this.WObject.Position += Velocity * Time.PhysicsDelta;
         }
 
         /*protected internal override void LateFixedUpdate()

@@ -182,6 +182,8 @@ namespace WEngine
         public event WindowInvokeDelegate OnLoaded;
         public event UpdateEventHandler OnUpdate;   
         public event UpdateEventHandler OnRender;
+        
+        private ManualResetEvent _updateEvent = new ManualResetEvent(false);
 
         public Thread Thread { get; set; }
 
@@ -223,6 +225,9 @@ namespace WEngine
             WObject camWobj = new WObject("Main Camera");
             Camera cam = camWobj.AddModule<Camera>();
             Camera.Main = cam;
+
+            OnUpdate += (e) => _updateEvent.Set();
+            OnRender += (e) => _updateEvent.Reset();
 
             Shader.CreateError(); // el famoso pinko del shader
 
@@ -283,6 +288,14 @@ namespace WEngine
             uncorrect.Y = (int)((float)this.SurfaceResolution.Y * 0.5) - uncorrect.Y;
 
             return uncorrect;
+        }
+        
+        public async Task WaitForNextFrame()
+        {
+            await new Task(() =>
+            {
+                _updateEvent.WaitOne();
+            }).ConfigureAwait(true);
         }
 
         public new void Close()
@@ -352,7 +365,8 @@ namespace WEngine
 
 
             Time.FrameTimer.Stop();
-            Time.DeltaTime = Time.FrameTimer.Elapsed.TotalSeconds * Time.TimeScale;//e.Time * Time.TimeScale; 
+            Time.DeltaUnscaled = Time.FrameTimer.Elapsed.TotalSeconds;//e.Time * Time.TimeScale; 
+            Time.PhysicsDeltaUnscaled = Time.FrameTimer.Elapsed.TotalSeconds;
             
             Time.FrameTimer.Reset();
             Time.FrameTimer.Start();
@@ -388,7 +402,11 @@ namespace WEngine
             
             Layer.RenderThreadLocker.WaitOne();
             Layer.PhysicsThreadLocker.Reset();
-            
+
+            foreach (Camera camera in Camera.Cameras)
+            {
+                camera.PrepareForRender();
+            }
             
             lock(MeshRenderer.ActiveMeshRenderersLocker)
             {

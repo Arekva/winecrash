@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace WEngine
 {
@@ -8,16 +9,23 @@ namespace WEngine
     {
         public bool RunAsync { get; set; } = false;
 
-        private int _Group;
+        private int _group;
         public int Group 
         { 
-            get
-            {
-                return _Group;
-            }
+            get => _group;
+
             set
             {
-                SetGroup(value);
+                int current = Group;
+                if (value == current) return;
+
+                Group previousGroup = WEngine.Group.GetGroup(current);
+            
+                previousGroup.RemoveModule(this);
+
+                WEngine.Group.CreateOrGetGroup(value, null, new[] { this });
+
+                this._group = value;
             }
         }
 
@@ -43,19 +51,6 @@ namespace WEngine
 
             WEngine.Group.GetGroup(this.Group).SortModules();
         }
-        private void SetGroup(int newGroup)
-        {
-            if (newGroup == _Group) return;
-
-            Group previousGroup = WEngine.Group.GetGroup(this._Group);
-            
-            previousGroup.RemoveModule(this);
-
-            WEngine.Group.CreateOrGetGroup(newGroup, null, new[] { this });
-
-            this._Group = newGroup;
-        }
-
         public Module() : base()
         {
             WEngine.Group.CreateOrGetGroup(0, "Default Group", new[] { this });
@@ -66,13 +61,13 @@ namespace WEngine
         internal bool StartDone { get; set; } = false;
 
         internal protected virtual void Creation() { }
-        internal protected virtual void Start() { }
+        internal protected virtual void FirstFrame() { }
+        
+        internal protected virtual void EarlyPhysicsUpdate() { }
+        internal protected virtual void PhysicsUpdate() { }
+        internal protected virtual void LatePhysicsUpdate() { }
 
-        /*internal protected virtual void PreFixedUpdate() { }
-        internal protected virtual void FixedUpdate() { }
-        internal protected virtual void LateFixedUpdate() { }*/
-
-        internal protected virtual void PreUpdate() { }
+        internal protected virtual void EarlyUpdate() { }
         internal protected virtual void Update() { }
         internal protected virtual void LateUpdate() { }
         

@@ -105,7 +105,7 @@ namespace WEngine
         public static bool IgnoreNextFocusFrame { get; set; } = true;
         protected internal override void Update()
         {
-            timeSinceMouseRefresh += Time.DeltaTime;
+            timeSinceMouseRefresh += Time.Delta;
 
             if (timeSinceMouseRefresh >= MouseRefreshTime)
             {

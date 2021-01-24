@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WEngine;
 using WEngine.GUI;
+using Winecrash.Entities;
 using Graphics = WEngine.Graphics;
 
 namespace Winecrash.Client
@@ -15,19 +16,20 @@ namespace Winecrash.Client
             if (Input.IsPressing(Keys.F3))
             {
                 Canvas.Main.UICamera.Enabled = !Canvas.Main.UICamera.Enabled;
+                PlayerEntity.PlayerHandWobject.Enabled = !PlayerEntity.PlayerHandWobject;
             }
             
             if (Input.IsPressing(Keys.W))
             {
-                Time.TimeScale = Time.TimeScale * 0.1D;
+                Time.Scale = Time.Scale * 0.1D;
             }
             if (Input.IsPressing(Keys.X))
             {
-                Time.TimeScale = Time.TimeScale * 10D;
+                Time.Scale = Time.Scale * 10D;
             }
             if (Input.IsPressing(Keys.C))
             {
-                Time.TimeScale = 1.0D;
+                Time.Scale = 1.0D;
             }
                 
             //screenshot

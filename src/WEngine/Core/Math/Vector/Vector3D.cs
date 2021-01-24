@@ -318,6 +318,10 @@ namespace WEngine
         {
             return Math.Abs((v1 - v2).Length);
         }
+        public static double SquaredDistance(Vector3D v1, Vector3D v2)
+        {
+            return Math.Abs((v1 - v2).SquaredLength);
+        }
         public Vector3D RotateAround(Vector3D pivot, Vector3D axis, float angle)
         {
             return this.RotateAround(pivot, axis * angle);
@@ -344,6 +348,16 @@ namespace WEngine
         public static double Angle(Vector3D v1, Vector3D v2)
         {
             return Math.Acos((v1.Normalized * v2.Normalized).Length) * WMath.RadToDeg;
+        }
+
+        public static double SignedAngle(Vector3D from, Vector3D to, Vector3D axis)
+        {
+            double num1 = Vector3D.Angle(from, to);
+            double num2 = from.Y * to.Z - from.Z * to.Y;
+            double num3 = from.Z * to.X - from.X * to.Z;
+            double num4 = from.X * to.Y - from.Y * to.X;
+            double num5 = Math.Sign(axis.X * num2 + axis.Y * num3 + axis.Z * num4);
+            return num1 * num5;
         }
 
         public Vector3D Normalize()

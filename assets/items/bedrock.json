@@ -2,7 +2,7 @@
     "DisplayName": "#winecrash:block.bedrock",
 
     "Transparent": false,
-    
+    "Collides": true,
     
     "Textures": {
       "Up": "assets/textures/blocks/bedrock.png",

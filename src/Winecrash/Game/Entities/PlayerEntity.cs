@@ -129,7 +129,7 @@ namespace Winecrash.Entities
             
             PlayerLeftArm.LocalRotation = PlayerRightArm.LocalRotation = Quaternion.Identity;
             
-            CurrentIdleAnimationTime += Time.DeltaTime * IdleAnimationSpeed;
+            CurrentIdleAnimationTime += Time.Delta * IdleAnimationSpeed;
 
             double t = WMath.Remap(Math.Cos(CurrentIdleAnimationTime), -1, 1, 0, 1);
 
@@ -164,7 +164,7 @@ namespace Winecrash.Entities
             if (PlayerLeftLeg == null || PlayerRightLeg == null) return;
             double speed = WMath.Clamp(velocity.XZ.Length,0,Player.WalkSpeed);
 
-            CurrentWalkAnimationTime += Time.DeltaTime * speed * WalkAnimationSpeedCoef;
+            CurrentWalkAnimationTime += Time.Delta * speed * WalkAnimationSpeedCoef;
 
             double t = WMath.Remap(Math.Cos(CurrentWalkAnimationTime), -1, 1, 0, 1);
 
@@ -200,7 +200,7 @@ namespace Winecrash.Entities
 
                 deltaAngle = WMath.Clamp(deltaAngle, -HeadMaxAngleToBody, HeadMaxAngleToBody);
                 
-                PlayerTorso.LocalRotation *= new Quaternion(0,-deltaAngle * WalkAnimationTorsoOrientCoef * Time.DeltaTime,0);
+                PlayerTorso.LocalRotation *= new Quaternion(0,-deltaAngle * WalkAnimationTorsoOrientCoef * Time.Delta,0);
             }
         }
 
@@ -256,9 +256,9 @@ namespace Winecrash.Entities
             }
         }
 
-        protected override void Start()
+        protected override void FirstFrame()
         {
-            base.Start();
+            base.FirstFrame();
 
             if (ModelWObject)
             {
@@ -295,24 +295,8 @@ namespace Winecrash.Entities
                     AnimateWalk(this.RigidBody.Velocity);
                 }
             }
-            
-            FreeBoxCollider collider = new FreeBoxCollider()
-            {
-                AABB = new AABB(new Vector3D(8, 128, 8), new Vector3D(8,128,8))
-            };
-
-            Hit hit = new BoxBoxCollisionProvider().Collide(this.Collider, collider);
-            
-            collider.Delete();
-            
-            //Debug.Log(this.WObject.Position);
-            if (hit.HasHit)
-            {
-                //Debug.Log("Hit delta: " + hit.Delta);
-            }
         }
-
-        private int debug = 0;
+        
         protected override void LateUpdate()
         {
             base.LateUpdate();
@@ -321,7 +305,6 @@ namespace Winecrash.Entities
 
             double xzVel = this.RigidBody.Velocity.XZ.Length;
             
-            //Debug.Log(xzVel);
 
             Vector2D xzDir = this.RigidBody.Velocity.Normalized.XZ;
             
@@ -333,20 +316,10 @@ namespace Winecrash.Entities
             {
                 if (xzVel > Player.WalkSpeed)
                 {
-                    
                     this.RigidBody.Velocity *= new Vector3D(0, 1, 0);
 
                     this.RigidBody.Velocity += new Vector3D(xzDir.X, 0, xzDir.Y) * Player.WalkSpeed;
                 }
-
-                
-
-                /*if (this.WObject.Position.Y < currentHeight)
-                {
-                    this.RigidBody.Velocity *= new Vector3D(1, 0, 1);
-                    this.WObject.Position *= new Vector3D(1, 0, 1);
-                    this.WObject.Position += new Vector3D(0, currentHeight, 0);
-                }*/
             }
 
 
@@ -363,7 +336,7 @@ namespace Winecrash.Entities
 
                 else
                 {
-                    Vector2D xySpeedDecay = xzDir * xzVel * Player.WalkDeaccelerationFactor * Time.PhysicsDeltaTime;
+                    Vector2D xySpeedDecay = xzDir * xzVel * Player.WalkDeaccelerationFactor * Time.PhysicsDelta;
 
                     Vector2D newSpeed = (xzDir * xzVel) - xySpeedDecay;
                     

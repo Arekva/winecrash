@@ -215,6 +215,11 @@ namespace WEngine
         {
             return Math.Abs((v1 - v2).Length);
         }
+        
+        public static double SquaredDistance(Vector2D v1, Vector2D v2)
+        {
+            return Math.Abs((v1 - v2).SquaredLength);
+        }
         /// <summary>
         /// The dot value of two vectors (Multiplication of the vectors).
         /// </summary>
@@ -235,6 +240,8 @@ namespace WEngine
         {
             return Math.Acos((v1.Normalized * v2.Normalized).Length) * WMath.RadToDeg;
         }
+        
+        public static double SignedAngle(Vector2D from, Vector2D to) => Vector2D.Angle(from, to) * Math.Sign(from.X * to.Y - from.Y * to.X);
 
         /// <summary>
         /// Normalize this vector.

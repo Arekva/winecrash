@@ -258,12 +258,12 @@ namespace Winecrash
             if (NoClipping)
             {
                 Entity.WObject.Position +=
-                    this.Entity.Rotation * dir.Normalized * Time.PhysicsDeltaTime * WalkAcceleration * 0.1;
+                    this.Entity.Rotation * dir.Normalized * Time.PhysicsDelta * WalkAcceleration * 0.1;
             }
             else
             {
                 Entity.RigidBody.Velocity += (new Quaternion(0, CameraAngles.X, 0) * dir.Normalized) *
-                                             Time.PhysicsDeltaTime * WalkAcceleration;
+                                             Time.PhysicsDelta * WalkAcceleration;
             }
             
             //Debug.Log(Entity.RigidBody.Velocity);

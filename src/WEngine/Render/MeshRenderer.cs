@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
@@ -46,19 +48,22 @@ namespace WEngine
         }
 
 
-        protected Vector3D _RenderPosition;
-        protected Vector3D _RenderForward;
-        protected Vector3D _RenderUp;
-        protected Vector3D _RenderScale;
-        protected Quaternion _RenderRotation;
+        protected Vector3D _renderPosition;
+        protected Vector3D _renderForward;
+        protected Vector3D _renderUp;
+        protected Vector3D _renderScale;
+        protected Quaternion _renderRotation;
+        public Dictionary<Camera, double> CamerasDistances { get; private set; } = new Dictionary<Camera, double>();
 
         internal virtual void PrepareForRender()
         {
-            _RenderPosition = this.WObject.Position;
-            _RenderForward = this.WObject.Forward;
-            _RenderScale = this.WObject.Scale;
-            _RenderRotation = this.WObject.Rotation;
-            _RenderUp = this.WObject.Up;
+            _renderPosition = this.WObject.Position;
+            _renderForward = this.WObject.Forward;
+            _renderScale = this.WObject.Scale;
+            _renderRotation = this.WObject.Rotation;
+            _renderUp = this.WObject.Up;
+
+            ComputeDistances();
         }
 
         internal virtual void Use(Camera sender)
@@ -83,6 +88,35 @@ namespace WEngine
             }
         }
 
+        protected virtual void ComputeDistances()
+        {
+            CamerasDistances.Clear();
+
+            foreach (Camera camera in Camera.Cameras)
+            {
+                if ((camera.RenderLayers & this.WObject.Layer) != 0)
+                {
+                    if (camera.ProjectionType == CameraProjectionType.Perspective)
+                    {
+                        //todo: better occulusion
+                        
+                        double dist = Vector3D.SquaredDistance(camera._RenderPosition, _renderPosition);
+                        /*Vector3D camFwd = camera._RenderForward;
+                        Vector3D relPos = _renderPosition - camera._RenderPosition;
+                        double angle = Vector3D.SignedAngle(camFwd, relPos.Normalized,
+                            camera._RenderUp);
+                        //if object is behind camera, don't draw.
+                        if (dist < 100.0D || angle > -45)*/
+                            CamerasDistances.Add(camera, dist);
+                    }
+                    else
+                    {
+                        CamerasDistances.Add(camera, 0);
+                    }
+                }
+            }
+        }
+
         protected internal virtual void BindBuffers()
         {
             GL.BindVertexArray(Mesh.VertexArrayObject);
@@ -101,9 +135,9 @@ namespace WEngine
             Matrix4D finalTransform;
             
             // object transform
-            Matrix4D scaD = new Matrix4D(_RenderScale, true);
-            Matrix4D rotD = new Matrix4D(_RenderRotation);
-            Matrix4D posD = new Matrix4D(_RenderPosition - sender._RenderPosition, false);
+            Matrix4D scaD = new Matrix4D(_renderScale, true);
+            Matrix4D rotD = new Matrix4D(_renderRotation);
+            Matrix4D posD = new Matrix4D(_renderPosition - sender._RenderPosition, false);
             Matrix4D.Mult(in scaD, in rotD, out objTrans);
             Matrix4D.Mult(in objTrans, in posD, out objTrans);
             Matrix4D.Mult(in objTrans, Matrix4D.Identity, out objTrans);
@@ -115,7 +149,7 @@ namespace WEngine
             Matrix4D.Mult(in transform, sender._RenderProjectionMatrix, out finalTransform);
             
             this.Material.SetData("transform", finalTransform);
-            this.Material.SetData("rotation", _RenderRotation);
+            this.Material.SetData("rotation", _renderRotation);
         }
 
         protected internal virtual void SetGLProperties()
@@ -132,9 +166,9 @@ namespace WEngine
         protected internal virtual void ComputeMatricesGPU(Camera sender)
         {
             Matrix4D objTrans;
-            Matrix4D scaD = new Matrix4D(_RenderScale, true);
-            Matrix4D rotD = new Matrix4D(_RenderRotation);
-            Matrix4D posD = new Matrix4D(_RenderPosition - sender._RenderPosition, false);
+            Matrix4D scaD = new Matrix4D(_renderScale, true);
+            Matrix4D rotD = new Matrix4D(_renderRotation);
+            Matrix4D posD = new Matrix4D(_renderPosition - sender._RenderPosition, false);
             Matrix4D.Mult(in scaD, in rotD, out objTrans);
             Matrix4D.Mult(in objTrans, in posD, out objTrans);
             Matrix4D.Mult(in objTrans, Matrix4D.Identity, out objTrans);
@@ -142,7 +176,7 @@ namespace WEngine
             this.Material.SetData("model", objTrans);
             this.Material.SetData("view", sender._RenderView);
             this.Material.SetData("projection", sender._RenderProjectionMatrix);
-            this.Material.SetData("rotation", _RenderRotation);
+            this.Material.SetData("rotation", _renderRotation);
         }
 
         protected internal override void Creation()

@@ -2,6 +2,7 @@
 	"DisplayName": "#winecrash:block.air",
 	
 	"Transparent": true,
+	"Collides": false,
 	"DrawInternalFaces": true,
 	
 

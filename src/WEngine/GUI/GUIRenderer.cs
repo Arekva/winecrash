@@ -12,8 +12,10 @@
 
         internal override void PrepareForRender()
         {
-            _RenderUp = this.WObject.Up;
-            _RenderForward = this.WObject.Forward;
+            _renderUp = this.WObject.Up;
+            _renderForward = this.WObject.Forward;
+
+            ComputeDistances();
         }
     }
 }

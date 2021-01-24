@@ -19,6 +19,9 @@ namespace WEngine
         /// The update loop reset event.
         /// </summary>
         internal ManualResetEvent ResetEvent { get; set; } = new ManualResetEvent(false);
+        
+        internal ManualResetEvent DoneEventPhysics { get; set; } = new ManualResetEvent(false);
+        internal ManualResetEvent ResetEventPhysics { get; set; } = new ManualResetEvent(false);
 
         private int _Order;
         internal int Order
@@ -68,13 +71,7 @@ namespace WEngine
         //internal readonly static object groupLocker = new object();
         internal static List<Group> _Groups { get; set; } = new List<Group>(1);
         internal static object GroupsLocker { get; set; } = new object();
-        internal int GroupCount
-        {
-            get
-            {
-                return _Groups == null ? 0 : _Groups.Count;
-            }
-        }
+        internal int GroupCount => _Groups == null ? 0 : _Groups.Count;
 
         internal Thread Thread { get; private set; }
 
@@ -110,7 +107,8 @@ namespace WEngine
             Thread.Start();
         }
 
-        internal static volatile UpdateTypes UpdateType = UpdateTypes.PreUpdate;
+        internal static volatile UpdateTypes UpdateType = UpdateTypes.EarlyUpdate;
+        internal static volatile UpdateTypes PhysicsUpdateType = UpdateTypes.EarlyPhysics;
         
         private void Update()
         {
@@ -128,7 +126,7 @@ namespace WEngine
                 if (modules != null)
                     switch (ut)
                     {
-                        case UpdateTypes.PreUpdate:
+                        case UpdateTypes.EarlyUpdate:
                             foreach (Module mod in modules) if (mod != null && mod.Enabled && !mod.Deleted)
                                 {
                                     // Invoke Start()
@@ -137,8 +135,8 @@ namespace WEngine
                                         if (mod.StartDone == false)
                                         {
                                             mod.StartDone = true;
-                                            if (mod.RunAsync) Task.Run(mod.Start);
-                                            else mod.Start();
+                                            if (mod.RunAsync) Task.Run(mod.FirstFrame);
+                                            else mod.FirstFrame();
                                         }
                                     }
                                     catch (Exception e)
@@ -148,7 +146,7 @@ namespace WEngine
 
                                     try
                                     {
-                                        mod.PreUpdate();
+                                        mod.EarlyUpdate();
                                     }
                                     catch (Exception e)
                                     {
@@ -183,6 +181,62 @@ namespace WEngine
                     }
 
                 this.DoneEvent.Set(); //says the thread is done.      
+            }  
+        }
+        private void PhysicsUpdate()
+        {
+            while (!this.Deleted)
+            {
+                this.DoneEventPhysics.WaitOne(); //wait for reset event
+                this.DoneEventPhysics.Reset(); //set reset event to false
+                
+                UpdateTypes ut = PhysicsUpdateType;
+
+                List<Module> modules = null;
+
+                lock(moduleLocker) modules = _Modules?.ToList();
+
+                if (modules != null)
+                    switch (ut)
+                    {
+                        case UpdateTypes.EarlyPhysics:
+                            foreach (Module mod in modules) if (mod != null && mod.Enabled && !mod.Deleted)
+                                try
+                                    {
+                                        mod.EarlyPhysicsUpdate();
+                                    }
+                                catch (Exception e)
+                                    {
+                                        Debug.LogException(e);
+                                    }
+                            break;
+                            
+                        case UpdateTypes.Physics:
+                            foreach (Module mod in modules) if (mod != null && mod.Enabled && !mod.Deleted)
+                                    try
+                                    {
+                                        mod.PhysicsUpdate();
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Debug.LogException(e);
+                                    }
+                            break;
+                    
+                        case UpdateTypes.LatePhysics: 
+                            foreach (Module mod in modules) if (mod != null && mod.Enabled && !mod.Deleted)
+                                try
+                                {
+                                    mod.LatePhysicsUpdate();
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.LogException(e);
+                                }
+                            break;
+                    }
+
+                this.DoneEventPhysics.Set(); //says the thread is done.      
             }  
         }
 

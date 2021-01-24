@@ -2,6 +2,8 @@
 	"DisplayName": "#winecrash:block.dirt",
 
     "Transparent": false,
+
+    "Collides": true,
     
     "Textures": {
       "Up": "assets/textures/blocks/dirt.png",

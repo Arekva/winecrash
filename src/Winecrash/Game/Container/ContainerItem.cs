@@ -38,15 +38,10 @@ namespace Winecrash
             this.Amount = amount;
         }
 
-        public override bool Equals(object obj)
-        {
-            return obj != null && obj is Container c && Equals(c);
-        }
-        
-        public bool Equals(ContainerItem other)
-        {
-            return other != null && this.Item.Equals(other.Item) && Amount == other.Amount;
-        }
+        public override bool Equals(object obj) => obj != null && obj is Container c && Equals(c);
+        public bool Equals(ContainerItem other) => other != null && this.Item.Equals(other.Item) && Amount == other.Amount;
+
+        public override string ToString() => (Item == null ? "Invalid" : this.Item.Identifier) + $"x{this.Amount}";
 
         public override void Delete()
         {
