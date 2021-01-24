@@ -220,7 +220,6 @@ namespace Winecrash
                     v *= mask;
 
                     c += Vector3D.Right * (hit.GlobalBlockPosition.X - b.Extents.X);
-                    Debug.Log("aa");
                 }
 
                 return hit;
@@ -410,13 +409,13 @@ namespace Winecrash
             CheckGrounded();
             
             b.Center = c;
-            Vector3D finalVelocity = Vector3D.Zero;
+            //Vector3D finalVelocity = Vector3D.Zero;
 
-            if (v.X != 0) finalVelocity.X = originalVelocity.X;
+            /*if (v.X != 0) finalVelocity.X = originalVelocity.X;
             if (v.Y != 0) finalVelocity.Y = originalVelocity.Y;
-            if (v.Z != 0) finalVelocity.Z = originalVelocity.Z;
+            if (v.Z != 0) finalVelocity.Z = originalVelocity.Z;*/
             
-            rb.Velocity = finalVelocity;
+            rb.Velocity = v;
 
             return hit;
         }

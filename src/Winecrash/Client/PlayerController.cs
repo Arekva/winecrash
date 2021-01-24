@@ -159,10 +159,10 @@ namespace Winecrash.Client
                         Vector3I b = bg;
 
                         Vector3I relb = World.RelativePositionToChunk(hit.LocalPosition, hit.Chunk.Coordinates);
-                        
-                        Debug.Log(relb + " / " + hit.Normal);
 
-                        Chunk ec = hit.Chunk;
+                        Debug.Log(hit.GlobalBlockPosition);//relb + " / " + hit.Normal);
+
+                        /*Chunk ec = hit.Chunk;
                         if (relb.Y < 0 || relb.Y > Chunk.Height - 1) // not in chunk ...
                         {
                             ec = null;
@@ -194,9 +194,15 @@ namespace Winecrash.Client
                                 ec = World.GetChunk(ec.Coordinates + Vector2I.Up, "winecrash:overworld");
                                 b.Z = 0;
                             }
-                        }
+                        }*/
+                        
+                        Debug.Log(hit.Normal);
 
-                        ec?.Edit(b.X, b.Y, b.Z, ItemCache.Get<Block>("winecrash:direction"));
+                        World.GlobalToLocal(hit.GlobalBlockPosition + (Vector3I)hit.Normal, out Vector2I cp, out Vector3I bp);
+
+                        World.GetChunk(cp, "winecrash:overworld")?.Edit(bp.X, bp.Y, bp.Z, ItemCache.Get<Block>("winecrash:direction") );
+
+                        //ec?.Edit(b.X, b.Y, b.Z, ItemCache.Get<Block>("winecrash:direction"));
                     }
                 }
 

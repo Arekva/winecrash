@@ -236,7 +236,7 @@ namespace Winecrash
                     if (shift < 36) return shift;
                     throw new ArgumentOutOfRangeException(nameof(shift), "The storage slots being 27 (3x9 + 1x9) items long, the shift must be inferior to 36.");
                 default:
-                    throw new ArgumentException($"Unvalid type \"{type.ToString()}\"", nameof(type));
+                    throw new ArgumentException($"Invalid type \"{type.ToString()}\"", nameof(type));
             }
         }
     }

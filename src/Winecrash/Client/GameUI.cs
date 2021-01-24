@@ -28,31 +28,32 @@ namespace Winecrash.Client
         
         public static GameUI Instance { get; private set; }
 
-        private static readonly Vector2D[][] _ItemHotbarAnchors = new Vector2D[9][]
-        {
-            // 0
-            new Vector2D[2] { new Vector2D(3/182.0D,19/22.0D), new Vector2D(19/182.0D,3/22.0D) },
-            //1
-            new Vector2D[2] { new Vector2D(23/182.0D,19/22.0D), new Vector2D(39/182.0D,3/22.0D) },
-            //2
-            new Vector2D[2] { new Vector2D(43/182.0D,19/22.0D), new Vector2D(59/182.0D,3/22.0D) },
-            //3
-            new Vector2D[2] { new Vector2D(63/182.0D,19/22.0D), new Vector2D(79/182.0D,3/22.0D) },
-            //4
-            new Vector2D[2] { new Vector2D(83/182.0D,19/22.0D), new Vector2D(99/182.0D,3/22.0D) },
-            //5
-            new Vector2D[2] { new Vector2D(103/182.0D,19/22.0D), new Vector2D(119/182.0D,3/22.0D) },
-            //6
-            new Vector2D[2] { new Vector2D(123/182.0D,19/22.0D), new Vector2D(139/182.0D,3/22.0D) },
-            //7
-            new Vector2D[2] { new Vector2D(143/182.0D,19/22.0D), new Vector2D(159/182.0D,3/22.0D) },
-            //8
-            new Vector2D[2] { new Vector2D(163/182.0D,19/22.0D), new Vector2D(179/182.0D,3/22.0D) },
-        };
+        private static readonly Vector2D[][] _ItemHotbarAnchors = new Vector2D[9][];
 
         private WObject[] HotbarItemsRenders { get; set; } = new WObject[9];
         private Label[] HotbarItemsAmount { get; set; } = new Label[9];
-        
+
+        static GameUI()
+        {
+            const double baseMinX = 3.0D;
+            const double minY = 19 / 22.0D;
+            
+            const double baseMaxX = 19.0D;
+            const double maxY = 3 / 22.0D;
+            
+            const double divisor = 182.0D;
+            const double increment = 20.0D;
+
+            for (int i = 0; i < _ItemHotbarAnchors.Length; i++)
+            {
+                _ItemHotbarAnchors[i] = new Vector2D[2]
+                {
+                    new Vector2D((baseMinX + increment*i) / divisor, minY), // min
+                    new Vector2D((baseMaxX + increment*i) / divisor, maxY)  // max
+                };
+            }
+        }
+
         protected override void Creation()
         {
             if (Instance)

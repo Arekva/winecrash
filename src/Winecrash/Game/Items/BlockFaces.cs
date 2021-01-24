@@ -43,7 +43,7 @@ namespace Winecrash
         /// </summary>
         /// <param name="face"></param>
         /// <returns></returns>
-        public static BlockFaces Face(Vector3D dir)
+        public static BlockFaces Face(this Vector3D dir)
         {
             if (dir == Vector3D.Up)
             {

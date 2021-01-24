@@ -226,14 +226,13 @@ namespace WEngine
                 {
                     lock (layer.GroupsLocker)
                     {
-                        if (layer._Groups.Contains(this))
+                        if (layer.ContainsGroup(this))
                         {
-                            layer._Groups.Remove(this);
+                            layer.RemoveGroup(this);
 
-                            if (layer._Groups.Count == 0) //remove layer
+                            if (layer.Groups.Count == 0) //remove layer
                             {
                                 WEngine.Layer.RemoveLayer(layer.Order);
-
                             }
 
                             break;
@@ -333,12 +332,12 @@ namespace WEngine
                     //find the current layer of the group
                     lock (layers[i].GroupsLocker)
                     {
-                        if (layers[i]._Groups.Contains(correspondingGroup))
+                        if (layers[i].ContainsGroup(correspondingGroup))
                         {
-                            layers[i]._Groups.Remove(correspondingGroup);
+                            layers[i].RemoveGroup(correspondingGroup);
                             WEngine.Layer.CreateOrGetLayer(newLayer, null, new[] {correspondingGroup});
 
-                            if (layers[i]._Groups.Count == 0) //remove layer
+                            if (layers[i].CountGroup() == 0) //remove layer
                             {
                                 WEngine.Layer.RemoveLayer(layers[i].Order);
                             }

@@ -5,6 +5,8 @@
         public ICollider Collider { get; }
         public Vector3D Position;
 
+        public double Distance;
+
         public Vector3D Normal;
 
         public Vector3D Delta;
@@ -19,6 +21,7 @@
             this.Delta = Vector3D.Zero;
             this.Time = 0.0D;
             this.HasHit = true;
+            this.Distance = double.PositiveInfinity;
         }
     }
 }

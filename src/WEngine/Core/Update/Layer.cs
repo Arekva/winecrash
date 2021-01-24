@@ -36,7 +36,41 @@ namespace WEngine
             }
         }
 
-        internal List<Group> _Groups { get; set; } = new List<Group>(1);
+        private volatile List<Group> _groups = new List<Group>(1);
+
+        internal List<Group> Groups
+        {
+            get
+            {
+                lock (GroupsLocker) return _groups;
+            }
+            set
+            {
+                lock (GroupsLocker) _groups = value;
+            }
+        }
+
+        internal void AddGroup(Group group)
+        {
+            lock (GroupsLocker) _groups.Add(group);
+        }
+        internal void AddRangeGroup(IEnumerable<Group> groups)
+        {
+            lock (GroupsLocker) _groups.AddRange(groups);
+        }
+        internal void RemoveGroup(Group group)
+        {
+            lock (GroupsLocker) _groups.Remove(group);
+        }
+        internal bool ContainsGroup(Group group)
+        {
+            return this.Groups.ToArray().Contains(group);
+        }
+        internal int CountGroup()
+        {
+            return this.Groups.ToArray().Length;
+        }
+        
         internal object GroupsLocker { get; set; } = new object();
         
         internal static ManualResetEvent PhysicsThreadLocker { get; set; } = new ManualResetEvent(false);
@@ -169,7 +203,7 @@ namespace WEngine
 
             if(groups != null)
                 lock(GroupsLocker)
-                    this._Groups = groups.ToList();
+                    this.Groups = groups.ToList();
 
             _Layers.Add(this);
 
@@ -194,7 +228,7 @@ namespace WEngine
             {
                 if(groups != null)
                 {
-                    layer._Groups.AddRange(groups);
+                    layer.AddRangeGroup(groups);
                 }
             }
 
@@ -218,7 +252,7 @@ namespace WEngine
 
             if(layer != null)
             {
-                List<Group> groups = layer._Groups;
+                List<Group> groups = layer.Groups;
                 _Layers.Remove(layer);
                 layer.Deleted = true;
                 CreateOrGetLayer(0, null, groups);
@@ -299,9 +333,9 @@ namespace WEngine
             lock (second.GroupsLocker)
             {
                 lock(first.GroupsLocker)
-                    first._Groups.AddRange(second._Groups);
+                    first.AddRangeGroup(second.Groups);
                 
-                second._Groups = null;
+                second.Groups = null;
             }
 
             _Layers.Remove(second);
@@ -352,7 +386,7 @@ namespace WEngine
 
             Group[] groups = null;
             lock (layer.GroupsLocker)
-                groups = layer._Groups.ToArray();
+                groups = layer.Groups.ToArray();
 
             int n = groups.Length;
 
@@ -381,7 +415,7 @@ namespace WEngine
             {
                 txt += layer.Name + "\n";
 
-                foreach(Group group in layer._Groups)
+                foreach(Group group in layer.Groups)
                 {
                     txt += "--" + group.Name + "\n";
 

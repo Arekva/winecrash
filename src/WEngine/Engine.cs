@@ -140,9 +140,9 @@ namespace WEngine
 
             foreach (Layer layer in Layer._Layers)
             {
-                lock (layer._Groups)
+                lock (layer.Groups)
                 {
-                    foreach (Group group in layer._Groups)
+                    foreach (Group group in layer.Groups)
                     {
                         try
                         {
@@ -156,7 +156,7 @@ namespace WEngine
                         }
                     }
 
-                    layer._Groups = null;
+                    layer.Groups = null;
                 }
             }
 
