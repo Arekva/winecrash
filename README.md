@@ -1,3 +1,5 @@
+![alt text](https://github.com/breaks-and-continues/winecrash/raw/master/src/previews/banner.png "In-Game main menu")
+
 # Winecrash, The unstable french cubic experience.
 
 Hey, welcome to the repos of Winecrash!
@@ -9,8 +11,6 @@ This is a fan project I enjoy making in my free time to train my C#. However fee
 If any legal issue would come up, please contact me on [arekva@protonmail.com](mailto:arekva@protonmail.com "Send a mail to arekva@protonmail.com").
 
 ## Run the game
-
-![alt text](https://github.com/breaks-and-continues/winecrash/raw/master/src/previews/banner.png "In-Game main menu")
 
 #### 🎮 Play the game as a non developper
 If you simply want to play the game, get the last available version from the [release tab of the project](https://github.com/breaks-and-continues/winecrash/releases "Releases of the game"). 
