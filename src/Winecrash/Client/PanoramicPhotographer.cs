@@ -65,8 +65,6 @@ namespace Winecrash.Client
                     camWobj.Rotation = dir;
 
                     await Task.Delay(250);
-                    /*
-                    await window.WaitForNextFrame();*/
 
                     using (Bitmap map = window.Screenshot())
                         map.Save(Path.Combine(finalFolder, face + ".png"));
