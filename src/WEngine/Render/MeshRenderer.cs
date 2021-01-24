@@ -11,7 +11,22 @@ namespace WEngine
         public virtual Mesh Mesh { get; set; } = null;
         protected object MeshLocker = new object();
 
-        public Material Material { get; set; } = Material.Find("Error");
+        private Material _material = Material.Find("Error");
+
+        public Material Material
+        {
+            get => _material;
+            
+            set
+            {
+                if(_material)
+                    _material.RenderersRemove(this);
+
+                if(value) value.RenderersAdd(this);
+                
+                _material = value;
+            }
+        }
         protected object MaterialLocker = new object();
 
         internal static object ActiveMeshRenderersLocker = new object();

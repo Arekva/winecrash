@@ -11,7 +11,6 @@ namespace WEngine
     public sealed class Material : BaseObject
     {
         private Shader _Shader;
-
         public Shader Shader
         {
             get
@@ -24,6 +23,24 @@ namespace WEngine
                 this._Shader = value ?? Shader.ErrorShader;
                 BuildDataDictionnary();
             }
+        }
+
+        private List<MeshRenderer> _renderers = new List<MeshRenderer>();
+        private object _renderersLocker = new object();
+
+        public List<MeshRenderer> RenderersGetAll()
+        {
+            lock (_renderersLocker) return _renderers.ToList();
+        }
+
+        public void RenderersAdd(MeshRenderer renderer)
+        {
+            lock (_renderersLocker) _renderers.Add(renderer);
+        }
+        
+        public void RenderersRemove(MeshRenderer renderer)
+        {
+            lock (_renderersLocker) _renderers.Remove(renderer);
         }
 
         static Material()
@@ -121,6 +138,17 @@ namespace WEngine
                 }
             }
         }
+
+        public void Draw(Camera sender)
+        {
+            this.Use();
+            
+            MeshRenderer[] mrs = RenderersGetAll().Where(mr => mr != null && mr.WObject != null && (mr.WObject.Layer & sender.RenderLayers) != 0).OrderBy(mr => mr.DrawOrder).ToArray();
+            
+            for (int i = 0; i < mrs.Length; i++)
+                mrs[i].Use(sender);
+        }
+        
         internal void SetGLData(ref MaterialData data, ref int texCount)
         {
             switch (data.GLType) //if texture
@@ -235,6 +263,12 @@ namespace WEngine
 
 
             lock (CacheLocker) Cache.Remove(this);
+            
+            lock(_renderers)
+                foreach (MeshRenderer renderer in _renderers)
+                    renderer.Material = null;
+            _renderers = null;
+            _renderersLocker = null;
             
             base.Delete();
         }

@@ -151,7 +151,7 @@ namespace WEngine
                     
                     Parallel.For(0, this.Size.X * this.Size.Y, (i) =>
                     {
-                        int j = (this.Size.X * this.Size.Y - 1) - i;
+                        int j = (Size.X * Size.Y - 1) - i;
                         //    alpha and green are ok                     blue and red have to be switched
                         byteData[i] = longDataPtr[j] & 0xFF00FF00 | (longDataPtr[j] & 0x00FF0000) >> 16 | (longDataPtr[j] & 0x000000FF) << 16;
                     });
@@ -164,20 +164,9 @@ namespace WEngine
         }
 
         public Vector2I Size { get; private set; }
-        public int Width
-        {
-            get
-            {
-                return this.Size.X;
-            }
-        }
-        public int Height
-        {
-            get
-            {
-                return this.Size.Y;
-            }
-        }
+        
+        public int Width => this.Size.X;
+        public int Height => this.Size.Y;
 
         internal static List<Texture> Cache { get; set; } = new List<Texture>();
         internal static object CacheLocker { get; set; } = new object();

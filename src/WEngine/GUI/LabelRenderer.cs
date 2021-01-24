@@ -9,6 +9,8 @@ namespace WEngine.GUI
     {
         public Label Label { get; set; }
 
+        private string _previousText = "";
+
         protected internal override void Creation()
         {
             this.UseMask = false;
@@ -40,24 +42,10 @@ namespace WEngine.GUI
 
             int xDir = 0, yDir = 0;
 
-            if (Label.Aligns.HasFlag(TextAligns.Left))
-            {
-                xDir += 1;
-            }
-            if (Label.Aligns.HasFlag(TextAligns.Right))
-            {
-                xDir -= 1;
-            }
-
-            if (Label.Aligns.HasFlag(TextAligns.Up))
-            {
-                yDir -= 1;
-            }
-
-            if (Label.Aligns.HasFlag(TextAligns.Down))
-            {
-                yDir += 1;
-            }
+            if (Label.Aligns.HasFlag(TextAligns.Left)) xDir += 1;
+            if (Label.Aligns.HasFlag(TextAligns.Right)) xDir -= 1;
+            if (Label.Aligns.HasFlag(TextAligns.Up)) yDir -= 1;
+            if (Label.Aligns.HasFlag(TextAligns.Down)) yDir += 1;
 
             double dst = Label.ShadowDistance;
             dst *= fontSize;
@@ -176,8 +164,6 @@ namespace WEngine.GUI
                         shiftX += glyphratio * fontSize;
 
                         Render(j);
-
-                        //count++;
                     }
 
                 }
@@ -198,8 +184,9 @@ namespace WEngine.GUI
             this.Material.SetData<OpenTK.Vector4>("color", col);
 
             RenderLabel();
-        }
 
+            _previousText = Label.Text;
+        }
         protected internal override void OnDelete()
         {
             Label = null;

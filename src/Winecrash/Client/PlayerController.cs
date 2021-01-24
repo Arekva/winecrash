@@ -200,7 +200,18 @@ namespace Winecrash.Client
 
                         World.GlobalToLocal(hit.GlobalBlockPosition + (Vector3I)hit.Normal, out Vector2I cp, out Vector3I bp);
 
-                        World.GetChunk(cp, "winecrash:overworld")?.Edit(bp.X, bp.Y, bp.Z, ItemCache.Get<Block>("winecrash:direction") );
+                        Player player = Player.LocalPlayer;
+                        int selected = player.HotbarSelectedIndex;
+                        ContainerItem ci = player.Hotbar[selected];
+
+                        if (ci.Amount > 0 && ci.Item is Block block)
+                        {
+                            --ci.Amount;
+                            Player.LocalPlayer.SetContainerItem(ci, selected);
+                            World.GetChunk(cp, "winecrash:overworld")?.Edit(bp.X, bp.Y, bp.Z, block);
+                        }
+
+                        
 
                         //ec?.Edit(b.X, b.Y, b.Z, ItemCache.Get<Block>("winecrash:direction"));
                     }

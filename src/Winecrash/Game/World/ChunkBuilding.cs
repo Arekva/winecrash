@@ -183,6 +183,7 @@ namespace Winecrash
 
             
             sw.Stop();
+            
             Debug.Log("Chunk build time: " + sw.Elapsed.TotalMilliseconds.ToString("F2") + "ms");
 
             if (svertices.Count != 0)

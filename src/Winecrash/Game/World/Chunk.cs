@@ -119,13 +119,13 @@ namespace Winecrash
                 this.InterdimensionalCoordinates = new Vector3I(this.InterdimensionalCoordinates.XZ, World.Dimensions.IndexOf(value));
             }
         }
-        
-        public MeshRenderer SolidRenderer { get; private set; }
-        public MeshRenderer TransparentRenderer { get; private set; }
+
+        public volatile MeshRenderer SolidRenderer;
+        public volatile MeshRenderer TransparentRenderer;
 
         public bool BuildEndFrame { get; set; } = false;
 
-        public bool ConstructedOnce { get; private set; } = false;
+        public bool ConstructedOnce = false;
 #endregion
 
 #region Events
@@ -378,7 +378,7 @@ namespace Winecrash
             
             OnChunkUnload += OnChunkUnloadDelegate;
 
-            this.RunAsync = true;
+            //this.RunAsync = true;
 
             if (Engine.DoGUI)
             {
@@ -404,12 +404,20 @@ namespace Winecrash
 
         private void CreateRenderer()
         {
-            SolidRenderer = this.WObject.AddModule<MeshRenderer>();
-            SolidRenderer.Material = ItemCache.AtlasMaterial;
+            if (ConstructedOnce) return;
+            
+            if (!SolidRenderer)
+            {
+                SolidRenderer = this.WObject.AddModule<MeshRenderer>();
+                SolidRenderer.Material = ItemCache.AtlasMaterial;
+            }
 
-            TransparentRenderer = this.WObject.AddModule<MeshRenderer>();
-            TransparentRenderer.Material = ItemCache.AtlasMaterial;
-            TransparentRenderer.DrawOrder = 1;
+            if (!TransparentRenderer)
+            {
+                TransparentRenderer = this.WObject.AddModule<MeshRenderer>();
+                TransparentRenderer.Material = ItemCache.AtlasMaterial;
+                TransparentRenderer.DrawOrder = 1;
+            }
         }
 
         protected override void LateUpdate()

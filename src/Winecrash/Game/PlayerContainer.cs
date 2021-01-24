@@ -155,11 +155,8 @@ namespace Winecrash
         
         public void SetContainerItem(ContainerItem item, int index)
         {
-            if(item == null) item = new ContainerItem();
+            if(item == null || item.Amount == 0) item = new ContainerItem();
             ContainerItem previousItem = Items[index];
-
-            // if (previousItem != null && previousItem.Equals(item))
-            //     return;
             
             if(previousItem == null) previousItem = new ContainerItem();
 

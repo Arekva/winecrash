@@ -150,7 +150,7 @@ namespace Winecrash.Client
                 {
                     Player.LocalPlayer.CameraAngles = Vector2I.Zero;
 
-                    Player.LocalPlayer.Entity.WObject.AddModule<DebugArrow>();
+                    //Player.LocalPlayer.Entity.WObject.AddModule<DebugArrow>();
 
                     Task.Run(() =>
                     {

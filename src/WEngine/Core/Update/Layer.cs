@@ -62,15 +62,10 @@ namespace WEngine
         {
             lock (GroupsLocker) _groups.Remove(group);
         }
-        internal bool ContainsGroup(Group group)
-        {
-            return this.Groups.ToArray().Contains(group);
-        }
-        internal int CountGroup()
-        {
-            return this.Groups.ToArray().Length;
-        }
+        internal bool ContainsGroup(Group group) => this.Groups.ToArray().Contains(group);
         
+        internal int CountGroup() => this.Groups.ToArray().Length;
+
         internal object GroupsLocker { get; set; } = new object();
         
         internal static ManualResetEvent PhysicsThreadLocker { get; set; } = new ManualResetEvent(false);

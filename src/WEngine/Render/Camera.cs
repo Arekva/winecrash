@@ -189,14 +189,20 @@ namespace WEngine
 
             PrepareForRender();
 
-            MeshRenderer[] mrs = null;
+            List<Material> mats = null;
+            lock (Material.CacheLocker)
+                mats = Material.Cache.ToList();
+            foreach(Material mat in mats)
+                mat.Draw(this);
+
+            /*MeshRenderer[] mrs = null;
             lock(MeshRenderer.ActiveMeshRenderersLocker)
                 mrs = MeshRenderer.ActiveMeshRenderers.ToArray();
             
             mrs = mrs.Where(mr => mr != null && mr.WObject != null && (mr.WObject.Layer & this.RenderLayers) != 0).OrderBy(mr => mr.DrawOrder).ToArray();
-
-            for (int i = 0; i < mrs.Length; i++)
-                mrs[i].Use(this);
+*/
+            //for (int i = 0; i < mrs.Length; i++)
+            //    mrs[i].Use(this);
         }
     }
 }

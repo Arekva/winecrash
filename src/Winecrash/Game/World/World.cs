@@ -25,6 +25,7 @@ namespace Winecrash
         public const int MaxDimension = 32;
 
         public static List<Chunk>[] Chunks { get; private set; } = new List<Chunk>[MaxDimension];
+        public static List<Vector3I> ReservedChunks { get; private set; } = new List<Vector3I>();
         internal static object ChunksLocker { get; } = new object();
         public static List<Dimension> Dimensions { get; } = new List<Dimension>(1);
         internal static object DimensionLocker { get; } = new object();
@@ -181,6 +182,8 @@ namespace Winecrash
             float oceanMaxDepth = oceanLevel - oceanDeformity;
             float mountainsDeformity = 10;
             float moutainsScale = 0.01F;
+
+            float maxLevel = 63 + 40;
             
             // this is meant to be used as a 2D base for continents     apparently unused \/
             IModule3D baseLandmass = new ImprovedPerlin(World.Seed.Value, NoiseQuality.Best);
@@ -200,7 +203,7 @@ namespace Winecrash
             
             ushort airID = ItemCache.GetIndex("winecrash:air");
             ushort stoneID = ItemCache.GetIndex("winecrash:stone");
-
+            
             ushort[] indices = new ushort[Chunk.Width * Chunk.Height * Chunk.Depth];
             
             Vector3F shift = Vector3F.Zero;
@@ -209,14 +212,15 @@ namespace Winecrash
 
             for (int i = 0; i < Chunk.Width * Chunk.Height * Chunk.Depth; i++)
             {
-
-
                 //Parallel.For(0, Chunk.Width * Chunk.Height * Chunk.Depth, i =>
                 //{
                 indices[i] = airID;
 
                 // get, from index, the x,y,z coordinates of the block. Then move it from the basePos x scale.
                 WMath.FlatTo3D(i, Chunk.Width, Chunk.Height, out int x, out int y, out int z);
+
+                if (y > maxLevel) continue;
+                
                 Vector3F finalPos = new Vector3F((basePos.X + x) * baseLandmassScale, basePos.Y + y,
                     (basePos.Z + z) * baseLandmassScale) * globalScale;
 
@@ -461,52 +465,71 @@ namespace Winecrash
 
         private static Chunk CreateChunk(Vector2I coordinates, int dimension, ushort[] blocks = null, bool build = true)
         {
-            Chunk chunk = null;
-            Vector3I[] surfaces = null;
-            
-            if (blocks == null)
-            {
-                blocks = GenerateSimple(coordinates, out surfaces);
-            }
-
-            WObject wobj = new WObject($"Chunk [{coordinates.X};{coordinates.Y}]")
-            {
-                Parent = GetOrCreateDimensionWObject(Dimensions.ElementAt(dimension)),
-                LocalPosition = new Vector3D(coordinates.X * 16, 0, coordinates.Y * 16)
-            };
-
-            chunk = wobj.AddModule<Chunk>();
-            chunk.InterdimensionalCoordinates = new Vector3I(coordinates, dimension);
-            chunk.Blocks = blocks;
-            
-            Dimension dim = Dimensions.ElementAt(dimension);
-            
-            Vector2I region = coordinates / 8;
-
-            string groupName = $"Region [{region.X};{region.Y} / {dim.Identifier}]";
-            
-            chunk.Group = groupName.GetHashCode();
-            
-            //ugh it doesn't work..?
-            //Group.GetGroup(groupName.GetHashCode()).Name = groupName;
-
-
             lock (ChunksLocker)
             {
-                Chunks[dimension].Add(chunk);
-            }
+                Vector3I coords = new Vector3I(coordinates, dimension);
 
-            if (surfaces != null)
-            {
-                Populate(coordinates, blocks, surfaces);
+                if (ReservedChunks.Contains(coords))
+                    return null;
+                else ReservedChunks.Add(coords);
             }
+            try
+            {
+                Chunk chunk = null;
+                Vector3I[] surfaces = null;
 
-            if(Engine.DoGUI && build)
-            {
-                chunk.BuildEndFrame = true;
+                if (blocks == null)
+                {
+                    blocks = GenerateSimple(coordinates, out surfaces);
+                }
+
+                WObject wobj = new WObject($"Chunk [{coordinates.X};{coordinates.Y}]")
+                {
+                    Parent = GetOrCreateDimensionWObject(Dimensions.ElementAt(dimension)),
+                    LocalPosition = new Vector3D(coordinates.X * 16, 0, coordinates.Y * 16)
+                };
+
+                chunk = wobj.AddModule<Chunk>();
+                chunk.InterdimensionalCoordinates = new Vector3I(coordinates, dimension);
+                chunk.Blocks = blocks;
+
+                Dimension dim = Dimensions.ElementAt(dimension);
+
+                Vector2I region = coordinates / 8;
+
+                string groupName = $"Region [{region.X};{region.Y} / {dim.Identifier}]";
+
+                chunk.Group = groupName.GetHashCode();
+
+                //ugh it doesn't work..?
+                //Group.GetGroup(groupName.GetHashCode()).Name = groupName;
+
+
+                lock (ChunksLocker)
+                {
+                    Chunks[dimension].Add(chunk);
+                    ReservedChunks.Add(new Vector3I(coordinates, dimension));
+                }
+                
+                if (surfaces != null)
+                {
+                    Populate(coordinates, blocks, surfaces);
+                }
+
+                if (Engine.DoGUI && build)
+                {
+                    chunk.BuildEndFrame = true;
+                }
+                
+                return chunk;
             }
-            
-            return chunk;
+            catch (Exception e)
+            {
+                lock(ChunksLocker)
+                    ReservedChunks.Remove(new Vector3I(coordinates, dimension));
+                
+                throw e;
+            }
         }
 
         public static Vector2I[] GetCoordsInRange(Vector2I startPosition, uint renderDistance)
