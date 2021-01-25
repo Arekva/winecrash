@@ -350,6 +350,8 @@ namespace WEngine
             return Math.Acos((v1.Normalized * v2.Normalized).Length) * WMath.RadToDeg;
         }
 
+        public static Vector3D Lerp(Vector3D a, Vector3D b, double t) => (1.0D - t) * a + t * b;//new Vector3D(WMath.Lerp(a.X,b.X,t), WMath.Lerp(a.Y,b.Y,t), WMath.Lerp(a.Z,b.Z,t));
+
         public static double SignedAngle(Vector3D from, Vector3D to, Vector3D axis)
         {
             double num1 = Vector3D.Angle(from, to);
@@ -463,6 +465,8 @@ namespace WEngine
         {
             return new Vector3D(v.X * n, v.Y * n, v.Z * n);
         }
+
+        public static Vector3D operator *(double n, Vector3D v) => v * n;
         public static Vector3D operator *(Vector3D v1, Vector3D v2)
         {
             return new Vector3D(v1.X * v2.X, v1.Y * v2.Y, v1.Z * v2.Z);

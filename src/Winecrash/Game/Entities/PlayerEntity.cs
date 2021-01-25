@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Policy;
 using System.Threading.Tasks;
@@ -204,7 +205,40 @@ namespace Winecrash.Entities
             }
         }
 
-        private int aa = 0;
+        private void PickItems()
+        {
+            Player player = null;
+            lock (Player.PlayersLocker)
+                player = Player.Players.FirstOrDefault(p => p.Entity == this);
+            
+            double pickRangeSqr = Player.PickRange * Player.PickRange;
+            Vector3D pos = this.WObject.Position + Player.PickLocalPoint;
+            
+            List<Chunk> searchChunks = this.Chunk.GetNeighbors();
+            searchChunks.Add(this.Chunk);
+            
+            Entity[] entities = null;
+
+            // search only in this and neighbors chunks
+            foreach (Chunk chunk in searchChunks)
+            {
+                lock (chunk.EntityLocker)
+                    entities = chunk.Entities.ToArray();
+
+                for (int i = 0; i < entities.Length; i++)
+                {
+                    // sort by item entities
+                    if (entities[i] is ItemEntity entity && 
+                        entity.IsPickable &&
+                        Vector3D.SquaredDistance(pos, entity.WObject.Position) < pickRangeSqr)
+                    {
+                        entity.PickingPlayer = player;
+                        entity.IsPicked = true;
+                    }
+                }
+            }
+        }
+        
         protected override void Creation()
         {
             base.Creation();
@@ -295,6 +329,8 @@ namespace Winecrash.Entities
                     AnimateWalk(this.RigidBody.Velocity);
                 }
             }
+
+            PickItems();
         }
         
         protected override void LateUpdate()

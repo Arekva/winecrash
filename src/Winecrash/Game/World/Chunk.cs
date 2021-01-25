@@ -486,5 +486,102 @@ namespace Winecrash
 
             BuildEndFrame = true;
         }
+
+        /// <summary>
+        /// Distance to another chunk.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public int DistanceTo(Chunk other)
+        {
+            Vector3I oCoords = other.InterdimensionalCoordinates;
+            Vector3I tCoords = this.InterdimensionalCoordinates;
+
+            if (oCoords.Z != tCoords.Z) return int.MaxValue;
+
+            else
+            {
+                Vector2I delta = oCoords.XY - tCoords.XY;
+
+                return delta.X + delta.Y;
+            }
+        }
+
+        public List<Chunk> GetNeighbors()
+        {
+            List<Chunk> neighbors = new List<Chunk>(8);
+
+            bool ne = false;
+            bool nw = false;
+            bool se = false;
+            bool sw = false;
+
+            if (EastNeighbor)
+            {
+                neighbors.Add(EastNeighbor);
+
+                if (!ne && EastNeighbor.NorthNeighbor)
+                {
+                    ne = true;
+                    neighbors.Add(EastNeighbor.NorthNeighbor);
+                }
+
+                if (!se && EastNeighbor.SouthNeighbor)
+                {
+                    se = true;
+                    neighbors.Add(EastNeighbor.SouthNeighbor);
+                }
+            }
+            if (WestNeighbor)
+            {
+                neighbors.Add(WestNeighbor);
+
+                if (!nw && WestNeighbor.NorthNeighbor)
+                {
+                    nw = true;
+                    neighbors.Add(WestNeighbor.NorthNeighbor);
+                }
+
+                if (!sw && WestNeighbor.SouthNeighbor)
+                {
+                    sw = true;
+                    neighbors.Add(WestNeighbor.SouthNeighbor);
+                }
+            }
+            if (NorthNeighbor)
+            {
+                neighbors.Add(NorthNeighbor);
+
+                if (!ne && NorthNeighbor.EastNeighbor)
+                {
+                    ne = true;
+                    neighbors.Add(NorthNeighbor.EastNeighbor);
+                }
+                
+                if (!nw && NorthNeighbor.WestNeighbor)
+                {
+                    nw = true;
+                    neighbors.Add(NorthNeighbor.WestNeighbor);
+                }
+            }
+            if (SouthNeighbor)
+            {
+                neighbors.Add(SouthNeighbor);
+                
+                if (!se && SouthNeighbor.EastNeighbor)
+                {
+                    se = true;
+                    neighbors.Add(SouthNeighbor.EastNeighbor);
+                }
+
+                if (!sw && SouthNeighbor.WestNeighbor)
+                {
+                    sw = true;
+                    neighbors.Add(SouthNeighbor.WestNeighbor);
+                }
+            }
+
+            return neighbors;
+        }
     }
 }

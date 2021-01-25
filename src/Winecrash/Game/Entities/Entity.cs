@@ -23,8 +23,26 @@ namespace Winecrash.Entities
         public event EntityRotationUpdate OnRotate;
         public event EntityChunkChange OnChunkChange;
         public event EntityDimensionChange OnDimensionChange;
-        
-        public Chunk Chunk { get; private set; }
+
+        private Chunk _chunk = null;
+
+        public Chunk Chunk
+        {
+            get => _chunk;
+            set
+            {
+                // switch this from other collections
+                if (_chunk)
+                    lock (_chunk.EntityLocker)
+                        _chunk.Entities.Remove(this);
+
+                if(value)
+                    lock (value.EntityLocker)
+                        value.Entities.Add(this);
+                    
+                this._chunk = value;
+            }
+        }
         
 
         public Vector2I ChunkCoordinates
@@ -108,9 +126,11 @@ namespace Winecrash.Entities
         {
             lock(EntitiesLocker)
                 Entities.Remove(this);
+            
+            this.Chunk = null;
 
             OnRotate = null;
-            OnChunkChange -= ChunkChange;
+            //OnChunkChange -= ChunkChange;
             OnChunkChange = null;
             OnDimensionChange = null;
 
@@ -124,7 +144,7 @@ namespace Winecrash.Entities
 
         private void ChunkChange(Vector2I previousChunk, Vector2I newChunk)
         {
-            Chunk c = this.Chunk;
+            /*Chunk c = this.Chunk;
 
             if (c != null)
             {
@@ -134,18 +154,18 @@ namespace Winecrash.Entities
                 }
             }
 
-            c = this.Chunk = World.GetChunk(newChunk, this.Dimension);
+            c = */this.Chunk = World.GetChunk(newChunk, this.Dimension);
             
             // todo: if chunk is null, save entity into chunk file and delete.
             // this will for sure throw a nullref if an entity tried to go
             // into an unloaded chunk.
 
-            if (c != null)
+            /*if (c != null)
             {
                 lock (c.Entities)
                     c.Entities.Add(this);
                 this.WObject.Parent = c.WObject;
-            }
+            }*/
         }
 
         public static Entity Get(Guid guid)

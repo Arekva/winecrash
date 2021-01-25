@@ -127,9 +127,9 @@ namespace Winecrash
             Vector3D v = rb.Velocity;
             Vector3D originalVelocity = v;
             Vector3D c = b.Center;
-
-            const double castExtents = 0.9D;
-            const double castLength = 0.05D;
+            
+            double castExtents = b.CastExtents;
+            double castLength = b.CastLength;
             
             RaycastChunkHit CheckRight()
             {

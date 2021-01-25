@@ -20,15 +20,21 @@ namespace Winecrash
         
         
         private Vector2D _CameraAngles = Vector2D.Zero;
-        public static double MaxYAngles = 89.99D;
+        public static double MaxYAngles { get; set; } = 89.99D;
 
-        public static double JumpTimer = 0.1D;
-        public static double JumpForce = 5.0D;
+        public static double JumpTimer { get; set; } = 0.1D;
+        public static double JumpForce { get; set; }= 5.0D;
 
-        public static double WalkSpeed = 4.3D;
-        public static double WalkAcceleration = 50.0D*25;
-        public static double WalkDeaccelerationFactor = 16.0D;
-        public static double StopSpeed = 0.05D;
+        public static double WalkSpeed { get; set; } = 4.3D;
+        public static double WalkAcceleration { get; set; } = 50.0D*25;
+        public static double WalkDeaccelerationFactor { get; set; } = 16.0D;
+        public static double StopSpeed { get; set; } = 0.05D;
+
+        public static Vector3D PickLocalPoint { get; set; } = Vector3D.Up * 0.9D;
+        public static Vector3D PickLocalPointAnimation { get; set; } = Vector3D.Up * 1.35D;
+        public Vector3D PickPosition => this.Entity.WObject.Position + PickLocalPoint;
+        public Vector3D PickPositionAnimation => this.Entity.WObject.Position + PickLocalPointAnimation;
+        public static double PickRange { get; set; } = 1.5D;
 
         public Vector2D CameraAngles
         {

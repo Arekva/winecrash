@@ -11,6 +11,10 @@ namespace WEngine
         internal static object ActiveBoxCollidersLocker { get; private set; } = new object();
 
         private Vector3D _Extents = Vector3D.One / 2.0D;
+
+        public double CastExtents { get; set; } = 0.9D;
+        public double CastLength { get; set; } = 0.05D;
+        
         public override Vector3D Extents
         {
             get
