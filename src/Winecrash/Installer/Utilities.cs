@@ -1,19 +1,20 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
+
 
 namespace Winecrash.Installer
 {
     public static class Utilities
     {
         public static string CustomPathFileName { get; set; } = "CustomPath";
-        public static string EmbeddedFileName { get; set; } = "Winecrash.Installer.Properties.Resources.resources";
+        public static string LauncherExecutable { get; set; } = "Winecrash.Launcher.exe";
         public static string DefaultInstallDirectory => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         
         public static string CustomPathFilePath => Path.Combine(DefaultInstallDirectory, ApplicationName, CustomPathFileName);
 
         public static string InstallDirectory => File.Exists(CustomPathFilePath) ? File.ReadAllText(CustomPathFilePath) : DefaultInstallDirectory;
         public static string LauncherFolder { get; set; } = "Launcher";
-        
         public static string ProfilesFolder { get; set; } = "Profiles";
         public static string PackagesFolder { get; set; } = "Packages";
         public static string ApplicationName { get; set; } = "Winecrash";
@@ -22,8 +23,15 @@ namespace Winecrash.Installer
         public static string LauncherPath => Path.Combine(ApplicationPath, LauncherFolder);
         public static string ProfilesPath => Path.Combine(ApplicationPath, ProfilesFolder);
         public static string PackagesPath => Path.Combine(ApplicationPath, PackagesFolder);
+        public static string LauncherExecutablePath => Path.Combine(LauncherPath, LauncherExecutable);
 
         public static bool LauncherInstalled => Directory.Exists(LauncherPath);
+        public static string ZipPath => Path.Combine(Utilities.ApplicationPath, "temp.zip");
+
+        public static string DownloadLink { get; set; } = @"file://C:\Users\arcarre\Desktop\launcher.zip";
+
+        public static bool InstalledAtPath(string path) => Directory.Exists(Path.Combine(path, LauncherFolder));
+        
 
         public static void CreateCustomPathFile(string path)
         {
@@ -38,6 +46,30 @@ namespace Winecrash.Installer
             Directory.CreateDirectory(LauncherPath);
             Directory.CreateDirectory(ProfilesPath);
             Directory.CreateDirectory(PackagesPath);
+        }
+
+        public static void CreateShortcutDesktop(string to) => CreateShortcut(to, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), ApplicationName));
+
+        public static void CreateShortcutStart(string to) => CreateShortcut(to, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", ApplicationName));
+        public static void CreateShortcut(string to, string path) => CreateLink(to, path, null);
+
+        public static void CreateLink(string srcPath, string shortcutPath, string description = null)
+        {
+            // Derive params
+            if (description == null)
+                description = "Opens " + Path.GetFileNameWithoutExtension(srcPath);
+            if (!shortcutPath.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase))
+                shortcutPath += ".lnk";
+
+            // Initialize Shortcut
+            var link = (IShellLink)new ShellLink();
+            link.SetDescription(description);
+            link.SetPath(srcPath);
+            link.SetWorkingDirectory(Path.GetDirectoryName(srcPath));
+
+            // Save
+            var pf = (IPersistFile)link;
+            pf.Save(shortcutPath, false);
         }
     }
 }
