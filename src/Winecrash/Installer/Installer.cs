@@ -28,12 +28,14 @@ namespace Winecrash.Installer
             }*/
             
             Utilities.SetupForInstallation(path);
-            path = Path.Combine(Utilities.ApplicationPath, "temp.zip");
+            string zipPath = Path.Combine(Utilities.ApplicationPath, "temp.zip");
 
             using (Stream cs = Assembly.GetExecutingAssembly().GetManifestResourceStream(Utilities.EmbeddedFileName))
-            using (FileStream fs = new FileStream(path, FileMode.Create)) cs.CopyTo(fs);
+            using (FileStream fs = new FileStream(zipPath, FileMode.Create)) cs.CopyTo(fs);
             
-            ZipFile.ExtractToDirectory(path, Utilities.LauncherPath);
+            ZipFile.ExtractToDirectory(zipPath, Utilities.LauncherPath);
+            
+            File.Delete(zipPath);
             /*using (var zipStream = new GZipStream(compressedStream, CompressionMode.Decompress))
             using (var resultStream = new MemoryStream())
             {
