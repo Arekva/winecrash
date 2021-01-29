@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Windows.Forms;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Winecrash.Installer
 {
@@ -20,7 +22,17 @@ namespace Winecrash.Installer
         private void Installer_Load(object sender, EventArgs e)
         {
             _pathInput.Text = Utilities.DefaultInstallDirectory;
-            _client.DownloadFileCompleted += _client_InstallFileCompleted;
+            _status.Text = "";
+            _pathInput.Select(_pathInput.Text.Length,0);
+
+            // no shortcut on linux/osx yet.
+            if (Environment.OSVersion.Platform != PlatformID.Win32NT)
+            {
+                _createDesktopShortcut.Checked = _createStartShortcut.Checked =
+                _createDesktopShortcut.Enabled = _createStartShortcut.Enabled = false;
+            }
+            
+            _client.DownloadFileCompleted += _client_DownloadFileCompleted;
             _client.DownloadProgressChanged += _client_DownloadProgress;
         }
 
@@ -46,29 +58,63 @@ namespace Winecrash.Installer
         private void _client_DownloadProgress(object sender, DownloadProgressChangedEventArgs e)
         {
             _installProgress.Value = e.ProgressPercentage;
+            _status.Text = $"Downloading {e.ProgressPercentage}% ({Utilities.FormatSize(e.BytesReceived)}/{Utilities.FormatSize(e.TotalBytesToReceive)})";
         }
 
-        private void _client_InstallFileCompleted(object sender, AsyncCompletedEventArgs e)
+        private void SafeInvoke(Action a) => Invoke(a);
+
+        private void _client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             _cancelButton.Enabled = false;
+            string zipPath = Utilities.ZipPath;
             
             if (e.Cancelled)
             {
-                MessageBox.Show("Installation Cancelled");
+                _status.Text = "Deleting temporary file";
+                File.Delete(zipPath);
+                MessageBox.Show("Install of the launcher has been canceled.", "Install canceled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _status.Text = "Install canceled";
+                _installProgress.Value = 0;
             }
             else
             {
-                string zipPath = Utilities.ZipPath;
+                _cancelButton.Enabled = false;
+                _status.Text = "Extracting";
+                Task.Run(() =>
+                {
+                    ZipFile.ExtractToDirectory(zipPath, Utilities.LauncherPath);
 
-                ZipFile.ExtractToDirectory(zipPath, Utilities.LauncherPath);
+                    SafeInvoke(() =>
+                    {
+                        _status.Text = "Deleting temporary file";
+                        File.Delete(zipPath);
+                        
+                        _status.Text = "Creating shortcuts";
+                        if (_createDesktopShortcut.Checked)
+                            Utilities.CreateShortcutDesktop(Utilities
+                                .LauncherExecutablePath);
+                        if (_createStartShortcut.Checked)
+                            Utilities.CreateShortcutStart(Utilities
+                                .LauncherExecutablePath);
 
-                File.Delete(zipPath);
-                if (_createDesktopShortcut.Checked)
-                    Utilities.CreateShortcutDesktop(Utilities.LauncherExecutablePath);//Path.Combine(Utilities.LauncherPath, "Winecrash.exe"));
-                if (_createStartShortcut.Checked)
-                    Utilities.CreateShortcutStart(Utilities.LauncherExecutablePath);//Path.Combine(Utilities.LauncherPath, "Winecrash.exe"));
-            
-                
+                        _status.Text = "Install complete";
+                        
+                        _installProgress.Value = 0;
+                                                
+                        MessageBox.Show("Install of the launcher successfully completed.", "Install completed",
+                                                                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        
+                        if (_openInstall.Checked)
+                        {
+                            ProcessStartInfo infos = new ProcessStartInfo(Utilities.LauncherExecutablePath)
+                            {
+                                WorkingDirectory = Utilities.LauncherPath
+                            };
+
+                            Process.Start(infos);
+                        }
+                    });
+                });
             }
         }
 
@@ -79,7 +125,7 @@ namespace Winecrash.Installer
             {
                 DialogResult result =
                     MessageBox.Show(
-                        $"{Utilities.ApplicationName} is already installed at this directory. Do you want to replace it?", "Directory Conflict", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                        $"{Utilities.ApplicationName} is already installed at this directory. Do you want to replace it?", "Directory conflict", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 
                 if (result == DialogResult.Yes)
                 {

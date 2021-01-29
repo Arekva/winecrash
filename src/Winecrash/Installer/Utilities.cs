@@ -28,7 +28,7 @@ namespace Winecrash.Installer
         public static bool LauncherInstalled => Directory.Exists(LauncherPath);
         public static string ZipPath => Path.Combine(Utilities.ApplicationPath, "temp.zip");
 
-        public static string DownloadLink { get; set; } = @"file://C:\Users\arcarre\Desktop\launcher.zip";
+        public static string DownloadLink { get; set; } = @"http://docs.arekva.fr/f/uzOCht/launcher.zip";
 
         public static bool InstalledAtPath(string path) => Directory.Exists(Path.Combine(path, LauncherFolder));
         
@@ -71,5 +71,24 @@ namespace Winecrash.Installer
             var pf = (IPersistFile)link;
             pf.Save(shortcutPath, false);
         }
+        
+
+            // Load all suffixes in an array  
+            private static readonly string[] sizeSuffixes =  
+            { "Bytes", "KB", "MB", "GB", "TB", "PB" };
+
+            public static string FormatSize(Int64 bytes)
+            {
+                int counter = 0;
+                decimal number = (decimal) bytes;
+                while (Math.Round(number / 1024) >= 1)
+                {
+                    number = number / 1024;
+                    counter++;
+                }
+
+                return $"{number:n1}{sizeSuffixes[counter]}";
+            }
+        
     }
 }
