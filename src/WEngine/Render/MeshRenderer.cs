@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
+using WEngine.GUI;
 
 namespace WEngine
 {
@@ -40,6 +41,7 @@ namespace WEngine
         public bool UseDepth { get; set; } = true;
         public bool Wireframe { get; set; } = false;
         public int DrawOrder { get; set; } = 0;
+        public bool IgnoreDepthSort { get; set; } = false;
         public static bool Global_Wireframe { get; set; } = false;
 
         protected bool CheckValidity(Camera sender)
@@ -54,7 +56,8 @@ namespace WEngine
         protected Vector3D _renderScale;
         protected Quaternion _renderRotation;
         public Dictionary<Camera, double> CamerasDistances { get; private set; } = new Dictionary<Camera, double>();
-
+        private object _camerasDistanceLocker = new object();
+        
         internal virtual void PrepareForRender()
         {
             _renderPosition = this.WObject.Position;
@@ -99,7 +102,7 @@ namespace WEngine
                     if (camera.ProjectionType == CameraProjectionType.Perspective)
                     {
                         //todo: better occulusion
-                        
+
                         double dist = Vector3D.SquaredDistance(camera._RenderPosition, _renderPosition);
                         /*Vector3D camFwd = camera._RenderForward;
                         Vector3D relPos = _renderPosition - camera._RenderPosition;
@@ -107,7 +110,7 @@ namespace WEngine
                             camera._RenderUp);
                         //if object is behind camera, don't draw.
                         if (dist < 100.0D || angle > -45)*/
-                            CamerasDistances.Add(camera, dist);
+                        CamerasDistances.Add(camera, dist);
                     }
                     else
                     {
@@ -115,6 +118,7 @@ namespace WEngine
                     }
                 }
             }
+            
         }
 
         protected internal virtual void BindBuffers()
@@ -181,36 +185,26 @@ namespace WEngine
 
         protected internal override void Creation()
         {
-            lock(ActiveMeshRenderersLocker)
-            {
-                MeshRenderers.Add(this);
-            }
+            lock(MeshRenderersLocker) MeshRenderers.Add(this);
             this.Group = -1;
         }
 
         protected internal override void OnEnable()
         {
-            lock(ActiveMeshRenderersLocker)
-            {
-                ActiveMeshRenderers.Add(this);
-            }
+            lock(ActiveMeshRenderersLocker) 
+                if(!ActiveMeshRenderers.Contains(this)) ActiveMeshRenderers.Add(this);
         }
 
         protected internal override void OnDisable()
         {
-            lock (ActiveMeshRenderersLocker)
-            {
-                ActiveMeshRenderers.Remove(this);
-            }
+            lock (ActiveMeshRenderersLocker) ActiveMeshRenderers.Remove(this);
         }
 
         protected internal override void OnDelete()
         {
-            lock (ActiveMeshRenderersLocker)
-                ActiveMeshRenderers.Remove(this);
+            lock (ActiveMeshRenderersLocker) ActiveMeshRenderers.Remove(this);
 
-            lock (MeshRenderersLocker)
-                MeshRenderers.Remove(this);
+            lock (MeshRenderersLocker) MeshRenderers.Remove(this);
             
                         
             lock (MaterialLocker)

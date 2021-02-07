@@ -24,10 +24,7 @@ namespace Winecrash.Client
 
         public CameraMode CameraMode
         {
-            get
-            {
-                return _CameraMode;
-            }
+            get => _CameraMode;
 
             set
             {
@@ -59,10 +56,10 @@ namespace Winecrash.Client
 
                     case CameraMode.TPSFront:
                         {
-                            Player.LocalPlayer.Entity.ModelWObject.Enabled = true;
+                            //Player.LocalPlayer.Entity.ModelWObject.Enabled = true;
                             PlayerEntity.PlayerHandWobject.Enabled = false;
                             Camera.Main.WObject.Parent = Player.LocalPlayer.Entity.PlayerHead;
-                            Camera.Main.WObject.LocalPosition = /*Vector3D.Up * EyeHeight + */Vector3D.Forward * TPSMaxDistance;
+                            Camera.Main.WObject.LocalPosition = Vector3D.Forward * TPSMaxDistance;
                             Camera.Main.WObject.LocalRotation = new Quaternion(0, 180, 0);
                             CameraLocked = true;
                         }
@@ -87,7 +84,7 @@ namespace Winecrash.Client
             CameraMode = CameraMode.FPS;
         }
 
-
+        private Dictionary<string, KeyStates> inputs = new Dictionary<string, KeyStates>();
         protected override void Update() //todo: NetworkUpdate
         {
             if (Player.LocalPlayer.Entity != null)
@@ -142,74 +139,40 @@ namespace Winecrash.Client
                 Player.LocalPlayer.ParseMouse(Input.MouseDelta * Time.Delta * MouseSensivity);
 
 
-                RaycastChunkHit hit = World.RaycastWorld(new Ray(Camera.Main.WObject.Position, Camera.Main.WObject.Forward, 5.0D));
-
-                if (hit.HasHit)
+                if (Player.LocalPlayer.OpenedContainer == null)
                 {
-                    if (Input.IsPressing(Keys.MouseLeftButton))
+                    RaycastChunkHit hit = World.RaycastWorld(new Ray(Camera.Main.WObject.Position,
+                        Camera.Main.WObject.Forward, 5.0D));
+
+                    if (hit.HasHit)
                     {
-                        Vector3I b = hit.LocalPosition;
-                        hit.Chunk.Dig(b.X, b.Y, b.Z);
-                        //Debug.Log(hit.Block.Identifier + " (Distance: " + hit.Distance + ")");
-                    }
-                    else if (Input.IsPressing(Keys.MouseRightButton))
-                    {
-                        Vector3D bg = hit.LocalPosition;
-                        bg += (Vector3D)hit.Normal;
-                        Vector3I b = bg;
-
-                        Vector3I relb = World.RelativePositionToChunk(hit.LocalPosition, hit.Chunk.Coordinates);
-                        
-                        /*Chunk ec = hit.Chunk;
-                        if (relb.Y < 0 || relb.Y > Chunk.Height - 1) // not in chunk ...
+                        if (Input.IsPressing(Keys.MouseLeftButton))
                         {
-                            ec = null;
+                            Vector3I b = hit.LocalPosition;
+                            hit.Chunk.Dig(b.X, b.Y, b.Z);
                         }
-
-                        // x - z
-                        if (ec != null)
+                        else if (Input.IsPressing(Keys.MouseRightButton))
                         {
-                            if (relb.X < 0)
+                            Vector3D bg = hit.LocalPosition;
+                            bg += (Vector3D) hit.Normal;
+                            Vector3I b = bg;
+
+                            Vector3I relb = World.RelativePositionToChunk(hit.LocalPosition, hit.Chunk.Coordinates);
+
+                            World.GlobalToLocal(hit.GlobalBlockPosition + (Vector3I) hit.Normal, out Vector2I cp,
+                                out Vector3I bp);
+
+                            Player player = Player.LocalPlayer;
+                            int selected = player.HotbarSelectedIndex;
+                            ContainerItem ci = player.Hotbar[selected];
+
+                            if (ci.Amount > 0 && ci.Item is Block block)
                             {
-                                ec = World.GetChunk(ec.Coordinates + Vector2I.Left, "winecrash:overworld");
-                                b.X = Chunk.Width - 1;
+                                --ci.Amount;
+                                Player.LocalPlayer.SetContainerItem(ci, selected);
+                                World.GetChunk(cp, "winecrash:overworld")?.Edit(bp.X, bp.Y, bp.Z, block);
                             }
-
-                            else if (relb.X > Chunk.Width - 1)
-                            {
-                                ec = World.GetChunk(ec.Coordinates + Vector2I.Right, "winecrash:overworld");
-                                b.X = 0;
-                            }
-                            
-                            if (relb.Z < 0)
-                            {
-                                ec = World.GetChunk(ec.Coordinates + Vector2I.Down, "winecrash:overworld");
-                                b.Z = Chunk.Depth - 1;
-                            }
-
-                            else if (relb.Z > Chunk.Depth - 1)
-                            {
-                                ec = World.GetChunk(ec.Coordinates + Vector2I.Up, "winecrash:overworld");
-                                b.Z = 0;
-                            }
-                        }*/
-
-                        World.GlobalToLocal(hit.GlobalBlockPosition + (Vector3I)hit.Normal, out Vector2I cp, out Vector3I bp);
-
-                        Player player = Player.LocalPlayer;
-                        int selected = player.HotbarSelectedIndex;
-                        ContainerItem ci = player.Hotbar[selected];
-
-                        if (ci.Amount > 0 && ci.Item is Block block)
-                        {
-                            --ci.Amount;
-                            Player.LocalPlayer.SetContainerItem(ci, selected);
-                            World.GetChunk(cp, "winecrash:overworld")?.Edit(bp.X, bp.Y, bp.Z, block);
                         }
-
-                        
-
-                        //ec?.Edit(b.X, b.Y, b.Z, ItemCache.Get<Block>("winecrash:direction"));
                     }
                 }
 

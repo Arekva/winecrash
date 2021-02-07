@@ -68,6 +68,8 @@ namespace Winecrash
 
         public Vector3I InterdimensionalCoordinates { get; set; }
 
+        public static WRandom Random => new WRandom("this emoji is cancer => 😳".GetHashCode());
+
         public Vector2I Coordinates
         {
             get => this.InterdimensionalCoordinates.XY;
@@ -455,7 +457,12 @@ namespace Winecrash
             this.Edit(x,y,z);
             ItemEntity item = ItemEntity.FromItem(b, 1);
             item.WObject.Position = (Vector3D)World.LocalToGlobal(this.Coordinates, new Vector3I(x, y, z)) + Vector3D.One * 0.5D;
-            //item.WObject.LocalPosition = 
+            
+            // apply force to item
+            Vector2D dir = Random.NextDirection2D();
+            Vector3D force = new Vector3D(dir.X, 0.0, dir.Y) * Item.ItemDigSpawnForce;
+
+            item.RigidBody.Velocity += force;
         }
 
         public void Edit(int x, int y, int z, Block b = null) => PrivateEdit(x,y,z,b);

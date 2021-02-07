@@ -1,0 +1,17 @@
+{
+  	"DisplayName": "#winecrash:block.glass",
+
+    "Transparent": true,
+    "DrawInternalFaces": false,
+    "DrawAllSides": false,
+    "Collides": true,
+    
+    "Textures": {
+      	"Up": "assets/textures/blocks/glass.png",
+      	"Down": "assets/textures/blocks/glass.png",
+      	"West": "assets/textures/blocks/glass.png",
+      	"East": "assets/textures/blocks/glass.png",
+      	"North": "assets/textures/blocks/glass.png",
+      	"South": "assets/textures/blocks/glass.png"
+    }
+}

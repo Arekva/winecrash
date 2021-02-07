@@ -4,7 +4,7 @@
     {
         protected internal override void Creation()
         {
-            this.UseDepth = false;
+            this.UseDepth = true;
             this.UseMask = true;
 
             base.Creation();

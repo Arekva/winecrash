@@ -69,6 +69,7 @@
     <Compile Include="GUI\LocalizedLabel.cs" />
     <Compile Include="GUI\SmallButton.cs" />
     <Compile Include="GUI\TinyButton.cs" />
+    <Compile Include="GUI\ToolTip.cs" />
     <Compile Include="Localization\Language.cs" />
     <Compile Include="MainLoadScreen.cs" />
     <Compile Include="MainMenu.cs" />

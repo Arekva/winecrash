@@ -40,6 +40,7 @@ namespace Winecrash.Client
 
             Debug.Log("\n\n");
             
+            Time.PhysicsRate = 128D;
             Vector3D soloPlayerSpawnpoint = /*new Vector3D(32_000_000D, 0, 32_000_000D);//*/new Vector3D(572, 66, 459);
 
 
@@ -66,12 +67,12 @@ namespace Winecrash.Client
             WObject camW = new WObject("Player Camera");
             camW.Parent = localPlayerWobj;
             camW.LocalPosition = Vector3D.Up * 1.62D;
-            Camera.Main = camW.AddModule<Camera>();
-            Camera.Main.FOV = 80;
-            Camera.Main.NearClip = 0.01D;
-            Camera.Main.FarClip = 4096.0D;
-            Camera.Main.RenderLayers &= ~(ulong)Layers.UI;
-            Camera.Main.WObject.AddModule<PanoramicPhotographer>();
+            Camera main = Camera.Main = camW.AddModule<Camera>();
+            main.FOV = 80;
+            main.NearClip = 0.01D;
+            main.FarClip = 4096.0D;
+            main.RenderLayers &= ~(ulong)Layers.UI;
+            main.WObject.AddModule<PanoramicPhotographer>();
 
             Winecrash.RenderDistance = 2;
             
@@ -96,7 +97,7 @@ namespace Winecrash.Client
                 new Shader("assets/shaders/item/Item.vert", "assets/shaders/item/Item.frag");
 
 
-                Database.Load("assets/items.json").ParseItems();
+                Database.Load("assets/winecrash.package");
                 ItemCache.BuildChunkTexture(out int xsize, out int ysize);
                 //Chunk.Texture.Save(Folders.UserData + "items_atlas.png");
 

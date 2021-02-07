@@ -34,8 +34,8 @@ namespace Winecrash.Server
 
             Engine.Run(false, args).Wait();
             
-            Database.Load("assets/items.json").ParseItems();
-
+            Database.Load("assets/winecrash.package");
+            
             try
             {
                 WEngine.Debug.Log("Save \"save\" found. Loading.");

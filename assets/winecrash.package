@@ -1,6 +1,5 @@
 {
-    "Items":
-    [
+    "Items": [
         {
             "Identifier": "winecrash:direction",
             "RuntimeType": "Winecrash.Cube, WinecrashCore",
@@ -61,5 +60,36 @@
             "RuntimeType": "Winecrash.Item, WinecrashCore",
             "Path": "assets/items/nord.json"
         },
+        {
+            "Identifier": "winecrash:ice",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
+            "Path": "assets/items/ice.json"
+        },
+        {
+            "Identifier": "winecrash:glass",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
+            "Path": "assets/items/glass.json"
+        },
+        {
+            "Identifier": "winecrash:debug",
+            "RuntimeType": "Winecrash.Item, WinecrashCore",
+            "Path": "assets/items/debug.json"
+        },
+        {
+            "Identifier": "winecrash:planks",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
+            "Path": "assets/items/planks.json"
+        },
+        {
+            "Identifier": "winecrash:stick",
+            "RuntimeType": "Winecrash.Item, WinecrashCore",
+            "Path": "assets/items/stick.json"
+        }
+    ],
+
+    "ManufactureTables": [
+        "assets/tables/manufacture/glass.json",
+        "assets/tables/manufacture/planks.json",
+        "assets/tables/manufacture/stick.json"
     ]
 }

@@ -14,7 +14,6 @@ namespace WEngine
 
         public UInt64 RenderLayers { get; set; } = UInt64.MaxValue;
         
-
         public double Depth { get; set; } = 0.0D;
 
 
@@ -143,18 +142,19 @@ namespace WEngine
         }
 
 
-
-        protected internal override void Creation()
+        protected internal override void OnEnable()
         {
-            //this.ClearColor = new Color256(0.11D, 0.11D, 0.11D, 1.0D);
-
             Cameras.Add(this);
+        }
+
+        protected internal override void OnDisable()
+        {
+            Cameras.Remove(this);
         }
 
         protected internal override void OnDelete()
         {
             Cameras.Remove(this);
-
             if(Main != null && Main == this)
             {
                 Main = null;

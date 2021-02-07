@@ -36,6 +36,32 @@
         public TextAligns Aligns { get; set; } = TextAligns.Up | TextAligns.Left;
         public int LinesMaxWidth { get; private set; } = 0;
 
+        public double CurrentWidth
+        {
+            get
+            {
+                string str = Text;
+                double lineXSize = 0.0D;
+                double fontSize = FontSize;
+                double wordSpace = (WordSpace * fontSize);
+                Glyph[] glyphs = FontFamilly.Glyphs[str];
+
+                for (int j = 0; j < glyphs.Length; j++)
+                {
+                    if (str[j] == ' ')
+                    {
+                        lineXSize += wordSpace;
+                        continue;
+                    }
+
+                    double glyphratio = (double)glyphs[j].Width / (double)glyphs[j].Height;
+                    lineXSize += glyphratio * fontSize;
+                }
+
+                return lineXSize;
+            }
+        }
+
         public bool Shadows { get; set; } = true;
         public double ShadowDistance { get; set; } = 0.1D;
 

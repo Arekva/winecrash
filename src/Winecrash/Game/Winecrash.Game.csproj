@@ -64,8 +64,11 @@
     <Compile Include="Items\CubeTexturePaths.cs" />
     <Compile Include="Items\Database.cs" />
     <Compile Include="Items\Item.cs" />
+    <Compile Include="Items\ItemAmount.cs" />
     <Compile Include="Items\ItemCache.cs" />
     <Compile Include="Items\ItemDB.cs" />
+    <Compile Include="Items\ManufacturePattern.cs" />
+    <Compile Include="Items\ManufactureTable.cs" />
     <Compile Include="Items\Tool.cs" />
     <Compile Include="Items\Workbench.cs" />
     <Compile Include="Layers.cs" />

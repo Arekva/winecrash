@@ -74,6 +74,7 @@ namespace WEngine
         internal int GroupCount => _Groups == null ? 0 : _Groups.Count;
 
         internal Thread Thread { get; private set; }
+        internal Thread PhysicsThread { get; private set; }
 
         internal bool Deleted { get; private set; }
 
@@ -101,10 +102,17 @@ namespace WEngine
             {
                 Priority = ThreadPriority.AboveNormal,
                 IsBackground = true,
-                Name = this._Name + " Thread"
+                Name = this._Name
             };
-
             Thread.Start();
+            
+            PhysicsThread = new Thread(PhysicsUpdate)
+            {
+                Priority = ThreadPriority.AboveNormal,
+                IsBackground = true,
+                Name = this._Name
+            };
+            PhysicsThread.Start();
         }
 
         internal static volatile UpdateTypes UpdateType = UpdateTypes.EarlyUpdate;
@@ -187,8 +195,8 @@ namespace WEngine
         {
             while (!this.Deleted)
             {
-                this.DoneEventPhysics.WaitOne(); //wait for reset event
-                this.DoneEventPhysics.Reset(); //set reset event to false
+                this.ResetEventPhysics.WaitOne(); //wait for reset event
+                this.ResetEventPhysics.Reset(); //set reset event to false
                 
                 UpdateTypes ut = PhysicsUpdateType;
 
@@ -203,6 +211,7 @@ namespace WEngine
                             foreach (Module mod in modules) if (mod != null && mod.Enabled && !mod.Deleted)
                                 try
                                     {
+                                        
                                         mod.EarlyPhysicsUpdate();
                                     }
                                 catch (Exception e)

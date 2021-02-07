@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using WEngine;
 using WEngine.GUI;
 using Winecrash.Entities;
@@ -29,11 +30,62 @@ namespace Winecrash.Client
         public static GameUI Instance { get; private set; }
 
         private static readonly Vector2D[][] _ItemHotbarAnchors = new Vector2D[9][];
+        
 
-        private WObject[] HotbarItemsRenders { get; set; } = new WObject[9];
-        private Label[] HotbarItemsAmount { get; set; } = new Label[9];
+        private static WObject[] HotbarItemsRenders { get; set; } = new WObject[9];
+        private static Label[] HotbarItemsAmount { get; set; } = new Label[9];
+        
+        private static readonly Vector2D[][] _ItemInventoryAnchors = new Vector2D[46][];
+        private static WObject[] InventoryItemsRenders { get; set; } = new WObject[46];
+        private static Label[] InventoryItemsAmount { get; set; } = new Label[46];
 
+        private static PointBoxCollisionProvider _collisionProvider = new PointBoxCollisionProvider();
+
+        private static UIBoxCollider[] _colliders = new UIBoxCollider[46];
+        
+        public WObject HoveredTooltipWObject { get; set; }
+        public ToolTip HoveredTooltip { get; set; }
+
+        public static Vector2D ItemSlotScale
+        {
+            get
+            {
+                Vector2D[] sizes = ItemSlotBaseAnchors;
+                Vector2D slotMins = sizes[0];
+                Vector2D slotMaxs = sizes[1];
+
+                Vector2D deltas = slotMaxs - slotMins;
+                Vector2D screenResolution = Graphics.Window.SurfaceResolution;
+
+                Vector2D actualSizes = deltas * screenResolution;
+                return actualSizes / 4.0;
+            }
+        }
+
+        public static Vector2D[] ItemSlotBaseAnchors => new Vector2D[2]
+        {
+            new Vector2D((3.0 / 182.0), 0.0),
+            new Vector2D((19.0 / 182.0), 3.0 / 22.0)
+        };
+
+        public static Vector2D[] ItemSlotBase => new Vector2D[2]
+        {
+            new Vector2D(0, 0.0),
+            new Vector2D((19.0 / 182.0) - (3.0 / 182.0), 3.0 / 22.0)
+        };
+        
+
+
+        //private static Material MenuBackgroundMaterial = new Material(Shader.Find("Unlit")) { RenderOrder = 10 };
+        //private static Material MenuInventoryMaterial = new Material(Shader.Find("Unlit")) { RenderOrder = 100 };
+        
         static GameUI()
+        {
+            CreateHotbarAnchors();
+            CreateInventoryAnchors();
+        }
+
+        private static void CreateHotbarAnchors()
         {
             const double baseMinX = 3.0D;
             const double minY = 19 / 22.0D;
@@ -54,6 +106,97 @@ namespace Winecrash.Client
             }
         }
 
+        private static void CreateInventoryAnchors()
+        {
+            Vector2D shift;
+
+            // hotbar 
+            for (int i = 0; i < 9; i++)
+            {
+                const double baseMinX = 3.0D;
+                const double minY = 0.0D;
+            
+                const double baseMaxX = 19.0D;
+                const double maxY = 3 / 22.0D;
+            
+                const double divisor = 182.0D;
+                const double incrementX = 20.0D;
+                const double incrementY = 0.12325D;
+
+                shift = new Vector2D(0,-0.0025);
+                
+                WMath.FlatTo2D(i, 9, out int x, out int y);
+                _ItemInventoryAnchors[i] = new Vector2D[2]
+                {
+                    new Vector2D((baseMinX + incrementX*x) / divisor, minY + incrementY*y) + shift, // min
+                    new Vector2D((baseMaxX + incrementX*x) / divisor, maxY + incrementY*y) + shift // max
+                };
+            }
+            // bag
+            for (int i = 9; i < 36; i++)
+            {
+                const double baseMinX = 3.0D;
+                const double minY = 0.0D;
+            
+                const double baseMaxX = 19.0D;
+                const double maxY = 3 / 22.0D;
+            
+                const double divisor = 182.0D;
+                const double incrementX = 20.0D;
+                const double incrementY = 0.1205D;
+
+                shift = new Vector2D(0.0,0.0025);
+                
+                WMath.FlatTo2D(i, 9, out int x, out int y);
+                _ItemInventoryAnchors[i] = new Vector2D[2]
+                {
+                    new Vector2D((baseMinX + incrementX*x) / divisor, minY + incrementY*y) + shift, // min
+                    new Vector2D((baseMaxX + incrementX*x) / divisor, maxY + incrementY*y) + shift // max
+                };
+            }
+            // armor
+            for (int i = 36, y = 0; i < 40; i++, y++)
+            {
+                shift = new Vector2D(0, 0.865 - y*0.1205);
+                _ItemInventoryAnchors[i] = new Vector2D[2]
+                {
+                    new Vector2D((3.0 / 182.0), 0.0) + shift, // min
+                    new Vector2D((19.0 / 182.0), 3.0 / 22.0) + shift // max
+                };
+            }
+            // crafting
+            for (int i = 40; i < 44; i++)
+            {
+                int x = i == 41 || i == 43 ? 1 : 0;
+                int y = i == 42 || i == 43 ? 1 : 0;
+                
+                shift = new Vector2D(0.495 + (20.0*x/182.0), 0.8645 - 0.1255 - y*0.1205);
+                
+                _ItemInventoryAnchors[i] = new Vector2D[2]
+                {
+                    new Vector2D((3.0 / 182.0), 0.0) + shift, // min
+                    new Vector2D((19.0 / 182.0), 3.0 / 22.0) + shift // max
+                };
+            }
+            
+            // crafting result
+            shift = new Vector2D(0.825, 0.6725);
+            _ItemInventoryAnchors[44] = new Vector2D[2]
+            {
+                new Vector2D((3.0 / 182.0), 0.0) + shift, // min
+                new Vector2D((19.0 / 182.0), 3.0 / 22.0) + shift // max
+            };
+            
+            // grabbed
+            Vector2D[] @base = ItemSlotBase;
+            shift = new Vector2D(-0.0275, -0.0625);
+            _ItemInventoryAnchors[45] = new Vector2D[2]
+            {
+                new Vector2D(0.5) - @base[0] + shift,
+                new Vector2D(0.5) + @base[1] + shift
+            };
+        }
+        
         protected override void Creation()
         {
             if (Instance)
@@ -63,8 +206,6 @@ namespace Winecrash.Client
             }
 
             Instance = this;
-
-            
             
             Crosshair = new WObject("Crosshair")
             {
@@ -87,6 +228,7 @@ namespace Winecrash.Client
             HotbarImage = img = Hotbar.AddModule<Image>();
             img.Picture = new Texture("assets/textures/gui/hotbar.png");
             img.KeepRatio = true;
+            img.Depth = 2000;
             img.Renderer.Material.RenderOrder = -10;
             
             HotbarSelector = new WObject("Hotbar Selector")
@@ -99,6 +241,7 @@ namespace Winecrash.Client
             img.KeepRatio = true;
             img.MinAnchor = new Vector2D(-0.0055D, 0.01D);
             img.MaxAnchor = new Vector2D(0.1265, 1.0725D);
+            img.Depth = 1999;
 
             DebugPanel = new WObject("Debug Panel")
             {
@@ -120,6 +263,7 @@ namespace Winecrash.Client
             ItemNameLabel.MaxAnchor = new Vector2D(0.66, 0.20);
             ItemNameLabel.Aligns = TextAligns.Middle;
             ItemNameLabel.Enabled = false;
+            ItemNameLabel.Depth = 1000;
             
             WObject positionTextObj = new WObject("Global Position")
             {
@@ -141,8 +285,23 @@ namespace Winecrash.Client
             Player.LocalPlayer.OnContainerToggle += TogglePlayerInventory;
             Player.LocalPlayer.OnContainerClose += PlayerCloseInventory;
             Player.LocalPlayer.OnContainerOpen += PlayerOpenInventory;
-        }
+            Player.LocalPlayer.OnItemUpdate += UpdateItem;
 
+            Player.LocalPlayer.OnCraftUpdate += UpdateCraft;
+
+
+            HoveredTooltipWObject = new WObject("Item Tooltip")
+            {
+                Parent = Canvas.Main.WObject,
+                Layer = (ulong)Layers.UI,
+                Enabled = false
+            };
+            HoveredTooltip = HoveredTooltipWObject.AddModule<ToolTip>();
+            HoveredTooltip.MinAnchor = new Vector2D(0);
+            HoveredTooltip.MaxAnchor = new Vector2D(0.2, 0.05);
+
+            CreateInventoryRenders();
+        }
         private void CreateInventoryFocus()
         {
             GlobalInventoryBackground = new WObject("Inventory Background")
@@ -152,9 +311,12 @@ namespace Winecrash.Client
             };
 
             Image img = GlobalInventoryBackground.AddModule<Image>();
+            //img.Material = MenuBackgroundMaterial;
+            //img.SetupMaterial();
             img.Picture = Texture.Blank;
             img.Color = new Color256(0.2,0.2,0.2,0.75);
-            GlobalInventoryBackground.GetModule<ImageRenderer>().DrawOrder = 1000;
+            //GlobalInventoryBackground.GetModule<ImageRenderer>().DrawOrder = 1;
+            img.Depth = 0;
             GlobalInventoryBackground.Enabled = false;
         }
         private void CreatePlayerInventory()
@@ -170,7 +332,7 @@ namespace Winecrash.Client
             img.Picture = new Texture("assets/textures/gui/inventory.png", "Player Inventory", true);
             img.MinAnchor = new Vector2D(0.33, 0.0);
             img.MaxAnchor = new Vector2D(0.66, 1.0);
-            Inventory.GetModule<ImageRenderer>().DrawOrder = 1000;
+            img.Depth = -1;
 
             WObject wobj = new WObject("Crafting Label")
             {
@@ -186,11 +348,9 @@ namespace Winecrash.Client
             lb.MaxAnchor = new Vector2D(0.95, 0.965);
             lb.Color = new Color256(0.35,0.35,0.35,1.0);
             lb.Shadows = false;
-            lb.Renderer.DrawOrder = 1000;
-            
+
             Inventory.Enabled = false;
         }
-
         private void PlayerOpenInventory(IContainer container)
         {
             Input.LockMode = CursorLockModes.Free;
@@ -208,10 +368,11 @@ namespace Winecrash.Client
             Input.CursorVisible = false;
             Inventory.Enabled = false;
         }
-
         private void TogglePlayerInventory(IContainer container)
         {
             GlobalInventoryBackground.Enabled = !GlobalInventoryBackground.Enabled;
+
+            //Player.LocalPlayer.SetContainerItem(new ContainerItem("winecrash:diamond_pickaxe"), 36);
         }
         
         private WObject itemPreview;
@@ -219,7 +380,24 @@ namespace Winecrash.Client
         private static double ItemNameCooldown = 0.0D;
         public static double ItemNameTime = 2.0D;
         public static double ItemNameDisappearTime = 1.0D;
-        
+
+        public static int HoveringIndex()
+        {
+            Vector2I rawMP = Input.MousePosition;
+            Vector3D mp = new Vector3D(rawMP.X, rawMP.Y, 0);
+            
+            for (int i = 0; i < 45; i++)
+            {
+                UIBoxCollider collider = _colliders[i];
+                if(!collider) continue;
+                
+                Hit hit = _collisionProvider.Collide(mp, collider);
+
+                if (hit.HasHit) return i;
+            }
+
+            return -1;
+        }
 
         private void ItemDisplayName(Item item)
         {
@@ -230,7 +408,6 @@ namespace Winecrash.Client
             ItemNameLabel.Color = item.DisplayColor;
             ItemNameCooldown = ItemNameDisappearTime + ItemNameTime;
         }
-
         private void AnimateDisplayName()
         {
             ItemNameCooldown -= Time.Delta;
@@ -244,10 +421,68 @@ namespace Winecrash.Client
                 ItemNameLabel.Color = col;
             }
         }
-        
-        //private void UpdateInventoryItems(ContainerItem)
 
-        private void UpdateHotbarItem(ContainerItem item, int index)
+        private void CreateInventoryRenders()
+        {
+            for (int i = 0; i < InventoryItemsRenders.Length; i++)
+            {
+                WObject itemRenderer = InventoryItemsRenders[i] = CreateItemRenderer(Inventory, out Model mod, out Label amount);
+                itemRenderer.Name += " (Inventory)";
+                UIBoxCollider collider = _colliders[i] = itemRenderer.AddModule<UIBoxCollider>();
+                collider.GUIModule = mod;
+                Vector2D scales = ItemSlotScale;
+                collider.Extents = new Vector3D(scales, 10000);
+                mod.Depth = -1000;
+                amount.Depth = -1000;
+                InventoryItemsAmount[i] = amount;
+                
+                mod.MinAnchor = _ItemInventoryAnchors[i][0];
+                mod.MaxAnchor = _ItemInventoryAnchors[i][1];
+            }
+        }
+
+        private void UpdateCraft(ContainerItem item, int index)
+        {
+            
+        }
+        
+        private void UpdateItem(ContainerItem item, int index)
+        {
+            Item aitem = item.Item;
+
+            WObject itemRenderer = InventoryItemsRenders[index];
+            Model mod = null;
+            Label amount = null;
+            if (itemRenderer == null)
+            {
+                
+            }
+            else
+            {
+                mod = itemRenderer.GetModule<Model>();
+                amount = InventoryItemsAmount[index];
+            }
+            
+            itemRenderer.LocalRotation = aitem.InventoryRotation;
+            itemRenderer.LocalScale = aitem.InventoryScale;
+
+            if (aitem.Identifier == "winecrash:air")
+            {
+                mod.Renderer.Mesh = null;
+                amount.Text = "";
+            }
+            else
+            {
+                mod.Renderer.Mesh = aitem.Model;
+                amount.Text = item.Amount > 1 ? item.Amount.ToString() : "";
+            }
+
+            
+            
+            
+            amount.WObject.Rotation = Quaternion.Identity;
+        }
+        private void UpdateHotbarItem (ContainerItem item, int index)
         { 
             Item aitem = item.Item;
 
@@ -256,27 +491,11 @@ namespace Winecrash.Client
             Label amount = null;
             if (itemRenderer == null)
             {
-                itemRenderer = HotbarItemsRenders[index] = new WObject("Item")
-                {
-                    Parent = Hotbar,
-                    Layer = (ulong) Layers.UI,
-                };
-                
-                mod = itemRenderer.AddModule<Model>();
-                mod.Renderer.Material = ItemCache.AtlasMaterial;
-                mod.KeepRatio = true;
-
-                WObject labelRender = new WObject("Amount")
-                {
-                    Parent = itemRenderer,
-                    Layer = (ulong)Layers.UI
-                };
-                amount = HotbarItemsAmount[index] = labelRender.AddModule<Label>();
-                amount.Text = "";
-                amount.AutoSize = true;
-                amount.Aligns = TextAligns.Down | TextAligns.Right;
-                amount.MinAnchor = new Vector2D(0.05,-0.3);
-                amount.MaxAnchor = new Vector2D(1.0,0.3);
+                itemRenderer = HotbarItemsRenders[index] = CreateItemRenderer(Hotbar, out mod, out amount);
+                itemRenderer.Name += " (Hotbar)";
+                mod.Depth = 1000;
+                amount.Depth = 1000;
+                HotbarItemsAmount[index] = amount;
             }
             else
             {
@@ -308,7 +527,33 @@ namespace Winecrash.Client
             if(index == Player.LocalPlayer.HotbarSelectedIndex)
                 UpdateHotbarSelected(item, index);
         }
+        private static WObject CreateItemRenderer(WObject parent, out Model model, out Label amount)
+        {
+            WObject itemRenderer = new WObject("Item")
+            {
+                Parent = parent,
+                Layer = (ulong) Layers.UI,
+            };
+            
+            
+            model = itemRenderer.AddModule<Model>();
+            model.Renderer.Material = ItemCache.AtlasMaterial;
+            model.KeepRatio = true;
 
+            WObject labelRender = new WObject("Amount")
+            {
+                Parent = itemRenderer,
+                Layer = (ulong)Layers.UI
+            };
+            amount = labelRender.AddModule<Label>();
+            amount.Text = "";
+            amount.AutoSize = true;
+            amount.Aligns = TextAligns.Down | TextAligns.Right;
+            amount.MinAnchor = new Vector2D(0.05,-0.3);
+            amount.MaxAnchor = new Vector2D(1.0,0.3);
+
+            return itemRenderer;
+        }
         private void UpdateHotbarSelected(ContainerItem item, int index)
         {
             WObject wobj = PlayerEntity.PlayerHandWobject;
@@ -359,6 +604,18 @@ namespace Winecrash.Client
         }
 
         private Random r = new Random();
+        protected override void EarlyUpdate()
+        {
+            if (Player.LocalPlayer.ContainerOpened)
+            {
+                Vector2D scales = ItemSlotScale;
+                Parallel.For(0, _colliders.Length, i =>
+                {
+                    if (_colliders[i]) _colliders[i].Extents = new Vector3D(scales, 10000);
+                });
+            }
+        }
+
         protected override void Update()
         {
             if (Input.IsPressing(Keys.E))
@@ -377,17 +634,42 @@ namespace Winecrash.Client
             {
                 Player.LocalPlayer.CloseContainer();
             }
-            if(Input.IsPressing(Keys.R))
+
+            if (Input.IsPressed(Keys.R))
                 Player.LocalPlayer.AddItemFast(new ContainerItem(ItemCache.GetIdentifier((ushort)r.Next((int)ItemCache.TotalItems))));
 
             AnimateDisplayName();
 
             Player.LocalPlayer.HotbarSelectedIndex -= Input.MouseScrollDeltaStep;
+            
+            int index = HoveringIndex();
+
+            if(Player.LocalPlayer.ContainerOpened)
+                if (index != -1 && Input.IsPressing(Keys.MouseLeftButton)) Player.LocalPlayer.MainGrab(index);
+                else if (index != -1 && Input.IsPressing(Keys.MouseRightButton)) Player.LocalPlayer.AltGrab(index);
         }
 
         protected override void LateUpdate()
         {
-            
+            if (HoveredTooltipWObject.Enabled = Player.LocalPlayer.ContainerOpened)
+            {
+                int index = HoveringIndex();
+                if (HoveredTooltipWObject.Enabled = index != -1)
+                {
+                    if (Player.LocalPlayer.Items[index] && 
+                        Player.LocalPlayer.Items[index].Item != null && 
+                        Player.LocalPlayer.Items[index].Item.Identifier != "winecrash:air")
+                        HoveredTooltip.Label.Text = Game.Language.GetText(
+                            Player.LocalPlayer.Items[index].Item.DisplayName);
+                    else HoveredTooltipWObject.Enabled = false;
+                }
+                
+                Vector2D rawmp = Input.MousePosition;
+                Vector2D ss = Graphics.Window.SurfaceResolution;
+                
+                if(InventoryItemsRenders[45])
+                    InventoryItemsRenders[45].GetModule<Model>().Shift = new Vector3D(rawmp, -1000);
+            }
         }
 
         protected override void OnRender()
@@ -442,12 +724,17 @@ namespace Winecrash.Client
             
             HotbarItemsAmount = null;
             HotbarItemsRenders = null;
+            
+            HoveredTooltipWObject.Delete();
+            HoveredTooltipWObject = null;
+            HoveredTooltip = null;
 
             Player.LocalPlayer.OnHotbarUpdate -= UpdateHotbarItem;
             Player.LocalPlayer.OnHotbarSelectedChange -= UpdateHotbarSelected;
             Player.LocalPlayer.OnContainerToggle -= TogglePlayerInventory;
             Player.LocalPlayer.OnContainerClose -= PlayerCloseInventory;
             Player.LocalPlayer.OnContainerOpen -= PlayerOpenInventory;
+            Player.LocalPlayer.OnItemUpdate -= UpdateItem;
         }
     }
 }

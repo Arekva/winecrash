@@ -106,7 +106,7 @@ namespace Winecrash
             }
         }
 
-        public static RaycastChunkHit CollideWorld(BoxCollider b)
+        public static RaycastChunkHit CollideWorld(BoxCollider b, Axis priorise = Axis.X)
         {
             // ok donc ça fais 3 jours non stop que j'essai de bosser sur les collisions et ça me fait vraiment chier.
             // du coup je vais reprendre celles que j'avais fait à la zbeul pour la Predev, c'est crade mais au
@@ -404,12 +404,36 @@ namespace Winecrash
                 return hit;
             }
 
-            CheckRight();
-            CheckLeft();
-            CheckForward();
-            CheckBackward();
-            CheckCeiling();
-            CheckGrounded();
+            if (priorise == Axis.X)
+            {
+                CheckRight();
+                CheckLeft();
+                CheckForward();
+                CheckBackward();
+                CheckGrounded();
+                CheckCeiling();
+            }
+            else if (priorise == Axis.Y)
+            {
+                CheckGrounded();
+                CheckCeiling();
+                CheckRight();
+                CheckLeft();
+                CheckForward();
+                CheckBackward();
+            }
+            else if (priorise == Axis.Z)
+            {
+                CheckForward();
+                CheckBackward();
+                CheckRight();
+                CheckLeft();
+                CheckGrounded();
+                CheckCeiling();
+            }
+            
+            
+            
             
             b.Center = c;
             //Vector3D finalVelocity = Vector3D.Zero;

@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
 using JCS;
 
 namespace WEngine
@@ -59,6 +60,8 @@ namespace WEngine
         /// </summary>
         private static WObject EngineObject { get; set; } = null;
 
+        public static bool Running { get; private set; } = false;
+        
         public static bool DoGUI { get; private set; }
 
         public static void TraceLayers()
@@ -68,6 +71,7 @@ namespace WEngine
 
         public async static Task Run(bool gui, string[] args)
         {
+            Running = true;
             DoGUI = gui;
 
             Arguments = args;
@@ -129,6 +133,9 @@ namespace WEngine
         }
         internal static void Stop(object sender)
         {
+            Engine.Running = false;
+            //Layer.UpdateRenderEvent.Set();
+            Layer.PhysicsEvent.Set();
             OnStop?.Invoke();
 
             if (!(sender is IWindow window))
@@ -136,7 +143,7 @@ namespace WEngine
                 Graphics.Window.Thread?.Abort();
             }
 
-            Layer.FixedThread?.Abort();
+            //Layer.FixedThread?.Abort();
 
             foreach (Layer layer in Layer._Layers)
             {
@@ -147,6 +154,18 @@ namespace WEngine
                         try
                         {
                             group.Thread.Abort();
+                            
+                        }
+                        catch (Exception e)
+                        {
+/*#IF DEBUG
+                        Debug.LogException(e);
+#ENDIF*/
+                        }
+                        try
+                        {
+                            group.PhysicsThread.Abort();
+                            
                         }
                         catch (Exception e)
                         {

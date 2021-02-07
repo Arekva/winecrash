@@ -55,11 +55,7 @@ namespace WEngine
         public object ParentLocker = new object();
         public WObject Parent
         {
-            get
-            {
-                //lock(ParentLocker)
-                    return this._Parent;
-            }
+            get => this._Parent;
 
             set
             {
@@ -107,13 +103,7 @@ namespace WEngine
 
         private List<WObject> _Children { get; set; } = new List<WObject>();
         private object _ChildrenLocker { get; set; } = new object();
-        public WObject[] Children
-        {
-            get
-            {
-                return _Children.ToArray();
-            }
-        }
+        public WObject[] Children => _Children.ToArray();
 
         private object _PositionLocker = new object();
         private Vector3D _Position;
@@ -515,14 +505,8 @@ namespace WEngine
 
             mod.Creation();
 
-            if (this.Enabled)
-            {
-                mod.OnEnable();
-            }
-            else
-            {
-                mod.OnDisable();
-            }
+            if (Enabled) mod.OnEnable();
+            else mod.OnDisable();
 
             return mod;
         }
@@ -545,23 +529,13 @@ namespace WEngine
             
             mod.Creation();
             
-            if (this.Enabled)
-            {
-                mod.OnEnable();
-            }
-            else
-            {
-                mod.OnDisable();
-            }
-            
+            if (this.Enabled) mod.OnEnable();
+            else mod.OnDisable();
+
             return mod;
         }
 
-        public T GetModule<T>() where T : Module
-        {
-            foreach (Module mod in this._Modules) if (mod is T module) return module;
-            return null;
-        }
+        public T GetModule<T>() where T : Module => _Modules.FirstOrDefault(m => m is T) as T;
 
         public List<T> GetModules<T>() where T : Module
         {
@@ -573,40 +547,50 @@ namespace WEngine
             else return modules;
         }
 
-        public T AddOrGetModule<T>() where T : Module
-        {
-            return this.GetModule<T>() ?? this.AddModule<T>();
-        }
-
+        public T AddOrGetModule<T>() where T : Module => this.GetModule<T>() ?? this.AddModule<T>();
 
         public override bool Enabled 
         { 
-            get
-            {
-                return ThisAndParentEnabled();
-            }
+            get => ThisAndParentEnabled();
+
             set
             {
-                this._Enabled = value;
+                RecordModulesStatesRecursive();
+                _Enabled = value;
+                TriggerModulesRecursive();
+
+                // also trigger all modules events
+                //TriggerModulesRecursive(value);
             }
         }
 
-        private bool ThisAndParentEnabled()
+        private void RecordModulesStatesRecursive()
         {
-            return this._Enabled && (!this.Parent || this.Parent.Enabled);
+            for (int i = 0; i < Children.Length; i++)
+                foreach(Module module in Children[i]._Modules)
+                    module.RecordEnabled();
         }
+
+        private void TriggerModulesRecursive()
+        {
+            WObject[] children = Children;
+
+            for (int i = 0; i < children.Length; i++)
+            {
+                WObject child = children[i];
+                foreach(Module module in child._Modules)
+                    module.TriggerEnabledEvents();
+                child.TriggerModulesRecursive();
+            }
+        }
+
+        private bool ThisAndParentEnabled() => this._Enabled && (!this.Parent || this.Parent.Enabled);
 
         internal sealed override void ForcedDelete()
         {
-            for (int i = 0; i < _Modules.Count; i++)
-            {
-                _Modules[i].ForcedDelete();
-            }
+            for (int i = 0; i < _Modules.Count; i++) _Modules[i].ForcedDelete();
 
-            for (int i = 0; i < _Children.Count; i++)
-            {
-                _Children[i].ForcedDelete();
-            }
+            for (int i = 0; i < _Children.Count; i++) _Children[i].ForcedDelete();
 
             lock(ParentLocker)
                 this.Parent = null;

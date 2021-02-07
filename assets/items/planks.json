@@ -1,0 +1,16 @@
+{
+    "DisplayName": "#winecrash:block.planks",
+
+    "Transparent": false,
+
+    "Collides": true,
+    
+    "Textures": {
+      "Up": "assets/textures/blocks/planks.png",
+      "Down": "assets/textures/blocks/planks.png",
+      "West": "assets/textures/blocks/planks.png",
+      "East": "assets/textures/blocks/planks.png",
+      "North": "assets/textures/blocks/planks.png",
+      "South": "assets/textures/blocks/planks.png"
+    }
+}

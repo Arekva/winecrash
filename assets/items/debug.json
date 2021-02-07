@@ -1,0 +1,15 @@
+{
+	"DisplayName": "#winecrash:item.debug",
+	"DisplayColor": {
+		"R": 1.0, 
+		"G": 0.5, 
+		"B": 0.0, 
+		"A": 1.0
+	},
+
+	"Transparent": true,
+
+	"TexturePath": "assets/textures/items/debug.png",
+
+	"Stack": 1
+}

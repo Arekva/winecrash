@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,15 +13,11 @@ namespace WEngine
         private int _Order;
         public int Order
         {
-            get
-            {
-                return this._Order;
-            }
+            get => this._Order;
+            
 
-            set
-            {
-                SetOrder(value);
-            }
+            set => SetOrder(value);
+            
         }
 
         public string Name { get; set; } = "Layer";
@@ -73,7 +70,7 @@ namespace WEngine
 
         internal bool Deleted { get; set; } = false;
 
-        public static Thread FixedThread;
+        public static Thread PhysicsThread;
 
         //[Initializer]
         internal static void Initialize()
@@ -86,12 +83,7 @@ namespace WEngine
                 Graphics.Window.OnUpdate += new UpdateEventHandler(Update);
                 Graphics.Window.OnRender += new UpdateEventHandler(Render);
             }
-            
-            FixedThread = new Thread(() =>
-            {
-                
-            });
-
+          
             /*FixedThread = new Thread(() =>
             {
                 Stopwatch sw = new Stopwatch();
@@ -192,6 +184,9 @@ namespace WEngine
                 Graphics.Window.OnLoaded += FixedThread.Start;
             else 
                 FixedThread.Start();*/
+
+            if (Engine.DoGUI) Graphics.Window.OnLoaded += () => StartPhysicsThread();
+            else StartPhysicsThread();
         }
 
         private Layer(string name, int order, IEnumerable<Group> groups)
@@ -286,19 +281,15 @@ namespace WEngine
         /// </summary>
         /// <param name="order">The order of the layer</param>
         /// <returns></returns>
-        public static Layer GetLayer(int order)
-        {
-            return _Layers.FindLast(l => l.Order == order);
-        }
+        public static Layer GetLayer(int order) => _Layers.FindLast(l => l.Order == order);
+        
         /// <summary>
         /// Gets a layer by its name. Null if none.
         /// </summary>
         /// <param name="name">The name of the layer</param>
         /// <returns></returns>
-        public static Layer GetLayer(string name)
-        {
-            return _Layers.FindLast(l => l.Name == name);
-        }
+        public static Layer GetLayer(string name) => _Layers.FindLast(l => l.Name == name);
+        
 
         /// <summary>
         /// Sorts layers by the orders.
@@ -377,8 +368,51 @@ namespace WEngine
                 UpdateGroups(layers[i], UpdateTypes.LateUpdate);
             }
         }
+
+        public static Thread StartPhysicsThread()
+        {
+            Thread physicsThread = PhysicsThread = new Thread(PhysicsLoop)
+            {
+                Name = "Physics",
+                IsBackground = false,
+                Priority = ThreadPriority.Highest
+            };
+            physicsThread.Start();
+            return physicsThread;
+        }
+
+        public static ManualResetEvent UpdateRenderEvent = new ManualResetEvent(false);
+
+        public static ManualResetEvent PhysicsEvent = new ManualResetEvent(true);
+        //public static ManualResetEvent PhysicsThreadResetEvent = new ManualResetEvent(true);
+        private static void PhysicsLoop()
+        {
+            Stopwatch frameLengthWatch = new Stopwatch();
+            Stopwatch frameBetweenWatch = new Stopwatch();
+            
+            double waitTime = 0.0;
+            while (Engine.Running)
+            {
+                
+                UpdateRenderEvent.WaitOne(); // wait for update/render to be free
+                PhysicsEvent.Reset(); // set physics thread as busy
+                if(!Engine.Running) break;
+
+                frameBetweenWatch.Stop();
+                frameLengthWatch.Restart();
+                PhysicsUpdate();
+                frameLengthWatch.Stop();
+                PhysicsEvent.Set();  // set physics thread as free
+
+                double timeLoss = 0.0D;//frameBetweenWatch.Elapsed.TotalSeconds - waitTime;
+                //Debug.Log("physics loss: " + timeLoss);
+                waitTime = Math.Max(0.0D, Time.PhysicsRateInverted - frameLengthWatch.Elapsed.TotalSeconds - timeLoss);
+                frameBetweenWatch.Restart();
+                Thread.Sleep((int)(waitTime * 1000.0D));
+            }
+        }
         
-        public static void PhysicsUpdate(UpdateEventArgs args)
+        public static void PhysicsUpdate()
         {
             Layer[] layers = null;
             lock(LayerLocker)
@@ -416,7 +450,6 @@ namespace WEngine
                 doneEvents.Add(group.DoneEventPhysics);
                 group.ResetEventPhysics.Set(); //unlock thread
             }
-
             //wait for all the threads of the group
             WaitHandle.WaitAll(doneEvents.ToArray());
         }

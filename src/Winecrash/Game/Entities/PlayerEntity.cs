@@ -207,12 +207,17 @@ namespace Winecrash.Entities
 
         private void PickItems()
         {
+            if (!this.Chunk) this.Chunk = World.GetChunk(this.ChunkCoordinates, this.Dimension);
+            if (!this.Chunk) return;
+            
             Player player = null;
             lock (Player.PlayersLocker)
                 player = Player.Players.FirstOrDefault(p => p.Entity == this);
             
             double pickRangeSqr = Player.PickRange * Player.PickRange;
             Vector3D pos = this.WObject.Position + Player.PickLocalPoint;
+
+
             
             List<Chunk> searchChunks = this.Chunk.GetNeighbors();
             searchChunks.Add(this.Chunk);
@@ -333,10 +338,9 @@ namespace Winecrash.Entities
             PickItems();
         }
         
-        protected override void LateUpdate()
+        protected override void LatePhysicsUpdate()
         {
-            base.LateUpdate();
-
+            //Debug.Log(Time.PhysicsDelta);
             if (this.RigidBody == null || this.Collider == null) return;
 
             double xzVel = this.RigidBody.Velocity.XZ.Length;
@@ -380,28 +384,8 @@ namespace Winecrash.Entities
                 }
             }
 
-            if (!Player.NoClipping/* && Chunk != null*/)
+            if (!Player.NoClipping)
             {
-                /*Sweep sw = new ChunkBoxCollisionProvider().SweepCollide(Chunk, Collider);
-
-                
-                if (sw.Hit.HasHit)
-                {
-                    if ((int)sw.Hit.Normal.Y == 1)
-                    {
-                        
-                        Vector3D newP = sw.Hit.Position;
-                        newP.Y += this.Collider.Extents.Y - this.RigidBody.Velocity.Y * Time.PhysicsDeltaTime;
-                        this.Collider.Center = newP;
-                        
-                        this.RigidBody.Velocity *= new Vector3D(1,0,1);
-                    }
-                    else
-                    {
-                        
-                    }
-                }*/
-                //this.Collider.Center = sw.Position;
                 RaycastChunkHit h = ChunkBoxCollisionProvider.CollideWorld(Collider);
             }
         }

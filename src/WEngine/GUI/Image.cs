@@ -106,13 +106,6 @@ namespace WEngine.GUI
                     Vector2F canPct = scale / canSca;
                     scale *= AutoTileScale;
 
-
-                    //scale *= canPct;
-
-
-                    //scale.X *= canRatioX;
-                    //scale.Y *= 1/ canPct;
-
                     scale.X *= (canSca.X / canSca.Y);
 
                     this.Renderer.Material.SetData("tiling", (OpenTK.Vector2)scale);
@@ -124,8 +117,6 @@ namespace WEngine.GUI
                 }
             }
         }
-
-
 
         public bool AutoTile { get; set; } = false;
         public float AutoTileScale { get; set; } = 1.0F;
@@ -139,10 +130,8 @@ namespace WEngine.GUI
             Renderer.Material = new Material(Shader.Find("Unlit"));
             Renderer.Image = this;
 
-            this.Renderer.Material.SetData<OpenTK.Vector4>("color", _Color);
-            this.Renderer.Material.SetData<Texture>("albedo", _Picture);
-
-            Tiling = _Tiling;
+            SetupMaterial();
+            
             Graphics.Window.OnResizing += Instance_Resize;
             //Viewport.Instance.WindowStateChanged += Instance_Resize;
             //Viewport.Instance.WindowBorderChanged += Instance_Resize;
@@ -152,6 +141,14 @@ namespace WEngine.GUI
             {
                 this.ParentGUI = guimod;
             }
+        }
+        
+        public void SetupMaterial()
+        {
+            this.Renderer.Material.SetData<OpenTK.Vector4>("color", _Color);
+            this.Renderer.Material.SetData<Texture>("albedo", _Picture);
+
+            Tiling = _Tiling;
         }
 
         private void Instance_Resize(object sender, EventArgs e)

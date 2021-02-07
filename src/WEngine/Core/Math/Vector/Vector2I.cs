@@ -12,37 +12,34 @@ namespace WEngine
     /// A 2D <see cref="int"/> Vector
     /// </summary>
     [Serializable]
-    public struct Vector2I : IVectorable, IComparable, IComparable<Vector2I>, IEquatable<Vector2I>, IFormattable
+    public struct Vector2I : IComparable, IComparable<Vector2I>, IEquatable<Vector2I>, IFormattable
     {
-        [JsonIgnore]
-        public int Dimensions { get; }
-
         #region Properties
         /// <summary>
         /// Serialized X component of the vector.
         /// </summary>
         [JsonIgnore]
-        private int _X;
+        private int _x;
         /// <summary>
         /// X component of the vector.
         /// </summary>
         public int X
         {
-            get => _X;
-            set => _X = value;
+            get => _x;
+            set => _x = value;
         }
         /// <summary>
         /// Serialized Y component of the vector.
         /// </summary>
         [JsonIgnore]
-        public int _Y;
+        private int _y;
         /// <summary>
         /// Y component of the vector.
         /// </summary>
         public int Y
         {
-            get => _Y;
-            set => _Y = value;
+            get => _y;
+            set => _y = value;
         }
 
         [JsonIgnore]
@@ -181,10 +178,8 @@ namespace WEngine
         /// <param name="values">The components values.</param>
         public Vector2I(int values)
         {
-            this._X = values;
-            this._Y = values;
-
-            this.Dimensions = 2;
+            _x = values;
+            _y = values;
         }
         /// <summary>
         /// Create an <see cref="int"/> 2D vector.
@@ -194,10 +189,8 @@ namespace WEngine
         [JsonConstructor]
         public Vector2I(int x, int y)
         {
-            this._X = x;
-            this._Y = y;
-
-            this.Dimensions = 2;
+            _x = x;
+            _y = y;
         }
         #endregion
 

@@ -40,10 +40,11 @@ namespace Winecrash
         
         //-- set in item config --//
         public virtual Quaternion InventoryRotation { get; set; } = Quaternion.Identity;
-        
 
         [JsonIgnore] public Mesh Model { get; set; } = null;
         [JsonIgnore] public Texture Texture { get; set; } = null;
+        
+        public static double ItemDigSpawnForce { get; set; } = 0.5D;
 
 
         public virtual void OnDeserialize()

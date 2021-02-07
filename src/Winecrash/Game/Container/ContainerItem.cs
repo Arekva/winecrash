@@ -18,6 +18,8 @@ namespace Winecrash
         /// </summary>
         public byte Amount { get; set; } = 1;
 
+        public bool Valid => Item != null && Item.Identifier != "winecrash:air" && Amount > 0;
+
         public ContainerItem() : this("winecrash:air", 0) { }
         public ContainerItem(string identifier)
         {
@@ -41,7 +43,9 @@ namespace Winecrash
         public override bool Equals(object obj) => obj != null && obj is Container c && Equals(c);
         public bool Equals(ContainerItem other) => other != null && this.Item.Equals(other.Item) && Amount == other.Amount;
 
-        public override string ToString() => (Item == null ? "Invalid" : this.Item.Identifier) + $"x{this.Amount}";
+        public override string ToString() => (Item == null ? "Invalid" : this.Item.Identifier) + $" x{this.Amount}";
+
+        public ContainerItem Duplicate() => new ContainerItem(Item, Amount);
 
         public override void Delete()
         {
@@ -50,6 +54,8 @@ namespace Winecrash
             
             base.Delete();
         }
+        
+        
 
         
     }

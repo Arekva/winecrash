@@ -4,10 +4,11 @@ namespace WEngine
 {
     public class WRandom : Random
     {
-        private static int _Count = 0;
-        private static double _CountDouble = 0.0D;
+        private int _Count = 0;
+        private double _CountDouble = 0.0D;
 
         public WRandom() { }
+        
         public WRandom(int seed)
         {
             _Count = seed;
@@ -20,22 +21,16 @@ namespace WEngine
 
             if (v < 0) return -v;
             else return v;
-            //return Math.Abs(((timeStartMult * _Count++ * 1024) % int.MaxValue) % maxValue);
         }
 
-        public override int Next()
-        {
-            return (int)((Time.TimeSinceStart * 2E+10 * (_Count++ * 2E+10)) % 2147483647D);
-        }
+        public override int Next() => (int)((Time.TimeSinceStart * 2E+10 * (_Count++ * 2E+10)) % 2147483647D);
+        public override int Next(int minValue, int maxValue) => minValue + (int)((Time.TimeSinceStart * 2E+10 * (_Count++ * 2E+10)) % 2147483647D) % maxValue - minValue;
+        public override double NextDouble() => ((Time.TimeSinceStart * 2E+10 * (_Count++ * 2E+10)) % 2147483647D) / 2147483647D;
 
-        public override int Next(int minValue, int maxValue)
+        public Vector2D NextDirection2D()
         {
-            return minValue + (int)((Time.TimeSinceStart * 2E+10 * (_Count++ * 2E+10)) % 2147483647D) % maxValue - minValue;
-        }
-
-        public override double NextDouble()
-        {
-            return ((Time.TimeSinceStart * 2E+10 * (_Count++ * 2E+10)) % 2147483647D) / 2147483647D;
+            double rad = WMath.Remap(NextDouble(), 0,1,-Math.PI,Math.PI);
+            return new Vector2D(Math.Cos(rad), Math.Sin(rad)).Normalized;
         }
     }
 }

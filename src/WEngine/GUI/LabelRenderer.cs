@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
@@ -50,7 +51,7 @@ namespace WEngine.GUI
             double dst = Label.ShadowDistance;
             dst *= fontSize;
 
-            Vector3D globalShift = new Vector3D(-dst, -dst, 0.0F);
+            Vector3D globalShift = new Vector3D(-dst, -dst, Label.Depth);
             Color256 shadColr = Label.Color * 0.33D;
             Color256 col = new Color256(shadColr.R, shadColr.G, shadColr.B, 0.75D);
 
@@ -165,7 +166,6 @@ namespace WEngine.GUI
 
                         Render(j);
                     }
-
                 }
 
                 //GL.MultiDrawElementsIndirect((Wireframe | Global_Wireframe) ? PrimitiveType.LineLoop : PrimitiveType.Triangles, DrawElementsType.UnsignedInt, , , Shader.Size);
@@ -178,7 +178,7 @@ namespace WEngine.GUI
                 RenderLabel();
             }
 
-            globalShift = new Vector3F(0.0F);
+            globalShift = new Vector3F(0.0F, 0.0F, (float)Label.Depth);
             col = Label.Color;
 
             this.Material.SetData<OpenTK.Vector4>("color", col);

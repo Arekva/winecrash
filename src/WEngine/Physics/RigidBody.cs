@@ -5,40 +5,18 @@ namespace WEngine
 {
     public sealed class RigidBody : Module
     {
-        //private object _VelocityLocker = new object();
         public Vector3D Velocity { get; set; } = Vector3D.Zero;
-
-        /*public Vector3D Velocity
-        {
-            get
-            {
-                lock (_VelocityLocker)
-                {
-                    return _Velocity;
-                }
-            }
-
-            set
-            {
-                lock (_VelocityLocker)
-                {
-                    _Velocity = value;
-                }
-            }
-        }*/
+        public double Drag { get; set; } = 0.00D;
+        
         public bool UseGravity { get; set; } = true;
         
-        protected internal override void EarlyUpdate()
+        protected internal override void EarlyPhysicsUpdate()
         {
-            if (UseGravity)
-                this.Velocity += Physics.Gravity * Time.PhysicsDelta;
-            
-            this.WObject.Position += Velocity * Time.PhysicsDelta;
-        }
+            if (UseGravity) Velocity += Physics.Gravity * Time.PhysicsDelta;
 
-        /*protected internal override void LateFixedUpdate()
-        {
+            Velocity -= Velocity * Drag * Time.PhysicsDelta;
             
-        }*/
+            WObject.Position += Velocity * Time.PhysicsDelta;
+        }
     }
 }

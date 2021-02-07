@@ -1,0 +1,28 @@
+{
+    "Results": [
+        {
+            "Identifier": "winecrash:planks",
+            "Amount": 4
+        }
+    ],
+
+    "Patterns": [
+        {
+            "Items": [
+                {
+                    "Identifier": "winecrash:log",
+                    "Amount": 1
+                }
+            ],
+            "Size": {
+                "X": 1,
+                "Y": 1
+            }
+
+        }
+    ],
+
+    "Manufactures" : [
+        "Winecrash.Player, WinecrashCore"
+    ]
+}

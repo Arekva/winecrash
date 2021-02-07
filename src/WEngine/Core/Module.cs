@@ -108,6 +108,15 @@ namespace WEngine
             base.SetEnable(status);
         }
 
+        internal bool wasEnabled = false;
+        internal void RecordEnabled() => wasEnabled = this.Enabled;
+
+        internal void TriggerEnabledEvents()
+        {
+            if(this.Enabled && !wasEnabled) this.OnEnable();
+            else if(!this.Enabled && wasEnabled) this.OnDisable();
+        }
+
         internal sealed override void ForcedDelete()
         {
             InternalDelete();

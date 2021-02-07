@@ -8,7 +8,7 @@ namespace Winecrash.Entities
         public ContainerItem Item { get; set; }
         public WObject RendererWObject { get; set; }
         public MeshRenderer Renderer { get; set; }
-        
+
         protected override void Creation()
         {
             base.Creation();
@@ -16,7 +16,7 @@ namespace Winecrash.Entities
             Vector3D scale = Vector3D.One * 0.25D;
             //WObject.LocalScale = scale; 
             Collider.Extents = scale / 2.0D;
-            Collider.CastExtents = 0.75D;
+            Collider.CastExtents = 0.85D;
             Collider.CastLength = 0.05D;
 
             RendererWObject = new WObject("Renderer")
@@ -32,12 +32,13 @@ namespace Winecrash.Entities
             Renderer.Material = mat;
 
             RigidBody.UseGravity = true;
+            RigidBody.Drag = 0.5D;
         }
 
         protected override void OnDelete()
         {
             base.OnDelete();
-            
+
             Item = null;
             Renderer?.Delete();
             Renderer = null;
@@ -45,18 +46,19 @@ namespace Winecrash.Entities
             //Item?.Delete();
         }
 
-        protected override void Update()
+        protected override void PhysicsUpdate()
         {
-            ChunkBoxCollisionProvider.CollideWorld(Collider);
+            ChunkBoxCollisionProvider.CollideWorld(Collider, Axis.Y);
 
             if (IsPicked)
             {
-                PickTimer -= Time.Delta;
+                PickTimer -= Time.PhysicsDelta;
                 PickMove();
             }
+        }
 
-            
-            
+        protected override void Update()
+        {  
             if(Engine.DoGUI) Animate();
 
             if (PickTimer <= 0.0D)
@@ -64,6 +66,8 @@ namespace Winecrash.Entities
                 FinishPicking();
             }
         }
+
+        
 
         public static double AnimationBaseHeight { get; set; } = 0.2D;
         public static double AnimationMaxHeight { get; set; } = 0.4D;

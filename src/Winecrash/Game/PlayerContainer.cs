@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Remoting.Messaging;
 using WEngine;
@@ -12,16 +14,14 @@ namespace Winecrash
         public event ItemChangeDelegate OnItemAdd;
         public event ItemChangeDelegate OnItemRemove;
         public event ItemChangeDelegate OnItemUpdate;
-        
         public event ItemChangeDelegate OnHotbarUpdate;
         public event ItemChangeDelegate OnStorageUpdate;
         public event ItemChangeDelegate OnBagUpdate;
         public event ItemChangeDelegate OnArmorUpdate;
         public event ItemChangeDelegate OnCraftUpdate;
         public event ItemChangeDelegate OnCraftOutputUpdate;
-
+        public event ItemChangeDelegate OnGrabUpdate;
         public event ItemChangeDelegate OnHotbarSelectedChange;
-
         public event ContainerDelegate OnContainerOpen;
         public event ContainerDelegate OnContainerClose;
         public event ContainerDelegate OnContainerToggle;
@@ -58,16 +58,10 @@ namespace Winecrash
 
             IContainer previousContainer = OpenedContainer;
             IContainer newContainer = OpenedContainer = container;
-            
-            if (previousContainer != null)
-            {
-                OnContainerClose?.Invoke(previousContainer);
-            }
-            else
-            {
-                OnContainerToggle?.Invoke(newContainer);
-            }
-            
+
+            if (previousContainer != null) OnContainerClose?.Invoke(previousContainer);
+            else OnContainerToggle?.Invoke(newContainer);
+
             OnContainerOpen?.Invoke(newContainer);
         }
 
@@ -92,6 +86,18 @@ namespace Winecrash
             }
         }
 
+        public ContainerItem[] Craft
+        {
+            get
+            {
+                ContainerItem[] items = new ContainerItem[4];
+                Array.Copy(Items, GetContainerIndex(PlayerContainerTypes.Craft), items, 0, 4);
+                return items;
+            }
+        }
+
+        public ContainerItem Grabbed => Items[GetContainerIndex(PlayerContainerTypes.Grab)];
+
         /// <summary>
         /// 0 - 8 => Hotbar
         /// <br>9 - 17 => First inv. line (bottom)</br>
@@ -101,7 +107,7 @@ namespace Winecrash
         /// <br>40 - 43 => Crafting inv. (numbers disposed in latin reading way)</br>
         /// <br>44 => Crafting result.</br>
         /// </summary>
-        public ContainerItem[] Items { get; set; } = new ContainerItem[45];
+        public ContainerItem[] Items { get; set; } = new ContainerItem[46];
         public void AddItemFast(ContainerItem item)
         {
             if (item == null) return;
@@ -152,10 +158,138 @@ namespace Winecrash
             }
         }
 
-        
+        public KeyValuePair<ManufactureTable, KeyValuePair<ManufacturePattern, Vector2I>> CraftResult;
+
+        public void MainGrab(int index)
+        {
+            ContainerItem current = Grabbed;
+            ContainerItem item = Items[index];
+
+            // if index's item is not empty
+            if (item && item.Item != null && item.Item.Identifier != "winecrash:air" && item.Amount > 0)
+            {
+                // if no item already grabbed, take the index one
+                if (index == GetContainerIndex(PlayerContainerTypes.CraftOutput)) // craft
+                {
+                    if (current != null && current.Valid)
+                    {
+                        ContainerItem result = (ContainerItem)CraftResult.Key.Results[0];
+                        if (result.Item.Identifier == current.Item.Identifier)
+                        {
+                            byte remaining = (byte) (current.Item.Stack - current.Amount);
+                            if (remaining >= result.Amount) // if still has space for craft output
+                            {
+                                ContainerItem output = (ContainerItem) ValidateCraft();
+                                current.Amount += output.Amount;
+                                SetContainerItem(current.Duplicate(), GetContainerIndex(PlayerContainerTypes.Grab));
+                                CheckCraft();
+                            }
+                            else // otherwise don't grab
+                            {
+                                SetContainerItem(current.Duplicate(), GetContainerIndex(PlayerContainerTypes.Grab));
+                                SetContainerItem(item.Duplicate(), index);
+                            }
+                        }
+                        else // otherwise don't grab
+                        {
+                            SetContainerItem(current.Duplicate(), GetContainerIndex(PlayerContainerTypes.Grab));
+                            SetContainerItem(item.Duplicate(), index);
+                        }
+                    }
+                    else
+                    {
+                        SetContainerItem((ContainerItem) ValidateCraft(), GetContainerIndex(PlayerContainerTypes.Grab));
+                        CheckCraft();
+                    }
+                }
+                else if (!current || !current.Valid) // non craft
+                {
+                    SetContainerItem(item.Duplicate(), GetContainerIndex(PlayerContainerTypes.Grab));
+                    SetContainerItem(null, index);
+                }
+                // if grabbed and index
+                else
+                {
+                    // same type, append
+                    if (current.Item.Identifier == item.Item.Identifier)
+                    {
+                        byte remaining = (byte) (item.Item.Stack - item.Amount);
+                        byte currentQty = current.Amount;
+
+                        byte toPlace = Math.Min(currentQty, remaining);
+
+                        item.Amount += toPlace;
+                        current.Amount -= toPlace;
+
+                        SetContainerItem(item.Duplicate(), index);
+                        SetContainerItem(current.Duplicate(), GetContainerIndex(PlayerContainerTypes.Grab));
+                    }
+                    else // exchange
+                    {
+                        ContainerItem ncurrent = current.Duplicate();
+                        ContainerItem nitem = item.Duplicate();
+                        SetContainerItem(ncurrent, index);
+                        SetContainerItem(nitem, GetContainerIndex(PlayerContainerTypes.Grab));
+                    }
+                }
+            }
+            // simply place grab item in index
+            else if (current && current.Item != null && current.Item.Identifier != "winecrash:air")
+            {
+                SetContainerItem(current.Duplicate(), index);
+                SetContainerItem(null, GetContainerIndex(PlayerContainerTypes.Grab));
+            }
+
+            item?.Delete();
+            current?.Delete();
+        }
+
+        public void AltGrab(int index)
+        {
+            ContainerItem current = Grabbed;
+            ContainerItem item = Items[index];
+
+            // if there is something grab
+            if (current && current.Valid)
+            {
+                if (!item || !item.Valid || current.Item.Identifier == item.Item.Identifier) // if items are same type
+                { // place one
+                    byte remaining = !item || !item.Valid ? (byte)1 : (byte)(item.Item.Stack - item.Amount);
+                    if (remaining != 0)
+                    {
+                        item = item && item.Valid ? new ContainerItem(item.Item, (byte)(item.Amount + 1)) : new ContainerItem(current.Item);
+                        current.Amount -= 1;
+                        
+                        SetContainerItem(item.Duplicate(), index);
+                        SetContainerItem(current.Duplicate(), (int)GetContainerIndex(PlayerContainerTypes.Grab));
+                    }
+                }
+                else // exchange
+                {
+                    ContainerItem ncurrent = current.Duplicate();
+                    ContainerItem nitem = item.Duplicate();
+                    SetContainerItem(ncurrent, index);
+                    SetContainerItem(nitem, (int)GetContainerIndex(PlayerContainerTypes.Grab));
+                }
+            } else { // nothing in hand
+                if (item && item.Valid)
+                { // if there is something to grab
+                    byte half = (byte)Math.Max(1.0, Math.Ceiling(item.Amount/2.0));
+                    
+                    SetContainerItem(new ContainerItem(item.Item, half), (int)GetContainerIndex(PlayerContainerTypes.Grab));
+                    item.Amount -= half;
+                    
+                    SetContainerItem(item.Duplicate(), index);
+                }
+            }
+
+            item?.Delete();
+            current?.Delete();
+        }
+
         public void SetContainerItem(ContainerItem item, int index)
         {
-            if(item == null || item.Amount == 0) item = new ContainerItem();
+            if(item == null || item.Amount == 0) item = new ContainerItem("winecrash:air");
             ContainerItem previousItem = Items[index];
             
             if(previousItem == null) previousItem = new ContainerItem();
@@ -182,10 +316,16 @@ namespace Winecrash
                     break;
                 case PlayerContainerTypes.Craft:
                     OnCraftUpdate?.Invoke(item, index);
+                    CheckCraft();
                     break;
                 case PlayerContainerTypes.CraftOutput:
                     OnCraftOutputUpdate?.Invoke(item, index);
                     break;
+                case PlayerContainerTypes.Grab:
+                    OnGrabUpdate?.Invoke(item, index);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
             
             OnItemUpdate?.Invoke(item, index);
@@ -196,22 +336,81 @@ namespace Winecrash
                 OnItemAdd?.Invoke(item, index);
                 previousItem.Delete();
             }
-            
-            //previousItem.Delete();
         }
 
-        public PlayerContainerTypes GetContainerType(uint index)
+        public void CheckCraft()
+        {
+            Vector2I playerCraftSize = Vector2I.One * 2;
+
+            ContainerItem[] containerItems = Player.LocalPlayer.Craft;
+            ItemAmount[] itemAmounts = new ItemAmount[containerItems.Length];
+            for (int i = 0; i < containerItems.Length; i++) itemAmounts[i] = (ItemAmount)containerItems[i];
+
+            bool found = false;
+            foreach (ManufactureTable table in ManufactureTable.Cache)
+            {
+                if (table.Validate(itemAmounts, playerCraftSize, out KeyValuePair<ManufacturePattern, Vector2I> result))
+                {
+                    CraftResult = new KeyValuePair<ManufactureTable, KeyValuePair<ManufacturePattern, Vector2I>>(table, result);
+                    // set output
+                    Player.LocalPlayer.SetContainerItem((ContainerItem)table.Results[0], Player.GetContainerIndex(PlayerContainerTypes.CraftOutput));
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) Player.LocalPlayer.SetContainerItem(null, Player.GetContainerIndex(PlayerContainerTypes.CraftOutput));
+        }
+
+        public ItemAmount ValidateCraft()
+        {
+            if (CraftResult.Value.Key.Items == null) return new ItemAmount();
+            
+            // edit input
+            ManufactureTable table = CraftResult.Key;
+            ManufacturePattern pattern = CraftResult.Value.Key;
+            Vector2I shift = CraftResult.Value.Value;
+            ItemAmount[] pitems = pattern.Items;
+            
+            ContainerItem[] containerItems = Player.LocalPlayer.Craft;
+            ItemAmount[] itemAmounts = new ItemAmount[containerItems.Length];
+            for (int i = 0; i < containerItems.Length; i++) itemAmounts[i] = (ItemAmount)containerItems[i];
+
+            for (int i = 0; i < pitems.Length; i++)
+            {
+                ItemAmount ia = pitems[i];
+                
+                if (ia.Amount == 0 || ia.Identifier == "winecrash:air") continue;
+                
+                // pattern space
+                WMath.FlatTo2D(i, pattern.Size.X, out int x, out int y);
+                
+                // craft space
+                Vector2I cpos = new Vector2I(x, y) + shift;
+
+                int k = WMath.Flatten2D(cpos.X, cpos.Y, 2);
+
+                itemAmounts[k].Amount -= ia.Amount;
+                
+                Player.LocalPlayer.SetContainerItem((ContainerItem)itemAmounts[k], Player.GetContainerIndex(PlayerContainerTypes.Craft, k));
+            }
+
+            return table.Results[0];
+        }
+
+        public static PlayerContainerTypes GetContainerType(uint index)
         {
             if (index < 9) return PlayerContainerTypes.Hotbar;
             if (index < 36) return PlayerContainerTypes.Bag;
             if (index < 40) return PlayerContainerTypes.Armor;
             if (index < 44) return PlayerContainerTypes.Craft;
             if (index < 45) return PlayerContainerTypes.CraftOutput;
+            if (index < 46) return PlayerContainerTypes.Grab;
 
             throw new ArgumentOutOfRangeException(nameof(index), "Container index must be inferior to 45.");
         }
         
-        public uint GetContainerIndex(PlayerContainerTypes type, uint shift)
+        public static int GetContainerIndex(PlayerContainerTypes type, int shift = 0)
         {
             switch (type)
             {
@@ -220,6 +419,8 @@ namespace Winecrash
                     throw new ArgumentOutOfRangeException(nameof(shift), "The hotbar being 9 items long, the shift must be inferior to 9.");
                 case PlayerContainerTypes.CraftOutput:
                     return 44;
+                case PlayerContainerTypes.Grab:
+                    return 45;
                 case PlayerContainerTypes.Craft:
                     if (shift < 4) return 40 + shift;
                     throw new ArgumentOutOfRangeException(nameof(shift), "The crafting slots being 4 (2x2) items long, the shift must be inferior to 4.");

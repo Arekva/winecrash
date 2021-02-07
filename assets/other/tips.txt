@@ -6,3 +6,4 @@ Multi-Threaded!
 You're Breathtaking!
 Your PC goes brrr!
 NullReferenceException:\noriginality not found!
+144 Hz!

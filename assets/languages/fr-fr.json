@@ -51,7 +51,11 @@
         "#winecrash:block.sand": "Sable",
         "#winecrash:block.stone": "Roche",
         "#winecrash:item.nord": "Vépéaine",
-        "#winecrash:tool.diamond_pickaxe": "Pioche en diamant"
-        
+        "#winecrash:tool.diamond_pickaxe": "Pioche en diamant",
+        "#winecrash:item.debug": "Debug",
+        "#winecrash:block.ice": "Glace",
+        "#winecrash:block.glass": "Verre",
+        "#winecrash:block.planks": "Planches",
+        "#winecrash:item.stick": "Bâton"
     }
 }

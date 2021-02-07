@@ -366,17 +366,16 @@ namespace WEngine
 
             Time.FrameTimer.Stop();
             Time.DeltaUnscaled = Time.FrameTimer.Elapsed.TotalSeconds;//e.Time * Time.TimeScale; 
-            Time.PhysicsDeltaUnscaled = Time.FrameTimer.Elapsed.TotalSeconds;
-            
+
             Time.FrameTimer.Reset();
             Time.FrameTimer.Start();
-            
-            
-            //Debug.Log(Time.DeltaTime);
 
             MouseState ms = Mouse.GetState();
             Vector2D delta = new Vector2D(this._PreviousMouseState.X - ms.X, this._PreviousMouseState.Y - ms.Y);
             this._PreviousMouseState = ms;
+            
+            //Layer.PhysicsEvent.WaitOne(); // wait for physics to be free
+            //Layer.UpdateRenderEvent.Reset(); // set update/render as busy
 
             OnUpdate?.Invoke(new UpdateEventArgs(e.Time));
 
@@ -399,10 +398,10 @@ namespace WEngine
             }
             onRenderOnce?.Invoke();
             
-            
-            Layer.RenderThreadLocker.WaitOne();
-            Layer.PhysicsThreadLocker.Reset();
 
+            Layer.PhysicsEvent.WaitOne(); // wait for physics to be free
+            Layer.UpdateRenderEvent.Reset(); // set update/render as busy
+            
             foreach (Camera camera in Camera.Cameras)
             {
                 camera.PrepareForRender();
@@ -415,19 +414,18 @@ namespace WEngine
                     mr.PrepareForRender();
                 });
             }
-
-            Layer.PhysicsThreadLocker.Set();
-
-
+            
             Time.ResetRender();
             Time.BeginRender();
             OnRender?.Invoke(new UpdateEventArgs(e.Time));
             Time.EndRender();
-            
+            Layer.UpdateRenderEvent.Set(); // set update/render as free
 
+            
             SwapBuffers();
 
             base.OnRenderFrame(e);
+            
         }
 
         protected override void OnLoad(EventArgs e)

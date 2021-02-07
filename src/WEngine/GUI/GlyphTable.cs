@@ -195,7 +195,7 @@ namespace WEngine.GUI
                         Triangles = new uint[6] { 0, 1, 2, 3, 4, 5 }
                     };
 
-                    m.ApplySafe(true);
+                    m.ApplySafe(false);
                 });
             }
         }

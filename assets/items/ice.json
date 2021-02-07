@@ -1,0 +1,22 @@
+{
+  	"DisplayName": "#winecrash:block.ice",
+
+    "Transparent": true,
+    "DrawInternalFaces": false,
+    "DrawAllSides": false,
+    "Collides": true,
+
+    "Physics": {
+      	"Friction": 0.25,
+      	"Bounciness": 0.0
+    },
+    
+    "Textures": {
+      	"Up": "assets/textures/blocks/ice.png",
+      	"Down": "assets/textures/blocks/ice.png",
+      	"West": "assets/textures/blocks/ice.png",
+      	"East": "assets/textures/blocks/ice.png",
+      	"North": "assets/textures/blocks/ice.png",
+      	"South": "assets/textures/blocks/ice.png"
+    }
+}

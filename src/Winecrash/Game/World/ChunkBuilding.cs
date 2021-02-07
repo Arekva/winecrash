@@ -201,6 +201,11 @@ namespace Winecrash
 
                 this.SolidRenderer.Mesh.Apply(true);
             }
+            else
+            {
+                this.SolidRenderer.Mesh?.Delete();
+                this.SolidRenderer.Mesh = null;
+            }
             if (tvertices.Count != 0)
             {
                 if (this.TransparentRenderer.Mesh == null)
@@ -215,6 +220,11 @@ namespace Winecrash
                 this.TransparentRenderer.Mesh.Tangents = new Vector4F[tvertices.Count];
 
                 this.TransparentRenderer.Mesh.Apply(true);
+            }
+            else
+            {
+                this.TransparentRenderer.Mesh?.Delete();
+                this.TransparentRenderer.Mesh = null;
             }
             
             svertices = null;

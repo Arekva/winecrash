@@ -7,6 +7,7 @@
         Storage,
         Armor,
         Craft,
-        CraftOutput
+        CraftOutput,
+        Grab
     }
 }

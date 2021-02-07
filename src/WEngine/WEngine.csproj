@@ -97,16 +97,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Input\KeysModifiers.cs" />
-    <Compile Include="Dab\Compiler\Processor.cs" />
-    <Compile Include="Dab\Compiler\CompilerToken.cs" />
-    <Compile Include="Dab\Compiler\ITokenProvider.cs" />
-    <Compile Include="Dab\Compiler\SourceReader.cs" />
-    <Compile Include="Dab\Compiler\Token.cs" />
-    <Compile Include="Dab\Compiler\TokenNode.cs" />
-    <Compile Include="Dab\ShaderException.cs" />
-    <Compile Include="Dab\ShaderSourceLoadException.cs" />
-    <Compile Include="Dab\Shader\Capabilities.cs" />
-    <Compile Include="Dab\Source.cs" />
     <Compile Include="Debugging\BoxDebugVolume.cs" />
     <Compile Include="Debugging\DebugVolume.cs" />
     <Compile Include="EngineException.cs" />
@@ -138,9 +128,11 @@
     <Compile Include="Physics\FreeBoxCollider.cs" />
     <Compile Include="Physics\ICollider.cs" />
     <Compile Include="Physics\ICollisionProvider.cs" />
+    <Compile Include="Physics\PhysicMaterial.cs" />
     <Compile Include="Physics\PointBoxCollisionProvider.cs" />
     <Compile Include="Physics\RayBoxCollisionProvider.cs" />
     <Compile Include="Physics\Sweep.cs" />
+    <Compile Include="Physics\UIBoxCollider.cs" />
     <Compile Include="Render\BlendingFactorSrc.cs" />
     <Compile Include="Render\Culling.cs" />
     <Compile Include="Render\Graphics.cs" />

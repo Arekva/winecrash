@@ -16,9 +16,7 @@ namespace Winecrash
     {
         public static List<Player> Players { get; set; } = new List<Player>();
         public static object PlayersLocker { get; private set; } = new object();
-        
-        
-        
+
         private Vector2D _CameraAngles = Vector2D.Zero;
         public static double MaxYAngles { get; set; } = 89.99D;
 
@@ -26,7 +24,7 @@ namespace Winecrash
         public static double JumpForce { get; set; }= 5.0D;
 
         public static double WalkSpeed { get; set; } = 4.3D;
-        public static double WalkAcceleration { get; set; } = 50.0D*25;
+        public static double WalkAcceleration { get; set; } = 50.0D;
         public static double WalkDeaccelerationFactor { get; set; } = 16.0D;
         public static double StopSpeed { get; set; } = 0.05D;
 
@@ -166,6 +164,7 @@ namespace Winecrash
             OnContainerClose = null;
             OnContainerOpen = null;
             OnContainerToggle = null;
+            OnGrabUpdate = null;
 
             
             base.Delete();
@@ -264,12 +263,12 @@ namespace Winecrash
             if (NoClipping)
             {
                 Entity.WObject.Position +=
-                    this.Entity.Rotation * dir.Normalized * Time.PhysicsDelta * WalkAcceleration * 0.1;
+                    this.Entity.Rotation * dir.Normalized * Time.Delta * WalkAcceleration;
             }
             else
             {
                 Entity.RigidBody.Velocity += (new Quaternion(0, CameraAngles.X, 0) * dir.Normalized) *
-                                             Time.PhysicsDelta * WalkAcceleration;
+                                             Time.Delta * WalkAcceleration;
             }
             
             //Debug.Log(Entity.RigidBody.Velocity);

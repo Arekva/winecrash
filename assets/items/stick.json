@@ -1,0 +1,9 @@
+{
+	"DisplayName": "#winecrash:item.stick",
+
+	"Transparent": true,
+
+	"TexturePath": "assets/textures/items/stick.png",
+
+	"Stack": 64
+}
