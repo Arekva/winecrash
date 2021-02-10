@@ -108,6 +108,7 @@ namespace Winecrash
         /// <br>44 => Crafting result.</br>
         /// </summary>
         public ContainerItem[] Items { get; set; } = new ContainerItem[46];
+        public int[] ReadonlyIndices { get; set; } = new int[1] { 45 };
         public void AddItemFast(ContainerItem item)
         {
             if (item == null) return;
@@ -248,6 +249,8 @@ namespace Winecrash
         {
             ContainerItem current = Grabbed;
             ContainerItem item = Items[index];
+            
+            
 
             // if there is something grab
             if (current && current.Valid)
@@ -347,7 +350,7 @@ namespace Winecrash
             for (int i = 0; i < containerItems.Length; i++) itemAmounts[i] = (ItemAmount)containerItems[i];
 
             bool found = false;
-            foreach (ManufactureTable table in ManufactureTable.Cache)
+            foreach (ManufactureTable table in ManufactureTable.Tables)
             {
                 if (table.Validate(itemAmounts, playerCraftSize, out KeyValuePair<ManufacturePattern, Vector2I> result))
                 {

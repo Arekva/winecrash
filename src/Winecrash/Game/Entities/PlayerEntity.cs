@@ -227,6 +227,7 @@ namespace Winecrash.Entities
             // search only in this and neighbors chunks
             foreach (Chunk chunk in searchChunks)
             {
+                if(!chunk || chunk.Deleted) continue;
                 lock (chunk.EntityLocker)
                     entities = chunk.Entities.ToArray();
 

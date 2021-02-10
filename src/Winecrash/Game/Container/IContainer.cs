@@ -9,8 +9,9 @@
 
         event ItemChangeDelegate OnItemUpdate;
         
-        
         ContainerItem[] Items { get; set; }
+        
+        int[] ReadonlyIndices { get; set; }
 
         /// <summary>
         /// Adds the item in the first slot available.

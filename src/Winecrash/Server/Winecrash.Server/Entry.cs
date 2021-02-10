@@ -34,7 +34,7 @@ namespace Winecrash.Server
 
             Engine.Run(false, args).Wait();
             
-            Database.Load("assets/winecrash.package");
+            Package.Load("assets/winecrash.package");
             
             try
             {

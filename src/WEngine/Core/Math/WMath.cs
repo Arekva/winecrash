@@ -297,51 +297,41 @@ namespace WEngine
         /// <param name="newLow">The new low-point of the range.</param>
         /// <param name="newHigh">The new high-point of the range.</param>
         /// <returns>The remapped value.</returns>
-        public static float Remap(float value, float oldLow, float oldHigh, float newLow, float newHigh)
-        {
-            return newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
-        }
-        /// <summary>
-        /// Remaps (~move) a value from a previous low / high cap to a new one (i.e. 5 from 0..10 remapped to 0..5 will give 2.5)
-        /// </summary>
-        /// <param name="value">The value to remap.</param>
-        /// <param name="oldLow">The previous low-point of the range.</param>
-        /// <param name="oldHigh">The previous high-point of the range.</param>
-        /// <param name="newLow">The new low-point of the range.</param>
-        /// <param name="newHigh">The new high-point of the range.</param>
-        /// <returns>The remapped value.</returns>
-        public static double Remap(double value, double oldLow, double oldHigh, double newLow, double newHigh)
-        {
-            return newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
-        }
-        /// <summary>
-        /// Remaps (~move) a value from a previous low / high cap to a new one (i.e. 5 from 0..10 remapped to 0..5 will give 2.5)
-        /// </summary>
-        /// <param name="value">The value to remap.</param>
-        /// <param name="oldLow">The previous low-point of the range.</param>
-        /// <param name="oldHigh">The previous high-point of the range.</param>
-        /// <param name="newLow">The new low-point of the range.</param>
-        /// <param name="newHigh">The new high-point of the range.</param>
-        /// <returns>The remapped value.</returns>
-        public static Vector2F Remap(Vector2F value, Vector2F oldLow, Vector2F oldHigh, Vector2F newLow, Vector2F newHigh)
-        {
-            return newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
-        }
-        /// <summary>
-        /// Remaps (~move) a value from a previous low / high cap to a new one (i.e. 5 from 0..10 remapped to 0..5 will give 2.5)
-        /// </summary>
-        /// <param name="value">The value to remap.</param>
-        /// <param name="oldLow">The previous low-point of the range.</param>
-        /// <param name="oldHigh">The previous high-point of the range.</param>
-        /// <param name="newLow">The new low-point of the range.</param>
-        /// <param name="newHigh">The new high-point of the range.</param>
-        /// <returns>The remapped value.</returns>
-        public static Vector3F Remap(Vector3F value, Vector3F oldLow, Vector3F oldHigh, Vector3F newLow, Vector3F newHigh)
-        {
-            return newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
-        }
+        public static float Remap(float value, float oldLow, float oldHigh, float newLow, float newHigh) => newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
         
+        /// <summary>
+        /// Remaps (~move) a value from a previous low / high cap to a new one (i.e. 5 from 0..10 remapped to 0..5 will give 2.5)
+        /// </summary>
+        /// <param name="value">The value to remap.</param>
+        /// <param name="oldLow">The previous low-point of the range.</param>
+        /// <param name="oldHigh">The previous high-point of the range.</param>
+        /// <param name="newLow">The new low-point of the range.</param>
+        /// <param name="newHigh">The new high-point of the range.</param>
+        /// <returns>The remapped value.</returns>
+        public static double Remap(double value, double oldLow, double oldHigh, double newLow, double newHigh) => newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
         
+        /// <summary>
+        /// Remaps (~move) a value from a previous low / high cap to a new one (i.e. 5 from 0..10 remapped to 0..5 will give 2.5)
+        /// </summary>
+        /// <param name="value">The value to remap.</param>
+        /// <param name="oldLow">The previous low-point of the range.</param>
+        /// <param name="oldHigh">The previous high-point of the range.</param>
+        /// <param name="newLow">The new low-point of the range.</param>
+        /// <param name="newHigh">The new high-point of the range.</param>
+        /// <returns>The remapped value.</returns>
+        public static Vector2F Remap(Vector2F value, Vector2F oldLow, Vector2F oldHigh, Vector2F newLow, Vector2F newHigh) => newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
+        /// <summary>
+        /// Remaps (~move) a value from a previous low / high cap to a new one (i.e. 5 from 0..10 remapped to 0..5 will give 2.5)
+        /// </summary>
+        /// <param name="value">The value to remap.</param>
+        /// <param name="oldLow">The previous low-point of the range.</param>
+        /// <param name="oldHigh">The previous high-point of the range.</param>
+        /// <param name="newLow">The new low-point of the range.</param>
+        /// <param name="newHigh">The new high-point of the range.</param>
+        /// <returns>The remapped value.</returns>
+        public static Vector3F Remap(Vector3F value, Vector3F oldLow, Vector3F oldHigh, Vector3F newLow, Vector3F newHigh) => newLow + (value - oldLow) * (newHigh - newLow) / (oldHigh - oldLow);
+
+
         public static double DeltaAngle(double current, double target)
         {
             double delta = WMath.Repeat((target - current), 360.0F);

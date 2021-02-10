@@ -1,0 +1,12 @@
+{
+    "Block": "winecrash:grass",
+
+    "Chance": 1.0,
+
+    "Results": [
+        {
+            "Identifier": "winecrash:dirt",
+            "Amount": 1
+        }
+    ]
+}

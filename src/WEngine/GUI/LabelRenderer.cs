@@ -68,7 +68,7 @@ namespace WEngine.GUI
 
             void RenderLabel()
             {
-                this.Material.Use();
+                this.Material.Use(sender);
 
                 int count = 0;
 

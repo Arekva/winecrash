@@ -79,6 +79,8 @@ namespace Winecrash
 
             _BuildLocker.Set();
         }
+        
+        Dictionary<ushort, Block> constructblocks = new Dictionary<ushort, Block>();
         private void ConstructInternal()
         {
             if (this.Deleted) return;
@@ -92,9 +94,29 @@ namespace Winecrash
             Stopwatch sw = new Stopwatch();
             sw.Start();
             cwest = WestNeighbor?.Blocks != null;
-            ceast = EastNeighbor?.Blocks != null;
-            cnorth = NorthNeighbor?.Blocks != null;
-            csouth = SouthNeighbor?.Blocks != null;
+            if (cwest)
+            {
+                bwest = new ushort[Chunk.TotalBlocks];
+                WestNeighbor.Blocks.CopyTo(bwest,0);
+            }
+            ceast = (EastNeighbor?.Blocks != null);
+            if (ceast)
+            {
+                beast = new ushort[Chunk.TotalBlocks];
+                EastNeighbor.Blocks.CopyTo(beast,0);
+            }
+            cnorth = (NorthNeighbor?.Blocks != null);
+            if (cnorth)
+            {
+                bnorth = new ushort[Chunk.TotalBlocks];
+                NorthNeighbor.Blocks.CopyTo(bnorth,0);
+            }
+            csouth = (SouthNeighbor?.Blocks != null);
+            if (csouth)
+            {
+                bsouth = new ushort[Chunk.TotalBlocks];
+                SouthNeighbor.Blocks.CopyTo(bsouth,0);
+            }
 
             List<Vector3F> svertices = new List<Vector3F>(1 << 18);
             List<Vector2F> suv = new List<Vector2F>(1 << 18);
@@ -113,7 +135,9 @@ namespace Winecrash
             Block block = null;
             ushort index = 0;
 
-            Dictionary<ushort, Block> blocks = new Dictionary<ushort, Block>();
+            if (this.Deleted) return;
+
+            Vector3F thisWP = this.WObject.Position;
             
             for (int z = 0; z < Depth; z++)
             {
@@ -121,12 +145,14 @@ namespace Winecrash
                 {
                     for (int x = 0; x < Width; x++)
                     {
+                        if (this.Deleted) return;
+                        
                         index = this.Blocks[x + Width * y + Width * Height * z];
                         
-                        if (!blocks.TryGetValue(index, out block))
+                        if (!constructblocks.TryGetValue(index, out block))
                         {
                             block = ItemCache.Get<Block>(index);
-                            blocks.Add(index, block);
+                            constructblocks.Add(index, block);
                         }
 
                         if (block.Identifier == "winecrash:air") continue; // ignore if air
@@ -144,17 +170,29 @@ namespace Winecrash
                         }
                         else
                         {
-                            if (IsTransparent(block, x, y + 1, z, blocks)) faces.Push(BlockFaces.Up); // up
-                            if (IsTransparent(block, x, y - 1, z, blocks)) faces.Push(BlockFaces.Down); // down
-                            if (IsTransparent(block, x - 1, y, z, blocks)) faces.Push(BlockFaces.West); // west
-                            if (IsTransparent(block, x + 1, y, z, blocks)) faces.Push(BlockFaces.East); // east
-                            if (IsTransparent(block, x, y, z + 1, blocks)) faces.Push(BlockFaces.North); // north
-                            if (IsTransparent(block, x, y, z - 1, blocks)) faces.Push(BlockFaces.South); // south
+                            if (IsTransparent(block, x, y + 1, z, constructblocks)) faces.Push(BlockFaces.Up); // up
+                            if (IsTransparent(block, x, y - 1, z, constructblocks)) faces.Push(BlockFaces.Down); // down
+                            if (IsTransparent(block, x - 1, y, z, constructblocks)) faces.Push(BlockFaces.West); // west
+                            if (IsTransparent(block, x + 1, y, z, constructblocks)) faces.Push(BlockFaces.East); // east
+                            if (IsTransparent(block, x, y, z + 1, constructblocks)) faces.Push(BlockFaces.North); // north
+                            if (IsTransparent(block, x, y, z - 1, constructblocks)) faces.Push(BlockFaces.South); // south
                         }
 
                         foreach (BlockFaces face in faces)
                         {
                             CreateVerticesCube(x, y, z, face, transparent ? tvertices : svertices);
+
+                            /*int count = usedvertices.Count;
+                            for (int i = count - 6; i < count; i++)
+                            {
+                                Vector3F worldPos = thisWP + usedvertices[i] - new Vector3F(572, 0, 459);
+
+                                Vector3F final = worldPos.RotateAround(new Vector3F(0,-360, 0), new Quaternion(worldPos.X * 0.1,0,worldPos.Z * 0.1));
+
+                                
+                                final += new Vector3F(572, 0, 459);
+                                usedvertices[i] = final - thisWP;
+                            }*/
 
                             CreateUVsCube(face, transparent ? tuv : suv, index);
 
@@ -238,6 +276,10 @@ namespace Winecrash
             tnormals = null;
             
             cwest = ceast = cnorth = csouth = false;
+            bsouth = null;
+            bnorth = null;
+            beast = null;
+            bwest = null;
 
             ConstructedOnce = true;
         }
@@ -541,10 +583,10 @@ namespace Winecrash
             }
         }
 
-        bool cwest;
-        bool ceast;
-        bool cnorth;
-        bool csouth;
+        bool cwest ; ushort[] bwest;
+        bool ceast ; ushort[] beast;
+        bool cnorth; ushort[] bnorth;
+        bool csouth; ushort[] bsouth;
 
 
         ushort transpid;
@@ -558,7 +600,7 @@ namespace Winecrash
             {
                 if (cwest)
                 {
-                    transpid = this.WestNeighbor.GetBlockIndex(15, y, z);
+                    transpid = this.bwest[15 + Width * y + Width * Height * z];
                 }
             }
 
@@ -566,7 +608,7 @@ namespace Winecrash
             {
                 if (ceast)
                 {
-                    transpid = this.EastNeighbor.GetBlockIndex(0, y, z);
+                    transpid = this.beast[0 + Width * y + Width * Height * z];
                 }
             }
 
@@ -574,7 +616,7 @@ namespace Winecrash
             {
                 if (cnorth)
                 {
-                    transpid = this.NorthNeighbor.GetBlockIndex(x, y, 0);
+                    transpid = this.bnorth[x + Width * y + Width * Height * 0];
                 }
             }
 
@@ -582,7 +624,7 @@ namespace Winecrash
             {
                 if(csouth)
                 {
-                    transpid = this.SouthNeighbor.GetBlockIndex(x, y, 15);
+                    transpid = this.bsouth[x + Width * y + Width * Height * 15];
                 }
             }
 

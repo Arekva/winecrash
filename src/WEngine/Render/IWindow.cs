@@ -96,7 +96,6 @@ namespace WEngine
         public Vector2I ScreenToWindow(Vector2I point);
 
         public Task WaitForNextFrame();
-
         public Bitmap Screenshot();
     }
 }

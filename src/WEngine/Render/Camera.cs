@@ -170,7 +170,7 @@ namespace WEngine
         internal Vector3D _RenderUp;
         internal Vector3D _RenderForward;
         internal Matrix4D _RenderView;
-
+        internal Matrix4D _worldRenderView;
 
         internal void PrepareForRender()
         {
@@ -181,6 +181,7 @@ namespace WEngine
             _RenderUp = this.WObject.Up;
             _RenderForward = this.WObject.Forward;
             _RenderView = new Matrix4D(Vector3D.Zero, this._RenderForward, this._RenderUp);
+            _worldRenderView = new Matrix4D(-this._RenderPosition, Vector3D.Forward, Vector3D.Up);
         }
 
         protected internal override void OnRender()

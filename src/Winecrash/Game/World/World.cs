@@ -279,6 +279,7 @@ namespace Winecrash
             ushort dirtID = ItemCache.GetIndex("winecrash:dirt");
             ushort sandID = ItemCache.GetIndex("winecrash:sand");
             ushort waterID = ItemCache.GetIndex("winecrash:water");
+            ushort bedrockID = ItemCache.GetIndex("winecrash:bedrock");
 
             //ushort[] indices = new ushort[Chunk.Width * Chunk.Height * Chunk.Depth];
             
@@ -300,6 +301,8 @@ namespace Winecrash
                 bool heightFound = false;
                 for (int y = Chunk.Height - 1; y > -1; y--)
                 {
+                    
+                    
                     int idx = WMath.Flatten3D(x, y, z, Chunk.Width, Chunk.Height);
 
 
@@ -347,7 +350,17 @@ namespace Winecrash
                     {
                         indices[idx] = waterID;
                     }
+
+                    if (y < 3)
+                    {
+                        double chance = Winecrash.Random.NextDouble();
+
+                        if (y == 2 && chance < 0.33) indices[idx] = bedrockID;
+                        else if (y == 1 && chance < 0.66) indices[idx] = bedrockID;
+                        else if (y == 0) indices[idx] = bedrockID;
+                    }
                 }
+                
                 //Vector3F finalPos = new Vector3F((basePos.X + x) * baseLandmassScale, basePos.Y + y,
                 //    (basePos.Z + z) * baseLandmassScale) * globalScale;
             //});
@@ -478,9 +491,17 @@ namespace Winecrash
                 Chunk chunk = null;
                 Vector3I[] surfaces = null;
 
+                bool generated = false;
+
                 if (blocks == null)
                 {
-                    blocks = GenerateSimple(coordinates, out surfaces);
+                    SaveChunk sc = Winecrash.CurrentSave.ReadChunk(coordinates, Dimensions.ElementAt(dimension).Identifier);
+                    if (sc != null) blocks = sc.LoadBlocks();
+                    else
+                    {
+                        generated = true;
+                        blocks = GenerateSimple(coordinates, out surfaces);
+                    }
                 }
 
                 WObject wobj = new WObject($"Chunk [{coordinates.X};{coordinates.Y}]")
@@ -492,6 +513,11 @@ namespace Winecrash
                 chunk = wobj.AddModule<Chunk>();
                 chunk.InterdimensionalCoordinates = new Vector3I(coordinates, dimension);
                 chunk.Blocks = blocks;
+
+                if (generated)
+                {
+                    Task.Run(() => Winecrash.CurrentSave.WriteChunk(chunk.ToSave()));
+                }
 
                 Dimension dim = Dimensions.ElementAt(dimension);
 
@@ -622,7 +648,7 @@ namespace Winecrash
         public static void UnloadChunk(Chunk c)
         {
             if (!c) return;
-            
+            Debug.Log("Deleting " + c);
             c.WObject.Delete();
             
             lock(ChunksLocker)

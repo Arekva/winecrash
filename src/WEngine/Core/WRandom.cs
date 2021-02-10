@@ -4,14 +4,14 @@ namespace WEngine
 {
     public class WRandom : Random
     {
-        private int _Count = 0;
+        private uint _Count = 0;
         private double _CountDouble = 0.0D;
 
         public WRandom() { }
         
         public WRandom(int seed)
         {
-            _Count = seed;
+            _Count = (uint)seed;
             _CountDouble = seed;
         }
 

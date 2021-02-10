@@ -42,6 +42,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,6 +54,7 @@
     <Compile Include="ConsoleUtils.cs" />
     <Compile Include="Container\ContainerItem.cs" />
     <Compile Include="Container\IContainer.cs" />
+    <Compile Include="Package.cs" />
     <Compile Include="Dimension.cs" />
     <Compile Include="Entities\ItemEntity.cs" />
     <Compile Include="Entities\Entity.cs" />
@@ -62,13 +64,9 @@
     <Compile Include="Items\BlockFaces.cs" />
     <Compile Include="Items\Cube.cs" />
     <Compile Include="Items\CubeTexturePaths.cs" />
-    <Compile Include="Items\Database.cs" />
     <Compile Include="Items\Item.cs" />
-    <Compile Include="Items\ItemAmount.cs" />
     <Compile Include="Items\ItemCache.cs" />
     <Compile Include="Items\ItemDB.cs" />
-    <Compile Include="Items\ManufacturePattern.cs" />
-    <Compile Include="Items\ManufactureTable.cs" />
     <Compile Include="Items\Tool.cs" />
     <Compile Include="Items\Workbench.cs" />
     <Compile Include="Layers.cs" />
@@ -95,6 +93,10 @@
     <Compile Include="Sync\Config.cs" />
     <Compile Include="Sync\SynchronizeAttribute.cs" />
     <Compile Include="Sync\SyncMode.cs" />
+    <Compile Include="Tables\HarvestTable.cs" />
+    <Compile Include="Tables\ItemAmount.cs" />
+    <Compile Include="Tables\ManufacturePattern.cs" />
+    <Compile Include="Tables\ManufactureTable.cs" />
     <Compile Include="TickType.cs" />
     <Compile Include="Winecrash.cs" />
     <Compile Include="World\Chunk.cs" />

@@ -19,11 +19,6 @@ namespace WEngine.GUI
         {
             get
             {
-                /*if(this.ParentGUI == null)
-                {
-                    return this.WObject.Position;
-                }*/
-
                 double[] ganchors = GlobalScreenAnchors;
 
                 Vector2D gMinAnchors = new Vector2D(ganchors[0], ganchors[1]);

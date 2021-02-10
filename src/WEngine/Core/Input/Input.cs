@@ -130,7 +130,7 @@ namespace WEngine
 
                     if (!firstTime)
                     {
-                        MouseDelta = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Lock ? (IgnoreNextFocusFrame ? Vector2D.Zero : centre - (Vector2D)pos) : Vector2D.Zero;
+                        MouseDelta = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Lock ? (IgnoreNextFocusFrame ? Vector2D.Zero : (Vector2D)(centre - pos)) : Vector2D.Zero;
                         if (Graphics.Window.Focused && IgnoreNextFocusFrame) IgnoreNextFocusFrame = false;
 
                         MousePosition = Graphics.Window.Focused && Input.LockMode == CursorLockModes.Free ? /*centre - pos*/Graphics.Window.ScreenToWindow(pos) : Vector2I.Zero;

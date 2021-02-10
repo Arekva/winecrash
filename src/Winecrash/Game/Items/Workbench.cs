@@ -17,5 +17,6 @@ namespace Winecrash
         public void AddItemFast(ContainerItem item) {}
 
         public ContainerItem[] Items { get; set; } = new ContainerItem[10];
+        public int[] ReadonlyIndices { get; set; } = new int[1] { 9 };
     }
 }

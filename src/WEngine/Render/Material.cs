@@ -111,7 +111,7 @@ namespace WEngine
         public WEngine.BlendingFactorSrc SourceColorBlending { get; set; } = WEngine.BlendingFactorSrc.SrcAlpha;
         public BlendingFactorDest DestinationColorBlending { get; set; } = BlendingFactorDest.OneMinusSrcAlpha;
 
-        internal void Use()
+        internal void Use(Camera sender)
         {
             if (DataLocker == null || this._Data == null) return;
             lock (DataLocker)
@@ -144,7 +144,7 @@ namespace WEngine
 
         public void Draw(Camera sender)
         {
-            this.Use();
+            this.Use(sender);
             
             MeshRenderer[] mrs = 
                 RenderersGetAll().

@@ -7,6 +7,8 @@ in vec3 worldNormal;
 in vec3 viewNormal;
 in vec3 objPos;
 
+in vec3 worldSpacePosition;
+
 uniform sampler2D albedo;
 uniform vec4 color;
 uniform float showPercent;
@@ -149,5 +151,6 @@ void main()
     vec4 finalColor = lerp(chunkCol, horizonColor, min(pct,1.0));
     finalColor.a = chunkCol.a;
 
-    outputColor = chunkCol;
+    outputColor = finalColor;
+
 }

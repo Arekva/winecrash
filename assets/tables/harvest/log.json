@@ -1,0 +1,12 @@
+{
+    "Block": "winecrash:log",
+
+    "Chance": 1.0,
+
+    "Results": [
+        {
+            "Identifier": "winecrash:log",
+            "Amount": 1
+        }
+    ]
+}

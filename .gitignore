@@ -1,6 +1,10 @@
 # Safety
 dbConnect.*
 
+# Other
+gource/
+gource.ps1
+
 
 # IntelliJ Rider
 .idea/

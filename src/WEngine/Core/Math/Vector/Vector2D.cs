@@ -299,6 +299,8 @@ namespace WEngine
         /// <param name="v2">The value.</param>
         /// <returns>The divided vector.</returns>
         public static Vector2D operator /(Vector2D v1, Vector2D v2) => new Vector2D(v1.X / v2.X, v1.Y / v2.Y);
+        
+        public static implicit operator Vector2D(Vector2F vec) => new Vector2D(vec.X, vec.Y);
         #endregion
     }
 }

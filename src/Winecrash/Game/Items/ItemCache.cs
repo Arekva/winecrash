@@ -15,7 +15,8 @@ namespace Winecrash
         private static readonly Dictionary<string, ushort> _ItemIdentifiersIndexes = new Dictionary<string, ushort>();
         private static readonly Dictionary<ushort, string> _ItemIndexesIdentifiers = new Dictionary<ushort, string>();
         private static readonly List<Item> _ItemsList = new List<Item>();
-        
+
+        private static readonly object _itemAddLocker = new object();
         
         public static Texture Atlas { get; set; }
         public static Material AtlasMaterial { get; private set; }
@@ -31,26 +32,15 @@ namespace Winecrash
 
         public const ushort TextureSize = 16;
 
-        public static T Get<T>(string identifier) where T : Item
-        {
-            return _ItemsIdentifiers[identifier] as T;
-        }
-        public static T Get<T>(int index) where T : Item
-        {
-            return _ItemsList[index] as T;
-        }
-        public static ushort GetIndex(Item item)
-        {
-            return _ItemsListIndexes[item];
-        }
-        public static ushort GetIndex(string identifier)
-        {
-            return _ItemIdentifiersIndexes[identifier];
-        }
-        public static string GetIdentifier(ushort index)
-        {
-            return _ItemIndexesIdentifiers[index];
-        }
+        public static Item Get(string identifier) => _ItemsIdentifiers[identifier];
+        public static T Get<T>(string identifier) where T : Item => Get(identifier) as T;
+        
+        public static Item Get(int index) => _ItemsList[index];
+        public static T Get<T>(int index) where T : Item => Get(index) as T;
+        public static ushort GetIndex(Item item) => _ItemsListIndexes[item];
+        public static ushort GetIndex(string identifier) => _ItemIdentifiersIndexes[identifier];
+        
+        public static string GetIdentifier(ushort index) =>_ItemIndexesIdentifiers[index];
         
         public static bool TryGet<T>(string identifier, out T item) where T : Item
         {
@@ -98,6 +88,20 @@ namespace Winecrash
             }
 
             _ItemsList.AddRange(items);
+        }
+
+        internal static void AddItem(Item item)
+        {
+            lock (_itemAddLocker)
+            {
+                ushort i = (ushort)_ItemsList.Count;
+                _ItemsIdentifiers.Add(item.Identifier, item);
+                _ItemsListIndexes.Add(item, i);
+                _ItemIdentifiersIndexes.Add(item.Identifier, i);
+                _ItemIndexesIdentifiers.Add(i, item.Identifier);
+                
+                _ItemsList.Add(item);
+            }
         }
         
         public static Texture BuildChunkTexture(out int xSize, out int ySize)

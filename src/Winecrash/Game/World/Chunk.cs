@@ -32,7 +32,7 @@ namespace Winecrash
     {
         public override string ToString()
         {
-            return $"Chunk[{Coordinates.X};{Coordinates.Y}/ {Dimension.Identifier}]";
+            return $"Chunk[{Coordinates.X};{Coordinates.Y}] -> {Dimension.Identifier}";
         }
 
 
@@ -90,6 +90,7 @@ namespace Winecrash
         public volatile MeshRenderer TransparentRenderer;
 
         public bool BuildEndFrame { get; set; } = false;
+        private bool EditedOnFrame { get; set; } = false;
 
         public bool ConstructedOnce = false;
 #endregion
@@ -396,13 +397,15 @@ namespace Winecrash
                     Construct();
                 }
             }
+
+            if (EditedOnFrame) Task.Run(()=>Winecrash.CurrentSave.WriteChunk(ToSave()));
             
             // if local, delete unnecessary chunks
-            /*if (Player.LocalPlayer != null)
+            /*if (Player.LocalPlayer != null &&Player.LocalPlayer.Entity?.Chunk)
             {
                 Vector2I pcords = Player.LocalPlayer.Entity.ChunkCoordinates;
 
-                double dist = Vector2I.Distance(pcords, this.Coordinates);
+                double dist = DistanceTo(Player.LocalPlayer.Entity.Chunk);
 
                 if (dist > Winecrash.RenderDistance + 2)
                 {
@@ -411,11 +414,15 @@ namespace Winecrash
                 }
             }*/
 
+            EditedOnFrame = false;
             base.LateUpdate();
         }
 
         protected override void OnDelete()
         {
+            SaveChunk sv = this.ToSave();
+            
+            
             OnChunkLoad -= OnChunkLoadedDelegate;
             OnChunkUnload -= OnChunkUnloadDelegate;
             
@@ -431,10 +438,14 @@ namespace Winecrash
                 this.Entities.Clear();
                 this.Entities = null;
             }
-            
+
+            if(this.NorthNeighbor) this.NorthNeighbor.SouthNeighbor = null;
             this.NorthNeighbor = null;
+            if(this.SouthNeighbor) this.SouthNeighbor.NorthNeighbor = null;
             this.SouthNeighbor = null;
+            if(this.WestNeighbor) this.WestNeighbor.WestNeighbor = null;
             this.WestNeighbor = null;
+            if(this.EastNeighbor) this.EastNeighbor.WestNeighbor = null;
             this.EastNeighbor = null;
             this.Blocks = null;
 
@@ -455,14 +466,8 @@ namespace Winecrash
             if (b.Identifier == "winecrash:air") return;
             
             this.Edit(x,y,z);
-            ItemEntity item = ItemEntity.FromItem(b, 1);
-            item.WObject.Position = (Vector3D)World.LocalToGlobal(this.Coordinates, new Vector3I(x, y, z)) + Vector3D.One * 0.5D;
-            
-            // apply force to item
-            Vector2D dir = Random.NextDirection2D();
-            Vector3D force = new Vector3D(dir.X, 0.0, dir.Y) * Item.ItemDigSpawnForce;
 
-            item.RigidBody.Velocity += force;
+            b.Harvest(this,x,y,z);
         }
 
         public void Edit(int x, int y, int z, Block b = null) => PrivateEdit(x,y,z,b);
@@ -471,6 +476,8 @@ namespace Winecrash
         {
             if (b == null) b = ItemCache.Get<Block>("winecrash:air");
 
+            Block previous = this[x,y,z];
+            if (!previous.Equals(b)) EditedOnFrame = true;
             this[x, y, z] = b;
 
             if (x == 0 && this.WestNeighbor)
@@ -510,7 +517,7 @@ namespace Winecrash
             {
                 Vector2I delta = oCoords.XY - tCoords.XY;
 
-                return delta.X + delta.Y;
+                return Math.Abs(delta.X) + Math.Abs(delta.Y);
             }
         }
 

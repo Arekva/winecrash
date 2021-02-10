@@ -336,11 +336,14 @@ namespace WEngine
             return new Vector2I(v1.X / v2.X, v1.Y / v2.Y);
         }
 
+        public static implicit operator Vector2I(Vector2D vec)
+        {
+            return new Vector2I((int)vec.X, (int)vec.Y);
+        }
         public static implicit operator Vector2I(Vector2F vec)
         {
             return new Vector2I((int)vec.X, (int)vec.Y);
         }
-
         public static implicit operator Vector2F(Vector2I vec)
         {
             return new Vector2F(vec.X, vec.Y);

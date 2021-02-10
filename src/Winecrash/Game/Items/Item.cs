@@ -418,10 +418,7 @@ namespace Winecrash
             return texture[x, y].A < threshold;
         }
 
-        public bool Equals(Item other)
-        {
-            return other != null && other.Identifier == this.Identifier;
-        }
+        public bool Equals(Item other) => other != null && other.Identifier == this.Identifier;
 
         public override bool Equals(object obj)
         {

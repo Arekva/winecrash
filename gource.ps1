@@ -1,1 +1,1 @@
-gource --key --s 0.25 --max-file-lag 0.1
+gource --no-vsync --key --s 0.25 --max-file-lag 0.1 --user-image-dir gource/avatars

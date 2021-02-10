@@ -84,6 +84,11 @@
             "Identifier": "winecrash:stick",
             "RuntimeType": "Winecrash.Item, WinecrashCore",
             "Path": "assets/items/stick.json"
+        },
+        {
+            "Identifier": "winecrash:cobblestone",
+            "RuntimeType": "Winecrash.Cube, WinecrashCore",
+            "Path": "assets/items/cobblestone.json"
         }
     ],
 
@@ -91,5 +96,15 @@
         "assets/tables/manufacture/glass.json",
         "assets/tables/manufacture/planks.json",
         "assets/tables/manufacture/stick.json"
+    ],
+    "HarvestTables": [
+        "assets/tables/harvest/dirt.json",
+        "assets/tables/harvest/grass.json",
+        "assets/tables/harvest/leaves.json",
+        "assets/tables/harvest/log.json",
+        "assets/tables/harvest/sand.json",
+        "assets/tables/harvest/planks.json",
+        "assets/tables/harvest/stone.json",
+        "assets/tables/harvest/cobblestone.json"
     ]
 }

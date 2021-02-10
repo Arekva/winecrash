@@ -8,7 +8,7 @@ namespace Winecrash
 {
     [Serializable] public struct ManufactureTable
     {
-        public static List<ManufactureTable> Cache { get; internal set; } = new List<ManufactureTable>();
+        public static List<ManufactureTable> Tables { get; internal set; } = new List<ManufactureTable>();
         
         private ItemAmount[] _results;
         public ItemAmount[] Results
@@ -99,8 +99,7 @@ namespace Winecrash
 
                         // check if both virtual and input sequences are equal.
                         // ItemAmounts are set to be equal if both have the
-                        // winecrash:atmosphere identifier or both amounts
-                        // are 0
+                        // winecrash:atmosphere identifier or both amounts are 0
                         if (virtualPattern.SequenceEqual(inputItems))
                         {
                             // found !

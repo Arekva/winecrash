@@ -84,7 +84,7 @@ namespace WEngine.GUI
 					BindBuffers();
 					ComputeMatricesGPU(sender);
                     
-					this.Material.Use();
+					this.Material.Use(sender);
 
 					SetGLProperties();
 

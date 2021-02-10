@@ -6,6 +6,10 @@ namespace Winecrash
     {
         private static uint _renderDistance = 5;
 
+        public static readonly WRandom Random = new WRandom("minecrash".GetHashCode());
+        
+        public static Save CurrentSave { get; set; }
+
         public static uint RenderDistance
         {
             get => _renderDistance;

@@ -1,0 +1,15 @@
+{
+	"DisplayName": "#winecrash:block.cobblestone",
+
+    "Transparent": false,
+    "Collides": true,
+    
+    "Textures": {
+      "Up": "assets/textures/blocks/cobblestone.png",
+      "Down": "assets/textures/blocks/cobblestone.png",
+      "West": "assets/textures/blocks/cobblestone.png",
+      "East": "assets/textures/blocks/cobblestone.png",
+      "North": "assets/textures/blocks/cobblestone.png",
+      "South": "assets/textures/blocks/cobblestone.png"
+    }
+  }

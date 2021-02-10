@@ -41,10 +41,11 @@ namespace Winecrash.Client
             Debug.Log("\n\n");
             
             Time.PhysicsRate = 128D;
-            Vector3D soloPlayerSpawnpoint = /*new Vector3D(32_000_000D, 0, 32_000_000D);//*/new Vector3D(572, 66, 459);
+            Vector3D soloPlayerSpawnpoint = /*new Vector3D(32_000_000D, 0, 32_000_000D);//*/
+                new Vector3D(572, 66, 459);
 
 
-            //MainLoadScreen.Show();
+                //MainLoadScreen.Show();
             
             new Sound(@"assets/sounds/button_click.mp3");
             //new Shader("assets/shaders/Debug/Volume/DebugVolume.vert", "assets/shaders/Debug/Volume/DebugVolume.frag");
@@ -74,7 +75,7 @@ namespace Winecrash.Client
             main.RenderLayers &= ~(ulong)Layers.UI;
             main.WObject.AddModule<PanoramicPhotographer>();
 
-            Winecrash.RenderDistance = 2;
+            Winecrash.RenderDistance = 5;
             
             GameApplication app = (GameApplication)Graphics.Window;
             app.VSync = VSyncMode.On;
@@ -95,14 +96,14 @@ namespace Winecrash.Client
                 new Shader("assets/shaders/skybox/Skybox.vert", "assets/shaders/skybox/Skybox.frag");
                 new Shader("assets/shaders/celestialbody/CelestialBody.vert", "assets/shaders/celestialbody/CelestialBody.frag");
                 new Shader("assets/shaders/item/Item.vert", "assets/shaders/item/Item.frag");
+                //new Shader("assets/shaders/fun/Fun.vert", "assets/shaders/fun/Fun.frag");
 
 
-                Database.Load("assets/winecrash.package");
+                Package.Load("assets/winecrash.package");
                 ItemCache.BuildChunkTexture(out int xsize, out int ysize);
                 //Chunk.Texture.Save(Folders.UserData + "items_atlas.png");
-
-
-
+                
+                Winecrash.CurrentSave = new Save(Save.DefaultName, Save.Exists(Save.DefaultName));
 
                 Canvas.Main.UICamera.NearClip = -8192.0D;
                 Canvas.Main.UICamera.FarClip = 8192.0D;

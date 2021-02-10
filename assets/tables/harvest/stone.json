@@ -1,0 +1,12 @@
+{
+    "Block": "winecrash:stone",
+
+    "Chance": 1.0,
+
+    "Results": [
+        {
+            "Identifier": "winecrash:cobblestone",
+            "Amount": 1
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "Block": "winecrash:leaves",
+
+    "Chance": 1.0,
+
+    "Results": [
+        {
+            "Identifier": "winecrash:stick",
+            "Amount": 1
+        }
+    ]
+}

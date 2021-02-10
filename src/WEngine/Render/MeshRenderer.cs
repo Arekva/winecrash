@@ -82,7 +82,7 @@ namespace WEngine
                     BindBuffers();
                     ComputeMatricesGPU(sender);
                     
-                    this.Material.Use();
+                    this.Material.Use(sender);
 
                     SetGLProperties();
 
@@ -181,6 +181,7 @@ namespace WEngine
             this.Material.SetData("view", sender._RenderView);
             this.Material.SetData("projection", sender._RenderProjectionMatrix);
             this.Material.SetData("rotation", _renderRotation);
+            this.Material.SetData("worldView", sender._worldRenderView);
         }
 
         protected internal override void Creation()

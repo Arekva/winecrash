@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 using WEngine;
 using System.Configuration;
+using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 
 namespace Winecrash
 {
@@ -84,8 +86,30 @@ namespace Winecrash
             }
         }
 
+        public SaveChunk ReadChunk(Vector2I coordinates, string dimension)
+        {
+            string dim = ToValidFileName(dimension);
+            string fileName = $"{coordinates.X};{coordinates.Y}.json";
+
+            string path = System.IO.Path.Combine(this.Path, "Dimensions", dim, fileName);
+
+            return File.Exists(path) ? JsonConvert.DeserializeObject<SaveChunk>(File.ReadAllText(path)) : null;
+        }
+
+        public void WriteChunk(SaveChunk chunk)
+        {
+            if (chunk == null) throw new ArgumentException("Unable to save chunk from null.", nameof(chunk));
+            string dim = ToValidFileName(chunk.Dimension);
+            string fileName = $"{chunk.Coordinates.X};{chunk.Coordinates.Y}.json";
+            string dimPath = System.IO.Path.Combine(this.Path, "Dimensions", dim);
+            Directory.CreateDirectory(dimPath);
+            string filePath = System.IO.Path.Combine(this.Path, "Dimensions", dim, fileName);
+            
+            File.WriteAllText(filePath, JsonConvert.SerializeObject(chunk));
+        }
+
         /// <summary>
-        /// Makes a file name valid by changing unvalid characters.
+        /// Makes a file name valid by changing invalid characters.
         /// </summary>
         /// <param name="name">The file name.</param>
         /// <param name="replacement">The invalid replacement string.</param>
@@ -122,6 +146,8 @@ namespace Winecrash
 
             return saves;
         }
+
+        public static bool Exists(string name) => GetAllSaves().Count(k => k.Key == name) != 0;
 
         public static SaveStatus CheckIntegrity(string path, out Save save)
         {

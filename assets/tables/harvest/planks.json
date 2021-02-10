@@ -1,0 +1,12 @@
+{
+    "Block": "winecrash:planks",
+
+    "Chance": 1.0,
+
+    "Results": [
+        {
+            "Identifier": "winecrash:planks",
+            "Amount": 1
+        }
+    ]
+}
