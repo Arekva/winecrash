@@ -4,7 +4,7 @@ namespace Winecrash
 {
     public static class Winecrash
     {
-        private static uint _renderDistance = 5;
+        private static uint _renderDistance = 6;
 
         public static readonly WRandom Random = new WRandom("minecrash".GetHashCode());
         
@@ -16,10 +16,11 @@ namespace Winecrash
             set
             {
                 _renderDistance = value;
-                Material.Find("Item")?.SetData("renderDistance", (float)value);
+                Material mat = Material.Find("Item");
+                mat?.SetData("renderDistance", (float)value);
             }
         }
-        public static Version Version { get; } = new Version(0, 0, 0, "Alpha \"Stève\"");
+        public static Version Version { get; } = new Version(0, 0, 1, "Alpha \"Stève\"");
         static Winecrash() => Physics.Gravity = Vector3D.Down * 27;
     }
 }

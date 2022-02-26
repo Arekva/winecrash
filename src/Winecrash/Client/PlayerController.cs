@@ -85,6 +85,7 @@ namespace Winecrash.Client
         }
 
         private Dictionary<string, KeyStates> inputs = new Dictionary<string, KeyStates>();
+        
         protected override void Update() //todo: NetworkUpdate
         {
             if (Player.LocalPlayer.Entity != null)
@@ -133,6 +134,7 @@ namespace Winecrash.Client
                         Player.LocalPlayer.Entity.RigidBody.Velocity = Vector3D.Zero;
                     }
                 }
+                
                 
 
                 Player.LocalPlayer.ParseInputs(inputs);
@@ -198,11 +200,11 @@ namespace Winecrash.Client
                 }
                 if (Input.IsPressing(Keys.O))
                 {
-                    Winecrash.RenderDistance--;
+                    //Winecrash.RenderDistance--;
                 }
                 if (Input.IsPressing(Keys.P))
                 {
-                    Winecrash.RenderDistance++;
+                    //Winecrash.RenderDistance++;
                 }
                 //#endif
 

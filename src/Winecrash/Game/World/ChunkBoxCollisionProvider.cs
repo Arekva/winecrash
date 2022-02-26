@@ -106,19 +106,24 @@ namespace Winecrash
             }
         }
 
-        public static RaycastChunkHit CollideWorld(BoxCollider b, Axis priorise = Axis.X)
+        public static RaycastChunkHit CollideWorld(BoxCollider b, out bool grounded, Axis priorise = Axis.X)
         {
             // ok donc ça fais 3 jours non stop que j'essai de bosser sur les collisions et ça me fait vraiment chier.
             // du coup je vais reprendre celles que j'avais fait à la zbeul pour la Predev, c'est crade mais au
             // moins ça fonctionne bordel de merde.
 
-            if (!b || !b.Enabled) return new RaycastChunkHit();
+            if (!b || !b.Enabled)
+            {
+                grounded = false;
+                return new RaycastChunkHit();
+            }
 
             RigidBody rb = b.WObject.GetModule<RigidBody>();
             if (!rb)
             {
                 Debug.LogWarning(
                     "No collision possible between a chunk and a box collider with no RigidBody. Please add a Rigidbody module.");
+                grounded = false;
                 return new RaycastChunkHit();
             }
             
@@ -410,12 +415,12 @@ namespace Winecrash
                 CheckLeft();
                 CheckForward();
                 CheckBackward();
-                CheckGrounded();
+                grounded = CheckGrounded().HasHit;
                 CheckCeiling();
             }
             else if (priorise == Axis.Y)
             {
-                CheckGrounded();
+                grounded = CheckGrounded().HasHit;
                 CheckCeiling();
                 CheckRight();
                 CheckLeft();
@@ -428,8 +433,12 @@ namespace Winecrash
                 CheckBackward();
                 CheckRight();
                 CheckLeft();
-                CheckGrounded();
+                grounded = CheckGrounded().HasHit;
                 CheckCeiling();
+            }
+            else
+            {
+                grounded = false;
             }
             
             

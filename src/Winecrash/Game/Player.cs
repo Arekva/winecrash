@@ -241,9 +241,9 @@ namespace Winecrash
 
                 if (ks.TryGetValue("move_jump", out state))
                 {
-                    if (state == KeyStates.Pressing)
+                    if (state == KeyStates.Pressing || state == KeyStates.Pressed)
                     {
-                        Entity.RigidBody.Velocity += Vector3D.Up * 8.75;
+                        Entity.Jump = true;
                     }
                 }
             }

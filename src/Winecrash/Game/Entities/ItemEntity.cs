@@ -48,7 +48,7 @@ namespace Winecrash.Entities
 
         protected override void PhysicsUpdate()
         {
-            ChunkBoxCollisionProvider.CollideWorld(Collider, Axis.Y);
+            ChunkBoxCollisionProvider.CollideWorld(Collider, out bool grounded, Axis.Y);
 
             if (IsPicked)
             {

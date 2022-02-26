@@ -52,8 +52,11 @@ namespace Winecrash.Entities
         public Material SkinMaterial { get; set; }
 
         public bool AnyMoveInputOnFrame { get; set; } = false;
-        
-        public double JumpCD = 0.0D;
+
+        public bool Jump { get; set; } = false;
+
+        private double _jumpCD = double.PositiveInfinity;
+        private double _jumpTime = 0.1D;
 
         static PlayerEntity()
         {
@@ -364,6 +367,8 @@ namespace Winecrash.Entities
             }
 
 
+            _jumpCD += Time.PhysicsDelta;
+
             if (AnyMoveInputOnFrame)
             {
                 
@@ -387,8 +392,17 @@ namespace Winecrash.Entities
 
             if (!Player.NoClipping)
             {
-                RaycastChunkHit h = ChunkBoxCollisionProvider.CollideWorld(Collider);
+                RaycastChunkHit h = ChunkBoxCollisionProvider.CollideWorld(Collider, out bool grounded);
+                
+                if (Jump && grounded && _jumpCD >= _jumpTime)
+                {
+                    _jumpCD = 0.0D;
+
+                    RigidBody.Velocity += Vector3D.Up * 8.75;
+                }
             }
+
+            Jump = false;
         }
 
         protected override void OnDelete()

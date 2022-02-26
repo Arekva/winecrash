@@ -152,7 +152,7 @@ namespace Winecrash.Client
             btnOptions.Button.MaxAnchor = new Vector2F(0.45F, 0.3F);
             btnOptions.Label.Localization = "#winecrash:ui.mainmenu.settings";
             btnOptions.Button.OnClick += () => ShowOptions();
-            btnOptions.Button.Locked = false;
+            btnOptions.Button.Locked = true;
             
             WObject quit = new WObject("Quit Button") { Parent = btnPanel };
             GUI.SmallButton btnQuit = quit.AddModule<GUI.SmallButton>();

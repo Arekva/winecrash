@@ -163,6 +163,7 @@ namespace Winecrash
             m.SetData("color", new Color256(1, 1, 1, 1));
             m.SetData("minLight", 0.8F);
             m.SetData("maxLight", 1.0F);
+            Winecrash.RenderDistance = Winecrash.RenderDistance;
             
             return tex;
         }

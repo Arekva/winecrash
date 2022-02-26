@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using WEngine;
 using WEngine.GUI;
-using WEngine.Networking;
-using Winecrash;
-using Winecrash.Entities;
-using Winecrash.Net;
 using Debug = WEngine.Debug;
 using Graphics = WEngine.Graphics;
 using Label = WEngine.GUI.Label;
@@ -75,8 +64,6 @@ namespace Winecrash.Client
             main.RenderLayers &= ~(ulong)Layers.UI;
             main.WObject.AddModule<PanoramicPhotographer>();
 
-            Winecrash.RenderDistance = 5;
-            
             GameApplication app = (GameApplication)Graphics.Window;
             app.VSync = VSyncMode.On;
             
@@ -88,6 +75,8 @@ namespace Winecrash.Client
             
             app.Title = title;   
             
+            Winecrash.RenderDistance = 8;
+            
             app.OnLoaded += () =>
             {
                 new Shader("assets/shaders/player/Player.vert", "assets/shaders/player/Player.frag");
@@ -96,6 +85,7 @@ namespace Winecrash.Client
                 new Shader("assets/shaders/skybox/Skybox.vert", "assets/shaders/skybox/Skybox.frag");
                 new Shader("assets/shaders/celestialbody/CelestialBody.vert", "assets/shaders/celestialbody/CelestialBody.frag");
                 new Shader("assets/shaders/item/Item.vert", "assets/shaders/item/Item.frag");
+                
                 //new Shader("assets/shaders/fun/Fun.vert", "assets/shaders/fun/Fun.frag");
 
 

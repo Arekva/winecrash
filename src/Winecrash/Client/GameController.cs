@@ -19,7 +19,7 @@ namespace Winecrash.Client
                 PlayerEntity.PlayerHandWobject.Enabled = !PlayerEntity.PlayerHandWobject;
             }
             
-            if (Input.IsPressing(Keys.W))
+            /*if (Input.IsPressing(Keys.W))
             {
                 Time.Scale = Time.Scale * 0.1D;
             }
@@ -30,7 +30,7 @@ namespace Winecrash.Client
             if (Input.IsPressing(Keys.C))
             {
                 Time.Scale = 1.0D;
-            }
+            }*/
                 
             //screenshot
             if (Input.IsPressing(Keys.F2))
