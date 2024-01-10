@@ -8,7 +8,7 @@ Hey, welcome to the repos of Winecrash!
 __Winecrash__ and __breaks-and-continues__ are both **unaffiliated** to __Minecraft__ nor __Mojang Studios__.
 This is a fan project I enjoy making in my free time to train my C#. However feel free to contribute! 😉
 
-If any legal issue would come up, please contact me on [arekva@protonmail.com](mailto:arekva@protonmail.com "Send a mail to arekva@protonmail.com").
+If any legal issue would come up, please contact me on arekva at protonmail dot com.
 
 ## Run the game
 
